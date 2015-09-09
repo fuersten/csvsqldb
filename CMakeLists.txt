@@ -35,7 +35,7 @@ SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 
 FIND_PACKAGE(Lua51 REQUIRED)
 FIND_PACKAGE(Doxygen)
-FIND_PACKAGE(Boost 1.55 COMPONENTS filesystem program_options system REQUIRED)
+FIND_PACKAGE(Boost 1.55 COMPONENTS filesystem program_options regex system REQUIRED) # TODO(BBR) regex only needed when using an old std lib
 FIND_PACKAGE(Readline REQUIRED)
 
 IF(NOT Boost_FOUND)
@@ -60,6 +60,11 @@ ENDIF()
 
 IF(CMAKE_BUILD_TYPE MATCHES "Debug")
     ADD_DEFINITIONS(-DDEBUG)
+ENDIF()
+
+OPTION(USE_BOOST_REGEX "Use regex from boost rather that the standard library")
+IF(USE_BOOST_REGEX)
+  ADD_DEFINITIONS(-DUSE_BOOST_REGEX)
 ENDIF()
 
 IF(NOT APPLE AND UNIX)

@@ -38,8 +38,9 @@
 
 #include "types.h"
 
+#include "compat/regex.h"
+
 #include <functional>
-#include <regex>
 #include <string>
 #include <vector>
 
@@ -139,18 +140,18 @@ namespace csvsqldb
             struct TokenDefinition
             {
                 TokenDefinition()
-                : _rx(std::regex(""))
+                : _rx(regex(""))
                 , _token(UNDEFINED)
                 {}
                 
-                TokenDefinition(const std::string& name, const std::regex& r, int32_t token)
+                TokenDefinition(const std::string& name, const regex& r, int32_t token)
                 : _name(name)
                 , _rx(r)
                 , _token(token)
                 {}
                 
                 std::string _name;
-                std::regex _rx;
+                regex _rx;
                 int32_t _token;
             };
             typedef std::vector<TokenDefinition> TokenDefinitionVector;
