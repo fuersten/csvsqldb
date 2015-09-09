@@ -35,7 +35,7 @@ SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 
 FIND_PACKAGE(Lua51 REQUIRED)
 FIND_PACKAGE(Doxygen)
-FIND_PACKAGE(Boost 1.55 COMPONENTS filesystem program_options regex system REQUIRED) # TODO(BBR) regex only needed when using an old std lib
+FIND_PACKAGE(Boost 1.55 COMPONENTS filesystem program_options system REQUIRED) # TODO(BBR) regex only needed when using an old std lib
 FIND_PACKAGE(Readline REQUIRED)
 
 IF(NOT Boost_FOUND)
@@ -78,6 +78,8 @@ IF(NOT APPLE AND UNIX)
       SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
       ADD_DEFINITIONS(-DHAS_PUT_TIME -DHAS_GET_TIME)
     ELSE()
+      MESSAGE(STATUS "Looking for Boost.Regex since we do not link again libc++")
+      FIND_PACKAGE(Boost 1.55 COMPONENTS filesystem program_options regex system REQUIRED)
       ADD_DEFINITIONS(-DUSE_BOOST_REGEX)
     ENDIF()
 
