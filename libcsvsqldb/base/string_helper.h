@@ -42,11 +42,12 @@
 #include "compat/put_time.h"
 
 #include <algorithm>
+#include <cctype>
 #include <chrono>
 #include <ctime>
-#include <cctype>
 #include <iomanip>
 #include <iostream>
+#include <iterator>
 
 
 namespace csvsqldb

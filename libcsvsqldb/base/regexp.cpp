@@ -34,6 +34,7 @@
 #include "regexp.h"
 #include "exception.h"
 
+#include <cstring>
 #include <list>
 #include <vector>
 

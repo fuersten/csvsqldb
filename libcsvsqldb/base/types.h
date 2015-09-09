@@ -38,6 +38,7 @@
 
 #include "detail/types_detail.h"
 
+#include <algorithm>
 #include <cstdint>
 #include <chrono>
 #include <memory>

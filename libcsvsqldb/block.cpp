@@ -33,6 +33,8 @@
 
 #include "block.h"
 
+#include <algorithm>
+
 
 namespace csvsqldb
 {

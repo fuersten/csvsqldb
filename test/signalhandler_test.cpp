@@ -38,6 +38,8 @@
 
 #include <unistd.h>
 #include <signal.h>
+#include <condition_variable>
+#include <mutex>
 #include <thread>
 
 

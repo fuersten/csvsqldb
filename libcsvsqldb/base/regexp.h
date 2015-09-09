@@ -34,6 +34,7 @@
 #ifndef csvsqldb_regexp_h
 #define csvsqldb_regexp_h
 
+#include <memory>
 #include <string>
 
 
