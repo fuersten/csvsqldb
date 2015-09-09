@@ -1,0 +1,112 @@
+
+./csvsqldb --sql="explain ast select emp_no,(first_name || ' ' || last_name) as name,( (CURRENT_DATE - birth_date)/365 ) as dt from employees where birth_date > DATE'1965-01-01' order by dt" --mapping="employees\\d+.csv->employees" ~/temp/csvDB/employees22.csv
+
+./csvsqldb --sql="explain exec select emp_no,(first_name || ' ' || last_name) as name,( (CURRENT_DATE - birth_date)/365 ) as dt from employees where birth_date > DATE'1965-01-01' order by dt" --mapping="employees\\d+.csv->employees" ~/temp/csvDB/employees22.csv
+
+./csvsqldb -v --sql="select emp_no,(first_name || ' ' || last_name) as name,(CURRENT_DATE - birth_date)/365 as dt from employees where last_name = 'Schmiedel'" --mapping="employees\\d+.csv->employees" ~/temp/csvDB/employees11.csv
+
+197 rows
+190ms
+
+./csvsqldb -v --sql="select emp_no,first_name || ' ' || last_name as name,gender,extract(year from birth_date) from employees where extract(year from birth_date) >= 1965" --mapping="employees\\d+.csv->employees" ~/temp/csvDB/employees11.csv
+
+1940 rows
+320ms
+
+./csvsqldb -v --sql="select emp_no,(first_name || ' ' || last_name) as name,CAST(CURRENT_DATE - birth_date as REAL)/365.0 as dt from employees where last_name = 'Schmiedel'" --mapping="employees\\d+.csv->employees" ~/temp/csvDB/employees11.csv
+
+197 rows
+190ms
+
+./csvsqldb -v --sql="select emp_no,first_name || ' ' || last_name as name,(CURRENT_DATE - birth_date)/365 as dt,CURRENT_DATE from employees where last_name = 'Schmiedel' and emp_no > 490000" --mapping="employees\\d+.csv->employees" ~/temp/csvDB/employees11.csv
+
+7 rows
+240ms
+
+./csvsqldb -v --sql="select emp_no no,emp_no as id from employees where last_name = 'Schmiedel' and emp_no > 490000" --mapping="employees\\d+.csv->employees" ~/temp/csvDB/employees11.csv
+
+7 rows
+240ms
+
+./csvsqldb -v --sql="select count(*) from employees where birth_date > DATE'1965-01-01'" --mapping="employees\\d+.csv->employees" ~/temp/csvDB/employees11.csv
+
+1 row
+180ms
+
+./csvsqldb -v --sql="SELECT *,CURRENT_DATE as dt FROM employees WHERE birth_date > DATE'1965-01-01'" --mapping="employees\\d*\\.csv->employees" /Users/lfg/temp/csvDB/employees11.csv
+
+1879 rows
+200ms
+
+./csvsqldb -v --sql="SELECT *,CURRENT_DATE as dt FROM employees WHERE birth_date > DATE'1965-01-01' order by birth_date" --mapping="employees\\d*\\.csv->employees" /Users/lfg/temp/csvDB/employees11.csv
+
+1879 rows
+200ms
+
+./csvsqldb -v --sql="select count(*) from employees" --mapping="employees\\d+.csv->employees" ~/temp/csvDB/employees11.csv
+
+1 row
+140ms
+
+./csvsqldb -v --sql="select * from employees" --mapping="employees\\d+.csv->employees" ~/temp/csvDB/employees11.csv
+
+300024 rows
+1870ms
+
+./csvsqldb -v --sql="select * from employees order by last_name" --mapping="employees\\d+.csv->employees" ~/temp/csvDB/employees11.csv
+
+300024 rows
+2600ms
+
+./csvsqldb -v --sql="SELECT emp.emp_no,emp.first_name,emp.last_name as name,birth_date,hire_date,gender FROM employees emp WHERE last_name='Tsukuda'" --mapping="employees\\d+.csv->employees" ~/temp/csvDB/employees11.csv
+
+185 rows
+200ms
+
+./csvsqldb -v --sql="select * from employees where emp_no < 10500 UNION (select * from employees where emp_no >= 10500)" --mapping="employees\\d+.csv->employees" ~/temp/csvDB/employees11.csv
+
+300024 rows
+2280ms
+
+./csvsqldb -v --sql="select * from employees where emp_no < 250000 UNION (select * from employees where emp_no >= 250000)" --mapping="employees\\d+.csv->employees" ~/temp/csvDB/employees11.csv
+
+300024 rows
+2280ms
+
+./csvsqldb -v --sql="select * from salaries sal join employees emp on sal.emp_no = emp.emp_no" --mapping="employees\\d*.csv->employees;salaries\\d*.csv->salaries" /Users/lfg/temp/csvDB/employees11.csv /Users/lfg/temp/csvDB/salaries11.csv
+
+2844046 rows
+29140ms
+
+./csvsqldb -v --sql="select * from salaries sal join employees emp on sal.emp_no = emp.emp_no where last_name='Tsukuda'" --mapping="employees\\d*.csv->employees;salaries\\d*.csv->salaries" /Users/lfg/temp/csvDB/employees11.csv /Users/lfg/temp/csvDB/salaries11.csv
+
+1707 rows
+1890ms
+
+./csvsqldb -v --sql="select * from employees emp join salaries sal on sal.emp_no = emp.emp_no" --mapping="employees\\d*.csv->employees;salaries.csv->salaries" /Users/lfg/temp/csvDB/employees11.csv /Users/lfg/temp/csvDB/salaries.csv
+
+36 rows
+160ms
+
+./csvsqldb -v --sql="select * from employees emp join salaries sal on sal.emp_no = emp.emp_no where emp.last_name='Delgrande'" --mapping="employees\\d*.csv->employees;salaries.csv->salaries" /Users/lfg/temp/csvDB/employees11.csv /Users/lfg/temp/csvDB/salaries.csv
+
+1843 rows
+2790ms
+
+./csvsqldb -v --sql="select max(emp_no) from employees where birth_date > DATE'1965-01-01'" --mapping="employees\\d+.csv->employees" ~/temp/csvDB/employees11.csv
+
+1 row
+180ms
+
+./csvsqldb -v --sql="SELECT emp.first_name,emp.last_name,dept_emp.dept_no,departments.dept_name FROM employees as emp JOIN dept_emp ON emp.emp_no = dept_emp.emp_no JOIN departments ON dept_emp.dept_no = departments.dept_no" --mapping="employees\\d*.csv->employees;salaries\\d*.csv->salaries;dept_emp\\d*.csv->dept_emp;departments\\d*.csv->departments" /Users/lfg/temp/csvDB/employees11.csv /Users/lfg/temp/csvDB/salaries11.csv /Users/lfg/temp/csvDB/dept_emp11.csv /Users/lfg/temp/csvDB/departments11.csv
+
+331603 rows
+1740ms
+
+./csvsqldb -v --sql="CREATE TABLE IF NOT EXISTS employees(emp_no INTEGER, birth_date DATE NOT NULL, first_name VARCHAR(25) NOT NULL, last_name VARCHAR(50) NOT NULL, gender CHAR, hire_date DATE, PRIMARY KEY(emp_no));"
+
+./csvsqldb -v --sql="SELECT * FROM salaries WHERE salary > 65000;" --mapping="employees\\d+.csv->employees;salaries.csv->salaries" ~/temp/csvDB/employees.csv ~/temp/csvDB/salaries.csv
+
+7 rows
+
+./csvsqldb --command-file=/Users/lfg/temp/git-sandbox/csvsqldb/test/test.sql --mapping="employees\\d*.csv->employees;salaries\\d*.csv->salaries;dept_emp\\d*.csv->dept_emp;departments\\d*.csv->departments" /Users/lfg/temp/csvDB/employees.csv /Users/lfg/temp/csvDB/salaries.csv /Users/lfg/temp/csvDB/dept_emp.csv /Users/lfg/temp/csvDB/departments11.csv

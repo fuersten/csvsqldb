@@ -1,0 +1,14 @@
+//
+//  test_util.h
+//  csvsqldb
+//
+//  Copyright (c) 2015 Fürstenberg IT Systems. All rights reserved.
+//
+
+#ifndef CSVSQLDB_TEST_UTIL_H
+#define CSVSQLDB_TEST_UTIL_H
+
+#define CSVSQLDB_TEST_PATH "${CMAKE_CURRENT_SOURCE_DIR}"
+
+#endif
+

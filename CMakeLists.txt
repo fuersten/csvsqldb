@@ -1,0 +1,111 @@
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
+PROJECT(csvsqldb)
+
+SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib/${CMAKE_SYSTEM_NAME}_${CMAKE_SYSTEM_PROCESSOR})
+SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib/${CMAKE_SYSTEM_NAME}_${CMAKE_SYSTEM_PROCESSOR})
+SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME}_${CMAKE_SYSTEM_PROCESSOR})
+
+SET(CSVSQLDB_VERSION_MAJOR 0)
+SET(CSVSQLDB_VERSION_MINOR 1)
+SET(CSVSQLDB_VERSION_PATCH 4)
+
+SET(CSVSQLDB_VERSION ${CSVSQLDB_VERSION_MAJOR}.${CSVSQLDB_VERSION_MINOR}.${CSVSQLDB_VERSION_PATCH})
+SET(CSVSQLDB_VERSION_SHORT ${CSVSQLDB_VERSION_MAJOR}.${CSVSQLDB_VERSION_MINOR})
+SET(CSVSQLDB_VERSION_STRING ${CSVSQLDB_VERSION_MAJOR}.${CSVSQLDB_VERSION_MINOR}.${CSVSQLDB_VERSION_PATCH})
+SET(CSVSQLDB_VERSION_HEX 0x00000104)
+
+IF(NOT CMAKE_BUILD_TYPE)
+    SET(CMAKE_BUILD_TYPE Debug)
+ENDIF()
+
+IF(CMAKE_BUILD_TYPE MATCHES "Debug")
+    MESSAGE("Setting up csvsqldb ${CSVSQLDB_VERSION_STRING} for a debug build")
+ELSEIF(CMAKE_BUILD_TYPE MATCHES "RelWithDebInfo")
+    MESSAGE("Setting up csvsqldb ${CSVSQLDB_VERSION_STRING} for a release with debug info build")
+ELSEIF(CMAKE_BUILD_TYPE MATCHES "Release")
+    MESSAGE("Setting up csvsqldb ${CSVSQLDB_VERSION_STRING} for a release build")
+ELSE()
+    MESSAGE(FATAL_ERROR "Unknown build type ${CMAKE_BUILD_TYPE} specified")
+ENDIF()
+
+INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR})
+INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR})
+
+SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
+
+FIND_PACKAGE(Lua51 REQUIRED)
+FIND_PACKAGE(Doxygen)
+FIND_PACKAGE(Boost 1.55 COMPONENTS filesystem program_options system REQUIRED)
+FIND_PACKAGE(Readline REQUIRED)
+
+IF(NOT Boost_FOUND)
+    MESSAGE(FATAL_ERROR "Could not find boost")
+ENDIF()
+
+IF(NOT LUA51_FOUND)
+    MESSAGE(FATAL_ERROR "Could not find LUA")
+ENDIF()
+
+IF(NOT READLINE_FOUND)
+    MESSAGE(FATAL_ERROR "Could not find readline")
+ENDIF()
+
+IF(NOT WIN32)
+    INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/libcsvsqldb ${LUA_INCLUDE_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${Boost_INCLUDE_DIR} ${Readline_INCLUDE_DIR})
+    LINK_DIRECTORIES(/usr/local/lib ${Boost_LIBRARY_DIRS})
+ELSE()
+    INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR} ${LUA_INCLUDE_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${Boost_INCLUDE_DIR})
+    LINK_DIRECTORIES(${CMAKE_LIBRARY_OUTPUT_DIRECTORY} ${LUA_LIBRARY_DIRS} ${Boost_LIBRARY_DIRS})
+ENDIF()
+
+IF(CMAKE_BUILD_TYPE MATCHES "Debug")
+    ADD_DEFINITIONS(-DDEBUG)
+ENDIF()
+
+IF(NOT APPLE AND UNIX)
+    SET(CMAKE_C_COMPILER "clang")
+    SET(CMAKE_CXX_COMPILER "clang++")
+    SET(CSVSQLDB_PLATFORM_LIBS dl pthread c++abi)
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -std=c++11 -stdlib=libc++")
+    MESSAGE(STATUS "${SANITIZE}")
+    IF(SANITIZE MATCHES "On")
+        SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -O1 -fno-omit-frame-pointer")
+    ENDIF()
+ELSEIF(APPLE AND CMAKE_GENERATOR STREQUAL Xcode)
+    MESSAGE("Setting up Xcode for C++11 with libc++.")
+    SET(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD "c++11")
+    SET(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LIBRARY "libc++")
+    SET(CSVSQLDB_PLATFORM_LIBS )
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wheader-hygiene -Wcast-align -Wconversion -Wfloat-equal -Wformat=2
+                         -Wimplicit-atomic-properties -Wmissing-declarations -Wmissing-prototypes -Woverlength-strings
+                         -Wshadow -Wstrict-selector-match -Wundeclared-selector -Wunreachable-code -Wextra
+                         -Wno-unused-parameter -Wpedantic -Werror")
+ELSEIF(APPLE)
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -stdlib=libc++")
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wheader-hygiene -Wcast-align -Wconversion -Wfloat-equal -Wformat=2
+                         -Wimplicit-atomic-properties -Wmissing-declarations -Wmissing-prototypes -Woverlength-strings
+                         -Wshadow -Wstrict-selector-match -Wundeclared-selector -Wunreachable-code -Wextra
+                         -Wno-unused-parameter -Wpedantic -Werror")
+ELSEIF(WIN32)
+    ADD_DEFINITIONS(-DNOMINMAX)
+    SET(Boost_USE_STATIC_LIBS ON)
+    SET(CMAKE_CXX_FLAGS "-D_SCL_SECURE_NO_WARNINGS")
+    SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /MP")
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP /EHsc")
+    SET(CSVSQLDB_PLATFORM_LIBS )
+ELSE()
+    SET(CSVSQLDB_PLATFORM_LIBS )
+ENDIF()
+
+IF(DOXYGEN_FOUND)
+    ADD_CUSTOM_TARGET(
+        docs
+        ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/csvsqldb.cfg
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        COMMENT "Generating API documentation with Doxygen" VERBATIM
+    )
+ENDIF()
+
+ADD_SUBDIRECTORY(csvsqldb)
+ADD_SUBDIRECTORY(libcsvsqldb)
+ADD_SUBDIRECTORY(test)
