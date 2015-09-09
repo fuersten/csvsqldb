@@ -34,8 +34,13 @@
 #ifndef csvsqldb_put_time_h
 #define csvsqldb_put_time_h
 
-// TODO(BBR) forward to available std fct
+#ifdef HAS_PUT_TIME
+#include <iomanip>
+namespace csvsqldb {
+using std::put_time;
+} // namespace csvsqldb
 
+#else
 #include <array>
 #include <ctime>
 #include <string>
@@ -48,6 +53,7 @@ std::string put_time(const std::tm *tmb, const CharT *fmt) {
   return buffer.data();
 }
 } // namespace csvsqldb
+#endif // HAS_PUT_TIME
 
 #endif  // csvsqldb_put_time_h
 

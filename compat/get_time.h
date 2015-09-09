@@ -34,8 +34,13 @@
 #ifndef csvsqldb_get_time_h
 #define csvsqldb_get_time_h
 
-// TODO(BBR) forward to available std fct
+#ifdef HAS_GET_TIME
+#include <iomanip>
+namespace csvsqldb {
+using std::get_time;
+} // namespace csvsqldb
 
+#else
 #include <ctime>
 #include <ios>
 #include <string>
@@ -66,6 +71,7 @@ operator>>(std::basic_istream<CharT, Traits> &is, detail::get_time_helper h) {
   return is;
 }
 } // namespace csvsqldb
+#endif // HAS_GET_TIME
 
 #endif // csvsqldb_get_time_h
 
