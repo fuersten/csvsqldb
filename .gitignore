@@ -26,3 +26,13 @@
 *.exe
 *.out
 *.app
+
+# temporary files
+*.swp
+*.swo
+
+# build directory
+build
+
+# test artifacts
+test/std*.txt

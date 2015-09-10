@@ -1,4 +1,0 @@
-2015-09-09T11:21:57 | DEBUG | 0x7fff73a3f310 | TestClass1 | This shows up | /Users/lfg/temp/git-sandbox/csvsqldb/test/logging_test.cpp:131
-2015-09-09T11:21:57 | DEBUG | 0x7fff73a3f310 | TestClass2 | This shows up also | /Users/lfg/temp/git-sandbox/csvsqldb/test/logging_test.cpp:132
-2015-09-09T11:21:57 | INFO | 0x7fff73a3f310 | Cannot be hidden
-2015-09-09T11:21:57 | ERROR | 0x7fff73a3f310 | Errors are always printed | /Users/lfg/temp/git-sandbox/csvsqldb/test/logging_test.cpp:134
