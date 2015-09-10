@@ -544,7 +544,7 @@ namespace csvsqldb
     {
         bool operation(const L& lhs, const R& rhs) const
         {
-            return static_cast<const bool&>(lhs) && static_cast<const bool&>(rhs);
+            return static_cast<bool>(lhs) && static_cast<bool>(rhs);
         }
     };
     
@@ -553,7 +553,7 @@ namespace csvsqldb
     {
         bool operation(const L& lhs, const StringType& rhs) const
         {
-            return static_cast<const bool&>(lhs) && rhs;
+            return static_cast<bool>(lhs) && rhs;
         }
     };
     
@@ -562,7 +562,7 @@ namespace csvsqldb
     {
         bool operation(const StringType& lhs, const R& rhs) const
         {
-            return lhs && static_cast<const bool&>(rhs);
+            return lhs && static_cast<bool>(rhs);
         }
     };
     
@@ -580,7 +580,7 @@ namespace csvsqldb
     {
         bool operation(const L& lhs, const R& rhs) const
         {
-            return static_cast<const bool&>(lhs) || static_cast<const bool&>(rhs);
+            return static_cast<bool>(lhs) || static_cast<bool>(rhs);
         }
     };
     
@@ -589,7 +589,7 @@ namespace csvsqldb
     {
         bool operation(const L& lhs, const StringType& rhs) const
         {
-            return static_cast<const bool&>(lhs) || rhs;
+            return static_cast<bool>(lhs) || rhs;
         }
     };
     
@@ -598,7 +598,7 @@ namespace csvsqldb
     {
         bool operation(const StringType& lhs, const R& rhs) const
         {
-            return lhs || static_cast<const bool&>(rhs);
+            return lhs || static_cast<bool>(rhs);
         }
     };
     
@@ -2045,7 +2045,7 @@ namespace csvsqldb
         typedef OperationCast<int64_t, bool> op_cast_bi;
         typedef OperationCast<bool, bool> op_cast_bb;
         typedef OperationCast<bool, int64_t> op_cast_ib;
-        typedef OperationCast<bool, double> op_cast_fb;
+        // typedef OperationCast<bool, double> op_cast_fb;
         typedef OperationCast<StringType, StringType> op_cast_ss;
         typedef OperationCast<bool, StringType> op_cast_sb;
         typedef OperationCast<double, StringType> op_cast_sf;

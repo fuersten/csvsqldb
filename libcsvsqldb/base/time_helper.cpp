@@ -33,6 +33,9 @@
 
 #include "time_helper.h"
 
+#include "compat/get_time.h"
+#include "compat/put_time.h"
+
 #include <iomanip>
 #include <sstream>
 
@@ -51,7 +54,7 @@ namespace csvsqldb
         std::stringstream ss;
         struct tm ptime;
         gmtime_r(&time, &ptime);
-        ss << std::put_time(&ptime, "%Y-%m-%dT%H:%M:%S");
+        ss << put_time(&ptime, "%Y-%m-%dT%H:%M:%S");
         return ss.str();
     }
     
@@ -61,7 +64,7 @@ namespace csvsqldb
         std::stringstream ss;
         struct tm ptime;
         localtime_r(&time, &ptime);
-        ss << std::put_time(&ptime, "%Y-%m-%dT%H:%M:%S");
+        ss << put_time(&ptime, "%Y-%m-%dT%H:%M:%S");
         return ss.str();
     }
     
@@ -69,7 +72,7 @@ namespace csvsqldb
     {
         std::tm t;
         std::istringstream ss(time);
-        ss >> std::get_time(&t, "%Y-%m-%dT%H:%M:%S");
+        ss >> get_time(&t, "%Y-%m-%dT%H:%M:%S");
 #ifndef _MSC_VER // TODO LCF: find a valid workaround for Windows (maybe boost something?)
         time_t tt = timegm(&t);
         localtime_r(&tt, &t);

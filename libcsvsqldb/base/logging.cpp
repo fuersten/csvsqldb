@@ -31,13 +31,14 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-#include "logging.h"
 #include "global_configuration.h"
 #include "log_devices.h"
+#include "logging.h"
 #include "string_helper.h"
 
+#include "compat/regex.h"
+
 #include <memory>
-#include <regex>
 #include <vector>
 
 
@@ -61,8 +62,8 @@ namespace csvsqldb
             os << event._classname << separator;
         }
         if(config<GlobalConfiguration>()->logging.escape_newline) {
-            std::regex exp("\n|\r");
-            os << std::regex_replace(event._message, exp, std::string("\\n"));
+            regex exp("\n|\r");
+            os << regex_replace(event._message, exp, std::string("\\n"));
         } else {
             os << event._message;
         }

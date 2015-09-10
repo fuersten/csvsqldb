@@ -34,6 +34,7 @@
 #include "string_helper.h"
 
 #include <algorithm>
+#include <cstring>
 #include <sstream>
 
 

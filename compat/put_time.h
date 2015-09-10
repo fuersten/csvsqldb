@@ -1,5 +1,5 @@
 //
-//  regexp.h
+//  put_time.h
 //  csvsqldb
 //
 //  BSD 3-Clause License
@@ -31,69 +31,29 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-#ifndef csvsqldb_regexp_h
-#define csvsqldb_regexp_h
+#ifndef csvsqldb_put_time_h
+#define csvsqldb_put_time_h
 
-#include <memory>
+#ifdef HAS_PUT_TIME
+#include <iomanip>
+namespace csvsqldb {
+using std::put_time;
+} // namespace csvsqldb
+
+#else
+#include <array>
+#include <ctime>
 #include <string>
 
-
-namespace csvsqldb
-{
-    /**
-     *  Regular expression matcher class. Supports most of the commen regular exression constructs. Does only matching and no capturing.
-     *  Supported constructs:
-     *  - ab
-     *  - a | b
-     *  - a*
-     *  - a+
-     *  - a?
-     *  - (a | b)
-     *  - [a-zA-Z]
-     *  - [^a-z]
-     *  - .
-     *  - \w
-     *  - \d
-     *  - \s
-     */
-    class RegExp
-    {
-    public:
-        /**
-         *  Constructs an empty regular expression which will match nothing. 
-         */
-        RegExp();
-
-        /**
-         * Constructs a regular expression from the given string.
-         * @param s The regular expression to construct. Will throw a RegExpException upon errors.
-         */
-        explicit RegExp(const std::string& s);
-        
-        RegExp(const RegExp& s);
-        
-        ~RegExp();
-        
-        RegExp& operator=(const std::string& s);
-        
-        /**
-         * Matches the given string against the regular expression.
-         * @param s String to match
-         * @return true if the string matches, otherwise false
-         */
-        bool match(const std::string& s) const;
-        
-        /**
-         * Matches the given string against the regular expression.
-         * @param s String to match
-         * @return true if the string matches, otherwise false
-         */
-        bool match(const char* s) const;
-        
-    private:
-        struct Private;
-        std::unique_ptr<Private> _m;
-    };
+namespace csvsqldb {
+template <typename CharT>
+std::string put_time(const std::tm *tmb, const CharT *fmt) {
+  std::array<char, 255> buffer;
+  ::strftime(buffer.data(), buffer.size(), fmt, tmb);
+  return buffer.data();
 }
+} // namespace csvsqldb
+#endif // HAS_PUT_TIME
 
-#endif
+#endif  // csvsqldb_put_time_h
+

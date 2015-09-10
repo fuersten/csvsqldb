@@ -36,6 +36,8 @@
 #define MPF_TEST_H
 
 
+#include "compat/regex.h"
+
 #include <cmath>
 #include <stdexcept>
 #include <iostream>
@@ -47,7 +49,6 @@
 #include <sstream>
 #include <type_traits>
 #include <functional>
-#include <regex>
 
 
 namespace mpf
@@ -538,9 +539,9 @@ while(false)
                 }
                 size_t testcount = 0;
                 TestcaseGuard<T> testcase;
-                std::regex e(name);
+                csvsqldb::regex e(name);
                 for(auto item : _functions) {
-                    if(name.empty() || std::regex_match(item.first, e)) {
+                    if(name.empty() || csvsqldb::regex_match(item.first, e)) {
                         if(!testcase && !testcase.reset()) {
                             break;
                         }
@@ -561,9 +562,9 @@ while(false)
                 if(name.empty()) {
                     count = _functions.size();
                 } else {
-                    std::regex e(name);
+                    csvsqldb::regex e(name);
                     for(auto item : _functions) {
-                        if(std::regex_match(item.first, e)) {
+                        if(regex_match(item.first, e)) {
                             ++count;
                         }
                     }

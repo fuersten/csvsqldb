@@ -39,12 +39,15 @@
 #include "exception.h"
 #include "types.h"
 
+#include "compat/put_time.h"
+
 #include <algorithm>
+#include <cctype>
 #include <chrono>
 #include <ctime>
-#include <cctype>
 #include <iomanip>
 #include <iostream>
+#include <iterator>
 
 
 namespace csvsqldb
@@ -107,7 +110,7 @@ namespace csvsqldb
         const time_t time = Clock::to_time_t(time_point);
         struct tm ptime;
         localtime_r(&time, &ptime);
-        return (stream << std::put_time(&ptime, "%Y-%m-%dT%H:%M:%S"));
+        return (stream << put_time(&ptime, "%Y-%m-%dT%H:%M:%S"));
     }
     
     /**
@@ -122,7 +125,7 @@ namespace csvsqldb
         std::stringstream ss;
         struct tm ptime;
         gmtime_r(&time, &ptime);
-        ss << std::put_time(&ptime, "%a, %d %b %Y %H:%M:%S GMT");
+        ss << put_time(&ptime, "%a, %d %b %Y %H:%M:%S GMT");
         return ss.str();
     }
 

@@ -34,6 +34,7 @@
 #include "thread_pool.h"
 #include "exception.h"
 
+#include <algorithm>
 
 namespace csvsqldb
 {

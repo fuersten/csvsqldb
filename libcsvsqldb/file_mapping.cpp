@@ -36,8 +36,9 @@
 #include "base/json_object.h"
 #include "base/string_helper.h"
 
+#include "compat/regex.h"
+
 #include <fstream>
-#include <regex>
 
 namespace csvsqldb
 {
@@ -51,10 +52,10 @@ namespace csvsqldb
     
     void FileMapping::initialize(const Mappings& mapping)
     {
-        std::regex r(R"((.+)->([a-zA-Z_]+))");
+        regex r(R"((.+)->([a-zA-Z_]+))");
         for(const auto& keyValue : mapping) {
-            std::smatch match;
-            if(!std::regex_match(keyValue._mapping, match, r)) {
+            smatch match;
+            if(!regex_match(keyValue._mapping, match, r)) {
                 CSVSQLDB_THROW(MappingException, "not a valid file to table mapping '" << keyValue._mapping << "'");
             } else {
                 Mapping map = { match.str(1), keyValue._delimiter, keyValue._skipFirstLine };
@@ -125,14 +126,14 @@ namespace csvsqldb
     
     std::string FileMapping::asJson(const std::string& tableName, const Mappings& mappings)
     {
-        std::regex r(R"((.+)->([a-zA-Z_]+))");
+        regex r(R"((.+)->([a-zA-Z_]+))");
         std::stringstream mapping;
         
         mapping << "{ \"Mapping\" :\n  { \"name\" : \"" << csvsqldb::toupper_copy(tableName) << "\",\n    \"mappings\" : [\n";
         int n = 0;
         for(const auto& map : mappings) {
-            std::smatch match;
-            if(!std::regex_match(map._mapping, match, r)) {
+            smatch match;
+            if(!regex_match(map._mapping, match, r)) {
                 CSVSQLDB_THROW(MappingException, "not a mapping expression '" << map._mapping << "'");
             }
             std::string mappingTableName = csvsqldb::toupper_copy(match.str(2));

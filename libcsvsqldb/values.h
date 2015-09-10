@@ -41,6 +41,7 @@
 #include "base/float_helper.h"
 #include "base/hash_helper.h"
 
+#include <cstring>
 #include <iomanip>
 
 
