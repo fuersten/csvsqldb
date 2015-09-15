@@ -283,7 +283,7 @@ namespace csvsqldb
     private:
         
         uint32_t _julianDay;
-    };
+    } __attribute__((__packed__));
     
 }
 

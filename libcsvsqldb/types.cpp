@@ -206,6 +206,7 @@ namespace csvsqldb
             case FULL:
                 return "NATURAL FULL OUTER";
         }
+        throw std::runtime_error("just to make VC2013 happy");
     }
     
     std::string operationTypeToString(eOperationType type)

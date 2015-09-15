@@ -249,7 +249,7 @@ public:
 
 private:
     int32_t _time;
-};
+} __attribute__((__packed__));
 
 }
 

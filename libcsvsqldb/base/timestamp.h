@@ -322,7 +322,7 @@ namespace csvsqldb
         static void calcFromJulDay(int64_t time, uint16_t& year, uint16_t& month, uint16_t& day,
                                    uint16_t& hour, uint16_t& minute, uint16_t& second, uint16_t& millisecond);
         int64_t _time;
-    };
+    } __attribute__((__packed__));
     
 }
 
