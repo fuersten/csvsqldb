@@ -157,11 +157,7 @@ struct TestRowProvider
     static void setRows(const std::string& tableName, std::initializer_list<std::vector<csvsqldb::Variant>> rows)
     {
         Rows data;
-        for(const auto& row : rows) {
-            Row dataRow;
-            std::copy(row.begin(),row.end(),std::back_inserter(dataRow));
-            data.push_back(dataRow);
-        }
+        std::copy(rows.begin(), rows.end(), std::back_inserter(data));
         getRows(csvsqldb::toupper_copy(tableName)) = data;
     }
 
