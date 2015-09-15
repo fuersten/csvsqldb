@@ -124,7 +124,7 @@ namespace csvsqldb
         }
         ++_offset;
         
-        Value* val;
+        Value* val = nullptr;
         eType type = *_typeOffset;
         switch(type) {
             case STRING:
@@ -239,7 +239,7 @@ namespace csvsqldb
         }
         ++_offset;
         
-        Value* val;
+        Value* val = nullptr;
         eType type = *_typeOffset;
         switch(type) {
             case STRING:
@@ -376,7 +376,7 @@ namespace csvsqldb
             }
             ++_offset;
             
-            Value* val;
+            Value* val = nullptr;
             eType type = *_typeOffset;
             switch(type) {
                 case STRING:
@@ -520,7 +520,7 @@ namespace csvsqldb
         }
         ++_offset;
         
-        Value* val;
+        Value* val = nullptr;
         eType type = *_typeOffset;
         switch(type) {
             case STRING:
@@ -750,7 +750,7 @@ namespace csvsqldb
         }
         ++_offset;
         
-        Value* val;
+        Value* val = nullptr;
         eType type = *_typeOffset;
         switch(type) {
             case STRING:
@@ -929,7 +929,7 @@ namespace csvsqldb
         }
         ++_offset;
         
-        Value* val;
+        Value* val = nullptr;
         eType type = *_typeOffset;
         switch(type) {
             case STRING:
