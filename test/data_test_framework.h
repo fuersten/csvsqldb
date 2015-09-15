@@ -37,6 +37,7 @@
 
 #include "libcsvsqldb/base/string_helper.h"
 
+#include <algorithm>
 #include <initializer_list>
 
 
@@ -113,7 +114,7 @@ public:
         return _block;
     }
     
-    void addRow(std::initializer_list<csvsqldb::Variant> values)
+    void addRow(const std::vector<csvsqldb::Variant>& values)
     {
         for(const auto& value : values) {
             _block->addValue(value);
@@ -149,23 +150,28 @@ private:
 
 struct TestRowProvider
 {
-    typedef std::initializer_list<csvsqldb::Variant> Row;
+    typedef std::vector<csvsqldb::Variant> Row;
     typedef std::vector<Row> Rows;
     typedef std::map<std::string, Rows> TableRows;
-    
-    
-    static void setRows(const std::string& tableName, Rows rows)
+
+    static void setRows(const std::string& tableName, std::initializer_list<std::vector<csvsqldb::Variant>> rows)
     {
-        getRows(csvsqldb::toupper_copy(tableName)) = rows;
+        Rows data;
+        for(const auto& row : rows) {
+            Row dataRow;
+            std::copy(row.begin(),row.end(),std::back_inserter(dataRow));
+            data.push_back(dataRow);
+        }
+        getRows(csvsqldb::toupper_copy(tableName)) = data;
     }
-    
+
     static void addRows(const std::string& tableName, TestScanOperatorNode<TestRowProvider>& scanOperator)
     {
         for(const auto& row : getRows(csvsqldb::toupper_copy(tableName))) {
             scanOperator.addRow(row);
         }
     }
-    
+
     static Rows& getRows(const std::string& tableName)
     {
         static TableRows s_rows;
