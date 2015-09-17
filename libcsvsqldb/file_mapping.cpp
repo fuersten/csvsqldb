@@ -52,9 +52,9 @@ namespace csvsqldb
     
     void FileMapping::initialize(const Mappings& mapping)
     {
-        regex r(R"((.+)->([a-zA-Z_]+))");
+        boost::regex r(R"((.+)->([a-zA-Z_]+))");
         for(const auto& keyValue : mapping) {
-            smatch match;
+            boost::smatch match;
             if(!regex_match(keyValue._mapping, match, r)) {
                 CSVSQLDB_THROW(MappingException, "not a valid file to table mapping '" << keyValue._mapping << "'");
             } else {
@@ -126,13 +126,13 @@ namespace csvsqldb
     
     std::string FileMapping::asJson(const std::string& tableName, const Mappings& mappings)
     {
-        regex r(R"((.+)->([a-zA-Z_]+))");
+        boost::regex r(R"((.+)->([a-zA-Z_]+))");
         std::stringstream mapping;
         
         mapping << "{ \"Mapping\" :\n  { \"name\" : \"" << csvsqldb::toupper_copy(tableName) << "\",\n    \"mappings\" : [\n";
         int n = 0;
         for(const auto& map : mappings) {
-            smatch match;
+            boost::smatch match;
             if(!regex_match(map._mapping, match, r)) {
                 CSVSQLDB_THROW(MappingException, "not a mapping expression '" << map._mapping << "'");
             }

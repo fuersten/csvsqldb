@@ -84,11 +84,9 @@ SET(LIB_CSVSQLDB_BASE_SOURCES
 SET(LIB_CSVSQLDB_BASE_HEADERS
     base/any.h
     base/application.h
-#    base/arithmetic_types.h
     base/configuration.h
     base/csv_parser.h
     base/date.h
-#    base/decimal.h
     base/default_configuration.h
     base/duration.h
     base/exception.h

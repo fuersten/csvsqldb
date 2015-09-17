@@ -140,18 +140,18 @@ namespace csvsqldb
             struct TokenDefinition
             {
                 TokenDefinition()
-                : _rx(regex(""))
+                : _rx(boost::regex(""))
                 , _token(UNDEFINED)
                 {}
                 
-                TokenDefinition(const std::string& name, const regex& r, int32_t token)
+                TokenDefinition(const std::string& name, const boost::regex& r, int32_t token)
                 : _name(name)
                 , _rx(r)
                 , _token(token)
                 {}
                 
                 std::string _name;
-                regex _rx;
+                boost::regex _rx;
                 int32_t _token;
             };
             typedef std::vector<TokenDefinition> TokenDefinitionVector;

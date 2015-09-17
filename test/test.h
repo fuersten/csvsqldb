@@ -539,9 +539,9 @@ while(false)
                 }
                 size_t testcount = 0;
                 TestcaseGuard<T> testcase;
-                csvsqldb::regex e(name);
+                boost::regex e(name);
                 for(auto item : _functions) {
-                    if(name.empty() || csvsqldb::regex_match(item.first, e)) {
+                    if(name.empty() || boost::regex_match(item.first, e)) {
                         if(!testcase && !testcase.reset()) {
                             break;
                         }
@@ -562,9 +562,9 @@ while(false)
                 if(name.empty()) {
                     count = _functions.size();
                 } else {
-                    csvsqldb::regex e(name);
+                    boost::regex e(name);
                     for(auto item : _functions) {
-                        if(regex_match(item.first, e)) {
+                        if(boost::regex_match(item.first, e)) {
                             ++count;
                         }
                     }

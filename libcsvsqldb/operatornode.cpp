@@ -1432,12 +1432,12 @@ namespace csvsqldb
         Mapping mapping = _context._database.getMappingForTable(_tableInfo._identifier);
         std::string filePattern = mapping._mapping;
         filePattern = R"(.*)" + filePattern;
-        regex r(filePattern);
+        boost::regex r(filePattern);
         
         fs::path pathToCsvFile("");
         
         for(const auto& file : _context._files) {
-            smatch match;
+            boost::smatch match;
             if(regex_match(file, match, r)) {
                 pathToCsvFile = file;
                 break;

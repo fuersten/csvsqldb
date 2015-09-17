@@ -62,7 +62,7 @@ namespace csvsqldb
             os << event._classname << separator;
         }
         if(config<GlobalConfiguration>()->logging.escape_newline) {
-            regex exp("\n|\r");
+            boost::regex exp("\n|\r");
             os << regex_replace(event._message, exp, std::string("\\n"));
         } else {
             os << event._message;

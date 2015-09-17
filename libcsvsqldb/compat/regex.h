@@ -34,24 +34,13 @@
 #ifndef csvsqldb_regex_h
 #define csvsqldb_regex_h
 
-#ifdef USE_BOOST_REGEX
+#if defined __unix__ || defined __APPLE__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wconversion"
 #include <boost/regex.hpp>
-#define CSVSQLDB_REGEX_IMPL boost
+#pragma GCC diagnostic pop
 #else
-#include <regex>
-#define CSVSQLDB_REGEX_IMPL std
+#include <boost/regex.hpp>
 #endif
-
-namespace csvsqldb {
-using regex = CSVSQLDB_REGEX_IMPL::regex;
-using smatch = CSVSQLDB_REGEX_IMPL::match_results<std::string::const_iterator>;
-using sregex_iterator = CSVSQLDB_REGEX_IMPL::sregex_iterator;
-
-using CSVSQLDB_REGEX_IMPL::regex_search;
-using CSVSQLDB_REGEX_IMPL::regex_match;
-
-} // namespace csvsqldb
-
-#undef CSVSQLDB_REGEX_IMPL
 
 #endif // csvsqldb_regex_h
