@@ -45,43 +45,52 @@
 
 namespace csvsqldb
 {
-    
+
     class CSVSQLDB_EXPORT ExecutionNode : csvsqldb::noncopyable
     {
     public:
         typedef std::unique_ptr<ExecutionNode> UniquePtr;
-        
-        virtual ~ExecutionNode() {}
-        
+
+        virtual ~ExecutionNode()
+        {
+        }
+
         virtual int64_t execute() = 0;
-        
+
         virtual void dump(std::ostream& stream) const = 0;
-        
+
     protected:
-        ExecutionNode() {}
+        ExecutionNode()
+        {
+        }
     };
-    
-    
+
+
     class CSVSQLDB_EXPORT ExecutionPlan : csvsqldb::noncopyable
     {
     public:
-        ExecutionPlan() {}
-        
+        ExecutionPlan()
+        {
+        }
+
         void addExecutionNode(ExecutionNode::UniquePtr& node);
-        
+
         int64_t execute();
-        
+
         void dump(std::ostream& stream) const;
-        
+
     private:
-        ExecutionPlan(const ExecutionPlan&) {}
-        
-        ExecutionPlan& operator=(const ExecutionPlan&) {
+        ExecutionPlan(const ExecutionPlan&)
+        {
+        }
+
+        ExecutionPlan& operator=(const ExecutionPlan&)
+        {
             return *this;
         }
-        
+
         typedef std::vector<ExecutionNode::UniquePtr> ExecutionNodes;
-        
+
         ExecutionNodes _executionNodes;
     };
 }

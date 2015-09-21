@@ -36,7 +36,7 @@
 
 namespace csvsqldb
 {
-    
+
     Value* createValue(eType type, const csvsqldb::Any& value)
     {
         switch(type) {
@@ -87,5 +87,4 @@ namespace csvsqldb
         }
         throw std::runtime_error("just to make VC2013 happy");
     }
-    
 }

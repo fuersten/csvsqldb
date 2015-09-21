@@ -39,7 +39,7 @@
 
 namespace csvsqldb
 {
-    
+
     BlockIterator::BlockIterator(const Types& types, BlockProvider& blockProvider, BlockManager& blockManager)
     : _blockProvider(blockProvider)
     , _blockManager(blockManager)
@@ -52,13 +52,13 @@ namespace csvsqldb
     {
         _row.resize(_types.size());
     }
-    
+
     BlockIterator::~BlockIterator()
     {
         _blockManager.release(_previousBlock);
         _blockManager.release(_block);
     }
-    
+
     const Values* BlockIterator::getNextRow()
     {
         if(!_block) {
@@ -77,7 +77,7 @@ namespace csvsqldb
             // no more rows left
             return nullptr;
         }
-        
+
         // look for next block marker
         if(*(&(_block->_store)[0] + _offset) == static_cast<char>(0xCC)) {
             _blockManager.release(_previousBlock);
@@ -86,11 +86,11 @@ namespace csvsqldb
             _offset = 0;
             _endOffset = _block->_offset;
         }
-        
+
         if(_offset == _endOffset) {
             CSVSQLDB_THROW(csvsqldb::Exception, "should have found the end marker in the first place");
         }
-        
+
         size_t index = 0;
         for(auto type : _types) {
             Value* val = getNextValue();
@@ -99,16 +99,16 @@ namespace csvsqldb
             }
             _row[index++] = val;
         }
-        
+
         return &_row;
     }
-    
+
     Value* BlockIterator::getNextValue()
     {
         if(_offset == _endOffset) {
             CSVSQLDB_THROW(csvsqldb::Exception, "expected more values, but already at end of block");
         }
-        
+
         // look for next block marker
         if(*(&(_block->_store)[0] + _offset) == static_cast<char>(0xCC)) {
             _blockManager.release(_previousBlock);
@@ -117,13 +117,13 @@ namespace csvsqldb
             _offset = 0;
             _endOffset = _block->_offset;
         }
-        
+
         // look for next value marker
         if(*(&(_block->_store)[0] + _offset) != static_cast<char>(0xAA)) {
             CSVSQLDB_THROW(csvsqldb::Exception, "missing value separator");
         }
         ++_offset;
-        
+
         Value* val = nullptr;
         eType type = *_typeOffset;
         switch(type) {
@@ -137,14 +137,14 @@ namespace csvsqldb
                 val = reinterpret_cast<Value*>(&(_block->_store)[0] + _offset);
                 break;
             case NONE:
-                CSVSQLDB_THROW(csvsqldb::Exception, "type not allowed "  << typeToString(type));
+                CSVSQLDB_THROW(csvsqldb::Exception, "type not allowed " << typeToString(type));
         }
         _offset += val->size();
         ++_typeOffset;
         return val;
     }
-    
-    
+
+
     CachingBlockIterator::CachingBlockIterator(const Types& types, RowProvider& rowProvider, BlockManager& blockManager)
     : _rowProvider(rowProvider)
     , _blockManager(blockManager)
@@ -157,14 +157,14 @@ namespace csvsqldb
     {
         _row.resize(_types.size());
     }
-    
+
     CachingBlockIterator::~CachingBlockIterator()
     {
         for(auto& block : _blocks) {
             _blockManager.release(block);
         }
     }
-    
+
     const Values* CachingBlockIterator::getNextRow()
     {
         if(_blocks.empty()) {
@@ -198,16 +198,16 @@ namespace csvsqldb
                 // no more rows left
                 return nullptr;
             }
-            
+
             // look for next block marker
             if(*(&(_blocks[_currentBlock]->_store)[0] + _offset) == static_cast<char>(0xCC)) {
                 getNextBlock();
             }
-            
+
             if(_offset == _endOffset) {
                 CSVSQLDB_THROW(csvsqldb::Exception, "should have found the end marker in the first place");
             }
-            
+
             size_t index = 0;
             for(auto type : _types) {
                 Value* val = getNextValue();
@@ -218,27 +218,27 @@ namespace csvsqldb
             }
             row = &_row;
         }
-        
+
         return row;
     }
-    
+
     Value* CachingBlockIterator::getNextValue()
     {
         if(_offset == _endOffset) {
             CSVSQLDB_THROW(csvsqldb::Exception, "expected more values, but already at end of block");
         }
-        
+
         // look for next block marker
         if(*(&(_blocks[_currentBlock]->_store)[0] + _offset) == static_cast<char>(0xCC)) {
             getNextBlock();
         }
-        
+
         // look for next value marker
         if(*(&(_blocks[_currentBlock]->_store)[0] + _offset) != static_cast<char>(0xAA)) {
             CSVSQLDB_THROW(csvsqldb::Exception, "missing value separator");
         }
         ++_offset;
-        
+
         Value* val = nullptr;
         eType type = *_typeOffset;
         switch(type) {
@@ -252,13 +252,13 @@ namespace csvsqldb
                 val = reinterpret_cast<Value*>(&(_blocks[_currentBlock]->_store)[0] + _offset);
                 break;
             case NONE:
-                CSVSQLDB_THROW(csvsqldb::Exception, "type not allowed "  << typeToString(type));
+                CSVSQLDB_THROW(csvsqldb::Exception, "type not allowed " << typeToString(type));
         }
         _offset += val->size();
         ++_typeOffset;
         return val;
     }
-    
+
     void CachingBlockIterator::rewind()
     {
         _useCache = true;
@@ -266,7 +266,7 @@ namespace csvsqldb
         _offset = 0;
         _endOffset = _blocks[_currentBlock]->_offset;
     }
-    
+
     void CachingBlockIterator::getNextBlock()
     {
         if(!_useCache) {
@@ -279,10 +279,9 @@ namespace csvsqldb
             _endOffset = _blocks[_currentBlock]->_offset;
         }
     }
-    
-    
-    struct SortOperation
-    {
+
+
+    struct SortOperation {
         SortOperation(const Types& types, const SortingBlockIterator::SortOrders& sortOrders, const Blocks& blocks)
         : _types(types)
         , _sortOrders(sortOrders)
@@ -294,14 +293,14 @@ namespace csvsqldb
             _leftCompare.resize(_sortOrders.size());
             _rightCompare.resize(_sortOrders.size());
         }
-        
+
         bool operator()(const BlockPosition& left, const BlockPosition& right)
         {
             _currentBlock = left._block;
             _offset = left._offset;
             _endOffset = _blocks[_currentBlock]->_offset;
             _typeOffset = _types.begin();
-            
+
             for(size_t n = 0, count = 0; count < _types.size(); ++count) {
                 Value* val = getNextValue();
                 for(const auto& order : _sortOrders) {
@@ -312,12 +311,12 @@ namespace csvsqldb
                 }
                 n = 0;
             }
-            
+
             _currentBlock = right._block;
             _offset = right._offset;
             _endOffset = _blocks[_currentBlock]->_offset;
             _typeOffset = _types.begin();
-            
+
             for(size_t n = 0, count = 0; count < _types.size(); ++count) {
                 Value* val = getNextValue();
                 for(const auto& order : _sortOrders) {
@@ -328,7 +327,7 @@ namespace csvsqldb
                 }
                 n = 0;
             }
-            
+
             size_t n = 0;
             for(const auto& order : _sortOrders) {
                 if(order._order == ASC) {
@@ -354,28 +353,28 @@ namespace csvsqldb
                 }
                 ++n;
             }
-            
+
             return false;
         }
-        
+
     private:
         Value* getNextValue()
         {
             if(_offset == _endOffset) {
                 CSVSQLDB_THROW(csvsqldb::Exception, "expected more values, but already at end of block");
             }
-            
+
             // look for next block marker
             if(*(&(_blocks[_currentBlock]->_store)[0] + _offset) == static_cast<char>(0xCC)) {
                 getNextBlock();
             }
-            
+
             // look for next value marker
             if(*(&(_blocks[_currentBlock]->_store)[0] + _offset) != static_cast<char>(0xAA)) {
                 CSVSQLDB_THROW(csvsqldb::Exception, "missing value separator");
             }
             ++_offset;
-            
+
             Value* val = nullptr;
             eType type = *_typeOffset;
             switch(type) {
@@ -389,20 +388,20 @@ namespace csvsqldb
                     val = reinterpret_cast<Value*>(&(_blocks[_currentBlock]->_store)[0] + _offset);
                     break;
                 case NONE:
-                    CSVSQLDB_THROW(csvsqldb::Exception, "type not allowed "  << typeToString(type));
+                    CSVSQLDB_THROW(csvsqldb::Exception, "type not allowed " << typeToString(type));
             }
             _offset += val->size();
             ++_typeOffset;
             return val;
         }
-        
+
         void getNextBlock()
         {
             ++_currentBlock;
             _offset = 0;
             _endOffset = _blocks[_currentBlock]->_offset;
         }
-        
+
         const Types& _types;
         Types::const_iterator _typeOffset;
         const SortingBlockIterator::SortOrders& _sortOrders;
@@ -413,7 +412,7 @@ namespace csvsqldb
         Values _leftCompare;
         Values _rightCompare;
     };
-    
+
     SortingBlockIterator::SortingBlockIterator(const Types& types, const SortOrders& sortOrders, RowProvider& rowProvider, BlockManager& blockManager)
     : _rowProvider(rowProvider)
     , _blockManager(blockManager)
@@ -427,14 +426,14 @@ namespace csvsqldb
     {
         _row.resize(_types.size());
     }
-    
+
     SortingBlockIterator::~SortingBlockIterator()
     {
         for(auto& block : _blocks) {
             _blockManager.release(block);
         }
     }
-    
+
     const Values* SortingBlockIterator::getNextRow()
     {
         if(_blocks.empty()) {
@@ -446,14 +445,15 @@ namespace csvsqldb
             do {
                 row = _rowProvider.getNextRow();
                 if(row) {
-                    BlockPosition bp = { _currentBlock, _offset };
+                    BlockPosition bp = {_currentBlock, _offset};
                     _rows.push_back(bp);
                     bool firstValue = true;
                     for(const auto& value : *row) {
                         if(!_blocks[_currentBlock]->addValue(*value)) {
-                            // if the block changes with the first value, we have to adjust the currentBlock and offset in the rows collection
+                            // if the block changes with the first value, we have to adjust the currentBlock and offset in the
+                            // rows collection
                             if(firstValue) {
-                                _rows.back() = { _currentBlock, _offset };
+                                _rows.back() = {_currentBlock, _offset};
                                 firstValue = false;
                             }
                             _blocks[_currentBlock]->markNextBlock();
@@ -472,22 +472,22 @@ namespace csvsqldb
             std::sort(_rows.begin(), _rows.end(), SortOperation(_types, _sortOrders, _blocks));
             _rowIter = _rows.begin();
         }
-        
+
         if(_rowIter == _rows.end()) {
             // no more rows
             return nullptr;
         }
-        
+
         _currentBlock = _rowIter->_block;
         _endOffset = _blocks[_currentBlock]->_offset;
         _offset = _rowIter->_offset;
         _typeOffset = _types.begin();
-        
+
         if(*(&(_blocks[_currentBlock]->_store)[0] + _offset) == static_cast<char>(0xDD)) {
             // no more rows left
             return nullptr;
         }
-        
+
         size_t index = 0;
         for(auto type : _types) {
             Value* val = getNextValue();
@@ -497,29 +497,29 @@ namespace csvsqldb
             _row[index++] = val;
         }
         row = &_row;
-        
+
         ++_rowIter;
-        
+
         return row;
     }
-    
+
     Value* SortingBlockIterator::getNextValue()
     {
         if(_offset == _endOffset) {
             CSVSQLDB_THROW(csvsqldb::Exception, "expected more values, but already at end of block");
         }
-        
+
         // look for next block marker
         if(*(&(_blocks[_currentBlock]->_store)[0] + _offset) == static_cast<char>(0xCC)) {
             getNextBlock();
         }
-        
+
         // look for next value marker
         if(*(&(_blocks[_currentBlock]->_store)[0] + _offset) != static_cast<char>(0xAA)) {
             CSVSQLDB_THROW(csvsqldb::Exception, "missing value separator");
         }
         ++_offset;
-        
+
         Value* val = nullptr;
         eType type = *_typeOffset;
         switch(type) {
@@ -533,13 +533,13 @@ namespace csvsqldb
                 val = reinterpret_cast<Value*>(&(_blocks[_currentBlock]->_store)[0] + _offset);
                 break;
             case NONE:
-                CSVSQLDB_THROW(csvsqldb::Exception, "type not allowed "  << typeToString(type));
+                CSVSQLDB_THROW(csvsqldb::Exception, "type not allowed " << typeToString(type));
         }
         _offset += val->size();
         ++_typeOffset;
         return val;
     }
-    
+
     void SortingBlockIterator::getNextBlock()
     {
         if(_initialize) {
@@ -552,50 +552,55 @@ namespace csvsqldb
             _endOffset = _blocks[_currentBlock]->_offset;
         }
     }
-    
-    
+
+
     GroupingElement::GroupingElement()
-    {}
-    
+    {
+    }
+
     GroupingElement::GroupingElement(const Variants& groupingValues)
     : _groupingValues(groupingValues)
-    {}
-    
+    {
+    }
+
     void GroupingElement::disconnect()
     {
         for(auto& value : _groupingValues) {
             value.disconnect();
         }
     }
-    
+
     size_t GroupingElement::getHash() const
     {
         size_t seed = 0;
-        
+
         for(const auto& value : _groupingValues) {
             csvsqldb::hash_combine(seed, value);
         }
-        
+
         return seed;
     }
-    
+
     bool GroupingElement::operator==(const GroupingElement& rhs) const
     {
         size_t groupSize = _groupingValues.size();
-        
+
         for(size_t n = 0; n < groupSize; ++n) {
             if(!(_groupingValues[n] == rhs._groupingValues[n])) {
                 return false;
             }
         }
-        
+
         return true;
     }
-    
-    
-    GroupingBlockIterator::GroupingBlockIterator(const Types& types, const csvsqldb::IndexVector groupingIndices,
+
+
+    GroupingBlockIterator::GroupingBlockIterator(const Types& types,
+                                                 const csvsqldb::IndexVector groupingIndices,
                                                  const csvsqldb::IndexVector outputIndices,
-                                                 AggregationFunctions& aggregateFunctions, RowProvider& rowProvider, BlockManager& blockManager)
+                                                 AggregationFunctions& aggregateFunctions,
+                                                 RowProvider& rowProvider,
+                                                 BlockManager& blockManager)
     : _rowProvider(rowProvider)
     , _blockManager(blockManager)
     , _types(types)
@@ -610,7 +615,7 @@ namespace csvsqldb
     {
         _row.resize(_types.size());
     }
-    
+
     GroupingBlockIterator::~GroupingBlockIterator()
     {
         for(auto& block : _blocks) {
@@ -620,7 +625,7 @@ namespace csvsqldb
             _blockManager.release(block);
         }
     }
-    
+
     const Values* GroupingBlockIterator::getNextRow()
     {
         if(_blocks.empty()) {
@@ -639,7 +644,7 @@ namespace csvsqldb
                     for(auto index : _groupingIndices) {
                         element._groupingValues.push_back(valueToVariant(*(*row)[index]));
                     }
-                    
+
                     GroupMap::iterator iter = _groupMap.find(element);
                     if(iter == _groupMap.end()) {
                         // group currently not contained - add new group
@@ -657,7 +662,7 @@ namespace csvsqldb
                             aggrFunc->step(valueToVariant(*(*row)[n]));
                             groupValues.push_back(aggrFunc);
                         }
-                        
+
                         element.disconnect();
                         _groupMap.emplace(element, groupValues);
                     } else {
@@ -670,7 +675,7 @@ namespace csvsqldb
                     }
                 }
             } while(row);
-            
+
             // TODO LCF: build new blocks, should be optimized to build only one block at a time
             getNextBlock();
             _currentBlock = 0;
@@ -688,7 +693,7 @@ namespace csvsqldb
                 _blocks[_currentBlock]->nextRow();
             }
             _blocks[_currentBlock]->endBlocks();
-            
+
             // reset to start of blocks
             _currentBlock = 0;
             _offset = 0;
@@ -707,16 +712,16 @@ namespace csvsqldb
             // no more rows left
             return nullptr;
         }
-        
+
         // look for next block marker
         if(*(&(_blocks[_currentBlock]->_store)[0] + _offset) == static_cast<char>(0xCC)) {
             getNextBlock();
         }
-        
+
         if(_offset == _endOffset) {
             CSVSQLDB_THROW(csvsqldb::Exception, "should have found the end marker in the first place");
         }
-        
+
         size_t index = 0;
         for(auto type : _types) {
             Value* val = getNextValue();
@@ -729,27 +734,27 @@ namespace csvsqldb
             _row[index++] = val;
         }
         row = &_row;
-        
+
         return row;
     }
-    
+
     Value* GroupingBlockIterator::getNextValue()
     {
         if(_offset == _endOffset) {
             CSVSQLDB_THROW(csvsqldb::Exception, "expected more values, but already at end of block");
         }
-        
+
         // look for next block marker
         if(*(&(_blocks[_currentBlock]->_store)[0] + _offset) == static_cast<char>(0xCC)) {
             getNextBlock();
         }
-        
+
         // look for next value marker
         if(*(&(_blocks[_currentBlock]->_store)[0] + _offset) != static_cast<char>(0xAA)) {
             CSVSQLDB_THROW(csvsqldb::Exception, "missing value separator");
         }
         ++_offset;
-        
+
         Value* val = nullptr;
         eType type = *_typeOffset;
         switch(type) {
@@ -763,13 +768,13 @@ namespace csvsqldb
                 val = reinterpret_cast<Value*>(&(_blocks[_currentBlock]->_store)[0] + _offset);
                 break;
             case NONE:
-                CSVSQLDB_THROW(csvsqldb::Exception, "type not allowed "  << typeToString(type));
+                CSVSQLDB_THROW(csvsqldb::Exception, "type not allowed " << typeToString(type));
         }
         _offset += val->size();
         ++_typeOffset;
         return val;
     }
-    
+
     void GroupingBlockIterator::getNextBlock()
     {
         if(!_useCache) {
@@ -782,8 +787,8 @@ namespace csvsqldb
             _endOffset = _blocks[_currentBlock]->_offset;
         }
     }
-    
-    
+
+
     HashingBlockIterator::HashingBlockIterator(const Types& types, RowProvider& rowProvider, BlockManager& blockManager, size_t hashTableKeyPosition)
     : _rowProvider(rowProvider)
     , _blockManager(blockManager)
@@ -799,21 +804,21 @@ namespace csvsqldb
         _context._it = _hashTable.end();
         _context._end = _hashTable.end();
     }
-    
+
     HashingBlockIterator::~HashingBlockIterator()
     {
         for(auto& block : _blocks) {
             _blockManager.release(block);
         }
     }
-    
+
     void HashingBlockIterator::setContextForKeyValue(const Value& keyValue)
     {
         std::pair<HashTable::const_iterator, HashTable::const_iterator> range = _hashTable.equal_range(valueToVariant(keyValue));
         _context._it = range.first;
         _context._end = range.second;
     }
-    
+
     const Values* HashingBlockIterator::getNextKeyValueRow()
     {
         if(_hashTable.empty()) {
@@ -829,7 +834,7 @@ namespace csvsqldb
             _endOffset = _blocks[_currentBlock]->_offset;
             _typeOffset = _types.begin();
             ++_context._it;
-            
+
             size_t index = 0;
             for(auto type : _types) {
                 Value* val = getNextValue();
@@ -842,7 +847,7 @@ namespace csvsqldb
         }
         return nullptr;
     }
-    
+
     const Values* HashingBlockIterator::getNextRow()
     {
         if(_blocks.empty()) {
@@ -856,7 +861,7 @@ namespace csvsqldb
                 BlockPosition pos;
                 pos._block = _currentBlock;
                 pos._offset = _blocks[_currentBlock]->_offset;
-                
+
                 size_t n = 0;
                 for(const auto& value : *row) {
                     if(_hashTableKeyPosition == n) {
@@ -885,16 +890,16 @@ namespace csvsqldb
                 // no more rows left
                 return nullptr;
             }
-            
+
             // look for next block marker
             if(*(&(_blocks[_currentBlock]->_store)[0] + _offset) == static_cast<char>(0xCC)) {
                 getNextBlock();
             }
-            
+
             if(_offset == _endOffset) {
                 CSVSQLDB_THROW(csvsqldb::Exception, "should have found the end marker in the first place");
             }
-            
+
             size_t index = 0;
             for(auto type : _types) {
                 Value* val = getNextValue();
@@ -908,27 +913,27 @@ namespace csvsqldb
             }
             row = &_row;
         }
-        
+
         return row;
     }
-    
+
     Value* HashingBlockIterator::getNextValue()
     {
         if(_offset == _endOffset) {
             CSVSQLDB_THROW(csvsqldb::Exception, "expected more values, but already at end of block");
         }
-        
+
         // look for next block marker
         if(*(&(_blocks[_currentBlock]->_store)[0] + _offset) == static_cast<char>(0xCC)) {
             getNextBlock();
         }
-        
+
         // look for next value marker
         if(*(&(_blocks[_currentBlock]->_store)[0] + _offset) != static_cast<char>(0xAA)) {
             CSVSQLDB_THROW(csvsqldb::Exception, "missing value separator");
         }
         ++_offset;
-        
+
         Value* val = nullptr;
         eType type = *_typeOffset;
         switch(type) {
@@ -942,13 +947,13 @@ namespace csvsqldb
                 val = reinterpret_cast<Value*>(&(_blocks[_currentBlock]->_store)[0] + _offset);
                 break;
             case NONE:
-                CSVSQLDB_THROW(csvsqldb::Exception, "type not allowed "  << typeToString(type));
+                CSVSQLDB_THROW(csvsqldb::Exception, "type not allowed " << typeToString(type));
         }
         _offset += val->size();
         ++_typeOffset;
         return val;
     }
-    
+
     void HashingBlockIterator::reset()
     {
         _useCache = false;
@@ -962,7 +967,7 @@ namespace csvsqldb
         }
         _hashTable.clear();
     }
-    
+
     void HashingBlockIterator::getNextBlock()
     {
         if(!_useCache) {
@@ -975,5 +980,4 @@ namespace csvsqldb
             _endOffset = _blocks[_currentBlock]->_offset;
         }
     }
-    
 }

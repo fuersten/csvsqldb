@@ -38,46 +38,50 @@
 
 namespace csvsqldb
 {
-    
+
     QueryExecutionNode::QueryExecutionNode(const OperatorContext& context)
-    : _context(context) {
+    : _context(context)
+    {
     }
-    
-    const OperatorContext& QueryExecutionNode::getContext() const {
+
+    const OperatorContext& QueryExecutionNode::getContext() const
+    {
         return _context;
     }
-    
-    void QueryExecutionNode::setRootOperatorNode(const RootOperatorNodePtr& queryOperationRoot) {
+
+    void QueryExecutionNode::setRootOperatorNode(const RootOperatorNodePtr& queryOperationRoot)
+    {
         _queryOperationRoot = queryOperationRoot;
     }
-    
-    int64_t QueryExecutionNode::execute() {
+
+    int64_t QueryExecutionNode::execute()
+    {
         return _queryOperationRoot->process();
     }
-    
+
     void QueryExecutionNode::dump(std::ostream& stream) const
     {
         _queryOperationRoot->dump(stream);
     }
-    
-    
+
+
     ExplainExecutionNode::ExplainExecutionNode(OperatorContext& context, eDescriptionType descType, const ASTQueryNodePtr& query)
     : _context(context)
     , _descType(descType)
-    , _query(query) {
+    , _query(query)
+    {
     }
-    
-    int64_t ExplainExecutionNode::execute() {
+
+    int64_t ExplainExecutionNode::execute()
+    {
         switch(_descType) {
-            case AST:
-            {
+            case AST: {
                 ASTNodeDumpVisitor visitor;
                 _query->accept(visitor);
                 std::cout << std::endl;
                 break;
             }
-            case EXEC:
-            {
+            case EXEC: {
                 std::stringstream ss;
                 ExecutionPlan execPlan;
                 ASTValidationVisitor validationVisitor(_context._database);
@@ -88,13 +92,11 @@ namespace csvsqldb
                 break;
             }
         }
-        
+
         return 0;
     }
-    
+
     void ExplainExecutionNode::dump(std::ostream& stream) const
     {
-        
     }
-    
 }

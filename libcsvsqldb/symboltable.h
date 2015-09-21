@@ -45,38 +45,30 @@
 
 namespace csvsqldb
 {
-    
-    enum eSymbolType
-    {
-        NOSYM,
-        CALC,
-        PLAIN,
-        FUNCTION,
-        TABLE,
-        SUBQUERY
-    };
-    
+
+    enum eSymbolType { NOSYM, CALC, PLAIN, FUNCTION, TABLE, SUBQUERY };
+
     CSVSQLDB_EXPORT std::string symbolTypeToString(eSymbolType symbolType);
-    
-    
+
+
     struct SymbolInfo;
     typedef std::shared_ptr<SymbolInfo> SymbolInfoPtr;
     typedef std::vector<SymbolInfoPtr> SymbolInfos;
-    
+
     class SymbolTable;
     typedef std::shared_ptr<SymbolTable> SymbolTablePtr;
     typedef std::vector<SymbolInfoPtr> SymbolMap;
-    
-    
-    struct CSVSQLDB_EXPORT SymbolInfo
-    {
+
+
+    struct CSVSQLDB_EXPORT SymbolInfo {
         typedef std::shared_ptr<ASTExprNode> ASTExprNodePtr;
-        
+
         SymbolInfo()
         : _symbolType(NOSYM)
         , _type(NONE)
-        {}
-        
+        {
+        }
+
         SymbolInfoPtr clone()
         {
             SymbolInfoPtr info = std::make_shared<SymbolInfo>();
@@ -90,23 +82,23 @@ namespace csvsqldb
             info->_qualifiedIdentifier = _qualifiedIdentifier;
             info->_expressionNode = _expressionNode;
             info->_subquery = _subquery;
-            
+
             return info;
         }
-        
+
         eSymbolType _symbolType;
         eType _type;
-        std::string _name; //!< real context name
+        std::string _name;    //!< real context name
         std::string _alias;
         std::string _prefix;
-        std::string _identifier; //!< parsed identifier name
+        std::string _identifier;    //!< parsed identifier name
         std::string _relation;
         std::string _qualifiedIdentifier;
         ASTExprNodePtr _expressionNode;
         SymbolTablePtr _subquery;
     };
-    
-    
+
+
     class CSVSQLDB_EXPORT SymbolTable : public std::enable_shared_from_this<SymbolTable>, private csvsqldb::noncopyable
     {
     public:
@@ -114,7 +106,7 @@ namespace csvsqldb
         {
             return _parent;
         }
-        
+
         void addSymbolsFrom(const SymbolTablePtr& symbolTable, const std::string& prefix);
         const SymbolInfoPtr& findSymbolNameForTable(const std::string& tableName, const std::string& columnName) const;
         bool hasSymbolNameForTable(const std::string& tableName, const std::string& columnName) const;
@@ -123,35 +115,36 @@ namespace csvsqldb
         const SymbolInfoPtr& findTableSymbol(const std::string& tableNameOrAlias) const;
         const SymbolInfoPtr& findAliasedSymbol(const std::string& alias) const;
         SymbolInfos findAllSymbolsForTable(const std::string& tableName) const;
-        
+
         bool hasSymbol(const std::string& name) const;
         bool addSymbol(const std::string& name, const SymbolInfoPtr& info);
         void replaceSymbol(const std::string& toreplace, const std::string& name, SymbolInfoPtr& info);
-        
+
         void dump(size_t indent = 0) const;
-        
+
         SymbolInfos getTables() const;
-        
+
         void typeSymbolTable(const Database& database);
-        
+
         std::string getNextAlias();
-        
+
         static SymbolTablePtr createSymbolTable(const SymbolTablePtr& parent = SymbolTablePtr());
-        
+
     private:
         SymbolTable(const SymbolTablePtr& parent)
         : _aliasCount(1)
         , _parent(parent)
-        {}
-        
+        {
+        }
+
         bool fillInfoFromTablePrefix(const Database& database, const SymbolInfos& tables, SymbolInfoPtr info);
         bool fillInfoFromTable(const Database& database, const SymbolInfos& tables, SymbolInfoPtr info);
         bool fillInfoFromSubquery(const Database& database, const SymbolInfos& subqueries, SymbolInfoPtr info);
         SymbolInfos getSubqueries() const;
         void fillWithTableData(const Database& database, const SymbolInfos& tables);
-        
+
         SymbolInfoPtr internFindSymbol(const std::string& name);
-        
+
         SymbolMap _symbols;
         uint32_t _aliasCount;
         SymbolTablePtr _parent;

@@ -38,28 +38,28 @@
 
 namespace csvsqldb
 {
-    
+
     CSVSQLDB_IMPLEMENT_EXCEPTION(VariantException, csvsqldb::Exception);
-    
-    
+
+
     Variant::~Variant()
     {
         if(_refCount) {
             if(_refCount->dec() == 0) {
-                delete []_storage._string;
+                delete[] _storage._string;
                 _storage._string = nullptr;
                 delete _refCount;
             }
         }
     }
-    
+
     Variant::Variant()
     : _refCount(nullptr)
     , _type(NONE)
     , _isNull(false)
     {
     }
-    
+
     Variant::Variant(const Variant& rhs)
     : _refCount(rhs._refCount)
     , _type(rhs._type)
@@ -94,14 +94,14 @@ namespace csvsqldb
                 break;
         }
     }
-    
+
     Variant::Variant(eType type)
     : _refCount(nullptr)
     , _type(type)
     , _isNull(true)
     {
     }
-    
+
     Variant::Variant(int32_t integer)
     : _refCount(nullptr)
     , _type(INT)
@@ -109,7 +109,7 @@ namespace csvsqldb
     {
         _storage._int = integer;
     }
-    
+
     Variant::Variant(int64_t integer)
     : _refCount(nullptr)
     , _type(INT)
@@ -117,7 +117,7 @@ namespace csvsqldb
     {
         _storage._int = integer;
     }
-    
+
     Variant::Variant(size_t integer)
     : _refCount(nullptr)
     , _type(INT)
@@ -125,7 +125,7 @@ namespace csvsqldb
     {
         _storage._int = static_cast<int64_t>(integer);
     }
-    
+
     Variant::Variant(double real)
     : _refCount(nullptr)
     , _type(REAL)
@@ -133,7 +133,7 @@ namespace csvsqldb
     {
         _storage._real = real;
     }
-    
+
     Variant::Variant(const csvsqldb::Date& date)
     : _refCount(nullptr)
     , _type(DATE)
@@ -141,7 +141,7 @@ namespace csvsqldb
     {
         _storage._date = date.asJulianDay();
     }
-    
+
     Variant::Variant(const csvsqldb::Time& time)
     : _refCount(nullptr)
     , _type(TIME)
@@ -149,7 +149,7 @@ namespace csvsqldb
     {
         _storage._time = time.asInteger();
     }
-    
+
     Variant::Variant(const csvsqldb::Timestamp& timestamp)
     : _refCount(nullptr)
     , _type(TIMESTAMP)
@@ -157,7 +157,7 @@ namespace csvsqldb
     {
         _storage._timestamp = timestamp.asInteger();
     }
-    
+
     Variant::Variant(bool boolean)
     : _refCount(nullptr)
     , _type(BOOLEAN)
@@ -165,7 +165,7 @@ namespace csvsqldb
     {
         _storage._bool = boolean;
     }
-    
+
     Variant::Variant(const char* string, bool owner)
     : _refCount(nullptr)
     , _type(STRING)
@@ -176,39 +176,39 @@ namespace csvsqldb
         }
         _storage._string = string;
     }
-    
+
     Variant::Variant(const std::string& s)
     : _type(STRING)
     , _isNull(false)
     {
         _refCount = new RefCount;
         size_t len = s.length();
-        _storage._string = new char[len+1];
+        _storage._string = new char[len + 1];
         s.copy(const_cast<char*>(_storage._string), len);
         const_cast<char*>(_storage._string)[len] = '\0';
     }
-    
+
     void Variant::disconnect()
     {
         if(!_isNull && _type == STRING && !_refCount) {
             _refCount = new RefCount;
             size_t len = ::strlen(_storage._string);
-            char* s = new char[len+1];
+            char* s = new char[len + 1];
             ::memcpy(s, _storage._string, len);
             s[len] = '\0';
             _storage._string = s;
         }
     }
-    
+
     Variant& Variant::operator=(const Variant& rhs)
     {
         if(_refCount) {
             if(_refCount->dec() == 0) {
-                delete [] _storage._string;
+                delete[] _storage._string;
                 delete _refCount;
             }
         }
-        
+
         _type = rhs._type;
         _refCount = rhs._refCount;
         _isNull = rhs._isNull;
@@ -240,14 +240,15 @@ namespace csvsqldb
                 _storage._timestamp = rhs._storage._timestamp;
                 break;
         }
-        
+
         return *this;
     }
-    
+
     bool Variant::operator==(const Variant& rhs) const
     {
         if(_type != rhs._type) {
-            CSVSQLDB_THROW(VariantException, "comparing Variants with different types (" << typeToString(_type) << ":" << typeToString(rhs._type));
+            CSVSQLDB_THROW(VariantException,
+                           "comparing Variants with different types (" << typeToString(_type) << ":" << typeToString(rhs._type));
         }
         if(_isNull || rhs._isNull) {
             return false;
@@ -279,11 +280,12 @@ namespace csvsqldb
         }
         throw std::runtime_error("just to make VC2013 happy");
     }
-    
+
     bool Variant::operator!=(const Variant& rhs) const
     {
         if(_type != rhs._type) {
-            CSVSQLDB_THROW(VariantException, "comparing Variants with different types (" << typeToString(_type) << ":" << typeToString(rhs._type));
+            CSVSQLDB_THROW(VariantException,
+                           "comparing Variants with different types (" << typeToString(_type) << ":" << typeToString(rhs._type));
         }
         if(_isNull || rhs._isNull) {
             return false;
@@ -315,11 +317,12 @@ namespace csvsqldb
         }
         throw std::runtime_error("just to make VC2013 happy");
     }
-    
+
     bool Variant::operator<(const Variant& rhs) const
     {
         if(_type != rhs._type) {
-            CSVSQLDB_THROW(VariantException, "comparing Variants with different types (" << typeToString(_type) << ":" << typeToString(rhs._type));
+            CSVSQLDB_THROW(VariantException,
+                           "comparing Variants with different types (" << typeToString(_type) << ":" << typeToString(rhs._type));
         }
         if(_isNull || rhs._isNull) {
             return false;
@@ -351,11 +354,12 @@ namespace csvsqldb
         }
         throw std::runtime_error("just to make VC2013 happy");
     }
-    
+
     Variant& Variant::operator+=(const Variant& rhs)
     {
         if(_type != rhs._type) {
-            CSVSQLDB_THROW(VariantException, "adding Variants with different types (" << typeToString(_type) << ":" << typeToString(rhs._type));
+            CSVSQLDB_THROW(VariantException,
+                           "adding Variants with different types (" << typeToString(_type) << ":" << typeToString(rhs._type));
         }
         if(_type != INT && _type != REAL) {
             CSVSQLDB_THROW(VariantException, "cannot add to non numeric types");
@@ -370,7 +374,7 @@ namespace csvsqldb
         }
         return *this;
     }
-    
+
     Variant& Variant::operator+=(int32_t rhs)
     {
         if(_type != INT && _type != REAL) {
@@ -386,7 +390,7 @@ namespace csvsqldb
         }
         return *this;
     }
-    
+
     Variant& Variant::operator+=(int64_t rhs)
     {
         if(_isNull) {
@@ -402,7 +406,7 @@ namespace csvsqldb
         }
         return *this;
     }
-    
+
     Variant& Variant::operator+=(double rhs)
     {
         if(_isNull) {
@@ -418,7 +422,7 @@ namespace csvsqldb
         }
         return *this;
     }
-    
+
     Variant& Variant::operator/=(const Variant& rhs)
     {
         if(_type != INT && _type != REAL) {
@@ -443,17 +447,17 @@ namespace csvsqldb
         }
         return *this;
     }
-    
+
     eType Variant::getType() const
     {
         return _type;
     }
-    
+
     bool Variant::isNull() const
     {
         return _isNull;
     }
-    
+
     int64_t Variant::asInt() const
     {
         if(_isNull) {
@@ -464,7 +468,7 @@ namespace csvsqldb
         }
         return _storage._int;
     }
-    
+
     double Variant::asDouble() const
     {
         if(_isNull) {
@@ -475,7 +479,7 @@ namespace csvsqldb
         }
         return _storage._real;
     }
-    
+
     csvsqldb::Date Variant::asDate() const
     {
         if(_isNull) {
@@ -486,7 +490,7 @@ namespace csvsqldb
         }
         return csvsqldb::Date(_storage._date);
     }
-    
+
     csvsqldb::Time Variant::asTime() const
     {
         if(_isNull) {
@@ -497,7 +501,7 @@ namespace csvsqldb
         }
         return csvsqldb::Time(_storage._time);
     }
-    
+
     csvsqldb::Timestamp Variant::asTimestamp() const
     {
         if(_isNull) {
@@ -508,13 +512,13 @@ namespace csvsqldb
         }
         return csvsqldb::Timestamp(_storage._timestamp);
     }
-    
+
     bool Variant::asBool() const
     {
         if(_isNull) {
             CSVSQLDB_THROW(VariantException, "variant is null");
         }
-        
+
         switch(_type) {
             case BOOLEAN:
                 return _storage._bool;
@@ -535,7 +539,7 @@ namespace csvsqldb
         }
         return _storage._bool;
     }
-    
+
     const char* Variant::asString() const
     {
         if(_isNull) {
@@ -546,7 +550,7 @@ namespace csvsqldb
         }
         return _storage._string;
     }
-    
+
     std::string Variant::toString() const
     {
         if(_isNull) {
@@ -572,7 +576,7 @@ namespace csvsqldb
         }
         throw std::runtime_error("just to make VC2013 happy");
     }
-    
+
     size_t Variant::getHash() const
     {
         if(_isNull) {
@@ -598,7 +602,7 @@ namespace csvsqldb
         }
         throw std::runtime_error("just to make VC2013 happy");
     }
-    
+
     Variant typedValueToVariant(const TypedValue& value)
     {
         if(!value._value.empty()) {
@@ -633,7 +637,7 @@ namespace csvsqldb
         }
         throw std::runtime_error("just to make VC2013 happy");
     }
-    
+
     Variant valueToVariant(const Value& value)
     {
         if(!value.isNull()) {
@@ -668,5 +672,4 @@ namespace csvsqldb
         }
         throw std::runtime_error("just to make VC2013 happy");
     }
-    
 }

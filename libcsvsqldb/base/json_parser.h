@@ -9,25 +9,25 @@
 //  Redistribution and use in source and binary forms, with or without modification, are permitted
 //  provided that the following conditions are met:
 //
-//  1. Redistributions of source code must retain the above copyright notice, this list of 
+//  1. Redistributions of source code must retain the above copyright notice, this list of
 //  conditions and the following disclaimer.
 //
-//  2. Redistributions in binary form must reproduce the above copyright notice, this list of 
-//  conditions and the following disclaimer in the documentation and/or other materials provided 
+//  2. Redistributions in binary form must reproduce the above copyright notice, this list of
+//  conditions and the following disclaimer in the documentation and/or other materials provided
 //  with the distribution.
 //
-//  3. Neither the name of the copyright holder nor the names of its contributors may be used to 
-//  endorse or promote products derived from this software without specific prior written 
+//  3. Neither the name of the copyright holder nor the names of its contributors may be used to
+//  endorse or promote products derived from this software without specific prior written
 //  permission.
 //
 //  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR
-//  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
+//  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY
 //  AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
-//  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
-//  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR 
-//  SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY 
-//  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
-//  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+//  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+//  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+//  SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+//  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+//  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
@@ -55,7 +55,7 @@ namespace csvsqldb
         {
         public:
             typedef std::shared_ptr<Callback> Ptr;
-          
+
             /**
              * Called upon a left curly bracket, to introduce an object.
              */
@@ -65,49 +65,49 @@ namespace csvsqldb
              * Called upon fetching the key for an obect value.
              */
             virtual void key(const std::string& key) = 0;
-            
+
             /**
              * Called upon a right culry bracket, closing an object.
              */
             virtual void endObject() = 0;
-            
+
             /**
              * Called upon a left square bracket, to introduce an array.
              */
             virtual void startArray() = 0;
-            
+
             /**
              * Called upon a right square bracket, closing an array.
              */
             virtual void endArray() = 0;
-            
+
             /**
              * Called upon fetching a number value.
              * @param val The number value
              */
             virtual void numberValue(double val) = 0;
-            
+
             /**
              * Called upon fetching a string value.
              * @param val The string value
              */
             virtual void stringValue(const std::string& val) = 0;
-            
+
             /**
              * Called upon fetching a boolena value.
              * @param val The value of the boolean
              */
             virtual void booleanValue(bool val) = 0;
-            
+
             /**
              * Called upon fetching a null value.
              */
             virtual void nullValue() = 0;
         };
-        
+
         /**
          * A JSON parser as specified by https://tools.ietf.org/html/rfc4627
-         * 
+         *
          * Does currently have the following limitations:
          * - Strings have no unicode points
          */
@@ -122,7 +122,7 @@ namespace csvsqldb
             Parser(const std::string& json, const Callback::Ptr& callback);
 
             ~Parser();
-            
+
             /**
              * Construct a parser with a stream object.
              * @param stream The JSON stream to parse
@@ -136,7 +136,7 @@ namespace csvsqldb
              * @return true upon successful parsing, otherwise false. Depends on the given callback,
              */
             bool parse();
-            
+
         private:
             struct Private;
             std::unique_ptr<Private> _p;

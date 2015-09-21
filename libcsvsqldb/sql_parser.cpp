@@ -39,41 +39,45 @@
 
 namespace csvsqldb
 {
-    
+
     SQLParser::SQLParser(const FunctionRegistry& functionRegistry)
     : _lexer("")
     , _functionRegistry(functionRegistry)
     {
         _currentToken._token = TOK_NONE;
     }
-    
+
     void SQLParser::reportUnexpectedToken(const std::string& message, const csvsqldb::lexer::Token& token)
     {
-        CSVSQLDB_THROW(SqlParserException, message << "'" << token._value << "' at line "
-                       << token._lineCount << ":" << token._charCount);
+        CSVSQLDB_THROW(SqlParserException, message << "'" << token._value << "' at line " << token._lineCount << ":" << token._charCount);
     }
-    
+
     std::string SQLParser::expect(eToken tok)
     {
         if(_currentToken._token != tok) {
-            CSVSQLDB_THROW(SqlParserException, "expected '" << tokenToString(tok) << "' but found '" << tokenToString(eToken(_currentToken._token)) <<
-                           "' (" << _currentToken._value << ") at line " << _currentToken._lineCount << ":" << _currentToken._charCount);
+            CSVSQLDB_THROW(SqlParserException,
+                           "expected '" << tokenToString(tok) << "' but found '" << tokenToString(eToken(_currentToken._token)) << "' ("
+                                        << _currentToken._value
+                                        << ") at line "
+                                        << _currentToken._lineCount
+                                        << ":"
+                                        << _currentToken._charCount);
         }
         std::string val = _currentToken._value;
         parseNext();
         return val;
     }
-    
+
     bool SQLParser::canExpect(eToken tok)
     {
         if(_currentToken._token == tok) {
             expect(tok);
             return true;
         }
-        
+
         return false;
     }
-    
+
     csvsqldb::lexer::Token SQLParser::parseNext()
     {
         if(_currentToken._token == csvsqldb::lexer::EOI) {
@@ -84,31 +88,31 @@ namespace csvsqldb
             tok = _lexer.next();
         }
         _currentToken = tok;
-        
+
         return _currentToken;
     }
-    
+
     void SQLParser::setInput(const std::string& input)
     {
         _lexer.setInput(input);
         _currentToken = csvsqldb::lexer::Token();
         _currentToken._token = TOK_NONE;
     }
-    
+
     ASTNodePtr SQLParser::parse(const std::string& input)
     {
         setInput(input);
         return parse();
     }
-    
+
     ASTNodePtr SQLParser::parse()
     {
         ASTNodePtr astnode;
-        
+
         if(_currentToken._token == TOK_NONE) {
             parseNext();
         }
-        
+
         if(_currentToken._token != csvsqldb::lexer::EOI) {
             if(_currentToken._token == TOK_SELECT || _currentToken._token == TOK_LEFT_PAREN) {
                 astnode = parseQuery();
@@ -137,17 +141,17 @@ namespace csvsqldb
                 expect(TOK_SEMICOLON);
             }
         }
-        
+
         return astnode;
     }
-    
+
     ASTExprNodePtr SQLParser::parseExpression(const std::string& expression)
     {
         setInput(expression);
         parseNext();
         return parseExpression(SymbolTable::createSymbolTable());
     }
-    
+
     ASTDescribeNodePtr SQLParser::parseExplain()
     {
         expect(TOK_EXPLAIN);
@@ -160,10 +164,10 @@ namespace csvsqldb
             reportUnexpectedToken("expected 'AST' or 'EXEC', but found ", _currentToken);
         }
         ASTQueryNodePtr query = parseQuery();
-        
+
         return std::make_shared<ASTExplainNode>(query->symbolTable(), desc, query);
     }
-    
+
     ASTMappingNodePtr SQLParser::parseMapping()
     {
         expect(TOK_MAPPING);
@@ -171,7 +175,7 @@ namespace csvsqldb
         std::string name = parseQuotedIdentifier(quoted);
         expect(TOK_LEFT_PAREN);
         FileMapping::Mappings mappings;
-        
+
         std::string value = _currentToken._value;
         if(!canExpect(TOK_CONST_STRING)) {
             expect(TOK_QUOTED_IDENTIFIER);
@@ -186,14 +190,14 @@ namespace csvsqldb
         }
         mappings.push_back({value, delimiter, skipFirstLine});
         expect(TOK_RIGHT_PAREN);
-        
+
         return std::make_shared<ASTMappingNode>(SymbolTable::createSymbolTable(), name, mappings);
     }
-    
+
     ASTCreateTableNodePtr SQLParser::parseCreateTable()
     {
         bool createIfNotExists = false;
-        
+
         expect(TOK_TABLE);
         if(canExpect(TOK_IF)) {
             expect(TOK_NOT);
@@ -203,37 +207,44 @@ namespace csvsqldb
         bool quoted = false;
         std::string name = parseQuotedIdentifier(quoted);
         expect(TOK_LEFT_PAREN);
-        
+
         ColumnDefinitions columns;
         TableConstraints constraints;
-        
-        while(_currentToken._token == TOK_IDENTIFIER || _currentToken._token == TOK_CONSTRAINT || _currentToken._token == TOK_UNIQUE ||
-              _currentToken._token == TOK_PRIMARY || _currentToken._token == TOK_CHECK) {
+
+        while(_currentToken._token == TOK_IDENTIFIER || _currentToken._token == TOK_CONSTRAINT || _currentToken._token == TOK_UNIQUE
+              || _currentToken._token == TOK_PRIMARY
+              || _currentToken._token == TOK_CHECK) {
             if(_currentToken._token == TOK_IDENTIFIER) {
                 columns.push_back(parseColumnDefinition());
             } else {
                 constraints.push_back(parseTableConstraint());
             }
             if(canExpect(TOK_COMMA)) {
-                if(!(_currentToken._token == TOK_IDENTIFIER || _currentToken._token == TOK_CONSTRAINT || _currentToken._token == TOK_UNIQUE ||
-                     _currentToken._token == TOK_PRIMARY || _currentToken._token == TOK_CHECK)) {
-                    CSVSQLDB_THROW(SqlParserException, "expected a table element but found '" << tokenToString(eToken(_currentToken._token)) <<
-                                   "' (" << _currentToken._value << ") at line " << _currentToken._lineCount << ":" << _currentToken._charCount);
+                if(!(_currentToken._token == TOK_IDENTIFIER || _currentToken._token == TOK_CONSTRAINT || _currentToken._token == TOK_UNIQUE
+                     || _currentToken._token == TOK_PRIMARY
+                     || _currentToken._token == TOK_CHECK)) {
+                    CSVSQLDB_THROW(SqlParserException,
+                                   "expected a table element but found '" << tokenToString(eToken(_currentToken._token)) << "' ("
+                                                                          << _currentToken._value
+                                                                          << ") at line "
+                                                                          << _currentToken._lineCount
+                                                                          << ":"
+                                                                          << _currentToken._charCount);
                 }
             } else {
                 break;
             }
         }
-        
+
         expect(TOK_RIGHT_PAREN);
-        
+
         return std::make_shared<ASTCreateTableNode>(SymbolTable::createSymbolTable(), name, columns, constraints, createIfNotExists);
     }
-    
+
     eType SQLParser::parseType()
     {
         eType type;
-        
+
         switch(_currentToken._token) {
             case TOK_BOOL:
                 expect(TOK_BOOL);
@@ -267,18 +278,21 @@ namespace csvsqldb
                 type = DATE;
                 break;
             default:
-                CSVSQLDB_THROW(SqlParserException, "expected a type but found '" << tokenToString(eToken(_currentToken._token)) <<
-                               "' (" << _currentToken._value << ") at line " << _currentToken._lineCount << ":" << _currentToken._charCount);
+                CSVSQLDB_THROW(SqlParserException,
+                               "expected a type but found '" << tokenToString(eToken(_currentToken._token)) << "' (" << _currentToken._value << ") at line "
+                                                             << _currentToken._lineCount
+                                                             << ":"
+                                                             << _currentToken._charCount);
         }
-        
+
         return type;
     }
-    
+
     ColumnDefinition SQLParser::parseColumnDefinition()
     {
         ColumnDefinition definition(_currentToken._value);
         expect(TOK_IDENTIFIER);
-        
+
         switch(_currentToken._token) {
             case TOK_BOOL:
                 expect(TOK_BOOL);
@@ -324,22 +338,27 @@ namespace csvsqldb
                 definition._type = TIMESTAMP;
                 break;
             default:
-                CSVSQLDB_THROW(SqlParserException, "expected a type but found '" << tokenToString(eToken(_currentToken._token)) <<
-                               "' (" << _currentToken._value << ") at line " << _currentToken._lineCount << ":" << _currentToken._charCount);
+                CSVSQLDB_THROW(SqlParserException,
+                               "expected a type but found '" << tokenToString(eToken(_currentToken._token)) << "' (" << _currentToken._value << ") at line "
+                                                             << _currentToken._lineCount
+                                                             << ":"
+                                                             << _currentToken._charCount);
         }
         if(_currentToken._token == TOK_DEFAULT) {
             expect(TOK_DEFAULT);
-            
-            if(_currentToken._token != TOK_CONST_STRING &&
-               _currentToken._token != TOK_CONST_INTEGER &&
-               _currentToken._token != TOK_CONST_BOOLEAN &&
-               _currentToken._token != TOK_CONST_DATE &&
-               _currentToken._token != TOK_CONST_REAL &&
-               _currentToken._token != TOK_CONST_CHAR) {
-                CSVSQLDB_THROW(SqlParserException, "expected a constant but found '" << tokenToString(eToken(_currentToken._token)) <<
-                               "' (" << _currentToken._value << ") at line " << _currentToken._lineCount << ":" << _currentToken._charCount);
+
+            if(_currentToken._token != TOK_CONST_STRING && _currentToken._token != TOK_CONST_INTEGER && _currentToken._token != TOK_CONST_BOOLEAN
+               && _currentToken._token != TOK_CONST_DATE
+               && _currentToken._token != TOK_CONST_REAL
+               && _currentToken._token != TOK_CONST_CHAR) {
+                CSVSQLDB_THROW(SqlParserException,
+                               "expected a constant but found '" << tokenToString(eToken(_currentToken._token)) << "' (" << _currentToken._value
+                                                                 << ") at line "
+                                                                 << _currentToken._lineCount
+                                                                 << ":"
+                                                                 << _currentToken._charCount);
             }
-            
+
             definition._defaultValue = _currentToken._value;
             parseNext();
         }
@@ -349,29 +368,29 @@ namespace csvsqldb
         } else {
             parseConstraint(definition);
         }
-        
+
         return definition;
     }
-    
+
     csvsqldb::StringVector SQLParser::parseColumnList()
     {
         csvsqldb::StringVector columns;
-        
+
         do {
             columns.push_back(expect(TOK_IDENTIFIER));
         } while(canExpect(TOK_COMMA));
-        
+
         return columns;
     }
-    
+
     TableConstraint SQLParser::parseTableConstraint()
     {
         TableConstraint constraint;
-        
+
         if(canExpect(TOK_CONSTRAINT)) {
             constraint._name = expect(TOK_IDENTIFIER);
         }
-        
+
         if(canExpect(TOK_PRIMARY)) {
             expect(TOK_KEY);
             expect(TOK_LEFT_PAREN);
@@ -389,10 +408,10 @@ namespace csvsqldb
             constraint._check = parseExpression(SymbolTable::createSymbolTable());
             expect(TOK_RIGHT_PAREN);
         }
-        
+
         return constraint;
     }
-    
+
     void SQLParser::parseConstraint(ColumnDefinition& definition)
     {
         if(canExpect(TOK_PRIMARY)) {
@@ -410,11 +429,11 @@ namespace csvsqldb
             expect(TOK_RIGHT_PAREN);
         }
     }
-    
+
     ASTAlterTableNodePtr SQLParser::parseAlterTable()
     {
         ASTAlterTableNodePtr alterNode;
-        
+
         expect(TOK_ALTER);
         expect(TOK_TABLE);
         expect(TOK_IDENTIFIER);
@@ -425,61 +444,64 @@ namespace csvsqldb
             canExpect(TOK_COLUMN);
             alterNode = std::make_shared<ASTAlterTableDropNode>(SymbolTable::createSymbolTable(), expect(TOK_IDENTIFIER));
         } else {
-            CSVSQLDB_THROW(SqlParserException, "expected add or drop but found '" << tokenToString(eToken(_currentToken._token)) <<
-                           "' (" << _currentToken._value << ") at line " << _currentToken._lineCount << ":" << _currentToken._charCount);
+            CSVSQLDB_THROW(SqlParserException,
+                           "expected add or drop but found '" << tokenToString(eToken(_currentToken._token)) << "' (" << _currentToken._value << ") at line "
+                                                              << _currentToken._lineCount
+                                                              << ":"
+                                                              << _currentToken._charCount);
         }
-        
+
         return alterNode;
     }
-    
+
     ASTDropTableNodePtr SQLParser::parseDropTable()
     {
         ASTDropTableNodePtr node;
         expect(TOK_DROP);
         expect(TOK_TABLE);
-        
+
         return std::make_shared<ASTDropTableNode>(SymbolTable::createSymbolTable(), expect(TOK_IDENTIFIER));
     }
-    
+
     ASTQueryNodePtr SQLParser::parseQuery()
     {
         ASTQueryExpressionNodePtr query = parseQueryExpression(SymbolTablePtr());
-        
+
         return std::make_shared<ASTQueryNode>(query->symbolTable(), query);
     }
-    
+
     ASTQueryExpressionNodePtr SQLParser::parseQueryExpression(const SymbolTablePtr& symboltable)
     {
         SymbolTablePtr nestedSymbolable = symboltable;
-        
+
         if(!symboltable) {
             nestedSymbolable = SymbolTable::createSymbolTable();
         } else {
             nestedSymbolable = SymbolTable::createSymbolTable(symboltable);
         }
-        
+
         bool expectRightParen = false;
         if(canExpect(TOK_LEFT_PAREN)) {
             expectRightParen = true;
         }
         expect(TOK_SELECT);
-        
+
         eQuantifier quantifier = ALL;
         if(canExpect(TOK_DISTINCT)) {
             quantifier = DISTINCT;
         } else if(canExpect(TOK_ALL)) {
             quantifier = ALL;
         }
-        
+
         Expressions nodes = parseSelectList(nestedSymbolable);
         ASTTableExpressionNodePtr tableExpression = parseTableExpression(nestedSymbolable);
-        
+
         if(expectRightParen) {
             expect(TOK_RIGHT_PAREN);
         }
-        
+
         ASTQueryExpressionNodePtr query = std::make_shared<ASTQuerySpecificationNode>(nestedSymbolable, quantifier, nodes, tableExpression);
-        
+
         while(_currentToken._token == TOK_UNION) {
             expect(TOK_UNION);
             quantifier = ALL;
@@ -491,12 +513,12 @@ namespace csvsqldb
             expect(TOK_LEFT_PAREN);
             ASTQueryExpressionNodePtr rhs = parseQueryExpression(nestedSymbolable);
             expect(TOK_RIGHT_PAREN);
-            query =  std::make_shared<ASTUnionNode>(nestedSymbolable, quantifier, query, rhs);
+            query = std::make_shared<ASTUnionNode>(nestedSymbolable, quantifier, query, rhs);
         }
-        
+
         return query;
     }
-    
+
     ASTTableExpressionNodePtr SQLParser::parseTableExpression(const SymbolTablePtr& symboltable)
     {
         ASTFromNodePtr from = parseFrom(symboltable);
@@ -505,24 +527,24 @@ namespace csvsqldb
         ASTHavingNodePtr having = parseHaving(symboltable);
         ASTOrderByNodePtr order = parseOrderBy(symboltable);
         ASTLimitNodePtr limit = parseLimit(symboltable);
-        
+
         return std::make_shared<ASTTableExpressionNode>(symboltable, from, where, group, having, order, limit);
     }
-    
+
     ASTFromNodePtr SQLParser::parseFrom(const SymbolTablePtr& symboltable)
     {
         TableReferences tables;
-        
+
         expect(TOK_FROM);
-        
+
         do {
             ASTTableReferenceNodePtr reference = parseTableReference(symboltable);
             tables.push_back(reference);
         } while(canExpect(TOK_COMMA));
-        
+
         return std::make_shared<ASTFromNode>(symboltable, tables);
     }
-    
+
     bool SQLParser::isJoin()
     {
         switch(_currentToken._token) {
@@ -537,25 +559,25 @@ namespace csvsqldb
         }
         return false;
     }
-    
+
     ASTTableReferenceNodePtr SQLParser::parseTableReference(const SymbolTablePtr& symboltable)
     {
         ASTTableReferenceNodePtr reference = parseTableFactor(symboltable);
-        
+
         if(isJoin()) {
             while(isJoin()) {
                 eJoinType type = parseJoinType();
                 reference = parseJoinClause(reference, type);
             }
         }
-        
+
         return reference;
     }
-    
+
     ASTTableFactorNodePtr SQLParser::parseTableFactor(const SymbolTablePtr& symboltable)
     {
         ASTTableFactorNodePtr node;
-        
+
         if(canExpect(TOK_LEFT_PAREN)) {
             ASTQueryExpressionNodePtr query = parseQueryExpression(symboltable);
             expect(TOK_RIGHT_PAREN);
@@ -563,7 +585,7 @@ namespace csvsqldb
             if(canExpect(TOK_AS)) {
                 subqueryAlias = expect(TOK_IDENTIFIER);
             }
-            
+
             SymbolTablePtr parent = query->symbolTable()->getParent();
             SymbolInfoPtr info = std::make_shared<SymbolInfo>();
             info->_name = subqueryAlias;
@@ -575,10 +597,10 @@ namespace csvsqldb
             ASTIdentifierPtr identifier = parseAliasedIdentifier(symboltable);
             node = std::make_shared<ASTTableIdentifierNode>(symboltable, identifier);
         }
-        
+
         return node;
     }
-    
+
     ASTIdentifierPtr SQLParser::parseAliasedIdentifier(const SymbolTablePtr& symboltable)
     {
         bool quoted = false;
@@ -587,7 +609,7 @@ namespace csvsqldb
         info->_identifier = identifier;
         info->_symbolType = TABLE;
         info->_type = NONE;
-        
+
         if(_currentToken._token == TOK_AS || _currentToken._token == TOK_IDENTIFIER || _currentToken._token == TOK_QUOTED_IDENTIFIER) {
             canExpect(TOK_AS);
             std::string alias = parseQuotedIdentifier(quoted);
@@ -597,10 +619,10 @@ namespace csvsqldb
         }
         info->_name = identifier;
         symboltable->addSymbol(identifier, info);
-        
+
         return std::make_shared<ASTIdentifier>(symboltable, symboltable->findSymbol(identifier), "", info->_identifier, quoted);
     }
-    
+
     eJoinType SQLParser::parseJoinType()
     {
         if(canExpect(TOK_CROSS)) {
@@ -639,72 +661,63 @@ namespace csvsqldb
             expect(TOK_JOIN);
             return FULL_JOIN;
         }
-        
+
         expect(TOK_JOIN);
         return INNER_JOIN;
     }
-    
+
     ASTJoinNodePtr SQLParser::parseJoinClause(const ASTTableReferenceNodePtr& reference, eJoinType joinType)
     {
         ASTJoinNodePtr join;
-        
+
         switch(joinType) {
-            case INNER_JOIN:
-            {
+            case INNER_JOIN: {
                 ASTTableFactorNodePtr factor = parseTableFactor(reference->symbolTable());
                 expect(TOK_ON);
                 ASTExprNodePtr exp = parseExpression(factor->symbolTable());
                 join = std::make_shared<ASTInnerJoinNode>(factor->symbolTable(), reference, factor, exp);
                 break;
             }
-            case CROSS_JOIN:
-            {
+            case CROSS_JOIN: {
                 ASTTableFactorNodePtr factor = parseTableFactor(reference->symbolTable());
                 join = std::make_shared<ASTCrossJoinNode>(factor->symbolTable(), reference, factor);
                 break;
             }
-            case NATURAL_JOIN:
-            {
+            case NATURAL_JOIN: {
                 ASTTableFactorNodePtr factor = parseTableFactor(reference->symbolTable());
                 join = std::make_shared<ASTNaturalJoinNode>(factor->symbolTable(), NATURAL, reference, factor);
                 break;
             }
-            case NATURAL_LEFT_JOIN:
-            {
+            case NATURAL_LEFT_JOIN: {
                 ASTTableFactorNodePtr factor = parseTableFactor(reference->symbolTable());
                 join = std::make_shared<ASTNaturalJoinNode>(factor->symbolTable(), LEFT, reference, factor);
                 break;
             }
-            case NATURAL_RIGHT_JOIN:
-            {
+            case NATURAL_RIGHT_JOIN: {
                 ASTTableFactorNodePtr factor = parseTableFactor(reference->symbolTable());
                 join = std::make_shared<ASTNaturalJoinNode>(factor->symbolTable(), RIGHT, reference, factor);
                 break;
             }
-            case NATURAL_FULL_JOIN:
-            {
+            case NATURAL_FULL_JOIN: {
                 ASTTableFactorNodePtr factor = parseTableFactor(reference->symbolTable());
                 join = std::make_shared<ASTNaturalJoinNode>(factor->symbolTable(), FULL, reference, factor);
                 break;
             }
-            case LEFT_JOIN:
-            {
+            case LEFT_JOIN: {
                 ASTTableFactorNodePtr factor = parseTableFactor(reference->symbolTable());
                 expect(TOK_ON);
                 ASTExprNodePtr exp = parseExpression(factor->symbolTable());
                 join = std::make_shared<ASTLeftJoinNode>(factor->symbolTable(), reference, factor, exp);
                 break;
             }
-            case RIGHT_JOIN:
-            {
+            case RIGHT_JOIN: {
                 ASTTableFactorNodePtr factor = parseTableFactor(reference->symbolTable());
                 expect(TOK_ON);
                 ASTExprNodePtr exp = parseExpression(factor->symbolTable());
                 join = std::make_shared<ASTRightJoinNode>(factor->symbolTable(), reference, factor, exp);
                 break;
             }
-            case FULL_JOIN:
-            {
+            case FULL_JOIN: {
                 ASTTableFactorNodePtr factor = parseTableFactor(reference->symbolTable());
                 expect(TOK_ON);
                 ASTExprNodePtr exp = parseExpression(factor->symbolTable());
@@ -712,22 +725,22 @@ namespace csvsqldb
                 break;
             }
         }
-        
+
         return join;
     }
-    
+
     ASTWhereNodePtr SQLParser::parseWhere(const SymbolTablePtr& symboltable)
     {
         ASTWhereNodePtr where;
-        
+
         if(canExpect(TOK_WHERE)) {
             ASTExprNodePtr exp = parseExpression(symboltable);
             where = std::make_shared<ASTWhereNode>(symboltable, exp);
         }
-        
+
         return where;
     }
-    
+
     ASTGroupByNodePtr SQLParser::parseGroupBy(const SymbolTablePtr& symboltable)
     {
         ASTGroupByNodePtr group;
@@ -742,10 +755,10 @@ namespace csvsqldb
             Identifiers identifiers = parseIdentifierList(symboltable);
             group = std::make_shared<ASTGroupByNode>(symboltable, quantifier, identifiers);
         }
-        
+
         return group;
     }
-    
+
     ASTHavingNodePtr SQLParser::parseHaving(const SymbolTablePtr& symboltable)
     {
         ASTHavingNodePtr having;
@@ -753,24 +766,24 @@ namespace csvsqldb
             ASTExprNodePtr exp = parseExpression(symboltable);
             having = std::make_shared<ASTHavingNode>(symboltable, exp);
         }
-        
+
         return having;
     }
-    
+
     ASTOrderByNodePtr SQLParser::parseOrderBy(const SymbolTablePtr& symboltable)
     {
         ASTOrderByNodePtr order;
-        
+
         if(canExpect(TOK_ORDER)) {
             expect(TOK_BY);
-            
+
             OrderExpressions orderExpressions;
             OrderExpression orderExp;
-            
+
             do {
                 orderExp.first = parseExpression(symboltable);
                 orderExp.second = ASC;
-                
+
                 if(canExpect(TOK_ASC)) {
                     orderExp.second = ASC;
                 } else if(canExpect(TOK_DESC)) {
@@ -778,17 +791,17 @@ namespace csvsqldb
                 }
                 orderExpressions.push_back(orderExp);
             } while(canExpect(TOK_COMMA));
-            
+
             order = std::make_shared<ASTOrderByNode>(symboltable, orderExpressions);
         }
-        
+
         return order;
     }
-    
+
     ASTLimitNodePtr SQLParser::parseLimit(const SymbolTablePtr& symboltable)
     {
         ASTLimitNodePtr limit;
-        
+
         if(canExpect(TOK_LIMIT)) {
             ASTExprNodePtr expStart = parseExpression(symboltable);
             ASTExprNodePtr expEnd;
@@ -797,14 +810,14 @@ namespace csvsqldb
             }
             limit = std::make_shared<ASTLimitNode>(symboltable, expStart, expEnd);
         }
-        
+
         return limit;
     }
-    
+
     ASTExprNodePtr SQLParser::parseExpression(const SymbolTablePtr& symboltable)
     {
         ASTExprNodePtr lhs = parseJoin(symboltable);
-        
+
         while(_currentToken._token == TOK_OR) {
             eOperationType op;
             switch(_currentToken._token) {
@@ -818,10 +831,10 @@ namespace csvsqldb
             ASTExprNodePtr rhs = parseJoin(symboltable);
             lhs = std::make_shared<ASTBinaryNode>(symboltable, op, lhs, rhs);
         }
-        
+
         return lhs;
     }
-    
+
     ASTExprNodePtr SQLParser::parseJoin(const SymbolTablePtr& symboltable)
     {
         ASTExprNodePtr lhs = parseEquality(symboltable);
@@ -838,15 +851,17 @@ namespace csvsqldb
             ASTExprNodePtr rhs = parseEquality(symboltable);
             lhs = std::make_shared<ASTBinaryNode>(symboltable, op, lhs, rhs);
         }
-        
+
         return lhs;
     }
-    
+
     ASTExprNodePtr SQLParser::parseEquality(const SymbolTablePtr& symboltable)
     {
         ASTExprNodePtr lhs = parseRelation(symboltable);
-        while(_currentToken._token == TOK_EQUAL || _currentToken._token == TOK_NOTEQUAL || _currentToken._token == TOK_LIKE ||
-              _currentToken._token == TOK_BETWEEN || _currentToken._token == TOK_IN || _currentToken._token == TOK_IS) {
+        while(_currentToken._token == TOK_EQUAL || _currentToken._token == TOK_NOTEQUAL || _currentToken._token == TOK_LIKE
+              || _currentToken._token == TOK_BETWEEN
+              || _currentToken._token == TOK_IN
+              || _currentToken._token == TOK_IS) {
             eOperationType op;
             switch(_currentToken._token) {
                 case TOK_EQUAL:
@@ -934,15 +949,15 @@ namespace csvsqldb
                 lhs = std::make_shared<ASTBinaryNode>(symboltable, op, lhs, rhs);
             }
         }
-        
+
         return lhs;
     }
-    
+
     ASTExprNodePtr SQLParser::parseRelation(const SymbolTablePtr& symboltable)
     {
         ASTExprNodePtr lhs = parseAdd(symboltable);
-        while(_currentToken._token == TOK_GREATER || _currentToken._token == TOK_GREATEREQUAL ||
-              _currentToken._token == TOK_SMALLER || _currentToken._token == TOK_SMALLEREQUAL) {
+        while(_currentToken._token == TOK_GREATER || _currentToken._token == TOK_GREATEREQUAL || _currentToken._token == TOK_SMALLER
+              || _currentToken._token == TOK_SMALLEREQUAL) {
             eOperationType op;
             switch(_currentToken._token) {
                 case TOK_GREATER:
@@ -967,10 +982,10 @@ namespace csvsqldb
             ASTExprNodePtr rhs = parseAdd(symboltable);
             lhs = std::make_shared<ASTBinaryNode>(symboltable, op, lhs, rhs);
         }
-        
+
         return lhs;
     }
-    
+
     ASTExprNodePtr SQLParser::parseAdd(const SymbolTablePtr& symboltable)
     {
         ASTExprNodePtr lhs = parseMul(symboltable);
@@ -995,10 +1010,10 @@ namespace csvsqldb
             ASTExprNodePtr rhs = parseMul(symboltable);
             lhs = std::make_shared<ASTBinaryNode>(symboltable, op, lhs, rhs);
         }
-        
+
         return lhs;
     }
-    
+
     ASTExprNodePtr SQLParser::parseMul(const SymbolTablePtr& symboltable)
     {
         ASTExprNodePtr lhs = parseFactor(symboltable);
@@ -1023,10 +1038,10 @@ namespace csvsqldb
             ASTExprNodePtr rhs = parseFactor(symboltable);
             lhs = std::make_shared<ASTBinaryNode>(symboltable, op, lhs, rhs);
         }
-        
+
         return lhs;
     }
-    
+
     ASTExprNodePtr SQLParser::parseFactor(const SymbolTablePtr& symboltable)
     {
         ASTExprNodePtr node;
@@ -1065,8 +1080,10 @@ namespace csvsqldb
                 symboltable->addSymbol(funcName, info);
                 node = std::make_shared<ASTFunctionNode>(symboltable, _functionRegistry, funcName, parameters);
             }
-        } else if(_currentToken._token == TOK_SUM || _currentToken._token == TOK_COUNT || _currentToken._token == TOK_AVG ||
-                  _currentToken._token == TOK_MIN || _currentToken._token == TOK_MAX || _currentToken._token == TOK_ARBITRARY) {
+        } else if(_currentToken._token == TOK_SUM || _currentToken._token == TOK_COUNT || _currentToken._token == TOK_AVG
+                  || _currentToken._token == TOK_MIN
+                  || _currentToken._token == TOK_MAX
+                  || _currentToken._token == TOK_ARBITRARY) {
             eAggregateFunction aggregateFunction;
             switch(_currentToken._token) {
                 case TOK_SUM:
@@ -1096,7 +1113,7 @@ namespace csvsqldb
                 default:
                     CSVSQLDB_THROW(SqlParserException, "unknown aggregate function '" << _currentToken._value << "'");
             }
-            
+
             expect(TOK_LEFT_PAREN);
             Parameters parameters;
             if(aggregateFunction == COUNT) {
@@ -1116,15 +1133,13 @@ namespace csvsqldb
                 parameters.push_back(param);
             }
             expect(TOK_RIGHT_PAREN);
-            
+
             node = std::make_shared<ASTAggregateFunctionNode>(symboltable, aggregateFunction, quantifier, parameters);
-        } else if(_currentToken._token == TOK_CONST_STRING ||
-                  _currentToken._token == TOK_CONST_CHAR ||
-                  _currentToken._token == TOK_CONST_BOOLEAN ||
-                  _currentToken._token == TOK_CONST_DATE ||
-                  _currentToken._token == TOK_CONST_INTEGER ||
-                  _currentToken._token == TOK_CONST_REAL ||
-                  _currentToken._token == TOK_NULL) {
+        } else if(_currentToken._token == TOK_CONST_STRING || _currentToken._token == TOK_CONST_CHAR || _currentToken._token == TOK_CONST_BOOLEAN
+                  || _currentToken._token == TOK_CONST_DATE
+                  || _currentToken._token == TOK_CONST_INTEGER
+                  || _currentToken._token == TOK_CONST_REAL
+                  || _currentToken._token == TOK_NULL) {
             eType type = NONE;
             std::string value = _currentToken._value;
             switch(_currentToken._token) {
@@ -1160,14 +1175,10 @@ namespace csvsqldb
                     CSVSQLDB_THROW(SqlParserException, "expected a constant");
             }
             node = std::make_shared<ASTValueNode>(symboltable, type, value);
-        } else if(_currentToken._token == TOK_NOT ||
-                  _currentToken._token == TOK_SUB ||
-                  _currentToken._token == TOK_ADD ||
-                  _currentToken._token == TOK_CAST) {
+        } else if(_currentToken._token == TOK_NOT || _currentToken._token == TOK_SUB || _currentToken._token == TOK_ADD
+                  || _currentToken._token == TOK_CAST) {
             node = parseUnary(symboltable);
-        } else if(_currentToken._token == TOK_DATE ||
-                  _currentToken._token == TOK_TIME ||
-                  _currentToken._token == TOK_TIMESTAMP) {
+        } else if(_currentToken._token == TOK_DATE || _currentToken._token == TOK_TIME || _currentToken._token == TOK_TIMESTAMP) {
             eType type;
             switch(_currentToken._token) {
                 case TOK_DATE:
@@ -1186,10 +1197,8 @@ namespace csvsqldb
                     CSVSQLDB_THROW(SqlParserException, "expected DATE/TIME/TIMESTAMP");
             }
             node = std::make_shared<ASTValueNode>(symboltable, type, expect(TOK_CONST_STRING));
-        } else if(_currentToken._token == TOK_CURRENT_DATE ||
-                  _currentToken._token == TOK_CURRENT_TIME ||
-                  _currentToken._token == TOK_CURRENT_TIMESTAMP ||
-                  _currentToken._token == TOK_EXTRACT) {
+        } else if(_currentToken._token == TOK_CURRENT_DATE || _currentToken._token == TOK_CURRENT_TIME || _currentToken._token == TOK_CURRENT_TIMESTAMP
+                  || _currentToken._token == TOK_EXTRACT) {
             std::string funcName;
             Parameters parameters;
             switch(_currentToken._token) {
@@ -1205,8 +1214,7 @@ namespace csvsqldb
                     expect(TOK_CURRENT_TIMESTAMP);
                     funcName = "CURRENT_TIMESTAMP";
                     break;
-                case TOK_EXTRACT:
-                {
+                case TOK_EXTRACT: {
                     expect(TOK_EXTRACT);
                     expect(TOK_LEFT_PAREN);
                     Parameter param;
@@ -1250,14 +1258,14 @@ namespace csvsqldb
         } else {
             CSVSQLDB_THROW(SqlParserException, "expected an expression");
         }
-        
+
         return node;
     }
-    
+
     ASTExprNodePtr SQLParser::parseUnary(const SymbolTablePtr& symboltable)
     {
         ASTExprNodePtr node;
-        
+
         eOperationType op;
         switch(_currentToken._token) {
             case TOK_NOT:
@@ -1289,10 +1297,10 @@ namespace csvsqldb
         } else {
             node = std::make_shared<ASTUnaryNode>(symboltable, op, NONE, parseExpression(symboltable));
         }
-        
+
         return node;
     }
-    
+
     std::string SQLParser::parseQuotedIdentifier(bool& quoted)
     {
         std::string prefix;
@@ -1308,7 +1316,7 @@ namespace csvsqldb
         expect(TOK_IDENTIFIER);
         return "";
     }
-    
+
     ASTExprNodePtr SQLParser::parseQualifiedIdentifierOrAsterisk(const SymbolTablePtr& symboltable)
     {
         bool quoted = false;
@@ -1321,10 +1329,10 @@ namespace csvsqldb
             }
             identifier = parseQuotedIdentifier(quoted);
         }
-        
+
         return std::make_shared<ASTIdentifier>(symboltable, nullptr, prefix, identifier, quoted);
     }
-    
+
     ASTIdentifierPtr SQLParser::parseQualifiedIdentifier(const SymbolTablePtr& symboltable)
     {
         bool quoted = false;
@@ -1334,10 +1342,10 @@ namespace csvsqldb
             prefix = identifier;
             identifier = parseQuotedIdentifier(quoted);
         }
-        
+
         return std::make_shared<ASTIdentifier>(symboltable, nullptr, prefix, identifier, quoted);
     }
-    
+
     Parameters SQLParser::parseParameterList(const SymbolTablePtr& symboltable)
     {
         Parameters parameters;
@@ -1349,14 +1357,14 @@ namespace csvsqldb
             parameters.push_back(param);
         }
         expect(TOK_RIGHT_PAREN);
-        
+
         return parameters;
     }
-    
+
     Identifiers SQLParser::parseIdentifierList(const SymbolTablePtr& symboltable)
     {
         Identifiers identifiers;
-        
+
         do {
             ASTIdentifierPtr identifier = parseQualifiedIdentifier(symboltable);
             std::string symbolName = identifier->getQualifiedIdentifier();
@@ -1372,17 +1380,17 @@ namespace csvsqldb
             identifier->_info = symboltable->findSymbol(symbolName);
             identifiers.push_back(identifier);
         } while(canExpect(TOK_COMMA));
-        
+
         return identifiers;
     }
-    
+
     Expressions SQLParser::parseSelectList(const SymbolTablePtr& symboltable)
     {
         Expressions nodes;
         ASTExprNodePtr exp;
         std::string prefix;
         bool first = true;
-        
+
         do {
             if(canExpect(TOK_ASTERISK) && first) {
                 exp = std::make_shared<ASTQualifiedAsterisk>(symboltable, prefix, false);
@@ -1390,13 +1398,13 @@ namespace csvsqldb
                 exp = parseDerivedColumn(symboltable);
             }
             first = false;
-            
+
             nodes.push_back(exp);
         } while(canExpect(TOK_COMMA));
-        
+
         return nodes;
     }
-    
+
     ASTExprNodePtr SQLParser::parseDerivedColumn(const SymbolTablePtr& symboltable)
     {
         ASTExprNodePtr exp = parseExpression(symboltable);
@@ -1436,20 +1444,19 @@ namespace csvsqldb
             }
             symboltable->replaceSymbol(symbolName, info->_alias, info);
         }
-        
+
         return exp;
     }
-    
+
     Expressions SQLParser::parseExprList(const SymbolTablePtr& symboltable)
     {
         Expressions nodes;
-        
+
         do {
             ASTExprNodePtr exp = parseExpression(symboltable);
             nodes.push_back(exp);
         } while(canExpect(TOK_COMMA));
-        
+
         return nodes;
     }
-    
 }

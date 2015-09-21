@@ -45,28 +45,29 @@
 
 namespace csvsqldb
 {
-    
+
     class CSVSQLDB_EXPORT ASTNodeDumpVisitor : public ASTNodeVisitor
     {
     public:
         ASTNodeDumpVisitor()
         : _indent(0)
-        {}
-        
+        {
+        }
+
         virtual void visit(ASTCreateTableNode& node)
         {
             std::cout << "ASTCreateTable" << std::endl;
             _indent += 2;
             indent();
-            std::cout << node._tableName << " -> " << (node._createIfNotExists? "create if not exists":"") << std::endl;
+            std::cout << node._tableName << " -> " << (node._createIfNotExists ? "create if not exists" : "") << std::endl;
             _indent += 2;
             for(const auto& definition : node._columnDefinitions) {
                 indent();
                 std::cout << definition._name << " -> " << typeToString(definition._type) << " ";
                 std::cout << (definition._length ? "length " + std::to_string(definition._length) + " " : "");
-                std::cout << (definition._primaryKey ? "Primary Key ":"");
-                std::cout << (definition._notNull ? "Not Null ":"");
-                std::cout << (definition._unique ? "Unique ":"");
+                std::cout << (definition._primaryKey ? "Primary Key " : "");
+                std::cout << (definition._notNull ? "Not Null " : "");
+                std::cout << (definition._unique ? "Unique " : "");
                 if(!definition._defaultValue.empty()) {
                     std::cout << printType(definition._type, definition._defaultValue);
                 }
@@ -114,28 +115,28 @@ namespace csvsqldb
             }
             _indent -= 4;
         }
-        
+
         virtual void visit(ASTMappingNode& node)
         {
             std::cout << "ASTMappingNode" << std::endl;
         }
-        
+
         virtual void visit(ASTAlterTableAddNode& node)
         {
             std::cout << "ASTAlterTableAdd" << std::endl;
             _indent += 2;
             indent();
             std::cout << node._definition._name << " -> " << typeToString(node._definition._type) << " ";
-            std::cout << (node._definition._primaryKey ? "Primary Key":"");
-            std::cout << (node._definition._notNull ? "Not Null":"");
-            std::cout << (node._definition._unique ? "Unique":"");
+            std::cout << (node._definition._primaryKey ? "Primary Key" : "");
+            std::cout << (node._definition._notNull ? "Not Null" : "");
+            std::cout << (node._definition._unique ? "Unique" : "");
             if(!node._definition._defaultValue.empty()) {
                 std::cout << printType(node._definition._type, node._definition._defaultValue);
             }
             std::cout << std::endl;
             _indent -= 2;
         }
-        
+
         virtual void visit(ASTAlterTableDropNode& node)
         {
             std::cout << "ASTAlterTableDrop" << std::endl;
@@ -144,7 +145,7 @@ namespace csvsqldb
             std::cout << "drop column " << node._columnName << std::endl;
             _indent -= 2;
         }
-        
+
         virtual void visit(ASTDropTableNode& node)
         {
             std::cout << "ASTDropTable" << std::endl;
@@ -153,12 +154,12 @@ namespace csvsqldb
             std::cout << "drop table " << node._tableName << std::endl;
             _indent -= 2;
         }
-        
+
         virtual void visit(ASTExplainNode& node)
         {
             std::cout << "ASTExplainNode" << std::endl;
         }
-        
+
         virtual void visit(ASTUnionNode& node)
         {
             std::cout << "ASTUnion" << std::endl;
@@ -176,12 +177,12 @@ namespace csvsqldb
             node._rhs->accept(*this);
             _indent -= 2;
         }
-        
+
         virtual void visit(ASTQueryNode& node)
         {
             node._query->accept(*this);
         }
-        
+
         virtual void visit(ASTQuerySpecificationNode& select)
         {
             std::cout << "ASTQuerySpecification" << std::endl;
@@ -194,7 +195,7 @@ namespace csvsqldb
                     break;
             }
             _indent += 2;
-            for(const auto& node: select._nodes) {
+            for(const auto& node : select._nodes) {
                 indent();
                 node->accept(*this);
             }
@@ -202,7 +203,7 @@ namespace csvsqldb
             select._tableExpression->accept(*this);
             _indent -= 2;
         }
-        
+
         virtual void visit(ASTTableExpressionNode& node)
         {
             indent();
@@ -210,7 +211,7 @@ namespace csvsqldb
             _indent += 2;
             indent();
             node._from->accept(*this);
-            
+
             if(node._where) {
                 indent();
                 node._where->accept(*this);
@@ -229,11 +230,11 @@ namespace csvsqldb
             }
             _indent -= 2;
         }
-        
+
         virtual void visit(ASTBinaryNode& node)
         {
             std::cout << "ASTBinary" << std::endl;
-            
+
             _indent += 2;
             indent();
             std::cout << operationTypeToString(node._op);
@@ -255,7 +256,7 @@ namespace csvsqldb
             }
             _indent -= 2;
         }
-        
+
         virtual void visit(ASTUnaryNode& node)
         {
             std::cout << "ASTUnary" << std::endl;
@@ -272,7 +273,7 @@ namespace csvsqldb
             }
             _indent -= 4;
         }
-        
+
         virtual void visit(ASTValueNode& node)
         {
             std::cout << "ASTValue -> ";
@@ -280,11 +281,11 @@ namespace csvsqldb
             std::cout << printType(node._value);
             std::cout << std::endl;
         }
-        
+
         virtual void visit(ASTLikeNode& node)
         {
             std::cout << "ASTLike" << std::endl;
-            
+
             _indent += 2;
             indent();
             node._lhs->accept(*this);
@@ -292,11 +293,11 @@ namespace csvsqldb
             std::cout << "'" << node._like << "'" << std::endl;
             _indent -= 2;
         }
-        
+
         virtual void visit(ASTBetweenNode& node)
         {
             std::cout << "ASTBetween" << std::endl;
-            
+
             _indent += 2;
             indent();
             node._lhs->accept(*this);
@@ -313,11 +314,11 @@ namespace csvsqldb
             node._to->accept(*this);
             _indent -= 4;
         }
-        
+
         virtual void visit(ASTInNode& node)
         {
             std::cout << "ASTIn" << std::endl;
-            
+
             _indent += 2;
             indent();
             node._lhs->accept(*this);
@@ -330,7 +331,7 @@ namespace csvsqldb
             }
             _indent -= 4;
         }
-        
+
         virtual void visit(ASTFunctionNode& node)
         {
             std::cout << "ASTFunction" << std::endl;
@@ -347,7 +348,7 @@ namespace csvsqldb
             std::cout << ")" << std::endl;
             _indent -= 2;
         }
-        
+
         virtual void visit(ASTAggregateFunctionNode& node)
         {
             std::cout << "ASTAggregateFunction" << std::endl;
@@ -374,7 +375,7 @@ namespace csvsqldb
             std::cout << ")" << std::endl;
             _indent -= 2;
         }
-        
+
         virtual void visit(ASTIdentifier& node)
         {
             std::cout << "ASTIdentifier -> " << node.getQualifiedIdentifier();
@@ -383,16 +384,16 @@ namespace csvsqldb
             }
             std::cout << std::endl;
         }
-        
+
         virtual void visit(ASTQualifiedAsterisk& node)
         {
             std::cout << "ASTQualifiedAsterisk -> " << node.getQualifiedIdentifier() << std::endl;
         }
-        
+
         virtual void visit(ASTFromNode& node)
         {
             std::cout << "ASTFrom" << std::endl;
-            
+
             _indent += 2;
             for(const auto& reference : node._tableReferences) {
                 indent();
@@ -400,11 +401,11 @@ namespace csvsqldb
             }
             _indent -= 2;
         }
-        
+
         virtual void visit(ASTTableIdentifierNode& node)
         {
             std::cout << "ASTTableIdentifier" << std::endl;
-            
+
             _indent += 2;
             indent();
             std::cout << node._factor->getQualifiedIdentifier();
@@ -414,21 +415,21 @@ namespace csvsqldb
             _indent -= 2;
             std::cout << std::endl;
         }
-        
+
         virtual void visit(ASTTableSubqueryNode& node)
         {
             std::cout << "ASTTableSubquery" << std::endl;
-            
+
             _indent += 2;
             indent();
             node._query->accept(*this);
             _indent -= 2;
         }
-        
+
         virtual void visit(ASTCrossJoinNode& node)
         {
             std::cout << "ASTCrossJoin" << std::endl;
-            
+
             _indent += 2;
             indent();
             node._tableReference->accept(*this);
@@ -439,11 +440,11 @@ namespace csvsqldb
             _indent -= 2;
             std::cout << std::endl;
         }
-        
+
         virtual void visit(ASTNaturalJoinNode& node)
         {
             std::cout << "ASTNaturalJoin" << std::endl;
-            
+
             _indent += 2;
             indent();
             node._tableReference->accept(*this);
@@ -454,7 +455,7 @@ namespace csvsqldb
             _indent -= 2;
             std::cout << std::endl;
         }
-        
+
         void printJoin(ASTJoinWithCondition& node)
         {
             _indent += 2;
@@ -472,45 +473,45 @@ namespace csvsqldb
             _indent -= 4;
             std::cout << std::endl;
         }
-        
+
         virtual void visit(ASTInnerJoinNode& node)
         {
             std::cout << "ASTInnerJoin" << std::endl;
-            
+
             printJoin(node);
         }
-        
+
         virtual void visit(ASTLeftJoinNode& node)
         {
             std::cout << "ASTLeftJoin" << std::endl;
-            
+
             printJoin(node);
         }
-        
+
         virtual void visit(ASTRightJoinNode& node)
         {
             std::cout << "ASTRightJoin" << std::endl;
-            
+
             printJoin(node);
         }
-        
+
         virtual void visit(ASTFullJoinNode& node)
         {
             std::cout << "ASTFullJoin" << std::endl;
-            
+
             printJoin(node);
         }
-        
+
         virtual void visit(ASTWhereNode& node)
         {
             std::cout << "ASTWhere" << std::endl;
-            
+
             _indent += 2;
             indent();
             node._exp->accept(*this);
             _indent -= 2;
         }
-        
+
         virtual void visit(ASTGroupByNode& group)
         {
             std::cout << "ASTGroupBy" << std::endl;
@@ -522,13 +523,13 @@ namespace csvsqldb
                 case ALL:
                     break;
             }
-            for(const auto& node: group._identifiers) {
+            for(const auto& node : group._identifiers) {
                 indent();
                 node->accept(*this);
             }
             _indent -= 2;
         }
-        
+
         virtual void visit(ASTHavingNode& node)
         {
             std::cout << "ASTHaving" << std::endl;
@@ -536,12 +537,12 @@ namespace csvsqldb
             node._exp->accept(*this);
             _indent -= 2;
         }
-        
+
         virtual void visit(ASTOrderByNode& node)
         {
             std::cout << "ASTOrderBy" << std::endl;
             _indent += 2;
-            for(const auto& order: node._orderExpressions) {
+            for(const auto& order : node._orderExpressions) {
                 indent();
                 std::cout << orderToString(order.second) << std::endl;
                 indent();
@@ -549,7 +550,7 @@ namespace csvsqldb
             }
             _indent -= 2;
         }
-        
+
         virtual void visit(ASTLimitNode& node)
         {
             std::cout << "ASTLimit" << std::endl;
@@ -562,38 +563,38 @@ namespace csvsqldb
             }
             _indent -= 2;
         }
-        
+
     protected:
         void indent()
         {
             std::cout << std::string(_indent, ' ');
         }
-        
+
         size_t _indent;
     };
-    
-    
+
+
     class CSVSQLDB_EXPORT ASTNodeSQLPrintVisitor : public ASTNodeVisitor
     {
     public:
         ASTNodeSQLPrintVisitor()
-        {}
-        
+        {
+        }
+
         std::string toString() const
         {
             return _ss.str();
         }
-        
+
         void reset()
         {
             _ss.str("");
             _ss.clear();
         }
-        
+
         void printOp(eOperationType op)
         {
-            switch(op)
-            {
+            switch(op) {
                 case OP_CAST:
                 case OP_LIKE:
                 case OP_BETWEEN:
@@ -603,52 +604,52 @@ namespace csvsqldb
                     _ss << " " << operationTypeToString(op) << " ";
             }
         }
-        
+
         virtual void visit(ASTExplainNode& node)
         {
             _ss << "EXPLAIN AST ";
             node._query->accept(*this);
         }
-        
+
         virtual void visit(ASTMappingNode& node)
         {
         }
-        
+
         virtual void visit(ASTQualifiedAsterisk& node)
         {
             _ss << node.getQualifiedQuotedIdentifier();
         }
-        
+
         virtual void visit(ASTCreateTableNode& node)
         {
         }
-        
+
         virtual void visit(ASTAlterTableAddNode& node)
         {
         }
-        
+
         virtual void visit(ASTAlterTableDropNode& node)
         {
         }
-        
+
         virtual void visit(ASTDropTableNode& node)
         {
         }
-        
+
         virtual void visit(ASTQueryNode& node)
         {
             node._query->accept(*this);
         }
-        
+
         virtual void visit(ASTUnionNode& node)
         {
             node._lhs->accept(*this);
-            _ss << " UNION " << (node._quantifier == DISTINCT? "DISTINCT ":"");
+            _ss << " UNION " << (node._quantifier == DISTINCT ? "DISTINCT " : "");
             _ss << "(";
             node._rhs->accept(*this);
             _ss << ")";
         }
-        
+
         virtual void visit(ASTQuerySpecificationNode& node)
         {
             _ss << "SELECT ";
@@ -666,7 +667,7 @@ namespace csvsqldb
             }
             node._tableExpression->accept(*this);
         }
-        
+
         virtual void visit(ASTTableExpressionNode& node)
         {
             node._from->accept(*this);
@@ -683,7 +684,7 @@ namespace csvsqldb
                 node._limit->accept(*this);
             }
         }
-        
+
         virtual void visit(ASTFromNode& node)
         {
             _ss << " FROM ";
@@ -697,27 +698,26 @@ namespace csvsqldb
                 ref->accept(*this);
             }
         }
-        
+
         virtual void visit(ASTTableIdentifierNode& node)
         {
             node._factor->accept(*this);
         }
-        
+
         virtual void visit(ASTTableSubqueryNode& node)
         {
             _ss << "(";
             node._query->accept(*this);
             _ss << ")";
         }
-        
+
         virtual void visit(ASTCrossJoinNode& node)
         {
             node._tableReference->accept(*this);
             _ss << " CROSS JOIN ";
             node._factor->accept(*this);
-            
         }
-        
+
         virtual void visit(ASTNaturalJoinNode& node)
         {
             node._tableReference->accept(*this);
@@ -725,7 +725,7 @@ namespace csvsqldb
             _ss << " JOIN ";
             node._factor->accept(*this);
         }
-        
+
         virtual void visit(ASTInnerJoinNode& node)
         {
             node._tableReference->accept(*this);
@@ -734,7 +734,7 @@ namespace csvsqldb
             _ss << " ON ";
             node._expression->accept(*this);
         }
-        
+
         virtual void visit(ASTLeftJoinNode& node)
         {
             node._tableReference->accept(*this);
@@ -743,7 +743,7 @@ namespace csvsqldb
             _ss << " ON ";
             node._expression->accept(*this);
         }
-        
+
         virtual void visit(ASTRightJoinNode& node)
         {
             node._tableReference->accept(*this);
@@ -752,7 +752,7 @@ namespace csvsqldb
             _ss << " ON ";
             node._expression->accept(*this);
         }
-        
+
         virtual void visit(ASTFullJoinNode& node)
         {
             node._tableReference->accept(*this);
@@ -761,13 +761,13 @@ namespace csvsqldb
             _ss << " ON ";
             node._expression->accept(*this);
         }
-        
+
         virtual void visit(ASTWhereNode& node)
         {
             _ss << " WHERE ";
             node._exp->accept(*this);
         }
-        
+
         virtual void visit(ASTGroupByNode& node)
         {
             _ss << " GROUP BY ";
@@ -781,11 +781,11 @@ namespace csvsqldb
                 ident->accept(*this);
             }
         }
-        
+
         virtual void visit(ASTHavingNode& node)
         {
         }
-        
+
         virtual void visit(ASTOrderByNode& node)
         {
             _ss << " ORDER BY ";
@@ -807,7 +807,7 @@ namespace csvsqldb
                 }
             }
         }
-        
+
         virtual void visit(ASTLimitNode& node)
         {
             _ss << " LIMIT ";
@@ -817,7 +817,7 @@ namespace csvsqldb
                 node._offset->accept(*this);
             }
         }
-        
+
         virtual void visit(ASTBinaryNode& node)
         {
             _ss << "(";
@@ -832,7 +832,7 @@ namespace csvsqldb
                 }
             }
         }
-        
+
         virtual void visit(ASTUnaryNode& node)
         {
             if(node._op == OP_CAST) {
@@ -858,7 +858,7 @@ namespace csvsqldb
                 node._rhs->accept(*this);
             }
         }
-        
+
         virtual void visit(ASTValueNode& node)
         {
             if(node._value._type == STRING) {
@@ -869,13 +869,13 @@ namespace csvsqldb
                 _ss << "'";
             }
         }
-        
+
         virtual void visit(ASTLikeNode& node)
         {
             node._lhs->accept(*this);
             _ss << "'" << node._like << "'";
         }
-        
+
         virtual void visit(ASTBetweenNode& node)
         {
             node._lhs->accept(*this);
@@ -884,7 +884,7 @@ namespace csvsqldb
             _ss << " and ";
             node._to->accept(*this);
         }
-        
+
         virtual void visit(ASTInNode& node)
         {
             node._lhs->accept(*this);
@@ -900,7 +900,7 @@ namespace csvsqldb
             }
             _ss << ")";
         }
-        
+
         virtual void visit(ASTFunctionNode& node)
         {
             _ss << node._function->getName() << "(";
@@ -915,7 +915,7 @@ namespace csvsqldb
             }
             _ss << ")";
         }
-        
+
         virtual void visit(ASTAggregateFunctionNode& node)
         {
             _ss << aggregateFunctionToString(node._aggregateFunction) << "(";
@@ -923,7 +923,7 @@ namespace csvsqldb
             if(node._aggregateFunction == COUNT_STAR) {
                 _ss << "*";
             }
-            _ss << (node._quantifier == DISTINCT? "DISTINCT ":"");
+            _ss << (node._quantifier == DISTINCT ? "DISTINCT " : "");
             for(const auto& param : node._parameters) {
                 if(!first) {
                     _ss << ",";
@@ -940,7 +940,7 @@ namespace csvsqldb
                 }
             }
         }
-        
+
         virtual void visit(ASTIdentifier& node)
         {
             _ss << node.getQualifiedQuotedIdentifier();
@@ -948,11 +948,10 @@ namespace csvsqldb
                 _ss << " AS " << node._info->_alias;
             }
         }
-        
+
     private:
         std::stringstream _ss;
     };
-    
 }
 
 #endif

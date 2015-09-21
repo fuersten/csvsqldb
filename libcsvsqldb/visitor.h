@@ -44,7 +44,7 @@
 
 namespace csvsqldb
 {
-    
+
     class CSVSQLDB_EXPORT ASTInstructionStackVisitor : public ASTExpressionNodeVisitor
     {
     public:
@@ -52,8 +52,9 @@ namespace csvsqldb
         : _sm(sm)
         , _mapping(mapping)
         , _index(0)
-        {}
-        
+        {
+        }
+
         virtual void visit(ASTBinaryNode& node)
         {
             if(node._op == OP_CONCAT) {
@@ -126,11 +127,11 @@ namespace csvsqldb
                 CSVSQLDB_THROW(StackMachineException, "not implemented");
             }
         }
-        
+
         virtual void visit(ASTUnaryNode& node)
         {
             node._rhs->accept(*this);
-            
+
             if(node._op == OP_NOT) {
                 _sm.addInstruction(StackMachine::Instruction(StackMachine::NOT));
             } else if(node._op == OP_PLUS) {
@@ -141,18 +142,18 @@ namespace csvsqldb
                 _sm.addInstruction(StackMachine::Instruction(StackMachine::CAST, Variant(node._castType)));
             }
         }
-        
+
         virtual void visit(ASTValueNode& node)
         {
             _sm.addInstruction(StackMachine::Instruction(StackMachine::PUSH, typedValueToVariant(node._value)));
         }
-        
+
         virtual void visit(ASTLikeNode& node)
         {
             node._lhs->accept(*this);
             _sm.addInstruction(StackMachine::Instruction(StackMachine::LIKE, new csvsqldb::RegExp(node._like.c_str())));
         }
-        
+
         virtual void visit(ASTBetweenNode& node)
         {
             node._to->accept(*this);
@@ -160,16 +161,16 @@ namespace csvsqldb
             node._lhs->accept(*this);
             _sm.addInstruction(StackMachine::Instruction(StackMachine::BETWEEN));
         }
-        
+
         virtual void visit(ASTInNode& node)
         {
-            for (auto i = node._expressions.rbegin(); i != node._expressions.rend(); ++i) {
+            for(auto i = node._expressions.rbegin(); i != node._expressions.rend(); ++i) {
                 (*i)->accept(*this);
             }
             node._lhs->accept(*this);
             _sm.addInstruction(StackMachine::Instruction(StackMachine::IN, Variant(node._expressions.size())));
         }
-        
+
         virtual void visit(ASTFunctionNode& node)
         {
             for(Parameters::reverse_iterator iter = node._parameters.rbegin(); iter != node._parameters.rend(); ++iter) {
@@ -177,27 +178,27 @@ namespace csvsqldb
             }
             _sm.addInstruction(StackMachine::Instruction(StackMachine::FUNC, Variant(node._function->getName())));
         }
-        
+
         virtual void visit(ASTAggregateFunctionNode& node)
         {
             // TODO LCF: add these expressions to a new collection and create a store variable for them
             CSVSQLDB_THROW(StackMachineException, "aggregation functions in expressions not allowed");
         }
-        
+
         virtual void visit(ASTIdentifier& node)
         {
             size_t index = getMapping(node.getQualifiedIdentifier());
             _sm.addInstruction(StackMachine::Instruction(StackMachine::PUSHVAR, Variant(index)));
         }
-        
+
     protected:
         size_t getMapping(const std::string& variable)
         {
-            StackMachine::VariableMapping::iterator iter = std::find_if(_mapping.begin(), _mapping.end(), [&](const StackMachine::VariableIndex& var)
-                                                                        {
-                                                                            return var.first == variable;
-                                                                        });
-            
+            StackMachine::VariableMapping::iterator iter =
+            std::find_if(_mapping.begin(),
+                         _mapping.end(),
+                         [&](const StackMachine::VariableIndex& var) { return var.first == variable; });
+
             if(iter == _mapping.end()) {
                 _mapping.push_back(std::make_pair(variable, _index));
                 return _index++;
@@ -205,70 +206,70 @@ namespace csvsqldb
                 return iter->second;
             }
         }
-        
+
         StackMachine& _sm;
         StackMachine::VariableMapping& _mapping;
         size_t _index;
     };
-    
+
     class ASTExpressionVariableVisitor : public ASTExpressionNodeVisitor
     {
     public:
         ASTExpressionVariableVisitor(IdentifierSet& variables)
         : _variables(variables)
-        {}
-        
+        {
+        }
+
         virtual void visit(ASTBinaryNode& node)
         {
             node._rhs->accept(*this);
             node._lhs->accept(*this);
         }
-        
+
         virtual void visit(ASTUnaryNode& node)
         {
             node._rhs->accept(*this);
         }
-        
+
         virtual void visit(ASTValueNode& node)
         {
         }
-        
+
         virtual void visit(ASTLikeNode& node)
         {
             node._lhs->accept(*this);
         }
-        
+
         virtual void visit(ASTBetweenNode& node)
         {
             node._to->accept(*this);
             node._from->accept(*this);
             node._lhs->accept(*this);
         }
-        
+
         virtual void visit(ASTInNode& node)
         {
         }
-        
+
         virtual void visit(ASTFunctionNode& node)
         {
             for(Parameters::reverse_iterator iter = node._parameters.rbegin(); iter != node._parameters.rend(); ++iter) {
                 (*iter)._exp->accept(*this);
             }
         }
-        
+
         virtual void visit(ASTAggregateFunctionNode& node)
         {
         }
-        
+
         virtual void visit(ASTIdentifier& node)
         {
             _variables.insert(node);
         }
-        
+
     protected:
         IdentifierSet& _variables;
     };
-    
 }
 
 #endif

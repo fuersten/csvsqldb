@@ -36,7 +36,7 @@
 
 namespace csvsqldb
 {
-    
+
     Duration::Duration()
     : _years(0)
     , _months(0)
@@ -47,7 +47,7 @@ namespace csvsqldb
     , _sign(Duration::Positive)
     {
     }
-    
+
     Duration::Duration(uint16_t years, uint16_t months, uint16_t days, Duration::enSign sign)
     : _years(years)
     , _months(months)
@@ -58,7 +58,7 @@ namespace csvsqldb
     , _sign(sign)
     {
     }
-    
+
     Duration::Duration(uint16_t years, uint16_t months, uint16_t days, uint16_t hours, uint16_t minutes, uint16_t seconds, Duration::enSign sign)
     : _years(years)
     , _months(months)
@@ -69,7 +69,7 @@ namespace csvsqldb
     , _sign(sign)
     {
     }
-    
+
     Duration::Duration(const Duration& duration)
     : _years(duration._years)
     , _months(duration._months)
@@ -80,7 +80,7 @@ namespace csvsqldb
     , _sign(duration._sign)
     {
     }
-    
+
     Duration& Duration::operator=(const Duration& duration)
     {
         _years = duration._years;
@@ -90,32 +90,26 @@ namespace csvsqldb
         _minutes = duration._minutes;
         _seconds = duration._seconds;
         _sign = duration._sign;
-        
+
         return *this;
     }
-    
+
     bool Duration::operator==(const Duration& duration) const
     {
-        return (_years == duration._years &&
-                _months == duration._months &&
-                _days == duration._days &&
-                _hours == duration._hours &&
-                _minutes == duration._minutes &&
-                _seconds == duration._seconds &&
-                _sign == duration._sign);
+        return (_years == duration._years && _months == duration._months && _days == duration._days && _hours == duration._hours
+                && _minutes == duration._minutes
+                && _seconds == duration._seconds
+                && _sign == duration._sign);
     }
-    
+
     bool Duration::operator!=(const Duration& duration) const
     {
-        return (_years != duration._years ||
-                _months != duration._months ||
-                _days != duration._days ||
-                _hours != duration._hours ||
-                _minutes != duration._minutes ||
-                _seconds != duration._seconds ||
-                _sign != duration._sign);
+        return (_years != duration._years || _months != duration._months || _days != duration._days || _hours != duration._hours
+                || _minutes != duration._minutes
+                || _seconds != duration._seconds
+                || _sign != duration._sign);
     }
-    
+
     bool Duration::operator>(const Duration& duration) const
     {
         if(_sign < duration._sign)
@@ -144,10 +138,10 @@ namespace csvsqldb
             return true;
         else if(_seconds < duration._seconds)
             return false;
-        
+
         return false;
     }
-    
+
     bool Duration::operator<(const Duration& duration) const
     {
         if(_sign > duration._sign)
@@ -176,10 +170,10 @@ namespace csvsqldb
             return true;
         else if(_seconds > duration._seconds)
             return false;
-        
+
         return false;
     }
-    
+
     void Duration::ymdhmss(uint16_t years, uint16_t months, uint16_t days, uint16_t hours, uint16_t minutes, uint16_t seconds, Duration::enSign sign)
     {
         _years = years;
@@ -190,123 +184,123 @@ namespace csvsqldb
         _seconds = seconds;
         _sign = sign;
     }
-    
+
     void Duration::years(uint16_t years)
     {
         _years = years;
     }
-    
+
     void Duration::months(uint16_t months)
     {
         _months = months;
     }
-    
+
     void Duration::days(uint16_t days)
     {
         _days = days;
     }
-    
+
     void Duration::hours(uint16_t hours)
     {
         _hours = hours;
     }
-    
+
     void Duration::minutes(uint16_t minutes)
     {
         _minutes = minutes;
     }
-    
+
     void Duration::seconds(uint16_t seconds)
     {
         _seconds = seconds;
     }
-    
+
     void Duration::sign(Duration::enSign sign)
     {
         _sign = sign;
     }
-    
+
     uint16_t Duration::years() const
     {
         return _years;
     }
-    
+
     uint16_t Duration::months() const
     {
         return _months;
     }
-    
+
     uint16_t Duration::days() const
     {
         return _days;
     }
-    
+
     uint16_t Duration::hours() const
     {
         return _hours;
     }
-    
+
     uint16_t Duration::minutes() const
     {
         return _minutes;
     }
-    
+
     uint16_t Duration::seconds() const
     {
         return _seconds;
     }
-    
+
     Duration::enSign Duration::sign() const
     {
         return _sign;
     }
-    
+
     int16_t Duration::yearsWithSign() const
     {
         return static_cast<int16_t>(_sign == Duration::Positive ? _years : -_years);
     }
-    
+
     int16_t Duration::monthsWithSign() const
     {
         return static_cast<int16_t>(_sign == Duration::Positive ? _months : -_months);
     }
-    
+
     int16_t Duration::daysWithSign() const
     {
         return static_cast<int16_t>(_sign == Duration::Positive ? _days : -_days);
     }
-    
+
     int16_t Duration::hoursWithSign() const
     {
         return static_cast<int16_t>(_sign == Duration::Positive ? _hours : -_hours);
     }
-    
+
     int16_t Duration::minutesWithSign() const
     {
         return static_cast<int16_t>(_sign == Duration::Positive ? _minutes : -_minutes);
     }
-    
+
     int16_t Duration::secondsWithSign() const
     {
         return static_cast<int16_t>(_sign == Duration::Positive ? _seconds : -_seconds);
     }
-    
+
     Duration& Duration::add(const Duration& duration)
     {
         if(_sign != duration._sign) {
             CSVSQLDB_THROW(DurationException, "The addition of durations with different signs is not allowed");
         }
-        
+
         _years += duration._years;
         _months += duration._months;
         _days += duration._days;
         _hours += duration._hours;
         _minutes += duration._minutes;
         _seconds += duration._seconds;
-        
+
         return *this;
     }
-    
+
     std::string Duration::format() const
     {
         std::stringstream ss;
@@ -332,7 +326,7 @@ namespace csvsqldb
         if(_seconds) {
             ss << _seconds << "S";
         }
-        
+
         return ss.str();
     }
 }

@@ -34,114 +34,106 @@
 namespace csvsqldb
 {
 
-	typedef std::map<int, SignalHandler::SignalEventHandlerList> SignalToHandlerMap;
+    typedef std::map<int, SignalHandler::SignalEventHandlerList> SignalToHandlerMap;
 
-	BOOL WINAPI onWindowsSignal(DWORD dwCtrlType)
-	{
-		int signum = 0;
+    BOOL WINAPI onWindowsSignal(DWORD dwCtrlType)
+    {
+        int signum = 0;
 
-		switch (dwCtrlType)
-		{
-		case CTRL_C_EVENT:
-			signum = SIGINT;
-			break;
-		case CTRL_BREAK_EVENT:
-			signum = SIGINT;
-			break;
-		case CTRL_CLOSE_EVENT:
-			signum = SIGTERM;
-			break;
-		case CTRL_LOGOFF_EVENT:
-			signum = SIGTERM;
-			break;
-		case CTRL_SHUTDOWN_EVENT:
-			signum = SIGTERM;
-			break;
-		}
+        switch(dwCtrlType) {
+            case CTRL_C_EVENT:
+                signum = SIGINT;
+                break;
+            case CTRL_BREAK_EVENT:
+                signum = SIGINT;
+                break;
+            case CTRL_CLOSE_EVENT:
+                signum = SIGTERM;
+                break;
+            case CTRL_LOGOFF_EVENT:
+                signum = SIGTERM;
+                break;
+            case CTRL_SHUTDOWN_EVENT:
+                signum = SIGTERM;
+                break;
+        }
 
-		SignalHandler::SignalEventHandlerList list;
-		bool callNextHandler = true;
-		for (SignalHandler::SignalEventHandlerList::iterator iter = list.begin(); callNextHandler && iter != list.end(); ++iter)
-		{
-			callNextHandler = (*iter)->onSignal(signum) >= 0 ? true : false;
-		}
+        SignalHandler::SignalEventHandlerList list;
+        bool callNextHandler = true;
+        for(SignalHandler::SignalEventHandlerList::iterator iter = list.begin(); callNextHandler && iter != list.end(); ++iter) {
+            callNextHandler = (*iter)->onSignal(signum) >= 0 ? true : false;
+        }
 
-		return TRUE;
-	}
+        return TRUE;
+    }
 
-	static std::mutex signal_mutex;
+    static std::mutex signal_mutex;
 
-	struct SignalHandler::Private
-	{
-		SignalToHandlerMap _handlerMap;
-		volatile bool _stopSignalHandling;
-	};
+    struct SignalHandler::Private {
+        SignalToHandlerMap _handlerMap;
+        volatile bool _stopSignalHandling;
+    };
 
 
-	SignalHandler::SignalHandler()
-		: _p(new Private())
-	{
-		_p->_stopSignalHandling = false;
-		SetConsoleCtrlHandler(onWindowsSignal, TRUE);
-	}
+    SignalHandler::SignalHandler()
+    : _p(new Private())
+    {
+        _p->_stopSignalHandling = false;
+        SetConsoleCtrlHandler(onWindowsSignal, TRUE);
+    }
 
-	SignalHandler::~SignalHandler()
-	{
-	}
+    SignalHandler::~SignalHandler()
+    {
+    }
 
-	void SignalHandler::addHandler(int signum, SignalEventHandler* handler)
-	{
-		std::unique_lock<std::mutex> guard(signal_mutex);
+    void SignalHandler::addHandler(int signum, SignalEventHandler* handler)
+    {
+        std::unique_lock<std::mutex> guard(signal_mutex);
 
-		SignalToHandlerMap::iterator iter = _p->_handlerMap.find(signum);
-		if (iter == _p->_handlerMap.end())
-		{
-			SignalEventHandlerList list;
-			list.push_back(handler);
-			_p->_handlerMap.insert(std::make_pair(signum, list));
-		}
-		else
-		{
-			iter->second.push_back(handler);
-		}
-	}
+        SignalToHandlerMap::iterator iter = _p->_handlerMap.find(signum);
+        if(iter == _p->_handlerMap.end()) {
+            SignalEventHandlerList list;
+            list.push_back(handler);
+            _p->_handlerMap.insert(std::make_pair(signum, list));
+        } else {
+            iter->second.push_back(handler);
+        }
+    }
 
-	void SignalHandler::removeHandler(int signum, SignalEventHandler* handler)
-	{
-		std::unique_lock<std::mutex> guard(signal_mutex);
+    void SignalHandler::removeHandler(int signum, SignalEventHandler* handler)
+    {
+        std::unique_lock<std::mutex> guard(signal_mutex);
 
-		SignalToHandlerMap::iterator iter = _p->_handlerMap.find(signum);
-		if (iter != _p->_handlerMap.end())
-		{
-			SignalEventHandlerList& list = iter->second;
-			std::remove(list.begin(), list.end(), handler);
-		}
-	}
+        SignalToHandlerMap::iterator iter = _p->_handlerMap.find(signum);
+        if(iter != _p->_handlerMap.end()) {
+            SignalEventHandlerList& list = iter->second;
+            std::remove(list.begin(), list.end(), handler);
+        }
+    }
 
-	SignalHandler::SignalEventHandlerList SignalHandler::handler(int signum) const
-	{
-		std::unique_lock<std::mutex> guard(signal_mutex);
+    SignalHandler::SignalEventHandlerList SignalHandler::handler(int signum) const
+    {
+        std::unique_lock<std::mutex> guard(signal_mutex);
 
-		SignalToHandlerMap::iterator iter = _p->_handlerMap.find(signum);
-		if (iter != _p->_handlerMap.end())
-		{
-			return iter->second;
-		}
+        SignalToHandlerMap::iterator iter = _p->_handlerMap.find(signum);
+        if(iter != _p->_handlerMap.end()) {
+            return iter->second;
+        }
 
-		return SignalHandler::SignalEventHandlerList();
-	}
+        return SignalHandler::SignalEventHandlerList();
+    }
 
-	bool SignalHandler::isStopSignalHandling() const
-	{
-		std::unique_lock<std::mutex> guard(signal_mutex);
+    bool SignalHandler::isStopSignalHandling() const
+    {
+        std::unique_lock<std::mutex> guard(signal_mutex);
 
-		return _p->_stopSignalHandling;
-	}
+        return _p->_stopSignalHandling;
+    }
 
-	void SignalHandler::stopSignalHandling()
-	{
-		std::unique_lock<std::mutex> guard(signal_mutex);
+    void SignalHandler::stopSignalHandling()
+    {
+        std::unique_lock<std::mutex> guard(signal_mutex);
 
-		_p->_stopSignalHandling = true;
-	}
+        _p->_stopSignalHandling = true;
+    }
 }

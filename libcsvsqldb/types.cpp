@@ -39,14 +39,14 @@
 
 namespace csvsqldb
 {
-    
+
     CSVSQLDB_IMPLEMENT_EXCEPTION(SqlException, Exception);
     CSVSQLDB_IMPLEMENT_EXCEPTION(SqlParserException, SqlException);
-    
-    
+
+
     std::string orderToString(eOrder order)
     {
-        switch (order) {
+        switch(order) {
             case ASC:
                 return "ASC";
             case DESC:
@@ -54,11 +54,10 @@ namespace csvsqldb
         }
         throw std::runtime_error("just to make VC2013 happy");
     }
-    
+
     std::string typeToString(eType type)
     {
-        switch(type)
-        {
+        switch(type) {
             case NONE:
                 return "none";
             case BOOLEAN:
@@ -78,7 +77,7 @@ namespace csvsqldb
         }
         throw std::runtime_error("just to make VC2013 happy");
     }
-    
+
     eType stringToType(const std::string& s)
     {
         if(s == "BOOLEAN") {
@@ -91,7 +90,7 @@ namespace csvsqldb
             return STRING;
         } else if(s == "DATE") {
             return DATE;
-        }  else if(s == "TIME") {
+        } else if(s == "TIME") {
             return TIME;
         } else if(s == "TIMESTAMP") {
             return TIMESTAMP;
@@ -99,17 +98,16 @@ namespace csvsqldb
             CSVSQLDB_THROW(SqlException, "unknown type string '" << s << "'");
         }
     }
-    
+
     std::string printType(eType type, const csvsqldb::Any& value)
     {
         std::stringstream ss;
-        switch(type)
-        {
+        switch(type) {
             case NONE:
                 ss << "NULL";
                 break;
             case BOOLEAN:
-                ss << (csvsqldb::any_cast<bool>(value)? "TRUE" : "FALSE");
+                ss << (csvsqldb::any_cast<bool>(value) ? "TRUE" : "FALSE");
                 break;
             case REAL:
                 ss << std::fixed << std::showpoint << csvsqldb::any_cast<double>(value);
@@ -132,16 +130,16 @@ namespace csvsqldb
         }
         return ss.str();
     }
-    
+
     std::string printType(const TypedValue& value)
     {
         return printType(value._type, value._value);
     }
-    
+
     TypedValue TypedValue::createValue(eType type, const std::string& value)
     {
         csvsqldb::Any any;
-        
+
         switch(type) {
             case NONE:
                 break;
@@ -169,10 +167,10 @@ namespace csvsqldb
                 any = csvsqldb::timestampFromString(value);
                 break;
         }
-        
+
         return TypedValue(type, any);
     }
-    
+
     std::string aggregateFunctionToString(eAggregateFunction aggregate)
     {
         switch(aggregate) {
@@ -193,7 +191,7 @@ namespace csvsqldb
         }
         throw std::runtime_error("just to make VC2013 happy");
     }
-    
+
     std::string naturalJoinToString(eNaturalJoinType joinType)
     {
         switch(joinType) {
@@ -208,10 +206,10 @@ namespace csvsqldb
         }
         throw std::runtime_error("just to make VC2013 happy");
     }
-    
+
     std::string operationTypeToString(eOperationType type)
     {
-        switch (type) {
+        switch(type) {
             case OP_CONCAT:
                 return "||";
             case OP_ADD:
@@ -261,5 +259,4 @@ namespace csvsqldb
         }
         throw std::runtime_error("just to make VC2013 happy");
     }
-    
 }

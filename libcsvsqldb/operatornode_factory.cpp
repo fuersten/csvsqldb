@@ -36,63 +36,79 @@
 
 namespace csvsqldb
 {
-    
-    RootOperatorNodePtr OperatorNodeFactory::createOutputRowOperatorNode(OperatorContext& context, const SymbolTablePtr& symbolTable,
-                                                                         std::ostream& stream) {
+
+    RootOperatorNodePtr
+    OperatorNodeFactory::createOutputRowOperatorNode(OperatorContext& context, const SymbolTablePtr& symbolTable, std::ostream& stream)
+    {
         return std::make_shared<OutputRowOperatorNode>(context, symbolTable, stream);
     }
-    
-    RowOperatorNodePtr OperatorNodeFactory::createLimitOperatorNode(OperatorContext& context, const SymbolTablePtr& symbolTable,
-                                                                    const ASTExprNodePtr& limit, const ASTExprNodePtr& offset) {
+
+    RowOperatorNodePtr OperatorNodeFactory::createLimitOperatorNode(OperatorContext& context,
+                                                                    const SymbolTablePtr& symbolTable,
+                                                                    const ASTExprNodePtr& limit,
+                                                                    const ASTExprNodePtr& offset)
+    {
         return std::make_shared<LimitOperatorNode>(context, symbolTable, limit, offset);
     }
-    
-    RowOperatorNodePtr OperatorNodeFactory::createSortOperatorNode(OperatorContext& context, const SymbolTablePtr& symbolTable,
-                                                                   OrderExpressions orderExpressions) {
+
+    RowOperatorNodePtr OperatorNodeFactory::createSortOperatorNode(OperatorContext& context, const SymbolTablePtr& symbolTable, OrderExpressions orderExpressions)
+    {
         return std::make_shared<SortOperatorNode>(context, symbolTable, orderExpressions);
     }
-    
-    RowOperatorNodePtr OperatorNodeFactory::createGroupingOperatorNode(OperatorContext& context, const SymbolTablePtr& symbolTable,
-                                                                       const Expressions& nodes, const Identifiers& groupByIdentifiers) {
+
+    RowOperatorNodePtr OperatorNodeFactory::createGroupingOperatorNode(OperatorContext& context,
+                                                                       const SymbolTablePtr& symbolTable,
+                                                                       const Expressions& nodes,
+                                                                       const Identifiers& groupByIdentifiers)
+    {
         return std::make_shared<GroupingOperatorNode>(context, symbolTable, nodes, groupByIdentifiers);
     }
-    
-    RowOperatorNodePtr OperatorNodeFactory::createAggregationOperatorNode(OperatorContext& context, const SymbolTablePtr& symbolTable,
-                                                                          const Expressions& nodes) {
+
+    RowOperatorNodePtr
+    OperatorNodeFactory::createAggregationOperatorNode(OperatorContext& context, const SymbolTablePtr& symbolTable, const Expressions& nodes)
+    {
         return std::make_shared<AggregationOperatorNode>(context, symbolTable, nodes);
     }
-    
-    RowOperatorNodePtr OperatorNodeFactory::createExtendedProjectionOperatorNode(OperatorContext& context, const SymbolTablePtr& symbolTable,
-                                                                                 const Expressions& nodes) {
+
+    RowOperatorNodePtr OperatorNodeFactory::createExtendedProjectionOperatorNode(OperatorContext& context,
+                                                                                 const SymbolTablePtr& symbolTable,
+                                                                                 const Expressions& nodes)
+    {
         return std::make_shared<ExtendedProjectionOperatorNode>(context, symbolTable, nodes);
     }
-    
-    RowOperatorNodePtr OperatorNodeFactory::createCrossJoinOperatorNode(OperatorContext& context, const SymbolTablePtr& symbolTable) {
+
+    RowOperatorNodePtr OperatorNodeFactory::createCrossJoinOperatorNode(OperatorContext& context, const SymbolTablePtr& symbolTable)
+    {
         return std::make_shared<CrossJoinOperatorNode>(context, symbolTable);
     }
-    
-    RowOperatorNodePtr OperatorNodeFactory::createInnerJoinOperatorNode(OperatorContext& context, const SymbolTablePtr& symbolTable,
-                                                                        const ASTExprNodePtr& exp) {
+
+    RowOperatorNodePtr
+    OperatorNodeFactory::createInnerJoinOperatorNode(OperatorContext& context, const SymbolTablePtr& symbolTable, const ASTExprNodePtr& exp)
+    {
         return std::make_shared<InnerJoinOperatorNode>(context, symbolTable, exp);
     }
-    
-    RowOperatorNodePtr OperatorNodeFactory::createInnerHashJoinOperatorNode(OperatorContext& context, const SymbolTablePtr& symbolTable,
-                                                                            const ASTExprNodePtr& exp) {
+
+    RowOperatorNodePtr OperatorNodeFactory::createInnerHashJoinOperatorNode(OperatorContext& context,
+                                                                            const SymbolTablePtr& symbolTable,
+                                                                            const ASTExprNodePtr& exp)
+    {
         return std::make_shared<InnerHashJoinOperatorNode>(context, symbolTable, exp);
     }
-    
-    RowOperatorNodePtr OperatorNodeFactory::createUnionOperatorNode(OperatorContext& context, const SymbolTablePtr& symbolTable) {
+
+    RowOperatorNodePtr OperatorNodeFactory::createUnionOperatorNode(OperatorContext& context, const SymbolTablePtr& symbolTable)
+    {
         return std::make_shared<UnionOperatorNode>(context, symbolTable);
     }
-    
-    RowOperatorNodePtr OperatorNodeFactory::createSelectOperatorNode(OperatorContext& context, const SymbolTablePtr& symbolTable,
-                                                                     const ASTExprNodePtr& exp) {
+
+    RowOperatorNodePtr
+    OperatorNodeFactory::createSelectOperatorNode(OperatorContext& context, const SymbolTablePtr& symbolTable, const ASTExprNodePtr& exp)
+    {
         return std::make_shared<SelectOperatorNode>(context, symbolTable, exp);
     }
-    
-    RowOperatorNodePtr OperatorNodeFactory::createScanOperatorNode(OperatorContext& context, const SymbolTablePtr& symbolTable,
-                                                                   const SymbolInfo& tableInfo) {
+
+    RowOperatorNodePtr
+    OperatorNodeFactory::createScanOperatorNode(OperatorContext& context, const SymbolTablePtr& symbolTable, const SymbolInfo& tableInfo)
+    {
         return std::make_shared<TableScanOperatorNode>(context, symbolTable, tableInfo);
     }
-    
 }

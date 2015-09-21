@@ -52,12 +52,12 @@ namespace csvsqldb
          * @param t The thread to join
          */
         ThreadJoinGuard(std::thread& t);
-        
+
         /**
          * Joins the thread upon destruction.
          */
         ~ThreadJoinGuard();
-        
+
     private:
         std::thread& _t;
     };

@@ -36,24 +36,26 @@
 
 #ifdef HAS_PUT_TIME
 #include <iomanip>
-namespace csvsqldb {
-using std::put_time;
-} // namespace csvsqldb
+namespace csvsqldb
+{
+    using std::put_time;
+}
 
 #else
 #include <array>
 #include <ctime>
 #include <string>
 
-namespace csvsqldb {
-template <typename CharT>
-std::string put_time(const std::tm *tmb, const CharT *fmt) {
-  std::array<char, 255> buffer;
-  ::strftime(buffer.data(), buffer.size(), fmt, tmb);
-  return buffer.data();
+namespace csvsqldb
+{
+    template <typename CharT>
+    std::string put_time(const std::tm* tmb, const CharT* fmt)
+    {
+        std::array<char, 255> buffer;
+        ::strftime(buffer.data(), buffer.size(), fmt, tmb);
+        return buffer.data();
+    }
 }
-} // namespace csvsqldb
-#endif // HAS_PUT_TIME
+#endif
 
-#endif  // csvsqldb_put_time_h
-
+#endif

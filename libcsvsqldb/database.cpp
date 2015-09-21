@@ -43,12 +43,13 @@
 
 namespace csvsqldb
 {
-    
+
     Database::Database(const fs::path& path, FileMapping mappings)
     : _path(path)
     , _mappings(mappings)
-    {}
-    
+    {
+    }
+
     void Database::setUp()
     {
         if(!fs::exists(_path)) {
@@ -71,37 +72,37 @@ namespace csvsqldb
         readTablesFromPath();
         readMappingsFromPath();
     }
-    
+
     void Database::addSystemTables()
     {
         TableData tabledata("SYSTEM_DUAL");
         tabledata.addColumn("x", BOOLEAN, false, false, false, csvsqldb::Any(), ASTExprNodePtr(), 0);
         addTable(tabledata);
     }
-    
+
     void Database::readTablesFromPath()
     {
         std::vector<fs::path> entries;
         std::copy(fs::directory_iterator(tablePath()), fs::directory_iterator(), std::back_inserter(entries));
-        
+
         for(const auto& entry : entries) {
             std::string tableEntry = entry.string();
             std::ifstream tableStream(tableEntry);
-            
+
             TableData tabledata = TableData::fromJson(tableStream);
-            
+
             if(hasTable(tabledata.name())) {
                 CSVSQLDB_THROW(SqlException, "table '" << tabledata.name() << "' already added");
             }
             addTable(tabledata);
         }
     }
-    
+
     void Database::readMappingsFromPath()
     {
         FileMapping::readFromPath(_mappings, mappingPath());
     }
-    
+
     bool Database::hasTable(const std::string& tableName) const
     {
         for(const auto& table : _tables) {
@@ -111,7 +112,7 @@ namespace csvsqldb
         }
         return false;
     }
-    
+
     const TableData& Database::getTable(const std::string& tableName) const
     {
         for(const auto& table : _tables) {
@@ -121,33 +122,33 @@ namespace csvsqldb
         }
         CSVSQLDB_THROW(csvsqldb::Exception, "table '" << tableName << "' not found");
     }
-    
+
     void Database::addTable(const TableData& table)
     {
         _tables.push_back(table);
     }
-    
+
     void Database::dropTable(const std::string& tableName)
     {
         if(tableName.substr(0, 7) == "SYSTEM_") {
             CSVSQLDB_THROW(csvsqldb::Exception, "table '" << tableName << "' is a system table. Dropping nothing");
         }
-        Tables::iterator iter = std::find_if(_tables.begin(), _tables.end(), [&](const TableData& data){ return data.name() == tableName; });
+        Tables::iterator iter =
+        std::find_if(_tables.begin(), _tables.end(), [&](const TableData& data) { return data.name() == tableName; });
         if(iter == _tables.end()) {
             CSVSQLDB_THROW(csvsqldb::Exception, "table '" << tableName << "' not found. Dropping nothing");
         }
         fs::remove(tablePath() / iter->name());
         _tables.erase(iter);
     }
-    
+
     const Mapping& Database::getMappingForTable(const std::string& tableName) const
     {
         return _mappings.getMappingForTable(tableName);
     }
-    
+
     void Database::addMapping(const FileMapping& mappings)
     {
         _mappings.mergeMapping(mappings);
     }
-    
 }

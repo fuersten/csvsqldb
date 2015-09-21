@@ -41,130 +41,135 @@
 
 namespace csvsqldb
 {
-    
+
     class AggregationFunction;
     typedef std::shared_ptr<AggregationFunction> AggregationFunctionPtr;
     typedef std::vector<AggregationFunctionPtr> AggregationFunctions;
-    
-    
+
+
     class CSVSQLDB_EXPORT AggregationFunction
     {
     public:
         virtual ~AggregationFunction()
-        {}
-        
+        {
+        }
+
         void init()
         {
             doInit();
         }
-        
+
         void step(const Variant& value)
         {
             doStep(value);
         }
-        
+
         const Variant& finalize()
         {
             return doFinalize();
         }
-        
+
         virtual bool suppress() const
         {
             return false;
         }
-        
+
         virtual std::string toString() const = 0;
-        
+
         virtual AggregationFunction* clone(BlockPtr block) const = 0;
-        
+
         static AggregationFunctionPtr create(eAggregateFunction aggrFunc, eType type);
-        
+
     protected:
         AggregationFunction()
-        {}
-        
+        {
+        }
+
     private:
         virtual void doInit() = 0;
         virtual void doStep(const Variant& value) = 0;
         virtual const Variant& doFinalize() = 0;
     };
-    
-    
+
+
     class CSVSQLDB_EXPORT CountAggregationFunction : public AggregationFunction
     {
     public:
         CountAggregationFunction()
         : _count(INT)
-        {}
-        
+        {
+        }
+
         virtual AggregationFunction* clone(BlockPtr block) const;
-        
+
         virtual std::string toString() const
         {
             return "COUNT";
         }
-        
+
     private:
         virtual void doInit();
         virtual void doStep(const Variant& value);
         virtual const Variant& doFinalize();
-        
+
         Variant _count;
     };
-    
-    
+
+
     class CSVSQLDB_EXPORT RowCountAggregationFunction : public AggregationFunction
     {
     public:
         RowCountAggregationFunction()
         : _count(0)
-        {}
-        
+        {
+        }
+
         virtual AggregationFunction* clone(BlockPtr block) const;
-        
+
         virtual std::string toString() const
         {
             return "COUNT_STAR";
         }
-        
+
     private:
         virtual void doInit();
         virtual void doStep(const Variant& value);
         virtual const Variant& doFinalize();
-        
+
         Variant _count;
     };
-    
-    
+
+
     class CSVSQLDB_EXPORT PaththroughAggregationFunction : public AggregationFunction
     {
     public:
         PaththroughAggregationFunction(bool suppress)
         : _suppress(suppress)
-        {}
-        
+        {
+        }
+
         virtual AggregationFunction* clone(BlockPtr block) const;
-        
+
         virtual std::string toString() const
         {
             return "PATH_THROUGH";
         }
-        
+
         virtual bool suppress() const
         {
             return _suppress;
         }
-        
+
     private:
         virtual void doInit();
         virtual void doStep(const Variant& value);
         virtual const Variant& doFinalize();
-        
+
         Variant _value;
         bool _suppress;
     };
-    
-    
+
+
     class CSVSQLDB_EXPORT SumAggregationFunction : public AggregationFunction
     {
     public:
@@ -175,23 +180,23 @@ namespace csvsqldb
                 CSVSQLDB_THROW(csvsqldb::Exception, "only INT and REAL as summation aggregation allowed");
             }
         }
-        
+
         virtual AggregationFunction* clone(BlockPtr block) const;
-        
+
         virtual std::string toString() const
         {
             return "SUM";
         }
-        
+
     private:
         virtual void doInit();
         virtual void doStep(const Variant& value);
         virtual const Variant& doFinalize();
-        
+
         Variant _sum;
     };
-    
-    
+
+
     class CSVSQLDB_EXPORT AvgAggregationFunction : public AggregationFunction
     {
     public:
@@ -203,24 +208,24 @@ namespace csvsqldb
                 CSVSQLDB_THROW(csvsqldb::Exception, "only INT and REAL as summation aggregation allowed");
             }
         }
-        
+
         virtual AggregationFunction* clone(BlockPtr block) const;
-        
+
         virtual std::string toString() const
         {
             return "AVG";
         }
-        
+
     private:
         virtual void doInit();
         virtual void doStep(const Variant& value);
         virtual const Variant& doFinalize();
-        
+
         Variant _count;
         Variant _sum;
     };
-    
-    
+
+
     class CSVSQLDB_EXPORT MinAggregationFunction : public AggregationFunction
     {
     public:
@@ -228,23 +233,23 @@ namespace csvsqldb
         : _value(type)
         {
         }
-        
+
         virtual AggregationFunction* clone(BlockPtr block) const;
-        
+
         virtual std::string toString() const
         {
             return "MIN";
         }
-        
+
     private:
         virtual void doInit();
         virtual void doStep(const Variant& value);
         virtual const Variant& doFinalize();
-        
+
         Variant _value;
     };
-    
-    
+
+
     class CSVSQLDB_EXPORT MaxAggregationFunction : public AggregationFunction
     {
     public:
@@ -252,23 +257,23 @@ namespace csvsqldb
         : _value(type)
         {
         }
-        
+
         virtual AggregationFunction* clone(BlockPtr block) const;
-        
+
         virtual std::string toString() const
         {
             return "MAX";
         }
-        
+
     private:
         virtual void doInit();
         virtual void doStep(const Variant& value);
         virtual const Variant& doFinalize();
-        
+
         Variant _value;
     };
-    
-    
+
+
     class CSVSQLDB_EXPORT ArbitraryAggregationFunction : public AggregationFunction
     {
     public:
@@ -276,19 +281,19 @@ namespace csvsqldb
         : _value(type)
         {
         }
-        
+
         virtual AggregationFunction* clone(BlockPtr block) const;
-        
+
         virtual std::string toString() const
         {
             return "ARBITRARY";
         }
-        
+
     private:
         virtual void doInit();
         virtual void doStep(const Variant& value);
         virtual const Variant& doFinalize();
-        
+
         Variant _value;
     };
 }

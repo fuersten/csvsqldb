@@ -43,17 +43,20 @@
 
 namespace csvsqldb
 {
-    
+
     class CSVSQLDB_EXPORT CreateTableExecutionNode : public ExecutionNode
     {
     public:
-        CreateTableExecutionNode(Database& database, const std::string& tableName, const ColumnDefinitions& columnDefinitions,
-                                 const TableConstraints& constraints, bool createIfNotExists);
-        
+        CreateTableExecutionNode(Database& database,
+                                 const std::string& tableName,
+                                 const ColumnDefinitions& columnDefinitions,
+                                 const TableConstraints& constraints,
+                                 bool createIfNotExists);
+
         virtual int64_t execute();
-        
+
         virtual void dump(std::ostream& stream) const;
-        
+
     private:
         Database& _database;
         std::string _tableName;
@@ -61,30 +64,30 @@ namespace csvsqldb
         TableConstraints _constraints;
         bool _createIfNotExists;
     };
-    
+
     class CSVSQLDB_EXPORT DropTableExecutionNode : public ExecutionNode
     {
     public:
         DropTableExecutionNode(Database& database, const std::string& tableName);
-        
+
         virtual int64_t execute();
-        
+
         virtual void dump(std::ostream& stream) const;
-        
+
     private:
         Database& _database;
         std::string _tableName;
     };
-    
+
     class CSVSQLDB_EXPORT CreateMappingExecutionNode : public ExecutionNode
     {
     public:
         CreateMappingExecutionNode(Database& database, const std::string& tableName, const FileMapping::Mappings& mappings);
-        
+
         virtual int64_t execute();
-        
+
         virtual void dump(std::ostream& stream) const;
-        
+
     private:
         Database& _database;
         std::string _tableName;

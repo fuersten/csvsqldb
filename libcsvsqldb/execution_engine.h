@@ -49,30 +49,28 @@
 
 namespace csvsqldb
 {
-    
-    struct CSVSQLDB_EXPORT ExecutionContext
-    {
+
+    struct CSVSQLDB_EXPORT ExecutionContext {
         ExecutionContext(Database& database);
-        
+
         Database& _database;
         csvsqldb::StringVector _files;
         bool _showHeaderLine;
     };
-    
-    struct CSVSQLDB_EXPORT ExecutionStatistics
-    {
+
+    struct CSVSQLDB_EXPORT ExecutionStatistics {
         csvsqldb::chrono::ProcessTimePoint _startParsing;
         csvsqldb::chrono::ProcessTimePoint _endParsing;
         csvsqldb::chrono::ProcessTimePoint _startPreprocessing;
         csvsqldb::chrono::ProcessTimePoint _endPreprocessing;
         csvsqldb::chrono::ProcessTimePoint _startExecution;
         csvsqldb::chrono::ProcessTimePoint _endExecution;
-        
+
         size_t _maxUsedBlocks;
         size_t _totalBlocks;
         size_t _maxUsedCapacity;
     };
-    
+
     template <typename OperatorNodeFactory>
     class ExecutionEngine
     {
@@ -84,47 +82,47 @@ namespace csvsqldb
         {
             initBuildInFunctions(_functions);
         }
-        
+
         int64_t execute(const std::string& sql, ExecutionStatistics& statistics, std::ostream& stream)
         {
             _parser.setInput(sql);
             return execute(statistics, stream);
         }
-        
+
         int64_t execute(ExecutionStatistics& statistics, std::ostream& stream)
         {
             OperatorContext context(_execContext._database, _functions, _blockManager, _execContext._files);
             context._showHeaderLine = _execContext._showHeaderLine;
-            
+
             statistics._startParsing = csvsqldb::chrono::ProcessTimeClock::now();
             ASTNodePtr astnode = _parser.parse();
             statistics._endParsing = csvsqldb::chrono::ProcessTimeClock::now();
-            
+
             if(!astnode) {
                 // ready
                 return -1;
             }
-            
+
             statistics._startPreprocessing = csvsqldb::chrono::ProcessTimeClock::now();
             ASTValidationVisitor validationVisitor(context._database);
             astnode->accept(validationVisitor);
-            
+
             ExecutionPlan execPlan;
             ExecutionPlanVisitor<OperatorNodeFactory> execVisitor(context, execPlan, stream);
             astnode->accept(execVisitor);
             statistics._endPreprocessing = csvsqldb::chrono::ProcessTimeClock::now();
-            
+
             statistics._startExecution = csvsqldb::chrono::ProcessTimeClock::now();
             int64_t rowCount = execPlan.execute();
             statistics._endExecution = csvsqldb::chrono::ProcessTimeClock::now();
-            
+
             statistics._maxUsedBlocks = _blockManager.getMaxUsedBlocks();
             statistics._maxUsedCapacity = (_blockManager.getMaxUsedBlocks() * _blockManager.getBlockCapacity()) / (1024 * 1024);
             statistics._totalBlocks = _blockManager.getTotalBlocks();
-            
+
             return rowCount;
         }
-        
+
     private:
         ExecutionContext _execContext;
         FunctionRegistry _functions;

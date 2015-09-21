@@ -43,9 +43,8 @@
 
 namespace csvsqldb
 {
-    
-    enum eToken
-    {
+
+    enum eToken {
         TOK_ADD,
         TOK_ADD_KEYWORD,
         TOK_ALL,
@@ -156,25 +155,25 @@ namespace csvsqldb
         TOK_WHERE,
         TOK_YEAR
     };
-    
+
     std::string tokenToString(eToken token);
-    
+
     class CSVSQLDB_EXPORT SQLLexer
     {
     public:
         SQLLexer(const std::string& input);
-        
+
         csvsqldb::lexer::Token next();
-        
+
         void setInput(const std::string& input);
-        
+
     private:
         typedef std::map<std::string, eToken> Keywords;
-        
+
         void initDefinitions();
         void initKeywords();
         void inspectToken(csvsqldb::lexer::Token& token);
-        
+
         csvsqldb::lexer::Lexer _lexer;
         Keywords _keywords;
     };

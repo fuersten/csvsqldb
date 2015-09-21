@@ -9,25 +9,25 @@
 //  Redistribution and use in source and binary forms, with or without modification, are permitted
 //  provided that the following conditions are met:
 //
-//  1. Redistributions of source code must retain the above copyright notice, this list of 
+//  1. Redistributions of source code must retain the above copyright notice, this list of
 //  conditions and the following disclaimer.
 //
-//  2. Redistributions in binary form must reproduce the above copyright notice, this list of 
-//  conditions and the following disclaimer in the documentation and/or other materials provided 
+//  2. Redistributions in binary form must reproduce the above copyright notice, this list of
+//  conditions and the following disclaimer in the documentation and/or other materials provided
 //  with the distribution.
 //
-//  3. Neither the name of the copyright holder nor the names of its contributors may be used to 
-//  endorse or promote products derived from this software without specific prior written 
+//  3. Neither the name of the copyright holder nor the names of its contributors may be used to
+//  endorse or promote products derived from this software without specific prior written
 //  permission.
 //
 //  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR
-//  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
+//  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY
 //  AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
-//  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
-//  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR 
-//  SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY 
-//  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
-//  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+//  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+//  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+//  SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+//  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+//  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
@@ -51,12 +51,12 @@ namespace csvsqldb
             addDefinition("newline", R"(\r|\n)", NEWLINE);
             addDefinition("whitespace", R"([ \t\f]+)", WHITESPACE);
         }
-        
+
         void Lexer::addDefinition(const std::string& name, const std::string& r, int32_t token)
         {
             _tokenDefinitions.push_back(TokenDefinition(name, boost::regex(r), token));
         }
-        
+
         void Lexer::setInput(const std::string& input)
         {
             _input = input;
@@ -65,12 +65,12 @@ namespace csvsqldb
             _lineCount = 1;
             _lineStart = _pos;
         }
-        
+
         Token Lexer::next()
         {
             if(_pos < _end) {
                 boost::smatch match;
-                
+
                 for(const auto& r : _tokenDefinitions) {
                     if(regex_search(_pos, _end, match, r._rx)) {
                         if(_pos == _pos + match.position()) {
@@ -84,7 +84,7 @@ namespace csvsqldb
                             }
                             token._lineCount = _lineCount;
                             token._charCount = static_cast<uint16_t>(std::distance(_lineStart, _pos)) + 1;
-                            
+
                             _pos = _pos + match.length();
 
                             if(token._token == WHITESPACE) {
@@ -95,10 +95,10 @@ namespace csvsqldb
                                 return next();
                             } else {
                                 boost::regex nl(R"(\r|\n)");
-                                
+
                                 boost::sregex_iterator it(token._value.begin(), token._value.end(), nl);
                                 boost::sregex_iterator it_end;
-                                
+
                                 while(it != it_end) {
                                     ++_lineCount;
                                     _lineStart = _pos;
@@ -118,7 +118,8 @@ namespace csvsqldb
                 return ret;
             }
             // didn't find any matching regex
-            CSVSQLDB_THROW(LexicalAnalysisException, "could not match any regex at line " << _lineCount << ":" << (std::distance(_lineStart, _pos) + 1));
+            CSVSQLDB_THROW(LexicalAnalysisException,
+                           "could not match any regex at line " << _lineCount << ":" << (std::distance(_lineStart, _pos) + 1));
         }
     }
 }

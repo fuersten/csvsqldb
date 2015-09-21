@@ -46,40 +46,56 @@ namespace fs = boost::filesystem;
 
 namespace csvsqldb
 {
-    
+
     class CSVSQLDB_EXPORT Database
     {
     public:
         typedef std::vector<TableData> Tables;
-        
+
         Database(const fs::path& path, FileMapping mappings);
-        
+
         void setUp();
-        
-        fs::path databasePath() const { return _path; }
-        fs::path tablePath() const { return _path / "tables"; }
-        fs::path functionPath() const { return _path / "functions"; }
-        fs::path mappingPath() const { return _path / "mappings"; }
-        
+
+        fs::path databasePath() const
+        {
+            return _path;
+        }
+        fs::path tablePath() const
+        {
+            return _path / "tables";
+        }
+        fs::path functionPath() const
+        {
+            return _path / "functions";
+        }
+        fs::path mappingPath() const
+        {
+            return _path / "mappings";
+        }
+
         bool hasTable(const std::string& tableName) const;
         const TableData& getTable(const std::string& tableName) const;
-        
+
         void addTable(const TableData& table);
         void dropTable(const std::string& tableName);
-        
+
         const Mapping& getMappingForTable(const std::string& tableName) const;
         void addMapping(const FileMapping& mappings);
-        
-        void getTables(Tables& tables) const { tables = _tables; }
-        void getMappings(csvsqldb::StringVector& mappings) const {
+
+        void getTables(Tables& tables) const
+        {
+            tables = _tables;
+        }
+        void getMappings(csvsqldb::StringVector& mappings) const
+        {
             mappings = _mappings.asStringVector();
         }
-        
+
     private:
         void addSystemTables();
         void readTablesFromPath();
         void readMappingsFromPath();
-        
+
         fs::path _path;
         Tables _tables;
         FileMapping _mappings;

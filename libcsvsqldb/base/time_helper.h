@@ -51,42 +51,42 @@ namespace csvsqldb
      * @return The current timestamp
      */
     CSVSQLDB_EXPORT Timepoint now();
-    
+
     /**
      * Converts the given timestamp to a GMT string representation.
      * @param timestamp The timestamp to convert
      * @return The converted timestamp as GMT string
      */
     CSVSQLDB_EXPORT std::string timestampToGMTString(const Timepoint& timestamp);
-    
+
     /**
      * Converts the given timestamp to a local string representation.
      * @param timestamp The timestamp to convert
      * @return The converted timestamp as local string
      */
     CSVSQLDB_EXPORT std::string timestampToLocalString(const Timepoint& timestamp);
-    
+
     /**
      * Converts the given GMT string representation into a timestamp
      * @param time The GMT time string to convert
      * @return The converted timestamp
      */
     CSVSQLDB_EXPORT Timepoint stringToTimestamp(const std::string& time);
-    
+
     /**
      * Converts a string into a Date representation. The date string has to be in an iso format: YYYY-mm-dd.
      * @param isodate The string in iso foramt YYYY-mm-dd to convert
      * @return The converted date
      */
     CSVSQLDB_EXPORT Date dateFromString(const std::string& isodate);
-    
+
     /**
      * Converts a string into a Time representation. The time string has to be in an iso format: HH:MM:SS.
      * @param isotime The string in iso foramt HH:MM:SS to convert
      * @return The converted time
      */
     CSVSQLDB_EXPORT Time timeFromString(const std::string& isotime);
-    
+
     /**
      * Converts a string into a Timestamp representation. The timestamp string has to be in an iso format: YYYY-mm-ddTHH:MM:SS.
      * @param isotimestamp The string in iso foramt YYYY-mm-ddTHH:MM:SS to convert

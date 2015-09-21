@@ -9,25 +9,25 @@
 //  Redistribution and use in source and binary forms, with or without modification, are permitted
 //  provided that the following conditions are met:
 //
-//  1. Redistributions of source code must retain the above copyright notice, this list of 
+//  1. Redistributions of source code must retain the above copyright notice, this list of
 //  conditions and the following disclaimer.
 //
-//  2. Redistributions in binary form must reproduce the above copyright notice, this list of 
-//  conditions and the following disclaimer in the documentation and/or other materials provided 
+//  2. Redistributions in binary form must reproduce the above copyright notice, this list of
+//  conditions and the following disclaimer in the documentation and/or other materials provided
 //  with the distribution.
 //
-//  3. Neither the name of the copyright holder nor the names of its contributors may be used to 
-//  endorse or promote products derived from this software without specific prior written 
+//  3. Neither the name of the copyright holder nor the names of its contributors may be used to
+//  endorse or promote products derived from this software without specific prior written
 //  permission.
 //
 //  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR
-//  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
+//  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY
 //  AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
-//  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
-//  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR 
-//  SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY 
-//  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
-//  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+//  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+//  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+//  SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+//  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+//  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
@@ -46,7 +46,7 @@ namespace csvsqldb
             }
             return _objects;
         }
-        
+
         const JsonObject::ObjectArray& JsonObject::getArray() const
         {
             if(_type != Array) {
@@ -54,15 +54,27 @@ namespace csvsqldb
             }
             return _array;
         }
-        
-        double JsonObject::getAsDouble() const { return csvsqldb::any_cast<double>(_value); }
-        
-        long JsonObject::getAsLong() const { return static_cast<long>(csvsqldb::any_cast<double>(_value)); }
-        
-        std::string JsonObject::getAsString() const { return csvsqldb::any_cast<std::string>(_value); }
-        
-        bool JsonObject::getAsBool() const { return csvsqldb::any_cast<bool>(_value); }
-        
+
+        double JsonObject::getAsDouble() const
+        {
+            return csvsqldb::any_cast<double>(_value);
+        }
+
+        long JsonObject::getAsLong() const
+        {
+            return static_cast<long>(csvsqldb::any_cast<double>(_value));
+        }
+
+        std::string JsonObject::getAsString() const
+        {
+            return csvsqldb::any_cast<std::string>(_value);
+        }
+
+        bool JsonObject::getAsBool() const
+        {
+            return csvsqldb::any_cast<bool>(_value);
+        }
+
         const JsonObject& JsonObject::operator[](const std::string& name) const
         {
             if(_type != Object) {
@@ -74,28 +86,28 @@ namespace csvsqldb
             }
             CSVSQLDB_THROW(csvsqldb::JsonException, "object with name '" << name << "' not found");
         }
-        
+
         JsonObjectCallback::JsonObjectCallback()
         {
         }
-        
+
         const JsonObject& JsonObjectCallback::getObject() const
         {
             return _object;
         }
-        
+
         void JsonObjectCallback::startObject()
         {
             JsonObject obj;
             obj._type = JsonObject::Object;
             _objectStack.push(obj);
         }
-        
+
         void JsonObjectCallback::key(const std::string& key)
         {
             _keyStack.push(key);
         }
-        
+
         void JsonObjectCallback::endObject()
         {
             JsonObject obj = _objectStack.top();
@@ -111,14 +123,14 @@ namespace csvsqldb
                 _objectStack.top()._array.push_back(obj);
             }
         }
-        
+
         void JsonObjectCallback::startArray()
         {
             JsonObject obj;
             obj._type = JsonObject::Array;
             _objectStack.push(obj);
         }
-        
+
         void JsonObjectCallback::endArray()
         {
             JsonObject obj = _objectStack.top();
@@ -128,7 +140,7 @@ namespace csvsqldb
                 _keyStack.pop();
             }
         }
-        
+
         void JsonObjectCallback::numberValue(double val)
         {
             if(_objectStack.top()._type == JsonObject::Object) {
@@ -145,7 +157,7 @@ namespace csvsqldb
                 _objectStack.top()._value = val;
             }
         }
-        
+
         void JsonObjectCallback::stringValue(const std::string& val)
         {
             if(_objectStack.top()._type == JsonObject::Object) {
@@ -162,7 +174,7 @@ namespace csvsqldb
                 _objectStack.top()._value = val;
             }
         }
-        
+
         void JsonObjectCallback::booleanValue(bool val)
         {
             if(_objectStack.top()._type == JsonObject::Object) {
@@ -179,7 +191,7 @@ namespace csvsqldb
                 _objectStack.top()._value = val;
             }
         }
-        
+
         void JsonObjectCallback::nullValue()
         {
             if(_objectStack.top()._type == JsonObject::Object) {

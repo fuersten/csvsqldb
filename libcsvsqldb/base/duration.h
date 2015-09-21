@@ -41,30 +41,26 @@
 
 namespace csvsqldb
 {
-    
+
     /** This class represents a duration for time calculations following the ISO8601 standard.
      */
     class CSVSQLDB_EXPORT Duration
     {
     public:
-        enum enSign
-        {
-            Positive = 1,
-            Negative = 2
-        };
-        
+        enum enSign { Positive = 1, Negative = 2 };
+
         Duration();
         Duration(uint16_t years, uint16_t months, uint16_t days, Duration::enSign sign = Positive);
         Duration(uint16_t years, uint16_t months, uint16_t days, uint16_t hours, uint16_t minutes, uint16_t seconds, Duration::enSign sign = Positive);
         Duration(const Duration& duration);
-        
+
         Duration& operator=(const Duration& duration);
-        
+
         bool operator==(const Duration& duration) const;
         bool operator!=(const Duration& duration) const;
         bool operator>(const Duration& duration) const;
         bool operator<(const Duration& duration) const;
-        
+
         void ymdhmss(uint16_t years, uint16_t months, uint16_t days, uint16_t hours, uint16_t minutes, uint16_t seconds, Duration::enSign sign);
         void years(uint16_t years);
         void months(uint16_t months);
@@ -73,7 +69,7 @@ namespace csvsqldb
         void minutes(uint16_t minutes);
         void seconds(uint16_t seconds);
         void sign(Duration::enSign sign);
-        
+
         uint16_t years() const;
         uint16_t months() const;
         uint16_t days() const;
@@ -81,14 +77,14 @@ namespace csvsqldb
         uint16_t minutes() const;
         uint16_t seconds() const;
         Duration::enSign sign() const;
-        
+
         int16_t yearsWithSign() const;
         int16_t monthsWithSign() const;
         int16_t daysWithSign() const;
         int16_t hoursWithSign() const;
         int16_t minutesWithSign() const;
         int16_t secondsWithSign() const;
-        
+
         /** Adds two Duration objects.
          *  This method throws a DurationException if two Duration objects with different
          *  signs shall be added.
@@ -97,12 +93,12 @@ namespace csvsqldb
          *  @return The modified duration object
          */
         Duration& add(const Duration& duration);
-        
+
         /** Formats the duration as specified by ISO8601.
          *  @return The string representation of the duration
          */
         std::string format() const;
-        
+
     protected:
         uint16_t _years;
         uint16_t _months;
@@ -112,7 +108,6 @@ namespace csvsqldb
         uint16_t _seconds;
         Duration::enSign _sign;
     };
-    
 }
 
 #endif

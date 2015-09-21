@@ -44,28 +44,28 @@
 
 namespace csvsqldb
 {
-    
+
     class CSVSQLDB_EXPORT ASTExpressionVisitor : public ASTExpressionNodeVisitor
     {
     public:
         ASTExpressionVisitor()
-        {}
-        
+        {
+        }
+
         void reset()
         {
             _ss.str("");
             _ss.clear();
         }
-        
+
         std::string toString() const
         {
             return _ss.str();
         }
-        
+
         void printOp(eOperationType op)
         {
-            switch(op)
-            {
+            switch(op) {
                 case OP_CAST:
                 case OP_LIKE:
                 case OP_BETWEEN:
@@ -75,7 +75,7 @@ namespace csvsqldb
                     _ss << " " << operationTypeToString(op) << " ";
             }
         }
-        
+
         virtual void visit(ASTBinaryNode& node)
         {
             _ss << "(";
@@ -84,19 +84,19 @@ namespace csvsqldb
             node._rhs->accept(*this);
             _ss << ")";
         }
-        
+
         virtual void visit(ASTUnaryNode& node)
         {
             if(node._op == OP_CAST) {
                 _ss << "CAST(";
                 node._rhs->accept(*this);
-                _ss<< " AS " << typeToString(node._castType) << ")";
+                _ss << " AS " << typeToString(node._castType) << ")";
             } else {
                 printOp(node._op);
                 node._rhs->accept(*this);
             }
         }
-        
+
         virtual void visit(ASTValueNode& node)
         {
             if(node._value._type == STRING) {
@@ -107,13 +107,13 @@ namespace csvsqldb
                 _ss << "'";
             }
         }
-        
+
         virtual void visit(ASTLikeNode& node)
         {
             node._lhs->accept(*this);
             _ss << "'" << node._like << "'";
         }
-        
+
         virtual void visit(ASTBetweenNode& node)
         {
             node._lhs->accept(*this);
@@ -122,7 +122,7 @@ namespace csvsqldb
             _ss << " and ";
             node._to->accept(*this);
         }
-        
+
         virtual void visit(ASTInNode& node)
         {
             node._lhs->accept(*this);
@@ -138,7 +138,7 @@ namespace csvsqldb
             }
             _ss << ")";
         }
-        
+
         virtual void visit(ASTFunctionNode& node)
         {
             _ss << node._function->getName() << "(";
@@ -153,7 +153,7 @@ namespace csvsqldb
             }
             _ss << ")";
         }
-        
+
         virtual void visit(ASTAggregateFunctionNode& node)
         {
             _ss << aggregateFunctionToString(node._aggregateFunction) << "(";
@@ -174,16 +174,15 @@ namespace csvsqldb
             }
             _ss << ")";
         }
-        
+
         virtual void visit(ASTIdentifier& node)
         {
             _ss << node.getQualifiedIdentifier();
         }
-        
+
     protected:
         std::stringstream _ss;
     };
-    
 }
 
 #endif

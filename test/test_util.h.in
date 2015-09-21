@@ -11,4 +11,3 @@
 #define CSVSQLDB_TEST_PATH "${CMAKE_CURRENT_SOURCE_DIR}"
 
 #endif
-

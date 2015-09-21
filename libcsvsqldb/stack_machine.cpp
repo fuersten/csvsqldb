@@ -41,33 +41,34 @@
 
 namespace csvsqldb
 {
-    
+
     CSVSQLDB_IMPLEMENT_EXCEPTION(StackMachineException, csvsqldb::Exception);
-    
-    
+
+
     VariableStore::VariableStore()
-    {}
-    
+    {
+    }
+
     const Variant& VariableStore::operator[](size_t index) const
     {
         return _variables[index];
     }
-    
+
     void VariableStore::addVariable(size_t index, const Variant& value)
     {
         if(_variables.capacity() < (index + 1)) {
-            size_t n = (index - _variables.size())+1;
-            _variables.resize(n+_variables.size());
+            size_t n = (index - _variables.size()) + 1;
+            _variables.resize(n + _variables.size());
         }
         _variables[index] = value;
     }
-    
-    
+
+
     void StackMachine::addInstruction(const Instruction& instruction)
     {
         _instructions.emplace(_instructions.end(), instruction);
     }
-    
+
     Variant& StackMachine::getTopValue()
     {
         if(_valueStack.empty()) {
@@ -75,7 +76,7 @@ namespace csvsqldb
         }
         return _valueStack.top();
     }
-    
+
     const Variant StackMachine::getNextValue()
     {
         if(_valueStack.empty()) {
@@ -85,14 +86,14 @@ namespace csvsqldb
         _valueStack.pop();
         return val;
     }
-    
+
     void StackMachine::reset()
     {
         while(!_valueStack.empty()) {
             _valueStack.pop();
         }
     }
-    
+
     void StackMachine::dump(std::ostream& stream) const
     {
         for(const auto& element : _instructions) {
@@ -181,28 +182,25 @@ namespace csvsqldb
             }
         }
     }
-    
+
     Variant& StackMachine::evaluate(const VariableStore& store, const FunctionRegistry& functions)
     {
         reset();
-        
+
         for(const auto& instruction : _instructions) {
             switch(instruction._opCode) {
-                case NOP:
-                {
+                case NOP: {
                     break;
                 }
-                case PUSH:
-                {
+                case PUSH: {
                     _valueStack.emplace(instruction._value);
                     break;
                 }
-                case PUSHVAR:
-                {
+                case PUSHVAR: {
                     if(instruction._value.getType() != INT) {
                         CSVSQLDB_THROW(StackMachineException, "expected an INT as variable index");
                     }
-                    
+
                     int64_t index = instruction._value.asInt();
                     _valueStack.emplace(store[static_cast<size_t>(index)]);
                     break;
@@ -222,38 +220,33 @@ namespace csvsqldb
                 case LE:
                 case AND:
                 case OR:
-                case CONCAT:
-                {
+                case CONCAT: {
                     const Variant lhs(getNextValue());
                     Variant& rhs(getTopValue());
                     rhs = binaryOperation(mapOpCodeToBinaryOperationType(instruction._opCode), lhs, rhs);
                     break;
                 }
-                case NOT:
-                {
+                case NOT: {
                     Variant& rhs(getTopValue());
                     rhs = unaryOperation(OP_NOT, BOOLEAN, rhs);
                     break;
                 }
-                case PLUS:
-                {
+                case PLUS: {
                     // this is a nop, as the value will not change, so just leave it on the stack
                     break;
                 }
-                case MINUS:
-                {
+                case MINUS: {
                     Variant& rhs = getTopValue();
                     rhs = unaryOperation(OP_MINUS, rhs.getType(), rhs);
                     break;
                 }
-                case BETWEEN:
-                {
+                case BETWEEN: {
                     const Variant lhs = getNextValue();
                     const Variant from = getNextValue();
                     Variant& to = getTopValue();
-                    
+
                     Variant result(BOOLEAN);
-                    if(not (lhs.isNull() || from.isNull() || to.isNull()) ) {
+                    if(not(lhs.isNull() || from.isNull() || to.isNull())) {
                         if(binaryOperation(OP_GE, to, from).asBool()) {
                             result = binaryOperation(OP_GE, lhs, from);
                             if(result.asBool()) {
@@ -269,12 +262,11 @@ namespace csvsqldb
                     to = result;
                     break;
                 }
-                case FUNC:
-                {
+                case FUNC: {
                     if(instruction._value.getType() != STRING) {
                         CSVSQLDB_THROW(StackMachineException, "expected a string as variable name");
                     }
-                    
+
                     std::string funcname = instruction._value.asString();
                     Function::Ptr func = functions.getFunction(funcname);
                     if(!func) {
@@ -288,7 +280,8 @@ namespace csvsqldb
                             try {
                                 v = unaryOperation(OP_CAST, param, v);
                             } catch(const std::exception&) {
-                                CSVSQLDB_THROW(StackMachineException, "calling function '" << funcname << "' with wrong parameter");
+                                CSVSQLDB_THROW(StackMachineException,
+                                               "calling function '" << funcname << "' with wrong parameter");
                             }
                         }
                         parameter.emplace(parameter.end(), v);
@@ -300,14 +293,12 @@ namespace csvsqldb
                     _valueStack.emplace(func->call(parameter));
                     break;
                 }
-                case CAST:
-                {
+                case CAST: {
                     Variant& rhs = getTopValue();
                     rhs = unaryOperation(OP_CAST, instruction._value.getType(), rhs);
                     break;
                 }
-                case IN:
-                {
+                case IN: {
                     size_t count = static_cast<size_t>(instruction._value.asInt());
                     const Variant lhs = getNextValue();
                     bool found(false);
@@ -330,8 +321,7 @@ namespace csvsqldb
                     }
                     break;
                 }
-                case LIKE:
-                {
+                case LIKE: {
                     if(!instruction._r) {
                         CSVSQLDB_THROW(StackMachineException, "expected a regexp in LIKE expression");
                     }
@@ -349,8 +339,7 @@ namespace csvsqldb
                 }
             }
         }
-        
+
         return _valueStack.top();
     }
-    
 }

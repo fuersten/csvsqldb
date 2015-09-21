@@ -41,21 +41,22 @@
 
 namespace csvsqldb
 {
-    
+
     OutputRowOperatorNode::OutputRowOperatorNode(const OperatorContext& context, const SymbolTablePtr& symbolTable, std::ostream& stream)
     : RootOperatorNode(context, symbolTable)
     , _stream(stream)
     , _firstCall(true)
-    {}
-    
+    {
+    }
+
     int64_t OutputRowOperatorNode::process()
     {
         if(_firstCall && _context._showHeaderLine) {
             _outputBuffer << "#";
-            
+
             SymbolInfos infos;
             _input->getColumnInfos(infos);
-            
+
             bool firstName(true);
             for(const auto& info : infos) {
                 if(!firstName) {
@@ -63,7 +64,7 @@ namespace csvsqldb
                 } else {
                     firstName = false;
                 }
-                
+
                 _outputBuffer << info->_name;
             }
             _outputBuffer << "\n";
@@ -71,7 +72,7 @@ namespace csvsqldb
         }
         int64_t count = 0;
         const Values* row = nullptr;
-        while( (row = _input->getNextRow()) ) {
+        while((row = _input->getNextRow())) {
             bool first = true;
             for(const auto value : *row) {
                 if(!first) {
@@ -79,7 +80,7 @@ namespace csvsqldb
                 } else {
                     first = false;
                 }
-                
+
                 if(value->getType() == STRING && !value->isNull()) {
                     _outputBuffer << "'";
                 }
@@ -98,17 +99,17 @@ namespace csvsqldb
         _stream << _outputBuffer.str();
         return count;
     }
-    
+
     bool OutputRowOperatorNode::connect(const RowOperatorNodePtr& input)
     {
         _input = input;
         return true;
     }
-    
+
     void OutputRowOperatorNode::getColumnInfos(SymbolInfos& outputSymbols)
     {
     }
-    
+
     void OutputRowOperatorNode::dump(std::ostream& stream) const
     {
         stream << "OutputRowOperator (";
@@ -126,9 +127,11 @@ namespace csvsqldb
         stream << ")\n-->";
         _input->dump(stream);
     }
-    
-    
-    LimitOperatorNode::LimitOperatorNode(const OperatorContext& context, const SymbolTablePtr& symbolTable, const ASTExprNodePtr& limit,
+
+
+    LimitOperatorNode::LimitOperatorNode(const OperatorContext& context,
+                                         const SymbolTablePtr& symbolTable,
+                                         const ASTExprNodePtr& limit,
                                          const ASTExprNodePtr& offset)
     : RowOperatorNode(context, symbolTable)
     , _limit(-1)
@@ -138,7 +141,7 @@ namespace csvsqldb
             StackMachine sm;
             VariableStore store;
             StackMachine::VariableMapping mapping;
-            
+
             ASTInstructionStackVisitor visitor(sm, mapping);
             limit->accept(visitor);
             // as we test from 1 to the limit we have to add one here
@@ -148,13 +151,13 @@ namespace csvsqldb
             StackMachine sm;
             VariableStore store;
             StackMachine::VariableMapping mapping;
-            
+
             ASTInstructionStackVisitor visitor(sm, mapping);
             offset->accept(visitor);
             _offset = sm.evaluate(store, _context._functions).asInt();
         }
     }
-    
+
     const Values* LimitOperatorNode::getNextRow()
     {
         if(_offset) {
@@ -171,19 +174,19 @@ namespace csvsqldb
         }
         return _input->getNextRow();
     }
-    
+
     bool LimitOperatorNode::connect(const RowOperatorNodePtr& input)
     {
         _input = input;
         return true;
     }
-    
+
     void LimitOperatorNode::getColumnInfos(SymbolInfos& outputSymbols)
     {
         remapOutputSymbols(outputSymbols);
         _input->getColumnInfos(outputSymbols);
     }
-    
+
     void LimitOperatorNode::dump(std::ostream& stream) const
     {
         stream << "LimitOperator (";
@@ -191,37 +194,37 @@ namespace csvsqldb
         stream << ")\n-->";
         _input->dump(stream);
     }
-    
-    
+
+
     SortOperatorNode::SortOperatorNode(const OperatorContext& context, const SymbolTablePtr& symbolTable, OrderExpressions orderExpressions)
     : RowOperatorNode(context, symbolTable)
     , _orderExpressions(orderExpressions)
     {
     }
-    
+
     const Values* SortOperatorNode::getNextRow()
     {
         return _iterator->getNextRow();
     }
-    
+
     bool SortOperatorNode::connect(const RowOperatorNodePtr& input)
     {
         _input = input;
         _input->getColumnInfos(_inputSymbols);
-        
+
         SortingBlockIterator::SortOrders sortOrders;
-        
+
         for(const auto& orderExp : _orderExpressions) {
             ASTIdentifierPtr ident = std::dynamic_pointer_cast<ASTIdentifier>(orderExp.first);
             if(ident) {
                 bool found = false;
                 for(size_t n = 0; !found && n < _inputSymbols.size(); ++n) {
                     const SymbolInfoPtr& info = _inputSymbols[n];
-                    
-                    if( (!ident->_info->_name.empty() && (ident->_info->_name == info->_name)) ||
-                       (!ident->_info->_qualifiedIdentifier.empty() && (ident->_info->_qualifiedIdentifier == info->_qualifiedIdentifier)) ||
-                       (ident->_info->_prefix.empty() && ident->_info->_identifier == info->_identifier) ) {
-                        sortOrders.push_back( { n, orderExp.second } );
+
+                    if((!ident->_info->_name.empty() && (ident->_info->_name == info->_name))
+                       || (!ident->_info->_qualifiedIdentifier.empty() && (ident->_info->_qualifiedIdentifier == info->_qualifiedIdentifier))
+                       || (ident->_info->_prefix.empty() && ident->_info->_identifier == info->_identifier)) {
+                        sortOrders.push_back({n, orderExp.second});
                         found = true;
                     }
                 }
@@ -232,21 +235,21 @@ namespace csvsqldb
                 CSVSQLDB_THROW(csvsqldb::Exception, "complex order expression not supported yet");
             }
         }
-        
+
         for(const auto& info : _inputSymbols) {
             _types.push_back(info->_type);
         }
         _iterator = std::make_shared<SortingBlockIterator>(_types, sortOrders, *_input, getBlockManager());
-        
+
         return true;
     }
-    
+
     void SortOperatorNode::getColumnInfos(SymbolInfos& outputSymbols)
     {
         remapOutputSymbols(_inputSymbols);
         outputSymbols = _inputSymbols;
     }
-    
+
     void SortOperatorNode::dump(std::ostream& stream) const
     {
         stream << "SortOperator (";
@@ -265,31 +268,35 @@ namespace csvsqldb
         stream << ")\n-->";
         _input->dump(stream);
     }
-    
-    
-    GroupingOperatorNode::GroupingOperatorNode(const OperatorContext& context, const SymbolTablePtr& symbolTable, const Expressions& nodes,
+
+
+    GroupingOperatorNode::GroupingOperatorNode(const OperatorContext& context,
+                                               const SymbolTablePtr& symbolTable,
+                                               const Expressions& nodes,
                                                const Identifiers& groupByIdentifiers)
     : RowOperatorNode(context, symbolTable)
     , _nodes(nodes)
     , _groupByIdentifiers(groupByIdentifiers)
     {
     }
-    
+
     const Values* GroupingOperatorNode::getNextRow()
     {
         return _iterator->getNextRow();
     }
-    
-    void GroupingOperatorNode::addPathThrough(const ASTIdentifierPtr& ident, csvsqldb::IndexVector& groupingIndices, csvsqldb::IndexVector& outputColumns,
+
+    void GroupingOperatorNode::addPathThrough(const ASTIdentifierPtr& ident,
+                                              csvsqldb::IndexVector& groupingIndices,
+                                              csvsqldb::IndexVector& outputColumns,
                                               bool suppress)
     {
         bool found = false;
         for(size_t n = 0; !found && n < _inputSymbols.size(); ++n) {
             const SymbolInfoPtr& info = _inputSymbols[n];
-            
-            if( (!ident->_info->_name.empty() && (ident->_info->_name == info->_name)) ||
-               (!ident->_info->_qualifiedIdentifier.empty() && (ident->_info->_qualifiedIdentifier == info->_qualifiedIdentifier)) ||
-               (ident->_info->_prefix.empty() && ident->_info->_identifier == info->_identifier)) {
+
+            if((!ident->_info->_name.empty() && (ident->_info->_name == info->_name))
+               || (!ident->_info->_qualifiedIdentifier.empty() && (ident->_info->_qualifiedIdentifier == info->_qualifiedIdentifier))
+               || (ident->_info->_prefix.empty() && ident->_info->_identifier == info->_identifier)) {
                 groupingIndices.push_back(n);
                 outputColumns.push_back(n);
                 if(!suppress) {
@@ -301,35 +308,39 @@ namespace csvsqldb
             }
         }
         if(!found) {
-            CSVSQLDB_THROW(csvsqldb::Exception, "group expression '" << ident->_info->_qualifiedIdentifier << "' not found in context");
+            CSVSQLDB_THROW(csvsqldb::Exception,
+                           "group expression '" << ident->_info->_qualifiedIdentifier << "' not found in context");
         }
     }
-    
+
     bool GroupingOperatorNode::connect(const RowOperatorNodePtr& input)
     {
         _input = input;
         _input->getColumnInfos(_inputSymbols);
-        
+
         csvsqldb::IndexVector groupingIndices;
         csvsqldb::IndexVector outputColumns;
         Identifiers foundGroupByIdentifiers;
-        
+
         for(const auto& groupExp : _nodes) {
             ASTIdentifierPtr ident = std::dynamic_pointer_cast<ASTIdentifier>(groupExp);
             if(ident) {
                 addPathThrough(ident, groupingIndices, outputColumns, false);
-                auto result = std::find_if(_groupByIdentifiers.begin(), _groupByIdentifiers.end(), [&](const ASTIdentifierPtr& identifier) {
-                    return ident->_info->_name == identifier->_identifier;
-                });
+                auto result =
+                std::find_if(_groupByIdentifiers.begin(),
+                             _groupByIdentifiers.end(),
+                             [&](const ASTIdentifierPtr& identifier) { return ident->_info->_name == identifier->_identifier; });
                 if(result == std::end(_groupByIdentifiers)) {
-                    CSVSQLDB_THROW(csvsqldb::Exception, "all elements of the select list of a group by have to be aggregations or contained in the group by expressions");
+                    CSVSQLDB_THROW(csvsqldb::Exception,
+                                   "all elements of the select list of a group by have to be aggregations or contained in the "
+                                   "group by expressions");
                 }
                 foundGroupByIdentifiers.push_back(*result);
             } else if(std::dynamic_pointer_cast<ASTAggregateFunctionNode>(groupExp)) {
                 ASTAggregateFunctionNodePtr aggr = std::dynamic_pointer_cast<ASTAggregateFunctionNode>(groupExp);
                 size_t rowValueId = 0;
                 eType type = INT;
-                
+
                 if(aggr->_aggregateFunction != COUNT_STAR) {
                     if(aggr->_parameters.size() != 1) {
                         CSVSQLDB_THROW(csvsqldb::Exception, "not exactly one aggregation parameter found");
@@ -351,12 +362,12 @@ namespace csvsqldb
                         CSVSQLDB_THROW(csvsqldb::Exception, "aggregation parameter '" << param << "'");
                     }
                 }
-                
+
                 _aggregateFunctions.push_back(AggregationFunction::create(aggr->_aggregateFunction, type));
                 if(aggr->_aggregateFunction == COUNT || aggr->_aggregateFunction == COUNT_STAR) {
                     type = INT;
                 }
-                
+
                 _types.push_back(type);
                 const SymbolInfoPtr& outputInfo = getSymbolTable().findSymbol(groupExp->_symbolName);
                 _outputSymbols.push_back(outputInfo);
@@ -366,25 +377,27 @@ namespace csvsqldb
             }
         }
         for(const auto& groupBy : _groupByIdentifiers) {
-            auto result = std::find_if(foundGroupByIdentifiers.begin(), foundGroupByIdentifiers.end(), [&](const ASTIdentifierPtr& identifier) {
-                return groupBy->_identifier == identifier->_identifier;
-            });
+            auto result =
+            std::find_if(foundGroupByIdentifiers.begin(),
+                         foundGroupByIdentifiers.end(),
+                         [&](const ASTIdentifierPtr& identifier) { return groupBy->_identifier == identifier->_identifier; });
             if(result == std::end(foundGroupByIdentifiers)) {
                 addPathThrough(groupBy, groupingIndices, outputColumns, true);
             }
         }
-        
-        _iterator = std::make_shared<GroupingBlockIterator>(_types, groupingIndices, outputColumns, _aggregateFunctions, *_input, getBlockManager());
-        
+
+        _iterator =
+        std::make_shared<GroupingBlockIterator>(_types, groupingIndices, outputColumns, _aggregateFunctions, *_input, getBlockManager());
+
         return true;
     }
-    
+
     void GroupingOperatorNode::getColumnInfos(SymbolInfos& outputSymbols)
     {
         remapOutputSymbols(_outputSymbols);
         outputSymbols = _outputSymbols;
     }
-    
+
     void GroupingOperatorNode::dump(std::ostream& stream) const
     {
         stream << "GroupingOperator (";
@@ -411,18 +424,19 @@ namespace csvsqldb
         stream << "-->";
         _input->dump(stream);
     }
-    
-    
+
+
     AggregationOperatorNode::AggregationOperatorNode(const OperatorContext& context, const SymbolTablePtr& symbolTable, const Expressions& nodes)
     : RowOperatorNode(context, symbolTable)
     , _nodes(nodes)
     , _block(nullptr)
-    {}
-    
+    {
+    }
+
     AggregationOperatorNode::~AggregationOperatorNode()
     {
     }
-    
+
     const Values* AggregationOperatorNode::getNextRow()
     {
         if(!_block) {
@@ -431,52 +445,53 @@ namespace csvsqldb
         }
         return _iterator->getNextRow();
     }
-    
+
     bool AggregationOperatorNode::connect(const RowOperatorNodePtr& input)
     {
         _input = input;
         eType type = INT;
         SymbolInfos infos;
         _input->getColumnInfos(infos);
-        
+
         for(const auto& exp : _nodes) {
             if(std::dynamic_pointer_cast<ASTAggregateFunctionNode>(exp)) {
                 ASTAggregateFunctionNodePtr aggr = std::dynamic_pointer_cast<ASTAggregateFunctionNode>(exp);
-                
+
                 if(aggr->_aggregateFunction != COUNT_STAR) {
                     if(aggr->_parameters.size() != 1) {
                         CSVSQLDB_THROW(csvsqldb::Exception, "not exactly one aggregation parameter found");
                     }
-                    
+
                     type = aggr->_parameters[0]._exp->type();
-                    
+
                     StackMachine sm;
                     IdentifierSet expressionVariables;
-                    
+
                     StackMachine::VariableMapping mapping;
                     {
                         ASTInstructionStackVisitor visitor(sm, mapping);
                         aggr->_parameters[0]._exp->accept(visitor);
                     }
-                    
+
                     {
                         ASTExpressionVariableVisitor visitor(expressionVariables);
                         aggr->_parameters[0]._exp->accept(visitor);
                     }
-                    
+
                     VariableMapping varMapping;
                     for(const auto& variable : expressionVariables) {
                         bool found = false;
                         for(size_t n = 0; !found && n < infos.size(); ++n) {
                             const SymbolInfoPtr& info = infos[n];
-                            
+
                             if(variable._info->_name == info->_name) {
                                 varMapping.push_back(std::make_pair(getMapping(variable.getQualifiedIdentifier(), mapping), n));
                                 found = true;
                             }
                         }
                         if(!found) {
-                            CSVSQLDB_THROW(csvsqldb::Exception, "variable '" << variable.getQualifiedIdentifier() << "' not found");
+                            CSVSQLDB_THROW(csvsqldb::Exception,
+                                           "variable '" << variable.getQualifiedIdentifier() << "' not found");
                         }
                     }
                     _sms.push_back(StackMachineType(sm, varMapping));
@@ -487,12 +502,12 @@ namespace csvsqldb
                     sm.addInstruction(StackMachine::Instruction(StackMachine::PUSH, Variant(BOOLEAN)));
                     _sms.push_back(StackMachineType(sm, varMapping));
                 }
-                
+
                 _aggregateFunctions.push_back(AggregationFunction::create(aggr->_aggregateFunction, type));
                 if(aggr->_aggregateFunction == COUNT || aggr->_aggregateFunction == COUNT_STAR) {
                     type = INT;
                 }
-                
+
                 _types.push_back(type);
                 const SymbolInfoPtr& outputInfo = getSymbolTable().findSymbol(exp->_symbolName);
                 _outputSymbols.push_back(outputInfo);
@@ -500,26 +515,26 @@ namespace csvsqldb
                 CSVSQLDB_THROW(csvsqldb::Exception, "no aggregation on other than aggregation functions");
             }
         }
-        
+
         return true;
     }
-    
+
     void AggregationOperatorNode::getColumnInfos(SymbolInfos& outputSymbols)
     {
         remapOutputSymbols(_outputSymbols);
         outputSymbols = _outputSymbols;
     }
-    
+
     BlockPtr AggregationOperatorNode::getNextBlock()
     {
         for(auto& aggrFunc : _aggregateFunctions) {
             aggrFunc->init();
         }
-        
+
         size_t smIndex = 0;
         size_t n = 0;
         const Values* row = nullptr;
-        while( (row = _input->getNextRow()) ) {
+        while((row = _input->getNextRow())) {
             for(auto& aggrFunc : _aggregateFunctions) {
                 fillVariableStore(_sms[smIndex]._store, _sms[smIndex]._variableMappings, *row);
                 Variant& variant = _sms[smIndex]._sm.evaluate(_sms[smIndex]._store, _context._functions);
@@ -530,17 +545,17 @@ namespace csvsqldb
             n = 0;
             smIndex = 0;
         }
-        
+
         n = 0;
         for(auto& aggrFunc : _aggregateFunctions) {
             _block->addValue(aggrFunc->finalize());
         }
         _block->nextRow();
         _block->endBlocks();
-        
+
         return _block;
     }
-    
+
     void AggregationOperatorNode::dump(std::ostream& stream) const
     {
         stream << "AggregationOperator (";
@@ -556,41 +571,43 @@ namespace csvsqldb
         stream << ")\n-->";
         _input->dump(stream);
     }
-    
-    
-    ExtendedProjectionOperatorNode::ExtendedProjectionOperatorNode(const OperatorContext& context, const SymbolTablePtr& symbolTable, const Expressions& nodes)
+
+
+    ExtendedProjectionOperatorNode::ExtendedProjectionOperatorNode(const OperatorContext& context,
+                                                                   const SymbolTablePtr& symbolTable,
+                                                                   const Expressions& nodes)
     : RowOperatorNode(context, symbolTable)
     , _nodes(nodes)
     , _block(nullptr)
     {
     }
-    
+
     ExtendedProjectionOperatorNode::~ExtendedProjectionOperatorNode()
     {
     }
-    
+
     const Values* ExtendedProjectionOperatorNode::getNextRow()
     {
         return _iterator->getNextRow();
     }
-    
+
     bool ExtendedProjectionOperatorNode::connect(const RowOperatorNodePtr& input)
     {
         _input = input;
         _input->getColumnInfos(_inputSymbols);
-        
+
         size_t index = 0;
         for(const auto& exp : _nodes) {
             if(std::dynamic_pointer_cast<ASTIdentifier>(exp)) {
                 ASTIdentifierPtr ident = std::dynamic_pointer_cast<ASTIdentifier>(exp);
-                
+
                 bool found = false;
                 for(size_t n = 0; !found && n < _inputSymbols.size(); ++n) {
                     const SymbolInfoPtr& info = _inputSymbols[n];
-                    
-                    if( (!ident->_info->_name.empty() && (ident->_info->_name == info->_name)) ||
-                       (!ident->_info->_qualifiedIdentifier.empty() && (ident->_info->_qualifiedIdentifier == info->_qualifiedIdentifier)) ||
-                       (ident->_info->_prefix.empty() && (ident->_info->_identifier == info->_identifier)) ) {
+
+                    if((!ident->_info->_name.empty() && (ident->_info->_name == info->_name))
+                       || (!ident->_info->_qualifiedIdentifier.empty() && (ident->_info->_qualifiedIdentifier == info->_qualifiedIdentifier))
+                       || (ident->_info->_prefix.empty() && (ident->_info->_identifier == info->_identifier))) {
                         _outputSymbols.push_back(ident->_info);
                         _types.push_back(ident->_info->_type);
                         _outputInputMapping.insert(std::make_pair(index, n));
@@ -598,29 +615,33 @@ namespace csvsqldb
                     }
                 }
                 if(!found) {
-                    CSVSQLDB_THROW(csvsqldb::Exception, "select list expression '" << ident->_info->_name << "' not found in context");
+                    CSVSQLDB_THROW(csvsqldb::Exception,
+                                   "select list expression '" << ident->_info->_name << "' not found in context");
                 }
             } else if(std::dynamic_pointer_cast<ASTQualifiedAsterisk>(exp)) {
                 std::string prefixName = std::dynamic_pointer_cast<ASTQualifiedAsterisk>(exp)->_prefix;
-                
+
                 SymbolInfoPtr table;
                 if(!prefixName.empty() && getSymbolTable().hasTableSymbol(prefixName)) {
                     table = getSymbolTable().findTableSymbol(prefixName);
                 }
-                
+
                 if(table) {
                     if(!_context._database.hasTable(table->_identifier)) {
                         CSVSQLDB_THROW(csvsqldb::Exception, "cannot find table '" << table->_identifier << "'");
                     }
-                    // TODO LCF: this is not quite ok, as we could have a different sorting, so better so go through the _inputSymbols and find the right
+                    // TODO LCF: this is not quite ok, as we could have a different sorting, so better so go through the
+                    // _inputSymbols and find the right
                     // table symbols
                     const TableData& tableData = _context._database.getTable(table->_identifier);
-                    
+
                     for(size_t n = 0; n < tableData.columnCount(); ++n) {
-                        const SymbolInfoPtr& info = getSymbolTable().findSymbolNameForTable(table->_identifier, tableData.getColumn(n)._name);
+                        const SymbolInfoPtr& info =
+                        getSymbolTable().findSymbolNameForTable(table->_identifier, tableData.getColumn(n)._name);
                         auto result = std::find(_inputSymbols.begin(), _inputSymbols.end(), info);
                         if(result == _inputSymbols.end()) {
-                            CSVSQLDB_THROW(csvsqldb::Exception, "could not find output symbol '" << info->_identifier << "' in input symbols");
+                            CSVSQLDB_THROW(csvsqldb::Exception,
+                                           "could not find output symbol '" << info->_identifier << "' in input symbols");
                         }
                         _outputSymbols.push_back(*result);
                         _types.push_back(info->_type);
@@ -635,27 +656,27 @@ namespace csvsqldb
                 const SymbolInfoPtr& outputInfo = getSymbolTable().findSymbol(exp->_symbolName);
                 _outputSymbols.push_back(outputInfo);
                 _types.push_back(outputInfo->_type);
-                
+
                 StackMachine sm;
                 IdentifierSet expressionVariables;
-                
+
                 StackMachine::VariableMapping mapping;
                 {
                     ASTInstructionStackVisitor visitor(sm, mapping);
                     exp->accept(visitor);
                 }
-                
+
                 {
                     ASTExpressionVariableVisitor visitor(expressionVariables);
                     exp->accept(visitor);
                 }
-                
+
                 VariableMapping varMapping;
                 for(const auto& variable : expressionVariables) {
                     bool found = false;
                     for(size_t n = 0; !found && n < _inputSymbols.size(); ++n) {
                         const SymbolInfoPtr& info = _inputSymbols[n];
-                        
+
                         if(variable._info->_name == info->_name) {
                             varMapping.push_back(std::make_pair(getMapping(variable.getQualifiedIdentifier(), mapping), n));
                             found = true;
@@ -669,38 +690,39 @@ namespace csvsqldb
             }
             ++index;
         }
-        
+
         _block = _context._blockManager.createBlock();
         _iterator = std::make_shared<BlockIterator>(_types, *this, getBlockManager());
-        
+
         return true;
     }
-    
+
     void ExtendedProjectionOperatorNode::getColumnInfos(SymbolInfos& outputSymbols)
     {
         remapOutputSymbols(_outputSymbols);
         outputSymbols = _outputSymbols;
     }
-    
+
     BlockPtr ExtendedProjectionOperatorNode::getNextBlock()
     {
         BlockPtr previousBlock = prepareNextBuffer();
-        return previousBlock? previousBlock : _block;
+        return previousBlock ? previousBlock : _block;
     }
-    
+
     BlockPtr ExtendedProjectionOperatorNode::prepareNextBuffer()
     {
         const Values* row = nullptr;
         BlockPtr previousBlock = nullptr;
-        
-        while( !previousBlock && (row = _input->getNextRow()) ) {
+
+        while(!previousBlock && (row = _input->getNextRow())) {
             size_t smIndex = 0;
             size_t index = 0;
             for(const auto& exp : _nodes) {
                 if(std::dynamic_pointer_cast<ASTIdentifier>(exp)) {
                     OutputInputMapping::const_iterator iter = _outputInputMapping.find(index);
                     if(iter == _outputInputMapping.end()) {
-                        CSVSQLDB_THROW(csvsqldb::Exception, "selection expression no. " << index << " not found in output input mappings");
+                        CSVSQLDB_THROW(csvsqldb::Exception,
+                                       "selection expression no. " << index << " not found in output input mappings");
                     }
                     const Values& rrow = *row;
                     if(!_block->addValue(*(rrow[iter->second]))) {
@@ -711,20 +733,21 @@ namespace csvsqldb
                     }
                 } else if(std::dynamic_pointer_cast<ASTQualifiedAsterisk>(exp)) {
                     std::string prefixName = std::dynamic_pointer_cast<ASTQualifiedAsterisk>(exp)->_prefix;
-                    
+
                     SymbolInfoPtr table;
                     if(!prefixName.empty() && getSymbolTable().hasTableSymbol(prefixName)) {
                         table = getSymbolTable().findTableSymbol(prefixName);
                     }
-                    
+
                     if(table) {
                         if(!_context._database.hasTable(table->_identifier)) {
                             CSVSQLDB_THROW(csvsqldb::Exception, "cannot find table '" << table->_identifier << "'");
                         }
-                        // TODO LCF: this is not quite ok, as we could have a different sorting, so better so go through the _inputSymbols and find the right
+                        // TODO LCF: this is not quite ok, as we could have a different sorting, so better so go through the
+                        // _inputSymbols and find the right
                         // table symbols
                         const TableData& tableData = _context._database.getTable(table->_identifier);
-                        
+
                         const Values& rrow = *row;
                         for(size_t n = 0; n < tableData.columnCount(); ++n) {
                             if(!_block->addValue(*(rrow[n]))) {
@@ -747,7 +770,7 @@ namespace csvsqldb
                     }
                 } else {
                     fillVariableStore(_sms[smIndex]._store, _sms[smIndex]._variableMappings, *row);
-                    
+
                     if(!_block->addValue(_sms[smIndex]._sm.evaluate(_sms[smIndex]._store, _context._functions))) {
                         _block->markNextBlock();
                         previousBlock = _block;
@@ -763,10 +786,10 @@ namespace csvsqldb
         if(!row) {
             _block->endBlocks();
         }
-        
+
         return previousBlock;
     }
-    
+
     void ExtendedProjectionOperatorNode::dump(std::ostream& stream) const
     {
         stream << "ExtendedProjectionOperator (";
@@ -782,13 +805,14 @@ namespace csvsqldb
         stream << ")\n-->";
         _input->dump(stream);
     }
-    
-    
+
+
     CrossJoinOperatorNode::CrossJoinOperatorNode(const OperatorContext& context, const SymbolTablePtr& symbolTable)
     : RowOperatorNode(context, symbolTable)
     , _currentLhs(nullptr)
-    {}
-    
+    {
+    }
+
     const Values* CrossJoinOperatorNode::getNextRow()
     {
         if(!_currentLhs) {
@@ -801,7 +825,7 @@ namespace csvsqldb
                 _row[n] = values[n];
             }
         }
-        
+
         const Values* row = _rhsIterator->getNextRow();
         if(!row) {
             _currentLhs = _lhsInput->getNextRow();
@@ -820,10 +844,10 @@ namespace csvsqldb
             const Values& values = *(row);
             _row[n] = values[m];
         }
-        
+
         return &_row;
     }
-    
+
     bool CrossJoinOperatorNode::connect(const RowOperatorNodePtr& input)
     {
         if(!_lhsInput) {
@@ -844,15 +868,15 @@ namespace csvsqldb
         } else {
             CSVSQLDB_THROW(csvsqldb::Exception, "all inputs already set");
         }
-        
+
         return true;
     }
-    
+
     void CrossJoinOperatorNode::getColumnInfos(SymbolInfos& outputSymbols)
     {
         outputSymbols = _outputSymbols;
     }
-    
+
     void CrossJoinOperatorNode::dump(std::ostream& stream) const
     {
         stream << "CrossJoinOperator\n";
@@ -861,97 +885,99 @@ namespace csvsqldb
         stream << "-->";
         _rhsInput->dump(stream);
     }
-    
-    
+
+
     InnerJoinOperatorNode::InnerJoinOperatorNode(const OperatorContext& context, const SymbolTablePtr& symbolTable, const ASTExprNodePtr& exp)
     : CrossJoinOperatorNode(context, symbolTable)
     , _exp(exp)
     {
     }
-    
+
     const Values* InnerJoinOperatorNode::getNextRow()
     {
         VariableStore store;
         const Values* row = nullptr;
         bool match = false;
-        
+
         do {
             row = CrossJoinOperatorNode::getNextRow();
-            
+
             if(row) {
                 fillVariableStore(store, _sm._variableMappings, *row);
                 match = _sm._sm.evaluate(store, _context._functions).asBool();
             }
         } while(row && !match);
-        
+
         return row;
     }
-    
+
     bool InnerJoinOperatorNode::connect(const RowOperatorNodePtr& input)
     {
         if(CrossJoinOperatorNode::connect(input)) {
             SymbolInfos outputSymbols;
             CrossJoinOperatorNode::getColumnInfos(outputSymbols);
-            
+
             StackMachine sm;
             IdentifierSet expressionVariables;
-            
+
             StackMachine::VariableMapping mapping;
             {
                 ASTInstructionStackVisitor visitor(sm, mapping);
                 _exp->accept(visitor);
             }
-            
+
             {
                 ASTExpressionVariableVisitor visitor(expressionVariables);
                 _exp->accept(visitor);
             }
-            
+
             VariableMapping variableMapping;
             for(const auto& variable : expressionVariables) {
                 bool found = false;
                 for(size_t n = 0; !found && n < outputSymbols.size(); ++n) {
                     const SymbolInfoPtr& info = outputSymbols[n];
-                    
+
                     if(variable._info->_name == info->_name) {
                         variableMapping.push_back(std::make_pair(getMapping(variable.getQualifiedIdentifier(), mapping), n));
                         found = true;
                     }
                 }
                 if(!found) {
-                    CSVSQLDB_THROW(csvsqldb::Exception, "variable '" << variable.getQualifiedIdentifier() << "' not found in context");
+                    CSVSQLDB_THROW(csvsqldb::Exception,
+                                   "variable '" << variable.getQualifiedIdentifier() << "' not found in context");
                 }
             }
-            
+
             _sm = StackMachineType(sm, variableMapping);
         }
-        
+
         return true;
     }
-    
+
     void InnerJoinOperatorNode::getColumnInfos(SymbolInfos& outputSymbols)
     {
         CrossJoinOperatorNode::getColumnInfos(outputSymbols);
     }
-    
+
     void InnerJoinOperatorNode::dump(std::ostream& stream) const
     {
         stream << "InnerJoinOperatorNode\n";
         CrossJoinOperatorNode::dump(stream);
     }
-    
-    
+
+
     InnerHashJoinOperatorNode::InnerHashJoinOperatorNode(const OperatorContext& context, const SymbolTablePtr& symbolTable, const ASTExprNodePtr& exp)
     : RowOperatorNode(context, symbolTable)
     , _currentLhs(nullptr)
     , _exp(exp)
     , _hashTableKeyPosition(0)
-    {}
-    
+    {
+    }
+
     const Values* InnerHashJoinOperatorNode::getNextRow()
     {
         const Values* row = nullptr;
-        
+
         do {
             row = _rhsIterator->getNextKeyValueRow();
             if(!row) {
@@ -968,7 +994,7 @@ namespace csvsqldb
                 _rhsIterator->setContextForKeyValue(*_row[_hashTableKeyPosition]);
             }
         } while(!row);
-        
+
         size_t m = 0;
         for(size_t n = _inputLhsSymbols.size(); n < _inputRhsSymbols.size() + _inputLhsSymbols.size(); ++n, ++m) {
             const Values& values = *(row);
@@ -976,7 +1002,7 @@ namespace csvsqldb
         }
         return &_row;
     }
-    
+
     bool InnerHashJoinOperatorNode::connect(const RowOperatorNodePtr& input)
     {
         if(!_lhsInput) {
@@ -992,41 +1018,42 @@ namespace csvsqldb
             for(const auto& info : _inputRhsSymbols) {
                 types.push_back(info->_type);
             }
-            
+
             StackMachine sm;
             IdentifierSet expressionVariables;
-            
+
             StackMachine::VariableMapping mapping;
             {
                 ASTInstructionStackVisitor visitor(sm, mapping);
                 _exp->accept(visitor);
             }
-            
+
             {
                 ASTExpressionVariableVisitor visitor(expressionVariables);
                 _exp->accept(visitor);
             }
-            
+
             VariableMapping variableMapping;
             size_t hashTableKeyPosition = 0;
             for(const auto& variable : expressionVariables) {
                 bool found = false;
                 for(size_t n = 0; !found && n < _outputSymbols.size(); ++n) {
                     const SymbolInfoPtr& info = _outputSymbols[n];
-                    
+
                     if(variable._info->_name == info->_name) {
                         variableMapping.push_back(std::make_pair(getMapping(variable.getQualifiedIdentifier(), mapping), n));
                         found = true;
                     }
                 }
                 if(!found) {
-                    CSVSQLDB_THROW(csvsqldb::Exception, "variable '" << variable.getQualifiedIdentifier() << "' not found in context");
+                    CSVSQLDB_THROW(csvsqldb::Exception,
+                                   "variable '" << variable.getQualifiedIdentifier() << "' not found in context");
                 }
                 // find the rhs expresion variable for the hash table key
                 found = false;
                 for(size_t n = 0; !found && n < _inputRhsSymbols.size(); ++n) {
                     const SymbolInfoPtr& info = _inputRhsSymbols[n];
-                    
+
                     if(variable._info->_name == info->_name) {
                         hashTableKeyPosition = n;
                         found = true;
@@ -1036,28 +1063,28 @@ namespace csvsqldb
                 found = false;
                 for(size_t n = 0; !found && n < _inputLhsSymbols.size(); ++n) {
                     const SymbolInfoPtr& info = _inputLhsSymbols[n];
-                    
+
                     if(variable._info->_name == info->_name) {
                         _hashTableKeyPosition = n;
                         found = true;
                     }
                 }
             }
-            
+
             _rhsIterator = std::make_shared<HashingBlockIterator>(types, *_rhsInput, getBlockManager(), hashTableKeyPosition);
             _row.resize(_outputSymbols.size());
         } else {
             CSVSQLDB_THROW(csvsqldb::Exception, "all inputs already set");
         }
-        
+
         return true;
     }
-    
+
     void InnerHashJoinOperatorNode::getColumnInfos(SymbolInfos& outputSymbols)
     {
         outputSymbols = _outputSymbols;
     }
-    
+
     void InnerHashJoinOperatorNode::dump(std::ostream& stream) const
     {
         stream << "InnerHashJoinOperator\n";
@@ -1066,26 +1093,27 @@ namespace csvsqldb
         stream << "-->";
         _rhsInput->dump(stream);
     }
-    
-    
+
+
     UnionOperatorNode::UnionOperatorNode(const OperatorContext& context, const SymbolTablePtr& symbolTable)
     : RowOperatorNode(context, symbolTable)
-    {}
-    
+    {
+    }
+
     const Values* UnionOperatorNode::getNextRow()
     {
         const Values* row;
-        
+
         row = _currentInput->getNextRow();
         if(!row && _firstInput) {
             _currentInput = _secondInput;
             row = _currentInput->getNextRow();
             _firstInput.reset();
         }
-        
+
         return row;
     }
-    
+
     bool UnionOperatorNode::connect(const RowOperatorNodePtr& input)
     {
         if(!_firstInput) {
@@ -1097,15 +1125,15 @@ namespace csvsqldb
         } else {
             CSVSQLDB_THROW(csvsqldb::Exception, "all inputs already set");
         }
-        
+
         return true;
     }
-    
+
     void UnionOperatorNode::getColumnInfos(SymbolInfos& outputSymbols)
     {
         outputSymbols = _inputSymbols;
     }
-    
+
     void UnionOperatorNode::dump(std::ostream& stream) const
     {
         stream << "UnionOperatorNode\n";
@@ -1114,8 +1142,8 @@ namespace csvsqldb
         stream << "-->";
         _secondInput->dump(stream);
     }
-    
-    
+
+
     SelectOperatorNode::SelectOperatorNode(const OperatorContext& context, const SymbolTablePtr& symbolTable, const ASTExprNodePtr& exp)
     : RowOperatorNode(context, symbolTable)
     {
@@ -1123,13 +1151,13 @@ namespace csvsqldb
             ASTInstructionStackVisitor visitor(_sm, _mapping);
             exp->accept(visitor);
         }
-        
+
         {
             ASTExpressionVariableVisitor visitor(_expressionVariables);
             exp->accept(visitor);
         }
     }
-    
+
     const Values* SelectOperatorNode::getNextRow()
     {
         const Values* row = _input->getNextRow();
@@ -1142,45 +1170,45 @@ namespace csvsqldb
         }
         return nullptr;
     }
-    
+
     bool SelectOperatorNode::connect(const RowOperatorNodePtr& input)
     {
         _input = input;
         _input->getColumnInfos(_inputSymbols);
-        
+
         for(const auto& variable : _expressionVariables) {
             bool found = false;
             for(size_t n = 0; !found && n < _inputSymbols.size(); ++n) {
                 const SymbolInfoPtr& info = _inputSymbols[n];
-                
-                if( (info->_identifier == variable._info->_name) ||
-                   (info->_qualifiedIdentifier == variable._info->_name) ) {
+
+                if((info->_identifier == variable._info->_name) || (info->_qualifiedIdentifier == variable._info->_name)) {
                     _variableMapping.push_back(std::make_pair(getMapping(variable.getQualifiedIdentifier(), _mapping), n));
                     found = true;
                 }
             }
             if(!found) {
-                CSVSQLDB_THROW(csvsqldb::Exception, "variable '" << variable.getQualifiedIdentifier() << "' not found in context");
+                CSVSQLDB_THROW(csvsqldb::Exception,
+                               "variable '" << variable.getQualifiedIdentifier() << "' not found in context");
             }
         }
-        
+
         return true;
     }
-    
+
     void SelectOperatorNode::getColumnInfos(SymbolInfos& outputSymbols)
     {
         remapOutputSymbols(_inputSymbols);
         outputSymbols = _inputSymbols;
     }
-    
+
     void SelectOperatorNode::dump(std::ostream& stream) const
     {
         stream << "SelectOperator\n";
         stream << "-->";
         _input->dump(stream);
     }
-    
-    
+
+
     ScanOperatorNode::ScanOperatorNode(const OperatorContext& context, const SymbolTablePtr& symbolTable, const SymbolInfo& tableInfo)
     : RowOperatorNode(context, symbolTable)
     , _tableData(_context._database.getTable(tableInfo._identifier))
@@ -1190,11 +1218,11 @@ namespace csvsqldb
             _types.push_back(_tableData.getColumn(n)._type);
         }
     }
-    
+
     void ScanOperatorNode::getColumnInfos(SymbolInfos& outputSymbols)
     {
         outputSymbols.clear();
-        
+
         for(size_t n = 0; n < _tableData.columnCount(); ++n) {
             if(getSymbolTable().hasSymbolNameForTable(_tableInfo._name, _tableData.getColumn(n)._name)) {
                 const SymbolInfoPtr& info = getSymbolTable().findSymbolNameForTable(_tableInfo._name, _tableData.getColumn(n)._name);
@@ -1202,19 +1230,19 @@ namespace csvsqldb
             }
         }
     }
-    
-    
+
+
     SystemTableScanOperatorNode::SystemTableScanOperatorNode(const OperatorContext& context, const SymbolTablePtr& symbolTable, const SymbolInfo& tableInfo)
     : ScanOperatorNode(context, symbolTable, tableInfo)
     , _currentBlock(nullptr)
     {
     }
-    
+
     void SystemTableScanOperatorNode::dump(std::ostream& stream) const
     {
         stream << "SystemTableScanOperatorNode(" << _tableInfo._identifier << ")\n";
     }
-    
+
     const Values* SystemTableScanOperatorNode::getNextRow()
     {
         if(!_currentBlock) {
@@ -1222,41 +1250,42 @@ namespace csvsqldb
         }
         return _iterator->getNextRow();
     }
-    
+
     BlockPtr SystemTableScanOperatorNode::getNextBlock()
     {
         _currentBlock = _context._blockManager.createBlock();
-        
+
         _currentBlock->addValue(Variant(false));
         _currentBlock->nextRow();
         _currentBlock->endBlocks();
-        
+
         return _currentBlock;
     }
-    
-    
+
+
     TableScanOperatorNode::TableScanOperatorNode(const OperatorContext& context, const SymbolTablePtr& symbolTable, const SymbolInfo& tableInfo)
     : ScanOperatorNode(context, symbolTable, tableInfo)
     , _blockReader(_context._blockManager)
-    {}
-    
+    {
+    }
+
     const Values* TableScanOperatorNode::getNextRow()
     {
         if(!_blockReader.valid()) {
             initializeBlockReader();
         }
-        
+
         return _iterator->getNextRow();
     }
-    
-    
+
+
     BlockReader::BlockReader(BlockManager& blockManager)
     : _blockManager(blockManager)
     , _block(_blockManager.createBlock())
     , _continue(true)
     {
     }
-    
+
     BlockReader::~BlockReader()
     {
         _continue = false;
@@ -1264,35 +1293,35 @@ namespace csvsqldb
             _readThread.join();
         }
     }
-    
+
     void BlockReader::initialize(CSVParserPtr csvparser)
     {
         _csvparser = csvparser;
         _readThread = std::thread(std::bind(&BlockReader::readBlocks, this));
     }
-    
+
     BlockPtr BlockReader::getNextBlock()
     {
         std::unique_lock<std::mutex> lk(_queueMutex);
         if(_blocks.empty() && !_block) {
             return nullptr;
         }
-        _cv.wait(lk, [this]{ return !_blocks.empty(); });
-        
+        _cv.wait(lk, [this] { return !_blocks.empty(); });
+
         BlockPtr block = nullptr;
         if(!_blocks.empty()) {
             block = _blocks.front();
             _blocks.pop();
         }
-        
+
         return block;
     }
-    
+
     void BlockReader::readBlocks()
     {
         bool moreLines = _csvparser->parseLine();
         _block->nextRow();
-        
+
         while(_continue && moreLines) {
             moreLines = _csvparser->parseLine();
             _block->nextRow();
@@ -1305,7 +1334,7 @@ namespace csvsqldb
         }
         _cv.notify_all();
     }
-    
+
     void BlockReader::onLong(int64_t num, bool isNull)
     {
         if(!_block->addInt(num, isNull)) {
@@ -1317,7 +1346,7 @@ namespace csvsqldb
             _block->addInt(num, isNull);
         }
     }
-    
+
     void BlockReader::onDouble(double num, bool isNull)
     {
         if(!_block->addReal(num, isNull)) {
@@ -1329,7 +1358,7 @@ namespace csvsqldb
             _block->addReal(num, isNull);
         }
     }
-    
+
     void BlockReader::onString(const char* s, size_t len, bool isNull)
     {
         if(!_block->addString(s, len, isNull)) {
@@ -1341,7 +1370,7 @@ namespace csvsqldb
             _block->addString(s, len, isNull);
         }
     }
-    
+
     void BlockReader::onDate(const csvsqldb::Date& date, bool isNull)
     {
         if(!_block->addDate(date, isNull)) {
@@ -1353,7 +1382,7 @@ namespace csvsqldb
             _block->addDate(date, isNull);
         }
     }
-    
+
     void BlockReader::onTime(const csvsqldb::Time& time, bool isNull)
     {
         if(!_block->addTime(time, isNull)) {
@@ -1365,7 +1394,7 @@ namespace csvsqldb
             _block->addTime(time, isNull);
         }
     }
-    
+
     void BlockReader::onTimestamp(const csvsqldb::Timestamp& timestamp, bool isNull)
     {
         if(!_block->addTimestamp(timestamp, isNull)) {
@@ -1377,7 +1406,7 @@ namespace csvsqldb
             _block->addTimestamp(timestamp, isNull);
         }
     }
-    
+
     void BlockReader::onBoolean(bool boolean, bool isNull)
     {
         if(!_block->addBool(boolean, isNull)) {
@@ -1389,17 +1418,17 @@ namespace csvsqldb
             _block->addBool(boolean, isNull);
         }
     }
-    
-    
+
+
     BlockPtr TableScanOperatorNode::getNextBlock()
     {
         return _blockReader.getNextBlock();
     }
-    
+
     void TableScanOperatorNode::initializeBlockReader()
     {
         _iterator = std::make_shared<BlockIterator>(_types, *this, getBlockManager());
-        
+
         csvsqldb::csv::Types types;
         for(auto& type : _types) {
             switch(type) {
@@ -1428,14 +1457,14 @@ namespace csvsqldb
                     CSVSQLDB_THROW(csvsqldb::Exception, "type not implemented yet");
             }
         }
-        
+
         Mapping mapping = _context._database.getMappingForTable(_tableInfo._identifier);
         std::string filePattern = mapping._mapping;
         filePattern = R"(.*)" + filePattern;
         boost::regex r(filePattern);
-        
+
         fs::path pathToCsvFile("");
-        
+
         for(const auto& file : _context._files) {
             boost::smatch match;
             if(regex_match(file, match, r)) {
@@ -1446,22 +1475,21 @@ namespace csvsqldb
         if(pathToCsvFile.string().empty()) {
             CSVSQLDB_THROW(MappingException, "no file found for mapping '" << filePattern << "'");
         }
-        
+
         _stream = std::make_shared<std::fstream>(pathToCsvFile.string());
         if(!_stream || _stream->fail()) {
             std::cerr << csvsqldb::errnoText() << std::endl;
             CSVSQLDB_THROW(csvsqldb::FilesystemException, "could not open file '" << pathToCsvFile << "'");
         }
-        
+
         _csvContext._skipFirstLine = true;
         _csvContext._delimiter = mapping._delimiter;
         _csvparser = std::make_shared<csvsqldb::csv::CSVParser>(_csvContext, *_stream, types, _blockReader);
         _blockReader.initialize(_csvparser);
     }
-    
+
     void TableScanOperatorNode::dump(std::ostream& stream) const
     {
         stream << "TableScanOperator (" << _tableInfo._identifier << ")\n";
     }
-    
 }

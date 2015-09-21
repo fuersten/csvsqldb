@@ -43,4 +43,4 @@
 #include <boost/regex.hpp>
 #endif
 
-#endif // csvsqldb_regex_h
+#endif

@@ -22,11 +22,11 @@ public:
     RedirectStdOut()
     {
     }
-    
+
     void flush()
     {
     }
-    
+
     ~RedirectStdOut()
     {
     }
@@ -38,11 +38,11 @@ public:
     RedirectStdErr()
     {
     }
-    
+
     void flush()
     {
     }
-    
+
     ~RedirectStdErr()
     {
     }

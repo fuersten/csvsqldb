@@ -9,25 +9,25 @@
 //  Redistribution and use in source and binary forms, with or without modification, are permitted
 //  provided that the following conditions are met:
 //
-//  1. Redistributions of source code must retain the above copyright notice, this list of 
+//  1. Redistributions of source code must retain the above copyright notice, this list of
 //  conditions and the following disclaimer.
 //
-//  2. Redistributions in binary form must reproduce the above copyright notice, this list of 
-//  conditions and the following disclaimer in the documentation and/or other materials provided 
+//  2. Redistributions in binary form must reproduce the above copyright notice, this list of
+//  conditions and the following disclaimer in the documentation and/or other materials provided
 //  with the distribution.
 //
-//  3. Neither the name of the copyright holder nor the names of its contributors may be used to 
-//  endorse or promote products derived from this software without specific prior written 
+//  3. Neither the name of the copyright holder nor the names of its contributors may be used to
+//  endorse or promote products derived from this software without specific prior written
 //  permission.
 //
 //  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR
-//  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
+//  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY
 //  AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
-//  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
-//  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR 
-//  SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY 
-//  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
-//  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+//  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+//  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+//  SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+//  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+//  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
@@ -52,26 +52,26 @@ namespace csvsqldb
      */
     namespace csv
     {
-     
+
         /**
          * Context for the parametration of a CSV parser
          */
-		struct CSVSQLDB_EXPORT CSVParserContext
-        {
+        struct CSVSQLDB_EXPORT CSVParserContext {
             CSVParserContext()
             : _skipFirstLine(false)
             , _delimiter(',')
-            {}
-            
-            bool _skipFirstLine; //!< The parser will skip the first input line (e.g. the header), default is false
-            char _delimiter; //!< Field delimiter, default is ','
+            {
+            }
+
+            bool _skipFirstLine;    //!< The parser will skip the first input line (e.g. the header), default is false
+            char _delimiter;        //!< Field delimiter, default is ','
         };
-        
-        
+
+
         /**
          * The type methods of the callback will be called by the corresponding parser upon encountering the specific type
          */
-		class CSVSQLDB_EXPORT CSVParserCallback
+        class CSVSQLDB_EXPORT CSVParserCallback
         {
         public:
             virtual void onLong(int64_t num, bool isNull) = 0;
@@ -82,23 +82,14 @@ namespace csvsqldb
             virtual void onTimestamp(const csvsqldb::Timestamp& timestamp, bool isNull) = 0;
             virtual void onBoolean(bool boolean, bool isNull) = 0;
         };
-        
-        enum CsvTypes
-        {
-            LONG,
-            DOUBLE,
-            STRING,
-            DATE,
-            TIME,
-            TIMESTAMP,
-            BOOLEAN
-        };
+
+        enum CsvTypes { LONG, DOUBLE, STRING, DATE, TIME, TIMESTAMP, BOOLEAN };
         typedef std::vector<CsvTypes> Types;
-        
+
         /**
          * A class used to parse CSV streams.
          */
-		class CSVSQLDB_EXPORT CSVParser : noncopyable
+        class CSVSQLDB_EXPORT CSVParser : noncopyable
         {
         public:
             /*
@@ -109,14 +100,15 @@ namespace csvsqldb
              * @param callback The callback to call type methods for
              */
             CSVParser(CSVParserContext context, std::istream& stream, Types types, CSVParserCallback& callback);
-            
+
             /**
-             * Parses one line of input and calls the corresponding type method callbacks. Skips the first line of input, if specified
+             * Parses one line of input and calls the corresponding type method callbacks. Skips the first line of input, if
+             * specified
              * by the context.
              * @return true if there are more lines to parse, false otherwise
              */
             bool parseLine();
-            
+
             /**
              * Returns the current count of lines excluding skipped lines.
              * @return The current line count starting with one.
@@ -125,18 +117,12 @@ namespace csvsqldb
             {
                 return _lineCount;
             }
-            
+
         private:
-            enum State
-            {
-                INIT,
-                LINESTART,
-                FIELDSTART,
-                END
-            };
-            
+            enum State { INIT, LINESTART, FIELDSTART, END };
+
             typedef std::vector<char> BufferType;
-            
+
             void parseString();
             void parseLong();
             void parseDouble();
@@ -144,17 +130,17 @@ namespace csvsqldb
             void parseDate();
             void parseTime();
             void parseTimestamp();
-            
+
             void findEndOfHeaderline();
             char readNextChar(bool ignoreDelimiter = false);
             bool checkBuffer();
             bool readBuffer();
-            
+
             CSVParserContext _context;
             std::istream& _stream;
             Types _types;
             CSVParserCallback& _callback;
-            
+
             State _state;
             Types::const_iterator _typeIterator;
             size_t _lineCount;

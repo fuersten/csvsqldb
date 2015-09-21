@@ -39,7 +39,7 @@
 
 namespace csvsqldb
 {
-    
+
     std::string tokenToString(eToken token)
     {
         switch(static_cast<csvsqldb::lexer::eToken>(token)) {
@@ -52,7 +52,7 @@ namespace csvsqldb
             case csvsqldb::lexer::EOI:
                 return "EOI";
         }
-        
+
         switch(token) {
             case TOK_NONE:
                 return "TOK_NONE";
@@ -275,21 +275,21 @@ namespace csvsqldb
         }
         throw std::runtime_error("just to make VC2013 happy");
     }
-    
+
     SQLLexer::SQLLexer(const std::string& input)
     : _lexer(std::bind(&SQLLexer::inspectToken, this, std::placeholders::_1))
     {
         initDefinitions();
         initKeywords();
-        
+
         _lexer.setInput(input);
     }
-    
+
     void SQLLexer::setInput(const std::string& input)
     {
         _lexer.setInput(input);
     }
-    
+
     void SQLLexer::initDefinitions()
     {
         _lexer.addDefinition("bool", R"([tT][rR][uU][eE])", TOK_CONST_BOOLEAN);
@@ -322,7 +322,7 @@ namespace csvsqldb
         _lexer.addDefinition("div", R"(/)", TOK_DIV);
         _lexer.addDefinition("mod", R"(%)", TOK_MOD);
     }
-    
+
     void SQLLexer::initKeywords()
     {
         _keywords["UNION"] = eToken(TOK_UNION);
@@ -413,11 +413,11 @@ namespace csvsqldb
         _keywords["EXEC"] = eToken(TOK_EXEC);
         _keywords["ARBITRARY"] = eToken(TOK_ARBITRARY);
     }
-    
+
     void SQLLexer::inspectToken(csvsqldb::lexer::Token& token)
     {
         CSVSQLDB_CLASSLOG(SQLLexer, 2, "Intercepted : " << token._value);
-        
+
         if(token._token == TOK_IDENTIFIER) {
             Keywords::const_iterator iter = _keywords.find(csvsqldb::toupper(token._value));
             if(iter != _keywords.end()) {
@@ -426,7 +426,7 @@ namespace csvsqldb
             }
         }
     }
-    
+
     csvsqldb::lexer::Token SQLLexer::next()
     {
         csvsqldb::lexer::Token tok = _lexer.next();
@@ -435,5 +435,4 @@ namespace csvsqldb
         }
         return tok;
     }
-    
 }

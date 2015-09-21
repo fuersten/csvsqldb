@@ -48,33 +48,32 @@
 
 namespace csvsqldb
 {
-    
+
     CSVSQLDB_DECLARE_EXCEPTION(StackMachineException, csvsqldb::Exception);
-    
+
     class CSVSQLDB_EXPORT VariableStore
     {
     public:
         VariableStore();
-        
+
         void addVariable(size_t index, const Variant& value);
-        
+
         const Variant& operator[](size_t index) const;
-        
+
     private:
         typedef std::vector<Variant> Variables;
-        
+
         Variables _variables;
     };
-    
-    
+
+
     class CSVSQLDB_EXPORT StackMachine
     {
     public:
         typedef std::pair<std::string, size_t> VariableIndex;
         typedef std::vector<VariableIndex> VariableMapping;
-        
-        enum OpCode
-        {
+
+        enum OpCode {
             ADD,
             AND,
             BETWEEN,
@@ -103,30 +102,32 @@ namespace csvsqldb
             PUSHVAR,
             SUB
         };
-        
-        struct CSVSQLDB_EXPORT Instruction
-        {
+
+        struct CSVSQLDB_EXPORT Instruction {
             Instruction(OpCode opCode)
             : _opCode(opCode)
             , _value(NONE)
             , _refCount(nullptr)
             , _r(nullptr)
-            {}
-            
+            {
+            }
+
             Instruction(OpCode opCode, Variant value)
             : _opCode(opCode)
             , _value(value)
             , _refCount(nullptr)
             , _r(nullptr)
-            {}
-            
+            {
+            }
+
             Instruction(OpCode opCode, csvsqldb::RegExp* r)
             : _opCode(opCode)
             , _value(NONE)
             , _refCount(new RefCount)
             , _r(r)
-            {}
-            
+            {
+            }
+
             Instruction(const Instruction& rhs)
             : _opCode(rhs._opCode)
             , _value(rhs._value)
@@ -137,7 +138,7 @@ namespace csvsqldb
                     _refCount->inc();
                 }
             }
-            
+
             ~Instruction()
             {
                 if(_refCount) {
@@ -148,25 +149,25 @@ namespace csvsqldb
                     }
                 }
             }
-            
+
             OpCode _opCode;
             Variant _value;
             RefCount* _refCount;
             csvsqldb::RegExp* _r;
         };
-        
+
         void addInstruction(const Instruction& instruction);
-        
+
         Variant& evaluate(const VariableStore& store, const FunctionRegistry& functions);
-        
+
         void reset();
-        
+
         void dump(std::ostream& stream) const;
-        
+
     private:
         typedef std::vector<Instruction> Instructions;
         typedef std::stack<Variant> ValueStack;
-        
+
         Variant& getTopValue();
         const Variant getNextValue();
         eOperationType mapOpCodeToBinaryOperationType(OpCode code)
@@ -208,7 +209,7 @@ namespace csvsqldb
                     CSVSQLDB_THROW(StackMachineException, "op code " << code << " not supported as binary operation type");
             }
         }
-        
+
         Instructions _instructions;
         ValueStack _valueStack;
     };

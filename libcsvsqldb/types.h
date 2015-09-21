@@ -48,66 +48,34 @@
 
 namespace csvsqldb
 {
-    
-    CSVSQLDB_DECLARE_EXCEPTION(SqlException,csvsqldb::Exception);
-    CSVSQLDB_DECLARE_EXCEPTION(SqlParserException,SqlException);
-    
-    
-    enum eDescriptionType
-    {
-        AST,
-        EXEC
-    };
-    
-    enum eOrder
-    {
-        ASC,
-        DESC
-    };
-    
-    enum eQuantifier
-    {
-        DISTINCT,
-        ALL
-    };
-    
+
+    CSVSQLDB_DECLARE_EXCEPTION(SqlException, csvsqldb::Exception);
+    CSVSQLDB_DECLARE_EXCEPTION(SqlParserException, SqlException);
+
+
+    enum eDescriptionType { AST, EXEC };
+
+    enum eOrder { ASC, DESC };
+
+    enum eQuantifier { DISTINCT, ALL };
+
     CSVSQLDB_EXPORT std::string orderToString(eOrder order);
-    
-    enum eType
-    {
-        NONE,
-        BOOLEAN,
-        INT,
-        REAL,
-        STRING,
-        DATE,
-        TIME,
-        TIMESTAMP
-    };
-    
+
+    enum eType { NONE, BOOLEAN, INT, REAL, STRING, DATE, TIME, TIMESTAMP };
+
     CSVSQLDB_EXPORT std::string typeToString(eType type);
     CSVSQLDB_EXPORT eType stringToType(const std::string& s);
     CSVSQLDB_EXPORT std::string printType(eType type, const csvsqldb::Any& value);
-    
+
     typedef std::vector<eType> Types;
-    
+
     typedef char* StringType;
-    
-    enum eAggregateFunction
-    {
-        SUM,
-        COUNT,
-        COUNT_STAR,
-        AVG,
-        MIN,
-        MAX,
-        ARBITRARY
-    };
-    
+
+    enum eAggregateFunction { SUM, COUNT, COUNT_STAR, AVG, MIN, MAX, ARBITRARY };
+
     CSVSQLDB_EXPORT std::string aggregateFunctionToString(eAggregateFunction aggregate);
-    
-    enum eJoinType
-    {
+
+    enum eJoinType {
         CROSS_JOIN,
         INNER_JOIN,
         NATURAL_JOIN,
@@ -118,113 +86,108 @@ namespace csvsqldb
         NATURAL_RIGHT_JOIN,
         NATURAL_FULL_JOIN
     };
-    
-    enum eNaturalJoinType
-    {
-        NATURAL,
-        LEFT,
-        RIGHT,
-        FULL
-    };
-    
+
+    enum eNaturalJoinType { NATURAL, LEFT, RIGHT, FULL };
+
     CSVSQLDB_EXPORT std::string naturalJoinToString(eNaturalJoinType joinType);
-    
-    struct CSVSQLDB_EXPORT TypedValue
-    {
+
+    struct CSVSQLDB_EXPORT TypedValue {
         TypedValue()
         : _type(NONE)
-        {}
-        
+        {
+        }
+
         TypedValue(eType type, const csvsqldb::Any& value)
         : _type(type)
         , _value(value)
-        {}
-        
+        {
+        }
+
         TypedValue(const TypedValue& rhs)
         : _type(rhs._type)
         , _value(rhs._value)
-        {}
-        
+        {
+        }
+
         static TypedValue createValue(eType type, const std::string& value);
-        
+
         eType _type;
         csvsqldb::Any _value;
     };
-    
+
     CSVSQLDB_EXPORT std::string printType(const TypedValue& value);
-    
+
     typedef std::vector<TypedValue> TypedValues;
-    
+
     typedef csvsqldb::int2type<NONE> NoneType;
-    
-    template<typename ctype>
+
+    template <typename ctype>
     inline eType ctype2eType()
     {
         return NONE;
     }
-    
-    template<>
+
+    template <>
     inline eType ctype2eType<NoneType>()
     {
         return NONE;
     }
-    
-    template<>
+
+    template <>
     inline eType ctype2eType<char>()
     {
         return STRING;
     }
-    
-    template<>
+
+    template <>
     inline eType ctype2eType<bool>()
     {
         return BOOLEAN;
     }
-    
-    template<>
+
+    template <>
     inline eType ctype2eType<int64_t>()
     {
         return INT;
     }
-    
-    template<>
+
+    template <>
     inline eType ctype2eType<double>()
     {
         return REAL;
     }
-    
-    template<>
+
+    template <>
     inline eType ctype2eType<std::string>()
     {
         return STRING;
     }
-    
-    template<>
+
+    template <>
     inline eType ctype2eType<StringType>()
     {
         return STRING;
     }
-    
-    template<>
+
+    template <>
     inline eType ctype2eType<csvsqldb::Date>()
     {
         return DATE;
     }
-    
-    template<>
+
+    template <>
     inline eType ctype2eType<csvsqldb::Time>()
     {
         return TIME;
     }
-    
-    template<>
+
+    template <>
     inline eType ctype2eType<csvsqldb::Timestamp>()
     {
         return TIMESTAMP;
     }
-    
-    enum eOperationType
-    {
+
+    enum eOperationType {
         OP_CONCAT,
         OP_ADD,
         OP_SUB,
@@ -249,9 +212,8 @@ namespace csvsqldb
         OP_IS,
         OP_ISNOT
     };
-    
+
     CSVSQLDB_EXPORT std::string operationTypeToString(eOperationType type);
-    
 }
 
 #endif

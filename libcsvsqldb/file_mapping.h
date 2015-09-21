@@ -48,47 +48,45 @@ namespace fs = boost::filesystem;
 
 namespace csvsqldb
 {
-    
+
     CSVSQLDB_DECLARE_EXCEPTION(MappingException, csvsqldb::Exception);
-    
-    
-    struct CSVSQLDB_EXPORT Mapping
-    {
+
+
+    struct CSVSQLDB_EXPORT Mapping {
         std::string _mapping;
         char _delimiter;
         bool _skipFirstLine;
     };
-    
-    
+
+
     class CSVSQLDB_EXPORT FileMapping
     {
     public:
         typedef std::vector<Mapping> Mappings;
-        
+
         FileMapping();
-        
+
         void initialize(const Mappings& mapping);
-        
+
         const Mapping& getMappingForTable(const std::string& tableName) const;
-        
+
         void mergeMapping(const FileMapping& mappings);
-        
+
         csvsqldb::StringVector asStringVector() const;
-        
+
         static FileMapping fromJson(std::istream& stream);
-        
+
         static std::string asJson(const std::string& tableName, const Mappings& mappings);
-        
+
         static void readFromPath(FileMapping& fileMapping, const fs::path& path);
-        
+
     private:
-        typedef std::map<std::string,Mapping> FileTableMapping;
-        
+        typedef std::map<std::string, Mapping> FileTableMapping;
+
         bool addMapping(const std::string& tableName, const Mapping& mapping);
-        
+
         FileTableMapping _fileTableMapping;
     };
-    
 }
 
 #endif

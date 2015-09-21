@@ -15,27 +15,26 @@ namespace csvsqldb
 {
     namespace detail
     {
-        struct tag {};
-        
-        struct any
-        {
+        struct tag {
+        };
+
+        struct any {
             template <typename T>
             any(T const&);
         };
-        
-        tag operator << (std::ostream&, any const&);
-        
+
+        tag operator<<(std::ostream&, any const&);
+
         typedef char yes;
-        typedef char (&no)[2];
-        
+        typedef char(&no)[2];
+
         no checkit(tag);
-        
+
         template <typename T>
         yes checkit(T const&);
-        
+
         template <typename T>
-        struct is_output_streamable_impl
-        {
+        struct is_output_streamable_impl {
             static typename std::remove_cv<typename std::remove_reference<T>::type>::type const& x;
             static const bool value = sizeof(checkit(std::cout << x)) == sizeof(yes);
         };

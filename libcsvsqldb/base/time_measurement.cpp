@@ -9,25 +9,25 @@
 //  Redistribution and use in source and binary forms, with or without modification, are permitted
 //  provided that the following conditions are met:
 //
-//  1. Redistributions of source code must retain the above copyright notice, this list of 
+//  1. Redistributions of source code must retain the above copyright notice, this list of
 //  conditions and the following disclaimer.
 //
-//  2. Redistributions in binary form must reproduce the above copyright notice, this list of 
-//  conditions and the following disclaimer in the documentation and/or other materials provided 
+//  2. Redistributions in binary form must reproduce the above copyright notice, this list of
+//  conditions and the following disclaimer in the documentation and/or other materials provided
 //  with the distribution.
 //
-//  3. Neither the name of the copyright holder nor the names of its contributors may be used to 
-//  endorse or promote products derived from this software without specific prior written 
+//  3. Neither the name of the copyright holder nor the names of its contributors may be used to
+//  endorse or promote products derived from this software without specific prior written
 //  permission.
 //
 //  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR
-//  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
+//  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY
 //  AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
-//  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
-//  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR 
-//  SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY 
-//  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
-//  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+//  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+//  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+//  SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+//  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+//  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
@@ -36,7 +36,7 @@
 
 namespace std
 {
-    std::ostream& operator<<(std::ostream &out, const csvsqldb::chrono::ProcessTimeDuration& duration)
+    std::ostream& operator<<(std::ostream& out, const csvsqldb::chrono::ProcessTimeDuration& duration)
     {
         out << "[user " << duration._user << "ms system " << duration._system << "ms real " << duration._real << "ms]";
         return out;
@@ -47,7 +47,7 @@ namespace csvsqldb
 {
     namespace chrono
     {
-        
+
         ProcessTimeDuration operator-(const ProcessTimePoint& lhs, const ProcessTimePoint& rhs)
         {
             ProcessTimeDuration duration;
@@ -56,12 +56,12 @@ namespace csvsqldb
             duration._system = lhs._system - rhs._system;
             return duration;
         }
-        
+
         ProcessTimePoint ProcessTimeClock::now()
         {
-			ProcessTimePoint timePoint;
+            ProcessTimePoint timePoint;
 
-#ifndef _MSC_VER // TODO LCF: find an adequat implementation for Windows
+#ifndef _MSC_VER    // TODO LCF: find an adequat implementation for Windows
             tms tm;
             clock_t clock_ticks = ::times(&tm);
             if(clock_ticks == static_cast<clock_t>(-1)) {
@@ -71,14 +71,14 @@ namespace csvsqldb
             if(factor == -1) {
                 CSVSQLDB_THROW(ChronoException, "chrono internal error");
             }
-            
+
             timePoint._real = static_cast<long>(clock_ticks) * factor;
             timePoint._user = static_cast<long>(tm.tms_utime + tm.tms_cutime) * factor;
             timePoint._system = static_cast<long>(tm.tms_stime + tm.tms_cstime) * factor;
 #else
-			timePoint._real = 0;
-			timePoint._system = 0;
-			timePoint._user = 0;
+            timePoint._real = 0;
+            timePoint._system = 0;
+            timePoint._user = 0;
 #endif
             return timePoint;
         }

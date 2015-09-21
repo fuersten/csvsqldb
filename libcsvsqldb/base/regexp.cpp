@@ -41,37 +41,24 @@
 
 namespace csvsqldb
 {
-    
-    enum eToken
-    {
-        STAR,
-        PLUS,
-        PIPE,
-        QUEST,
-        LPAREN,
-        RPAREN,
-        CHAR,
-        CHARCLASS,
-        CHARSET,
-        EOP
-    };
-    
+
+    enum eToken { STAR, PLUS, PIPE, QUEST, LPAREN, RPAREN, CHAR, CHARCLASS, CHARSET, EOP };
+
     typedef std::vector<std::string> Groups;
-    
-    struct CharacterSet
-    {
+
+    struct CharacterSet {
         bool _negate;
         Groups _groups;
     };
-    
+
     typedef std::list<CharacterSet> CharacterSets;
-    
-    struct Token
-    {
+
+    struct Token {
         Token()
         : _token(EOP)
-        {}
-        
+        {
+        }
+
         std::string tostring() const
         {
             switch(_token) {
@@ -89,20 +76,20 @@ namespace csvsqldb
                     return ")";
                 case CHAR:
                 case CHARCLASS:
-                    return std::string(1,_lexeme);
+                    return std::string(1, _lexeme);
                 case CHARSET:
                     return "[]";
                 case EOP:
                     return "eop";
             }
         }
-        
+
         eToken _token;
         char _lexeme;
         CharacterSet _charSet;
     };
-    
-    
+
+
     class CharacterSetParser
     {
     public:
@@ -114,7 +101,7 @@ namespace csvsqldb
         {
             _negate = false;
         }
-        
+
         void parse()
         {
             char c = nextChar();
@@ -126,18 +113,18 @@ namespace csvsqldb
                 _groups.push_back("-");
                 c = nextChar();
             }
-            
+
             findSets(c);
         }
-        
+
         bool& _negate;
         Groups& _groups;
-        
+
     private:
         void findSets(char c)
         {
             std::string group;
-            
+
             while(c != ']') {
                 if(c == '\\') {
                     c = nextChar();
@@ -165,21 +152,21 @@ namespace csvsqldb
             }
             _groups.push_back(group);
         }
-        
+
         char nextChar()
         {
             ++_iter;
             if(_iter == _end) {
                 CSVSQLDB_THROW(RegExpException, "invalid expression");
             }
-            
+
             return *_iter;
         }
-        
+
         std::string::iterator& _iter;
         std::string::iterator _end;
     };
-    
+
     class Lexer
     {
     public:
@@ -188,11 +175,11 @@ namespace csvsqldb
         {
             _iter = _s.begin();
         }
-        
+
         Token nextToken()
         {
             Token token;
-            
+
             if(*_iter == '*') {
                 token._token = STAR;
             } else if(*_iter == '+') {
@@ -205,32 +192,29 @@ namespace csvsqldb
                 token._token = LPAREN;
             } else if(*_iter == ')') {
                 token._token = RPAREN;
-            } else if( (*_iter >= '0' && *_iter <= '9') ||
-                      (*_iter >= 'A' && *_iter <= 'Z') ||
-                      (*_iter >= 'a' && *_iter <= 'z') ||
-                      (*_iter == ' ') ||
-                      (*_iter == '!') ||
-                      (*_iter == '"') ||
-                      (*_iter == '#') ||
-                      (*_iter == '$') ||
-                      (*_iter == '%') ||
-                      (*_iter == '&') ||
-                      (*_iter == '\'') ||
-                      (*_iter == ',') ||
-                      (*_iter == '-') ||
-                      (*_iter == '/') ||
-                      (*_iter == ':') ||
-                      (*_iter == ';') ||
-                      (*_iter == '<') ||
-                      (*_iter == '=') ||
-                      (*_iter == '>') ||
-                      (*_iter == '@') ||
-                      (*_iter == '_') ||
-                      (*_iter == '`') ||
-                      (*_iter == '{') ||
-                      (*_iter == '}') ||
-                      (*_iter == '~')
-                      ) {
+            } else if((*_iter >= '0' && *_iter <= '9') || (*_iter >= 'A' && *_iter <= 'Z') || (*_iter >= 'a' && *_iter <= 'z')
+                      || (*_iter == ' ')
+                      || (*_iter == '!')
+                      || (*_iter == '"')
+                      || (*_iter == '#')
+                      || (*_iter == '$')
+                      || (*_iter == '%')
+                      || (*_iter == '&')
+                      || (*_iter == '\'')
+                      || (*_iter == ',')
+                      || (*_iter == '-')
+                      || (*_iter == '/')
+                      || (*_iter == ':')
+                      || (*_iter == ';')
+                      || (*_iter == '<')
+                      || (*_iter == '=')
+                      || (*_iter == '>')
+                      || (*_iter == '@')
+                      || (*_iter == '_')
+                      || (*_iter == '`')
+                      || (*_iter == '{')
+                      || (*_iter == '}')
+                      || (*_iter == '~')) {
                 token._token = CHAR;
                 token._lexeme = *_iter;
             } else if(*_iter == '.') {
@@ -262,93 +246,82 @@ namespace csvsqldb
                 CSVSQLDB_THROW(RegExpException, "unrecognized sequence " << *_iter);
             }
             ++_iter;
-            
+
             return token;
         }
-        
+
     private:
         std::string _s;
         std::string::iterator _iter;
     };
-    
-    
-    struct Transition
-    {
-        enum eType
-        {
-            Char,
-            CharClass,
-            CharSet,
-            Epsilon
-        };
-        
+
+
+    struct Transition {
+        enum eType { Char, CharClass, CharSet, Epsilon };
+
         Transition(eType type, char c)
         : _c(c)
         , _charSet(0)
         , _type(type)
         {
         }
-        
+
         Transition(const CharacterSet* charSet)
         : _charSet(charSet)
         , _type(CharSet)
         {
         }
-        
+
         char _c;
         const CharacterSet* _charSet;
         eType _type;
     };
-    
+
     class State
     {
     public:
-        enum eType
-        {
-            Accept,
-            Final
-        };
-        
+        enum eType { Accept, Final };
+
         State(eType type = Accept, char c = 0, Transition::eType tranType = Transition::Char)
         : _out1(NULL)
         , _out2(NULL)
         , _end(NULL)
         , _type(type)
         , _tran(tranType, c)
-        {}
-        
+        {
+        }
+
         State(const CharacterSet* charSet)
         : _out1(NULL)
         , _out2(NULL)
         , _end(NULL)
         , _type(Accept)
         , _tran(charSet)
-        {}
-        
+        {
+        }
+
         bool accept() const
         {
             return _type == Accept;
         }
-        
+
         bool final() const
         {
             return _type == Final;
         }
-        
+
         bool epsilon() const
         {
             return _tran._type == Transition::Epsilon;
         }
-        
+
         bool match(char c) const
         {
-            switch (_tran._type) {
-                case Transition::Char:
-                {
+            switch(_tran._type) {
+                case Transition::Char: {
                     return _tran._c == c;
                 }
-                case Transition::CharClass:
-                {
+                case Transition::CharClass: {
                     if(_tran._c == '.') {
                         return true;
                     } else if(_tran._c == 'W') {
@@ -360,15 +333,14 @@ namespace csvsqldb
                     }
                     break;
                 }
-                case Transition::CharSet:
-                {
+                case Transition::CharSet: {
                     Groups groups = _tran._charSet->_groups;
                     bool negate = _tran._charSet->_negate;
-                    
+
                     while(!groups.empty()) {
                         std::string group = groups.back();
                         groups.pop_back();
-                        
+
                         if(group[0] == 'R') {
                             char left = group[1];
                             char right = group[2];
@@ -383,74 +355,72 @@ namespace csvsqldb
                             }
                         }
                     }
-                    
+
                     return negate;
                 }
-                case Transition::Epsilon:
-                {
+                case Transition::Epsilon: {
                     CSVSQLDB_THROW(RegExpException, "wrong state");
                 }
             }
             return false;
         }
-        
+
         void setEpsilon()
         {
             _tran._type = Transition::Epsilon;
         }
-        
+
         void setAccept()
         {
             _type = Accept;
             _tran._type = Transition::Epsilon;
         }
-        
+
         State* _out1;
         State* _out2;
         State* _end;
-        
+
     private:
         eType _type;
         Transition _tran;
         static const std::string groupS;
     };
-    
+
     const std::string State::groupS = " \t\r\n";
-    
-    
-    
+
+
     class Parser
     {
     public:
         typedef std::list<State> States;
         typedef std::vector<State*> WorkStates;
-        
+
         Parser(const std::string& s)
         : _lexer(s)
         {
         }
-        
+
         void parse()
         {
             _tok = _lexer.nextToken();
             _start = expression();
         }
-        
+
         bool match(const char* s) const
         {
             if(_states.empty()) {
                 return ::strlen(s) == 0;
             }
-            
+
             WorkStates workStates;
             eClosure(workStates, _start);
-            
+
             WorkStates tmpStates;
             while(*s) {
                 while(!workStates.empty()) {
                     State* current = workStates.back();
                     workStates.pop_back();
-                    
+
                     if(current->accept() && current->match(*s)) {
                         eClosure(tmpStates, current->_out1);
                         eClosure(tmpStates, current->_out2);
@@ -464,20 +434,20 @@ namespace csvsqldb
             while(!workStates.empty()) {
                 State* current = workStates.back();
                 workStates.pop_back();
-                
+
                 if(current->final()) {
                     return true;
                 }
             }
-            
+
             return false;
         }
-        
+
         bool match(const std::string& s) const
         {
             return match(s.c_str());
         }
-        
+
     private:
         void eClosure(WorkStates& states, State* state) const
         {
@@ -498,105 +468,105 @@ namespace csvsqldb
                 }
             }
         }
-        
+
         State* expression()
         {
             State* state = factor();
             if(_tok._token == PIPE) {
                 _tok = _lexer.nextToken();
                 State* rhs = expression();
-                
+
                 State s(State::Accept);
                 State f(State::Final);
                 _states.push_back(f);
-                
+
                 s.setEpsilon();
                 s._out1 = state;
                 s._out2 = rhs;
                 s._end = &_states.back();
-                
+
                 state->_end->_out1 = s._end;
                 state->_end->setAccept();
                 rhs->_end->_out1 = s._end;
                 rhs->_end->setAccept();
-                
+
                 _states.push_back(s);
-                
+
                 state = &_states.back();
             }
-            
+
             if(_tok._token == STAR) {
                 _tok = _lexer.nextToken();
-                
+
                 State s(State::Accept);
                 State f(State::Final);
                 _states.push_back(f);
-                
+
                 s.setEpsilon();
                 s._out1 = state;
                 s._out2 = &_states.back();
                 s._end = &_states.back();
-                
+
                 state->_end->_out1 = state;
                 state->_end->_out2 = s._end;
                 state->_end->setAccept();
-                
+
                 _states.push_back(s);
-                
+
                 state = &_states.back();
             } else if(_tok._token == PLUS) {
                 _tok = _lexer.nextToken();
-                
+
                 State s(State::Accept);
                 State f(State::Final);
                 _states.push_back(f);
-                
+
                 s.setEpsilon();
                 s._out1 = state;
                 s._end = &_states.back();
-                
+
                 state->_end->_out1 = state;
                 state->_end->_out2 = s._end;
                 state->_end->setAccept();
-                
+
                 _states.push_back(s);
-                
+
                 state = &_states.back();
             } else if(_tok._token == QUEST) {
                 _tok = _lexer.nextToken();
-                
+
                 State s(State::Accept);
                 State f(State::Final);
                 _states.push_back(f);
-                
+
                 s.setEpsilon();
                 s._out1 = state;
                 s._out2 = &_states.back();
                 s._end = &_states.back();
-                
+
                 state->_end->_out1 = s._end;
                 state->_end->setAccept();
-                
+
                 _states.push_back(s);
-                
+
                 state = &_states.back();
             }
-            
+
             if(_tok._token != RPAREN && _tok._token != EOP) {
                 State* rhs = expression();
-                
+
                 state->_end->_out1 = rhs;
                 state->_end->setAccept();
                 state->_end = rhs->_end;
             }
-            
+
             return state;
         }
-        
+
         State* factor()
         {
             State* state = 0;
-            
+
             if(_tok._token == LPAREN) {
                 _tok = _lexer.nextToken();
                 state = expression();
@@ -608,99 +578,98 @@ namespace csvsqldb
             } else if(_tok._token == CHAR) {
                 State f(State::Final);
                 _states.push_back(f);
-                
+
                 State s(State::Accept, _tok._lexeme, Transition::Char);
                 s._out1 = &_states.back();
                 s._end = &_states.back();
                 _states.push_back(s);
                 state = &_states.back();
-                
+
                 _tok = _lexer.nextToken();
             } else if(_tok._token == CHARCLASS) {
                 State f(State::Final);
                 _states.push_back(f);
-                
+
                 State s(State::Accept, _tok._lexeme, Transition::CharClass);
                 s._out1 = &_states.back();
                 s._end = &_states.back();
                 _states.push_back(s);
                 state = &_states.back();
-                
+
                 _tok = _lexer.nextToken();
             } else if(_tok._token == CHARSET) {
                 State f(State::Final);
                 _states.push_back(f);
-                
+
                 _charSets.push_back(_tok._charSet);
-                
+
                 State s(&_charSets.back());
                 s._out1 = &_states.back();
                 s._end = &_states.back();
                 _states.push_back(s);
                 state = &_states.back();
-                
+
                 _tok = _lexer.nextToken();
             }
-            
+
             return state;
         }
-        
+
         Lexer _lexer;
         Token _tok;
         States _states;
         State* _start;
         CharacterSets _charSets;
     };
-    
-    
-    struct RegExp::Private
-    {
+
+
+    struct RegExp::Private {
         Private(const std::string& s)
         : _parser(s)
         , _regex(s)
-        {}
-        
+        {
+        }
+
         Parser _parser;
         std::string _regex;
     };
-    
+
     RegExp::RegExp()
     : _m(new Private(""))
     {
         _m->_parser.parse();
     }
-    
+
     RegExp::~RegExp()
     {
     }
-    
+
     RegExp::RegExp(const std::string& s)
     : _m(new Private(s))
     {
         _m->_parser.parse();
     }
-    
+
     RegExp::RegExp(const RegExp& e)
     : _m(new Private(e._m->_regex))
     {
         _m->_parser.parse();
     }
-    
+
     RegExp& RegExp::operator=(const std::string& s)
     {
         _m.reset(new Private(s));
         _m->_parser.parse();
         return *this;
     }
-    
+
     bool RegExp::match(const std::string& s) const
     {
         return _m->_parser.match(s);
     }
-    
+
     bool RegExp::match(const char* s) const
     {
         return _m->_parser.match(s);
     }
-    
 }

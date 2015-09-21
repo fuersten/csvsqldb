@@ -8,25 +8,25 @@
 //  Redistribution and use in source and binary forms, with or without modification, are permitted
 //  provided that the following conditions are met:
 //
-//  1. Redistributions of source code must retain the above copyright notice, this list of 
+//  1. Redistributions of source code must retain the above copyright notice, this list of
 //  conditions and the following disclaimer.
 //
-//  2. Redistributions in binary form must reproduce the above copyright notice, this list of 
-//  conditions and the following disclaimer in the documentation and/or other materials provided 
+//  2. Redistributions in binary form must reproduce the above copyright notice, this list of
+//  conditions and the following disclaimer in the documentation and/or other materials provided
 //  with the distribution.
 //
-//  3. Neither the name of the copyright holder nor the names of its contributors may be used to 
-//  endorse or promote products derived from this software without specific prior written 
+//  3. Neither the name of the copyright holder nor the names of its contributors may be used to
+//  endorse or promote products derived from this software without specific prior written
 //  permission.
 //
 //  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR
-//  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
+//  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY
 //  AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
-//  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
-//  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR 
-//  SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY 
-//  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
-//  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+//  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+//  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+//  SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+//  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+//  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
@@ -38,7 +38,6 @@
 #include "libcsvsqldb/buildin_functions.h"
 
 
-
 class BuildinFunctionsTestCase
 {
 public:
@@ -46,15 +45,15 @@ public:
     {
         initBuildInFunctions(_registry);
     }
-    
+
     void setUp()
     {
     }
-    
+
     void tearDown()
     {
     }
-    
+
     void buildinDateFunctionsTest()
     {
         csvsqldb::Function::Ptr function = _registry.getFunction("CURRENT_DATE");
@@ -64,14 +63,14 @@ public:
         csvsqldb::Variants parameter;
         csvsqldb::Variant result = function->call(parameter);
         MPF_TEST_ASSERTEQUAL(csvsqldb::DATE, result.getType());
-        
+
         function = _registry.getFunction("CURRENT_TIME");
         MPF_TEST_ASSERT(function);
         MPF_TEST_ASSERTEQUAL("CURRENT_TIME", function->getName());
         MPF_TEST_ASSERTEQUAL(csvsqldb::TIME, function->getReturnType());
         result = function->call(parameter);
         MPF_TEST_ASSERTEQUAL(csvsqldb::TIME, result.getType());
-        
+
         function = _registry.getFunction("EXTRACT");
         MPF_TEST_ASSERT(function);
         MPF_TEST_ASSERTEQUAL("EXTRACT", function->getName());
@@ -81,27 +80,27 @@ public:
         result = function->call(parameter);
         MPF_TEST_ASSERTEQUAL(csvsqldb::INT, result.getType());
         MPF_TEST_ASSERTEQUAL(9, result.asInt());
-        
+
         parameter[0] = csvsqldb::Variant(6);
         result = function->call(parameter);
         MPF_TEST_ASSERTEQUAL(csvsqldb::INT, result.getType());
         MPF_TEST_ASSERTEQUAL(1970, result.asInt());
-        
+
         parameter[0] = csvsqldb::Variant(4);
         result = function->call(parameter);
         MPF_TEST_ASSERTEQUAL(csvsqldb::INT, result.getType());
         MPF_TEST_ASSERTEQUAL(23, result.asInt());
-        
+
         parameter[0] = csvsqldb::Variant(3);
         result = function->call(parameter);
         MPF_TEST_ASSERTEQUAL(csvsqldb::INT, result.getType());
         MPF_TEST_ASSERTEQUAL(8, result.asInt());
-        
+
         parameter[0] = csvsqldb::Variant(2);
         result = function->call(parameter);
         MPF_TEST_ASSERTEQUAL(csvsqldb::INT, result.getType());
         MPF_TEST_ASSERTEQUAL(9, result.asInt());
-        
+
         parameter[0] = csvsqldb::Variant(1);
         result = function->call(parameter);
         MPF_TEST_ASSERTEQUAL(csvsqldb::INT, result.getType());
@@ -117,7 +116,7 @@ public:
         result = function->call(parameter);
         MPF_TEST_ASSERTEQUAL(csvsqldb::STRING, result.getType());
         MPF_TEST_ASSERTEQUAL("23.09.1970 266 39 3", result);
-        
+
         function = _registry.getFunction("TIME_FORMAT");
         MPF_TEST_ASSERT(function);
         MPF_TEST_ASSERTEQUAL("TIME_FORMAT", function->getName());
@@ -128,7 +127,7 @@ public:
         result = function->call(parameter);
         MPF_TEST_ASSERTEQUAL(csvsqldb::STRING, result.getType());
         MPF_TEST_ASSERTEQUAL("08@09@11", result);
-        
+
         function = _registry.getFunction("TIMESTAMP_FORMAT");
         MPF_TEST_ASSERT(function);
         MPF_TEST_ASSERTEQUAL("TIMESTAMP_FORMAT", function->getName());
@@ -140,7 +139,7 @@ public:
         MPF_TEST_ASSERTEQUAL(csvsqldb::STRING, result.getType());
         MPF_TEST_ASSERTEQUAL("1970@09@23T@08@09@11", result);
     }
-    
+
     void buildinStringFunctionsTest()
     {
         csvsqldb::Function::Ptr function = _registry.getFunction("UPPER");
@@ -152,7 +151,7 @@ public:
         csvsqldb::Variant result = function->call(parameter);
         MPF_TEST_ASSERTEQUAL(csvsqldb::STRING, result.getType());
         MPF_TEST_ASSERTEQUAL("LARS", result);
-        
+
         function = _registry.getFunction("LOWER");
         MPF_TEST_ASSERT(function);
         MPF_TEST_ASSERTEQUAL("LOWER", function->getName());
@@ -160,7 +159,7 @@ public:
         result = function->call(parameter);
         MPF_TEST_ASSERTEQUAL(csvsqldb::STRING, result.getType());
         MPF_TEST_ASSERTEQUAL("lars", result);
-        
+
         function = _registry.getFunction("CHARACTER_LENGTH");
         MPF_TEST_ASSERT(function);
         MPF_TEST_ASSERTEQUAL("CHARACTER_LENGTH", function->getName());
@@ -177,7 +176,7 @@ public:
         MPF_TEST_ASSERTEQUAL(csvsqldb::INT, result.getType());
         MPF_TEST_ASSERTEQUAL(4, result);
     }
-    
+
     void buildinMathFunctionsTest()
     {
         csvsqldb::Function::Ptr function = _registry.getFunction("POW");
@@ -191,7 +190,7 @@ public:
         MPF_TEST_ASSERTEQUAL(csvsqldb::REAL, result.getType());
         MPF_TEST_ASSERT(csvsqldb::compare(100.0, result.asDouble()));
     }
-    
+
     csvsqldb::FunctionRegistry _registry;
 };
 

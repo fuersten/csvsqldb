@@ -42,17 +42,16 @@
 
 namespace csvsqldb
 {
-    
+
     CSVSQLDB_EXPORT Variant binaryOperation(eOperationType op, const Variant& lhs, const Variant& rhs);
-    
+
     CSVSQLDB_EXPORT Variant unaryOperation(eOperationType op, eType retType, const Variant& rhs);
-    
+
     CSVSQLDB_EXPORT eType inferTypeOfBinaryOperation(eOperationType op, eType lhs, eType rhs);
-    
+
     CSVSQLDB_EXPORT eType inferTypeOfUnaryOperation(eOperationType op, eType retType, eType rhs);
-    
+
     CSVSQLDB_EXPORT void initTypeSystem();
-    
 }
 
 #endif

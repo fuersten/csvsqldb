@@ -36,12 +36,12 @@
 
 namespace csvsqldb
 {
-    
+
     void FunctionRegistry::registerFunction(const Function::Ptr& function)
     {
         _functions.emplace(function->getName(), function);
     }
-    
+
     Function::Ptr FunctionRegistry::getFunction(const std::string& funcname) const
     {
         Functions::const_iterator iter = _functions.find(funcname);
@@ -50,5 +50,4 @@ namespace csvsqldb
         }
         return iter->second;
     }
-    
 }

@@ -36,7 +36,7 @@
 
 namespace csvsqldb
 {
-    
+
     AggregationFunctionPtr AggregationFunction::create(eAggregateFunction aggrFunc, eType type)
     {
         switch(aggrFunc) {
@@ -57,21 +57,21 @@ namespace csvsqldb
         }
         throw std::runtime_error("just to make VC2013 happy");
     }
-    
+
     AggregationFunction* CountAggregationFunction::clone(BlockPtr block) const
     {
         if(!block->hasSizeFor(sizeof(CountAggregationFunction))) {
             return nullptr;
         }
-        AggregationFunction* tmp = new (block->getRawBuffer()) CountAggregationFunction();
+        AggregationFunction* tmp = new(block->getRawBuffer()) CountAggregationFunction();
         block->moveOffset(sizeof(CountAggregationFunction));
         return tmp;
     }
-    
+
     void CountAggregationFunction::doInit()
     {
     }
-    
+
     void CountAggregationFunction::doStep(const Variant& value)
     {
         if(!value.isNull()) {
@@ -82,52 +82,52 @@ namespace csvsqldb
             }
         }
     }
-    
+
     const Variant& CountAggregationFunction::doFinalize()
     {
         return _count;
     }
-    
-    
+
+
     AggregationFunction* RowCountAggregationFunction::clone(BlockPtr block) const
     {
         if(!block->hasSizeFor(sizeof(RowCountAggregationFunction))) {
             return nullptr;
         }
-        AggregationFunction* tmp = new (block->getRawBuffer()) RowCountAggregationFunction();
+        AggregationFunction* tmp = new(block->getRawBuffer()) RowCountAggregationFunction();
         block->moveOffset(sizeof(RowCountAggregationFunction));
         return tmp;
     }
-    
+
     void RowCountAggregationFunction::doInit()
     {
     }
-    
+
     void RowCountAggregationFunction::doStep(const Variant& value)
     {
         _count += 1;
     }
-    
+
     const Variant& RowCountAggregationFunction::doFinalize()
     {
         return _count;
     }
-    
-    
+
+
     AggregationFunction* PaththroughAggregationFunction::clone(BlockPtr block) const
     {
         if(!block->hasSizeFor(sizeof(PaththroughAggregationFunction))) {
             return nullptr;
         }
-        AggregationFunction* tmp = new (block->getRawBuffer()) PaththroughAggregationFunction(_suppress);
+        AggregationFunction* tmp = new(block->getRawBuffer()) PaththroughAggregationFunction(_suppress);
         block->moveOffset(sizeof(PaththroughAggregationFunction));
         return tmp;
     }
-    
+
     void PaththroughAggregationFunction::doInit()
     {
     }
-    
+
     void PaththroughAggregationFunction::doStep(const Variant& value)
     {
         if(_value.getType() == NONE) {
@@ -135,27 +135,27 @@ namespace csvsqldb
             _value.disconnect();
         }
     }
-    
+
     const Variant& PaththroughAggregationFunction::doFinalize()
     {
         return _value;
     }
-    
-    
+
+
     AggregationFunction* SumAggregationFunction::clone(BlockPtr block) const
     {
         if(!block->hasSizeFor(sizeof(SumAggregationFunction))) {
             return nullptr;
         }
-        AggregationFunction* tmp = new (block->getRawBuffer()) SumAggregationFunction(_sum.getType());
+        AggregationFunction* tmp = new(block->getRawBuffer()) SumAggregationFunction(_sum.getType());
         block->moveOffset(sizeof(SumAggregationFunction));
         return tmp;
     }
-    
+
     void SumAggregationFunction::doInit()
     {
     }
-    
+
     void SumAggregationFunction::doStep(const Variant& value)
     {
         if(!value.isNull()) {
@@ -166,27 +166,27 @@ namespace csvsqldb
             }
         }
     }
-    
+
     const Variant& SumAggregationFunction::doFinalize()
     {
         return _sum;
     }
-    
-    
+
+
     AggregationFunction* AvgAggregationFunction::clone(BlockPtr block) const
     {
         if(!block->hasSizeFor(sizeof(AvgAggregationFunction))) {
             return nullptr;
         }
-        AggregationFunction* tmp = new (block->getRawBuffer()) AvgAggregationFunction(_sum.getType());
+        AggregationFunction* tmp = new(block->getRawBuffer()) AvgAggregationFunction(_sum.getType());
         block->moveOffset(sizeof(AvgAggregationFunction));
         return tmp;
     }
-    
+
     void AvgAggregationFunction::doInit()
     {
     }
-    
+
     void AvgAggregationFunction::doStep(const Variant& value)
     {
         if(!value.isNull()) {
@@ -198,7 +198,7 @@ namespace csvsqldb
             _count += 1;
         }
     }
-    
+
     const Variant& AvgAggregationFunction::doFinalize()
     {
         if(!_sum.isNull()) {
@@ -206,22 +206,22 @@ namespace csvsqldb
         }
         return _sum;
     }
-    
-    
+
+
     AggregationFunction* MinAggregationFunction::clone(BlockPtr block) const
     {
         if(!block->hasSizeFor(sizeof(MinAggregationFunction))) {
             return nullptr;
         }
-        AggregationFunction* tmp = new (block->getRawBuffer()) MinAggregationFunction(_value.getType());
+        AggregationFunction* tmp = new(block->getRawBuffer()) MinAggregationFunction(_value.getType());
         block->moveOffset(sizeof(MinAggregationFunction));
         return tmp;
     }
-    
+
     void MinAggregationFunction::doInit()
     {
     }
-    
+
     void MinAggregationFunction::doStep(const Variant& value)
     {
         if(!value.isNull()) {
@@ -235,27 +235,27 @@ namespace csvsqldb
             }
         }
     }
-    
+
     const Variant& MinAggregationFunction::doFinalize()
     {
         return _value;
     }
-    
-    
+
+
     AggregationFunction* MaxAggregationFunction::clone(BlockPtr block) const
     {
         if(!block->hasSizeFor(sizeof(MaxAggregationFunction))) {
             return nullptr;
         }
-        AggregationFunction* tmp = new (block->getRawBuffer()) MaxAggregationFunction(_value.getType());
+        AggregationFunction* tmp = new(block->getRawBuffer()) MaxAggregationFunction(_value.getType());
         block->moveOffset(sizeof(MaxAggregationFunction));
         return tmp;
     }
-    
+
     void MaxAggregationFunction::doInit()
     {
     }
-    
+
     void MaxAggregationFunction::doStep(const Variant& value)
     {
         if(!value.isNull()) {
@@ -269,27 +269,27 @@ namespace csvsqldb
             }
         }
     }
-    
+
     const Variant& MaxAggregationFunction::doFinalize()
     {
         return _value;
     }
-    
-    
+
+
     AggregationFunction* ArbitraryAggregationFunction::clone(BlockPtr block) const
     {
         if(!block->hasSizeFor(sizeof(ArbitraryAggregationFunction))) {
             return nullptr;
         }
-        AggregationFunction* tmp = new (block->getRawBuffer()) ArbitraryAggregationFunction(_value.getType());
+        AggregationFunction* tmp = new(block->getRawBuffer()) ArbitraryAggregationFunction(_value.getType());
         block->moveOffset(sizeof(ArbitraryAggregationFunction));
         return tmp;
     }
-    
+
     void ArbitraryAggregationFunction::doInit()
     {
     }
-    
+
     void ArbitraryAggregationFunction::doStep(const Variant& value)
     {
         if(!value.isNull()) {
@@ -299,10 +299,9 @@ namespace csvsqldb
             }
         }
     }
-    
+
     const Variant& ArbitraryAggregationFunction::doFinalize()
     {
         return _value;
     }
-    
 }

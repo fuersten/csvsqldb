@@ -40,41 +40,43 @@
 
 namespace csvsqldb
 {
-    
+
     TableData::TableData(const std::string& tableName)
     : _tableName(tableName)
     {
     }
-    
+
     bool TableData::hasColumn(const std::string& name) const
     {
-        Columns::const_iterator iter = std::find_if(_columns.begin(), _columns.end(), [&name](const Column& col) { return name == col._name; });
+        Columns::const_iterator iter =
+        std::find_if(_columns.begin(), _columns.end(), [&name](const Column& col) { return name == col._name; });
         if(iter == _columns.end()) {
             return false;
         }
         return true;
     }
-    
+
     const TableData::Column& TableData::getColumn(const std::string& name) const
     {
-        Columns::const_iterator iter = std::find_if(_columns.begin(), _columns.end(), [&name](const Column& col) { return name == col._name; });
+        Columns::const_iterator iter =
+        std::find_if(_columns.begin(), _columns.end(), [&name](const Column& col) { return name == col._name; });
         if(iter == _columns.end()) {
             CSVSQLDB_THROW(SqlException, "column '" << name << "' not found in table " << _tableName);
         }
         return *iter;
     }
-    
+
     const TableData::Column& TableData::getColumn(size_t index) const
     {
         if(index >= _columns.size()) {
             CSVSQLDB_THROW(csvsqldb::IndexException, "index '" << index << "' is out of range");
         }
-        
+
         return _columns[index];
     }
-    
-    void TableData::addColumn(const std::string name, eType type, bool primaryKey, bool unique, bool notNull,
-                              csvsqldb::Any defaultValue, const ASTExprNodePtr& check, uint32_t length)
+
+    void TableData::addColumn(
+    const std::string name, eType type, bool primaryKey, bool unique, bool notNull, csvsqldb::Any defaultValue, const ASTExprNodePtr& check, uint32_t length)
     {
         Column column;
         column._name = name;
@@ -85,24 +87,24 @@ namespace csvsqldb
         column._defaultValue = defaultValue;
         column._check = check;
         column._length = length;
-        
+
         _columns.push_back(column);
     }
-    
+
     void TableData::addConstraint(const csvsqldb::StringVector& primaryKey, const csvsqldb::StringVector& unique, const ASTExprNodePtr& check)
     {
         TableConstraint constraint;
         constraint._primaryKey = primaryKey;
         constraint._unique = unique;
         constraint._check = check;
-        
+
         _constraints.push_back(constraint);
     }
-    
+
     std::string TableData::asJson() const
     {
         std::stringstream table;
-        
+
         table << "{ \"Table\" :\n  { \"name\" : \"" << _tableName << "\",\n    \"columns\" : [\n";
         int n = 0;
         for(const auto& column : _columns) {
@@ -189,10 +191,10 @@ namespace csvsqldb
             ++m;
         }
         table << "\n    ]\n  }\n}";
-        
+
         return table.str();
     }
-    
+
     TableData TableData::fromJson(std::istream& stream)
     {
         std::shared_ptr<csvsqldb::json::JsonObjectCallback> callback = std::make_shared<csvsqldb::json::JsonObjectCallback>();
@@ -201,9 +203,9 @@ namespace csvsqldb
         const csvsqldb::json::JsonObject& obj = callback->getObject();
         csvsqldb::json::JsonObject table = obj["Table"];
         std::string tableName = table["name"].getAsString();
-        
+
         TableData tabledata(tableName);
-        
+
         const csvsqldb::json::JsonObject::ObjectArray& columns = table["columns"].getArray();
         for(const auto& column : columns) {
             std::string name = column["name"].getAsString();
@@ -246,21 +248,26 @@ namespace csvsqldb
             }
             tabledata.addConstraint(primary, unique, check);
         }
-        
+
         return tabledata;
     }
-    
+
     TableData TableData::fromCreateAST(const ASTCreateTableNodePtr& createNode)
     {
         TableData tabledata(createNode->_tableName);
         for(const auto& definition : createNode->_columnDefinitions) {
-            tabledata.addColumn(definition._name, definition._type, definition._primaryKey, definition._unique,
-                                definition._notNull, definition._defaultValue, definition._check, definition._length);
+            tabledata.addColumn(definition._name,
+                                definition._type,
+                                definition._primaryKey,
+                                definition._unique,
+                                definition._notNull,
+                                definition._defaultValue,
+                                definition._check,
+                                definition._length);
         }
         for(const auto& constraint : createNode->_tableConstraints) {
             tabledata.addConstraint(constraint._primaryKeys, constraint._uniqueKeys, constraint._check);
         }
         return tabledata;
     }
-    
 }

@@ -42,14 +42,14 @@
 
 namespace csvsqldb
 {
-    
+
     CSVSQLDB_IMPLEMENT_EXCEPTION(MappingException, csvsqldb::Exception);
-    
-    
+
+
     FileMapping::FileMapping()
     {
     }
-    
+
     void FileMapping::initialize(const Mappings& mapping)
     {
         boost::regex r(R"((.+)->([a-zA-Z_]+))");
@@ -58,12 +58,12 @@ namespace csvsqldb
             if(!regex_match(keyValue._mapping, match, r)) {
                 CSVSQLDB_THROW(MappingException, "not a valid file to table mapping '" << keyValue._mapping << "'");
             } else {
-                Mapping map = { match.str(1), keyValue._delimiter, keyValue._skipFirstLine };
+                Mapping map = {match.str(1), keyValue._delimiter, keyValue._skipFirstLine};
                 _fileTableMapping.insert(std::make_pair(csvsqldb::toupper_copy(match.str(2)), map));
             }
         }
     }
-    
+
     bool FileMapping::addMapping(const std::string& tableName, const Mapping& mapping)
     {
         FileTableMapping::const_iterator iter = _fileTableMapping.find(csvsqldb::toupper_copy(tableName));
@@ -73,7 +73,7 @@ namespace csvsqldb
         }
         return false;
     }
-    
+
     const Mapping& FileMapping::getMappingForTable(const std::string& tableName) const
     {
         FileTableMapping::const_iterator iter = _fileTableMapping.find(csvsqldb::toupper_copy(tableName));
@@ -82,25 +82,25 @@ namespace csvsqldb
         }
         return iter->second;
     }
-    
+
     csvsqldb::StringVector FileMapping::asStringVector() const
     {
         csvsqldb::StringVector mapping;
-        
+
         for(const auto& keyValue : _fileTableMapping) {
             mapping.push_back(keyValue.second._mapping + "->" + keyValue.first);
         }
-        
+
         return mapping;
     }
-    
+
     void FileMapping::mergeMapping(const FileMapping& mappings)
     {
         for(const auto& mapping : mappings._fileTableMapping) {
             addMapping(mapping.first, mapping.second);
         }
     }
-    
+
     FileMapping FileMapping::fromJson(std::istream& stream)
     {
         std::shared_ptr<csvsqldb::json::JsonObjectCallback> callback = std::make_shared<csvsqldb::json::JsonObjectCallback>();
@@ -109,9 +109,9 @@ namespace csvsqldb
         const csvsqldb::json::JsonObject& obj = callback->getObject();
         csvsqldb::json::JsonObject table = obj["Mapping"];
         std::string tableName = table["name"].getAsString();
-        
+
         FileMapping fileMapping;
-        
+
         const csvsqldb::json::JsonObject::ObjectArray& mappings = table["mappings"].getArray();
         for(const auto& mapping : mappings) {
             Mapping map;
@@ -120,15 +120,15 @@ namespace csvsqldb
             map._skipFirstLine = mapping["skipFirstLine"].getAsBool();
             fileMapping.addMapping(tableName, map);
         }
-        
+
         return fileMapping;
     }
-    
+
     std::string FileMapping::asJson(const std::string& tableName, const Mappings& mappings)
     {
         boost::regex r(R"((.+)->([a-zA-Z_]+))");
         std::stringstream mapping;
-        
+
         mapping << "{ \"Mapping\" :\n  { \"name\" : \"" << csvsqldb::toupper_copy(tableName) << "\",\n    \"mappings\" : [\n";
         int n = 0;
         for(const auto& map : mappings) {
@@ -138,9 +138,8 @@ namespace csvsqldb
             }
             std::string mappingTableName = csvsqldb::toupper_copy(match.str(2));
             std::string mappingPattern = match.str(1);
-            
-            if(mappingTableName == csvsqldb::toupper_copy(tableName))
-            {
+
+            if(mappingTableName == csvsqldb::toupper_copy(tableName)) {
                 if(n > 0) {
                     mapping << ",\n";
                 }
@@ -152,31 +151,31 @@ namespace csvsqldb
                     }
                     entry << c;
                 }
-                mapping << "    " << "\"" << entry.str() << "\"";
+                mapping << "    "
+                        << "\"" << entry.str() << "\"";
                 mapping << ", \"delimiter\" : \"" << map._delimiter << "\"";
-                mapping << ", \"skipFirstLine\" :" << (map._skipFirstLine? "true" : "false");
+                mapping << ", \"skipFirstLine\" :" << (map._skipFirstLine ? "true" : "false");
                 mapping << "}\n";
                 ++n;
             }
         }
         mapping << "\n    ]";
         mapping << "\n  }\n}";
-        
+
         return mapping.str();
     }
-    
+
     void FileMapping::readFromPath(FileMapping& fileMapping, const fs::path& path)
     {
         std::vector<fs::path> entries;
         std::copy(fs::directory_iterator(path), fs::directory_iterator(), std::back_inserter(entries));
-        
+
         for(const auto& entry : entries) {
             std::string mappingEntry = entry.string();
             std::ifstream mappingStream(mappingEntry);
-            
+
             FileMapping mapping = FileMapping::fromJson(mappingStream);
             fileMapping.mergeMapping(mapping);
         }
     }
-    
 }

@@ -36,9 +36,10 @@
 
 #ifdef HAS_GET_TIME
 #include <iomanip>
-namespace csvsqldb {
-using std::get_time;
-} // namespace csvsqldb
+namespace csvsqldb
+{
+    using std::get_time;
+}
 
 #else
 #include <ctime>
@@ -46,32 +47,33 @@ using std::get_time;
 #include <string>
 #include <vector>
 
-namespace csvsqldb {
-namespace detail {
-struct get_time_helper {
-  std::tm *tmb;
-  const std::string fmt;
-};
-} // namespace detail
+namespace csvsqldb
+{
+    namespace detail
+    {
+        struct get_time_helper {
+            std::tm* tmb;
+            const std::string fmt;
+        };
+    }
 
-template <typename CharT>
-detail::get_time_helper get_time(std::tm *tmb, CharT *fmt) {
-  return {tmb, fmt};
+    template <typename CharT>
+    detail::get_time_helper get_time(std::tm* tmb, CharT* fmt)
+    {
+        return { tmb, fmt };
+    }
+
+    template <typename CharT, typename Traits>
+    std::basic_istream<CharT, Traits>& operator>>(std::basic_istream<CharT, Traits>& is, detail::get_time_helper h)
+    {
+        std::string s;
+        is >> s;
+        if(not::strptime(s.c_str(), h.fmt.c_str(), h.tmb)) {
+            throw std::ios_base::failure("failure to parse data on stream ('" + s + "') with format string ('" + h.fmt + "')");
+        }
+        return is;
+    }
 }
+#endif
 
-template <typename CharT, typename Traits>
-std::basic_istream<CharT, Traits> &
-operator>>(std::basic_istream<CharT, Traits> &is, detail::get_time_helper h) {
-  std::string s;
-  is >> s;
-  if (not::strptime(s.c_str(), h.fmt.c_str(), h.tmb)) {
-    throw std::ios_base::failure("failure to parse data on stream ('" + s +
-                                 "') with format string ('" + h.fmt + "')");
-  }
-  return is;
-}
-} // namespace csvsqldb
-#endif // HAS_GET_TIME
-
-#endif // csvsqldb_get_time_h
-
+#endif

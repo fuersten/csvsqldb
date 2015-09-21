@@ -43,43 +43,43 @@
 
 namespace csvsqldb
 {
-    
+
     class CSVSQLDB_EXPORT SQLParser
     {
     public:
         SQLParser(const FunctionRegistry& functionRegistry);
-        
+
         ASTNodePtr parse(const std::string& input);
         ASTNodePtr parse();
-        
+
         ASTExprNodePtr parseExpression(const std::string& expression);
-        
+
         void setInput(const std::string& input);
-        
+
     private:
         void reportUnexpectedToken(const std::string& message, const csvsqldb::lexer::Token& token);
-        
+
         std::string expect(eToken tok);
         bool canExpect(eToken tok);
         csvsqldb::lexer::Token parseNext();
-        
+
         ASTCreateTableNodePtr parseCreateTable();
         eType parseType();
         ColumnDefinition parseColumnDefinition();
         TableConstraint parseTableConstraint();
         void parseConstraint(ColumnDefinition& definition);
         csvsqldb::StringVector parseColumnList();
-        
+
         ASTAlterTableNodePtr parseAlterTable();
-        
+
         ASTDropTableNodePtr parseDropTable();
-        
+
         ASTDescribeNodePtr parseExplain();
-        
+
         ASTMappingNodePtr parseMapping();
-        
+
         ASTQueryNodePtr parseQuery();
-        
+
         ASTQueryExpressionNodePtr parseQueryExpression(const SymbolTablePtr& symboltable);
         ASTTableExpressionNodePtr parseTableExpression(const SymbolTablePtr& symboltable);
         ASTTableReferenceNodePtr parseTableReference(const SymbolTablePtr& symboltable);
@@ -103,7 +103,7 @@ namespace csvsqldb
         ASTHavingNodePtr parseHaving(const SymbolTablePtr& symboltable);
         ASTOrderByNodePtr parseOrderBy(const SymbolTablePtr& symboltable);
         ASTLimitNodePtr parseLimit(const SymbolTablePtr& symboltable);
-        
+
         ASTExprNodePtr parseJoin(const SymbolTablePtr& symboltable);
         ASTExprNodePtr parseEquality(const SymbolTablePtr& symboltable);
         ASTExprNodePtr parseRelation(const SymbolTablePtr& symboltable);
@@ -111,7 +111,7 @@ namespace csvsqldb
         ASTExprNodePtr parseMul(const SymbolTablePtr& symboltable);
         ASTExprNodePtr parseFactor(const SymbolTablePtr& symboltable);
         ASTExprNodePtr parseUnary(const SymbolTablePtr& symboltable);
-        
+
         SQLLexer _lexer;
         csvsqldb::lexer::Token _currentToken;
         const FunctionRegistry& _functionRegistry;

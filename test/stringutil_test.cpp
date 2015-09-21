@@ -9,25 +9,25 @@
 //  Redistribution and use in source and binary forms, with or without modification, are permitted
 //  provided that the following conditions are met:
 //
-//  1. Redistributions of source code must retain the above copyright notice, this list of 
+//  1. Redistributions of source code must retain the above copyright notice, this list of
 //  conditions and the following disclaimer.
 //
-//  2. Redistributions in binary form must reproduce the above copyright notice, this list of 
-//  conditions and the following disclaimer in the documentation and/or other materials provided 
+//  2. Redistributions in binary form must reproduce the above copyright notice, this list of
+//  conditions and the following disclaimer in the documentation and/or other materials provided
 //  with the distribution.
 //
-//  3. Neither the name of the copyright holder nor the names of its contributors may be used to 
-//  endorse or promote products derived from this software without specific prior written 
+//  3. Neither the name of the copyright holder nor the names of its contributors may be used to
+//  endorse or promote products derived from this software without specific prior written
 //  permission.
 //
 //  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR
-//  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
+//  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY
 //  AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
-//  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
-//  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR 
-//  SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY 
-//  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
-//  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+//  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+//  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+//  SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+//  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+//  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
@@ -39,11 +39,15 @@
 #include <vector>
 
 
-namespace csvsqldb {
-    namespace testspace {
-        class Test {};
+namespace csvsqldb
+{
+    namespace testspace
+    {
+        class Test
+        {
+        };
     }
-    
+
     static std::string callTimeStream(const std::chrono::system_clock::time_point& tp)
     {
         std::ostringstream os;
@@ -59,19 +63,19 @@ public:
     void setUp()
     {
     }
-    
+
     void tearDown()
     {
     }
-    
+
     void tokenizer()
     {
         std::string s("This is my glorious test   string");
         std::vector<std::string> tokens;
         csvsqldb::split(s, ' ', tokens);
-        
+
         MPF_TEST_ASSERTEQUAL(8u, tokens.size());
-        
+
         MPF_TEST_ASSERTEQUAL("This", tokens[0]);
         MPF_TEST_ASSERTEQUAL("is", tokens[1]);
         MPF_TEST_ASSERTEQUAL("my", tokens[2]);
@@ -83,16 +87,16 @@ public:
 
         s = "This,is,my,glorious,test,,,string";
         csvsqldb::split(s, ' ', tokens);
-        
+
         MPF_TEST_ASSERTEQUAL(1u, tokens.size());
-        
+
         MPF_TEST_ASSERTEQUAL("This,is,my,glorious,test,,,string", tokens[0]);
 
         s = "This,is,my,glorious,test,,,string";
         csvsqldb::split(s, ',', tokens);
-        
+
         MPF_TEST_ASSERTEQUAL(8u, tokens.size());
-        
+
         MPF_TEST_ASSERTEQUAL("This", tokens[0]);
         MPF_TEST_ASSERTEQUAL("is", tokens[1]);
         MPF_TEST_ASSERTEQUAL("my", tokens[2]);
@@ -101,7 +105,7 @@ public:
         MPF_TEST_ASSERTEQUAL("", tokens[5]);
         MPF_TEST_ASSERTEQUAL("", tokens[6]);
         MPF_TEST_ASSERTEQUAL("string", tokens[7]);
-        
+
         s = "This,is,my,glorious,test,,,string";
         csvsqldb::split(s, ',', tokens, false);
         MPF_TEST_ASSERTEQUAL(6u, tokens.size());
@@ -113,7 +117,7 @@ public:
         MPF_TEST_ASSERTEQUAL("test", tokens[4]);
         MPF_TEST_ASSERTEQUAL("string", tokens[5]);
     }
-    
+
     void joinTest()
     {
         std::vector<std::string> tokens;
@@ -123,39 +127,39 @@ public:
         tokens.push_back("glorious");
         tokens.push_back("test");
         tokens.push_back("string");
-        
+
         MPF_TEST_ASSERTEQUAL("This,is,my,glorious,test,string", csvsqldb::join(tokens, ","));
     }
-    
+
     void upperTest()
     {
         std::string s("Not All upper");
         csvsqldb::toupper(s);
         MPF_TEST_ASSERTEQUAL("NOT ALL UPPER", s);
-        
+
         std::string s1("Not All upper");
         std::string s2 = csvsqldb::toupper_copy(s1);
         MPF_TEST_ASSERTEQUAL("NOT ALL UPPER", s2);
         MPF_TEST_ASSERTEQUAL("Not All upper", s1);
     }
-    
+
     void lowerTest()
     {
         std::string s("Not All upper");
         csvsqldb::tolower(s);
         MPF_TEST_ASSERTEQUAL("not all upper", s);
-        
+
         std::string s1("Not All upper");
         std::string s2 = csvsqldb::tolower_copy(s1);
         MPF_TEST_ASSERTEQUAL("not all upper", s2);
         MPF_TEST_ASSERTEQUAL("Not All upper", s1);
     }
-    
+
     void stripTypeNameTest()
     {
         MPF_TEST_ASSERTEQUAL("csvsqldb::testspace::Test", csvsqldb::stripTypeName(typeid(csvsqldb::testspace::Test).name()));
     }
-    
+
     void stringCompareTest()
     {
         MPF_TEST_ASSERTEQUAL(0, csvsqldb::stricmp("Test it", "TEST IT"));
@@ -163,7 +167,7 @@ public:
         MPF_TEST_ASSERTEQUAL(0, csvsqldb::strnicmp("Test it", "TEST IT", 5));
         MPF_TEST_ASSERTEQUAL(1, csvsqldb::strnicmp("Txst it", "TEST IT", 5));
     }
-    
+
     void timeFormatTest()
     {
         std::chrono::duration<int, std::mega> megaSecs(22);
@@ -173,11 +177,11 @@ public:
         tp += megaSecs;
         tp += kiloSecs;
         tp += decaSecs;
-        
+
         MPF_TEST_ASSERTEQUAL("1970-09-23T08:00:00", csvsqldb::callTimeStream(tp));
         MPF_TEST_ASSERTEQUAL("Wed, 23 Sep 1970 07:00:00 GMT", csvsqldb::formatDateRfc1123(tp));
     }
-    
+
     void trimTest()
     {
         std::string s("     left whitespace");
@@ -189,15 +193,20 @@ public:
         s = "no right whitespace";
         MPF_TEST_ASSERTEQUAL("no right whitespace", csvsqldb::trim_right(s));
     }
-    
+
     void decodeTest()
     {
-        std::string encoded("wikiPageName=Testpage&wikiPageMarkdown=Markdown%0D%0A%3D%3D%3D%3D%3D%3D%3D%3D%0D%0A%0D%0A-+some+tests%0D%0A-+and+more%0D%0A%0D%0A");
+        std::string encoded(
+        "wikiPageName=Testpage&wikiPageMarkdown=Markdown%0D%0A%3D%3D%3D%3D%3D%3D%3D%3D%0D%0A%0D%0A-+some+tests%0D%0A-+and+more%"
+        "0D%0A%0D%0A");
         std::string decoded;
         MPF_TEST_ASSERT(csvsqldb::decode(encoded, decoded));
-        MPF_TEST_ASSERTEQUAL("wikiPageName=Testpage&wikiPageMarkdown=Markdown\r\n========\r\n\r\n- some tests\r\n- and more\r\n\r\n", decoded);
-        
-        encoded = "wikiPageName=Testpage&wikiPageMarkdown=Markdown% %0A%3D%3D%3D%3D%3D%3D%3D%3D%0D%0A%0D%0A-+some+tests%0D%0A-+and+more%0D%0A%0D%0A";
+        MPF_TEST_ASSERTEQUAL(
+        "wikiPageName=Testpage&wikiPageMarkdown=Markdown\r\n========\r\n\r\n- some tests\r\n- and more\r\n\r\n", decoded);
+
+        encoded =
+        "wikiPageName=Testpage&wikiPageMarkdown=Markdown% "
+        "%0A%3D%3D%3D%3D%3D%3D%3D%3D%0D%0A%0D%0A-+some+tests%0D%0A-+and+more%0D%0A%0D%0A";
         MPF_TEST_ASSERT(!csvsqldb::decode(encoded, decoded));
     }
 };

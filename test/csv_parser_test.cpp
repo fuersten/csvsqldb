@@ -8,25 +8,25 @@
 //  Redistribution and use in source and binary forms, with or without modification, are permitted
 //  provided that the following conditions are met:
 //
-//  1. Redistributions of source code must retain the above copyright notice, this list of 
+//  1. Redistributions of source code must retain the above copyright notice, this list of
 //  conditions and the following disclaimer.
 //
-//  2. Redistributions in binary form must reproduce the above copyright notice, this list of 
-//  conditions and the following disclaimer in the documentation and/or other materials provided 
+//  2. Redistributions in binary form must reproduce the above copyright notice, this list of
+//  conditions and the following disclaimer in the documentation and/or other materials provided
 //  with the distribution.
 //
-//  3. Neither the name of the copyright holder nor the names of its contributors may be used to 
-//  endorse or promote products derived from this software without specific prior written 
+//  3. Neither the name of the copyright holder nor the names of its contributors may be used to
+//  endorse or promote products derived from this software without specific prior written
 //  permission.
 //
 //  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR
-//  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
+//  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY
 //  AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
-//  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
-//  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR 
-//  SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY 
-//  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
-//  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+//  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+//  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+//  SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+//  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+//  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
@@ -51,7 +51,7 @@ public:
             _results.push_back(std::to_string(num));
         }
     }
-    
+
     virtual void onDouble(double num, bool isNull)
     {
         if(isNull) {
@@ -60,7 +60,7 @@ public:
             _results.push_back(std::to_string(num));
         }
     }
-    
+
     virtual void onString(const char* s, size_t len, bool isNull)
     {
         if(isNull) {
@@ -69,7 +69,7 @@ public:
             _results.push_back(s);
         }
     }
-    
+
     virtual void onDate(const csvsqldb::Date& date, bool isNull)
     {
         if(isNull) {
@@ -78,7 +78,7 @@ public:
             _results.push_back(date.format("%F"));
         }
     }
-    
+
     virtual void onTime(const csvsqldb::Time& time, bool isNull)
     {
         if(isNull) {
@@ -87,7 +87,7 @@ public:
             _results.push_back(time.format("%H:%M:%S"));
         }
     }
-    
+
     virtual void onTimestamp(const csvsqldb::Timestamp& timestamp, bool isNull)
     {
         if(isNull) {
@@ -96,16 +96,16 @@ public:
             _results.push_back(timestamp.format("%F"));
         }
     }
-    
+
     virtual void onBoolean(bool boolean, bool isNull)
     {
         if(isNull) {
             _results.push_back("<NULL>");
         } else {
-            _results.push_back(boolean? "true" : "false");
+            _results.push_back(boolean ? "true" : "false");
         }
     }
-    
+
     csvsqldb::StringVector _results;
 };
 
@@ -116,15 +116,15 @@ public:
     CSVParserTestCase()
     {
     }
-    
+
     void setUp()
     {
     }
-    
+
     void tearDown()
     {
     }
-    
+
     void parseSimpleTest()
     {
         csvsqldb::csv::Types types;
@@ -147,10 +147,10 @@ public:
         csvsqldb::csv::CSVParser csvparser(context, csvfile, types, callback);
         while(csvparser.parseLine()) {
         }
-        
+
         MPF_TEST_ASSERTEQUAL(2U, csvparser.getLineCount());
         MPF_TEST_ASSERTEQUAL(20U, callback._results.size());
-        
+
         MPF_TEST_ASSERTEQUAL("Fürstenberg", callback._results[0]);
         MPF_TEST_ASSERTEQUAL("<NULL>", callback._results[1]);
         MPF_TEST_ASSERTEQUAL("1970-09-23", callback._results[2]);
@@ -183,7 +183,7 @@ public:
         types.push_back(csvsqldb::csv::STRING);
         types.push_back(csvsqldb::csv::STRING);
         types.push_back(csvsqldb::csv::DATE);
-        
+
         std::stringstream ss(R"(emp_no,birth_date,first_name,last_name,gender,hire_date
 47291,1960-09-09,"Ulf",Flexer,M,2000-01-12
 60134,1964-04-21,Seshu,Rathonyi,F,2000-01-02
@@ -206,10 +206,10 @@ public:
         csvsqldb::csv::CSVParser csvparser(context, ss, types, callback);
         while(csvparser.parseLine()) {
         }
-        
+
         MPF_TEST_ASSERTEQUAL(14U, csvparser.getLineCount());
         MPF_TEST_ASSERTEQUAL(78U, callback._results.size());
-    
+
         MPF_TEST_ASSERTEQUAL("47291", callback._results[0]);
         MPF_TEST_ASSERTEQUAL("1960-09-09", callback._results[1]);
         MPF_TEST_ASSERTEQUAL("Ulf", callback._results[2]);
@@ -223,13 +223,13 @@ public:
         MPF_TEST_ASSERTEQUAL("205048", callback._results[24]);
         MPF_TEST_ASSERTEQUAL("222965", callback._results[30]);
         MPF_TEST_ASSERTEQUAL("226633", callback._results[36]);
-        
+
         MPF_TEST_ASSERTEQUAL("1958-06-10", callback._results[37]);
         MPF_TEST_ASSERTEQUAL("Xuejun", callback._results[38]);
         MPF_TEST_ASSERTEQUAL("Benzmuller", callback._results[39]);
         MPF_TEST_ASSERTEQUAL("F", callback._results[40]);
         MPF_TEST_ASSERTEQUAL("2000-01-04", callback._results[41]);
-        
+
         MPF_TEST_ASSERTEQUAL("227544", callback._results[42]);
         MPF_TEST_ASSERTEQUAL("422990", callback._results[48]);
         MPF_TEST_ASSERTEQUAL("424445", callback._results[54]);

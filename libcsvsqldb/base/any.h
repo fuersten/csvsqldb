@@ -49,7 +49,7 @@ namespace csvsqldb
     /**
      * This class represents any type. The assigned value can be extracted with the any_cast operator.
      */
-	class CSVSQLDB_EXPORT Any
+    class CSVSQLDB_EXPORT Any
     {
     public:
         /**
@@ -57,31 +57,33 @@ namespace csvsqldb
          */
         Any()
         : _holder(nullptr)
-        {}
-        
+        {
+        }
+
         /**
          * Constructs an Any from the given type and value.
          * @param value The value to construct
          */
-        template<typename T>
+        template <typename T>
         Any(const T& value)
         : _holder(new ValueHolder<T>(value))
-        {}
-        
+        {
+        }
+
         /**
          * Copy constructs the Any from another Any.
          * @param any Any to construct with
          */
         Any(const Any& any)
-        : _holder(any._holder?any._holder->clone():nullptr)
+        : _holder(any._holder ? any._holder->clone() : nullptr)
         {
         }
-        
+
         ~Any()
         {
             delete _holder;
         }
-        
+
         /**
          * Swaps this Any with the given one.
          * @param any Any to swap with
@@ -90,13 +92,13 @@ namespace csvsqldb
         {
             std::swap(_holder, any._holder);
         }
-        
+
         /**
          * Assignes the given value to this Any.
          * @param value The value to assign
          * @return Returns this Any as reference.
          */
-        template<typename T>
+        template <typename T>
         Any& operator=(const T& value)
         {
             Any(value).swap(*this);
@@ -113,7 +115,7 @@ namespace csvsqldb
             Any(any).swap(*this);
             return *this;
         }
-        
+
         /**
          * Tests if the object has a value.
          * @return true if no value was assigned, otherwise false.
@@ -122,42 +124,42 @@ namespace csvsqldb
         {
             return !_holder;
         }
-        
+
     private:
-        struct ValueHolderBase
-        {
-            virtual ~ValueHolderBase() {}
+        struct ValueHolderBase {
+            virtual ~ValueHolderBase()
+            {
+            }
             virtual ValueHolderBase* clone() const = 0;
             virtual const std::type_info& type() const = 0;
         };
-        
-        template<typename T>
-        struct ValueHolder : public ValueHolderBase
-        {
+
+        template <typename T>
+        struct ValueHolder : public ValueHolderBase {
             ValueHolder(const T& t)
             : _value(t)
             {
             }
-            
+
             virtual ValueHolderBase* clone() const
             {
                 return new ValueHolder<T>(_value);
             }
-            
+
             virtual const std::type_info& type() const
             {
                 return typeid(T);
             }
-            
+
             T _value;
         };
-        
+
         ValueHolderBase* _holder;
-        
-        template<typename T>
+
+        template <typename T>
         friend T any_cast(const Any& any);
-        
-        template<typename T>
+
+        template <typename T>
         friend T* any_cast(const Any* any);
     };
 
@@ -166,7 +168,7 @@ namespace csvsqldb
      * @param any The Any to extract the value from
      * @return A pointer to the value or nullptr, if the value is empty or the type does not match.
      */
-    template<typename T>
+    template <typename T>
     T* any_cast(const Any* any)
     {
         typedef typename std::remove_reference<T>::type noreftype;
@@ -178,18 +180,18 @@ namespace csvsqldb
         Any::ValueHolder<T>* holder = static_cast<Any::ValueHolder<T>*>(any->_holder);
         return &holder->_value;
     }
-    
+
     /**
      * Extracts the value from an Any. The type T has to match the underlying Any type.
      * Throws a BadcastException if the value is empty or the type does not match.
      * @param any The Any to extract the value from
      * @return The value of the any.
      */
-    template<typename T>
+    template <typename T>
     T any_cast(const Any& any)
     {
         typedef typename std::remove_reference<T>::type noreftype;
-        
+
         if(any.empty()) {
             CSVSQLDB_THROW(BadcastException, "any_cast: any has no value");
         }
@@ -199,7 +201,6 @@ namespace csvsqldb
         }
         return static_cast<T>(*value);
     }
-    
 }
 
 #endif

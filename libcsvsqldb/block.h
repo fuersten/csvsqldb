@@ -46,37 +46,37 @@
 
 namespace csvsqldb
 {
-    
+
     typedef char* StoreType;
-    
+
     class Block;
     typedef Block* BlockPtr;
     typedef std::vector<BlockPtr> Blocks;
-    
+
     class BlockProvider;
     typedef std::shared_ptr<BlockProvider> BlockProviderPtr;
-    
+
     class RowProvider;
     typedef std::shared_ptr<RowProvider> RowProviderPtr;
-    
+
 
     class CSVSQLDB_EXPORT BlockManager
     {
     public:
         BlockManager(size_t maxActiveBlocks = 100, size_t blockCapacity = 1 * 1024 * 1024);
-        
+
         BlockPtr createBlock();
         BlockPtr getBlock(size_t blockNumber) const;
-        
+
         void release(BlockPtr& block);
         void cache(const BlockPtr block);
-        
+
         size_t getActiveBlocks() const;
         size_t getMaxActiveBlocks() const;
         size_t getMaxUsedBlocks() const;
         size_t getBlockCapacity() const;
         size_t getTotalBlocks() const;
-        
+
     private:
         Blocks _blocks;
         size_t _blockCapacity;
@@ -84,35 +84,35 @@ namespace csvsqldb
         size_t _activeBlocks;
         size_t _maxCountActiveBlocks;
         size_t _totalBlocks;
-        
+
         static size_t sBlockNumber;
     };
-    
-    
+
+
     class CSVSQLDB_EXPORT BlockProvider
     {
     public:
         virtual BlockPtr getNextBlock() = 0;
     };
-    
-    
+
+
     class CSVSQLDB_EXPORT RowProvider
     {
     public:
         virtual const Values* getNextRow() = 0;
     };
-    
-    
+
+
     class CSVSQLDB_EXPORT Block
     {
     public:
         Block(size_t blockNumber, size_t capacity);
-        
+
         ~Block();
-        
+
         Value* addValue(const Variant& value);
         Value* addValue(const Value& value);
-        
+
         Value* addInt(int64_t num, bool isNull);
         Value* addReal(double num, bool isNull);
         Value* addString(const char* s, size_t len, bool isNull);
@@ -120,43 +120,43 @@ namespace csvsqldb
         Value* addDate(const csvsqldb::Date& date, bool isNull);
         Value* addTime(const csvsqldb::Time& time, bool isNull);
         Value* addTimestamp(const csvsqldb::Timestamp& timestamp, bool isNull);
-        
+
         void nextRow();
-        
+
         void endBlocks();
-        
+
         void markNextBlock();
-        
+
         size_t getBlockNumber() const
         {
             return _blockNumber;
         }
-        
+
         size_t offset() const
         {
             return _offset;
         }
-        
+
         void moveOffset(size_t add)
         {
             _offset += add;
         }
-        
+
         StoreType getRawBuffer()
         {
             return &_store[_offset];
         }
-        
+
         bool hasSizeFor(size_t size) const;
-        
+
     private:
         void markValue();
-        
+
         size_t _capacity;
         StoreType _store;
         size_t _offset;
         size_t _blockNumber;
-        
+
         friend class BlockIterator;
         friend class CachingBlockIterator;
         friend class SortingBlockIterator;

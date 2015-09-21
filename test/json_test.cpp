@@ -8,25 +8,25 @@
 //  Redistribution and use in source and binary forms, with or without modification, are permitted
 //  provided that the following conditions are met:
 //
-//  1. Redistributions of source code must retain the above copyright notice, this list of 
+//  1. Redistributions of source code must retain the above copyright notice, this list of
 //  conditions and the following disclaimer.
 //
-//  2. Redistributions in binary form must reproduce the above copyright notice, this list of 
-//  conditions and the following disclaimer in the documentation and/or other materials provided 
+//  2. Redistributions in binary form must reproduce the above copyright notice, this list of
+//  conditions and the following disclaimer in the documentation and/or other materials provided
 //  with the distribution.
 //
-//  3. Neither the name of the copyright holder nor the names of its contributors may be used to 
-//  endorse or promote products derived from this software without specific prior written 
+//  3. Neither the name of the copyright holder nor the names of its contributors may be used to
+//  endorse or promote products derived from this software without specific prior written
 //  permission.
 //
 //  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR
-//  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
+//  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY
 //  AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
-//  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
-//  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR 
-//  SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY 
-//  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
-//  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+//  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+//  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+//  SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+//  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+//  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
@@ -45,8 +45,9 @@ class JsonCallback : public csvsqldb::json::Callback
 public:
     JsonCallback(std::ostringstream& ss)
     : _ss(ss)
-    {}
-    
+    {
+    }
+
     virtual void startObject()
     {
         _ss << "{" << std::endl;
@@ -69,7 +70,7 @@ public:
     }
     virtual void numberValue(double val)
     {
-        _ss <<  val << std::endl;
+        _ss << val << std::endl;
     }
     virtual void stringValue(const std::string& val)
     {
@@ -77,18 +78,19 @@ public:
     }
     virtual void booleanValue(bool val)
     {
-        _ss << (val?"true":"false") << std::endl;
+        _ss << (val ? "true" : "false") << std::endl;
     }
     virtual void nullValue()
     {
         _ss << "null" << std::endl;
     }
-    
+
 private:
     std::ostringstream& _ss;
 };
 
-static std::string json = "                        "
+static std::string json =
+"                        "
 "{"
 "    \"Image\": { "
 "       \"Width\":  800, "
@@ -104,7 +106,8 @@ static std::string json = "                        "
 "    } "
 "} ";
 
-static std::string json2 = "["
+static std::string json2 =
+"["
 " {"
 " \"precision\": \"zip\","
 " \"Latitude\":  37.7668,"
@@ -127,7 +130,8 @@ static std::string json2 = "["
 " }"
 " ]";
 
-static std::string jsonBad = "                        "
+static std::string jsonBad =
+"                        "
 "{"
 "    \"Image\": { "
 "       \"Width\":  800, "
@@ -136,14 +140,15 @@ static std::string jsonBad = "                        "
 "       \"Thumbnail\": { "
 "            \"Url\":    \"http://www.example.com/image/481989943\", "
 "            \"Height\": 125, "
-"            \"100\" " // <== the key is missing here
+"            \"100\" "    // <== the key is missing here
 "        }, "
 "        \"IDs\": [116.47, 943, 234, -38793, null, false], "
 "        \"Cool\": true "
 "    } "
 "} ";
 
-static std::string result = "{\n"
+static std::string result =
+"{\n"
 "\"Image\" : {\n"
 "\"Width\" : 800\n"
 "\"Height\" : 600\n"
@@ -164,7 +169,8 @@ static std::string result = "{\n"
 "\"Cool\" : true\n}\n"
 "}\n";
 
-static std::string result2 = "[\n"
+static std::string result2 =
+"[\n"
 "{\n"
 "\"precision\" : \"zip\"\n"
 "\"Latitude\" : 37.7668\n"
@@ -209,22 +215,22 @@ public:
     void setUp()
     {
     }
-    
+
     void tearDown()
     {
     }
-    
+
     void parseString()
     {
         std::ostringstream oss;
         csvsqldb::json::Parser parser(json, std::make_shared<JsonCallback>(oss));
         MPF_TEST_ASSERT(parser.parse());
         MPF_TEST_ASSERTEQUAL(result, oss.str());
-        
+
         csvsqldb::json::Parser parser2(jsonBad, std::make_shared<JsonCallback>(oss));
         MPF_TEST_EXPECTS(parser2.parse(), csvsqldb::JsonException);
     }
-    
+
     void parseStream()
     {
         std::ostringstream oss;
@@ -233,7 +239,7 @@ public:
         MPF_TEST_ASSERT(parser.parse());
         MPF_TEST_ASSERTEQUAL(result, oss.str());
     }
-    
+
     void parseComplex()
     {
         std::ostringstream oss;
@@ -241,64 +247,64 @@ public:
         MPF_TEST_ASSERT(parser.parse());
         MPF_TEST_ASSERTEQUAL(result2, oss.str());
     }
-    
+
     void parseOnly()
     {
         csvsqldb::json::Parser parser(json, JsonCallback::Ptr());
         MPF_TEST_ASSERT(parser.parse());
-        
+
         csvsqldb::json::Parser parser2(jsonBad, JsonCallback::Ptr());
         MPF_TEST_ASSERT(!parser2.parse());
     }
-    
+
     void parseGood()
     {
         csvsqldb::json::Parser parser(goodJson1, JsonCallback::Ptr());
         MPF_TEST_ASSERT(parser.parse());
-        
+
         csvsqldb::json::Parser parser2(goodJson2, JsonCallback::Ptr());
         MPF_TEST_ASSERT(parser2.parse());
-        
+
         csvsqldb::json::Parser parser3(goodJson3, JsonCallback::Ptr());
         MPF_TEST_ASSERT(parser3.parse());
 
         csvsqldb::json::Parser parser4(goodJson4, JsonCallback::Ptr());
         MPF_TEST_ASSERT(parser4.parse());
     }
-    
+
     void parseErrors()
     {
         csvsqldb::json::Parser parser(badJson1, JsonCallback::Ptr());
         MPF_TEST_ASSERT(!parser.parse());
-        
+
         csvsqldb::json::Parser parser2(badJson2, JsonCallback::Ptr());
         MPF_TEST_ASSERT(!parser2.parse());
-        
+
         csvsqldb::json::Parser parser3(badJson3, JsonCallback::Ptr());
         MPF_TEST_ASSERT(!parser3.parse());
-        
+
         csvsqldb::json::Parser parser4(badJson4, JsonCallback::Ptr());
         MPF_TEST_ASSERT(!parser4.parse());
-        
+
         csvsqldb::json::Parser parser5(badJson5, JsonCallback::Ptr());
         MPF_TEST_ASSERT(!parser5.parse());
-        
+
         csvsqldb::json::Parser parser6(badJson6, JsonCallback::Ptr());
         MPF_TEST_ASSERT(!parser6.parse());
-        
+
         csvsqldb::json::Parser parser7(badJson7, JsonCallback::Ptr());
         MPF_TEST_ASSERT(!parser7.parse());
-        
+
         csvsqldb::json::Parser parser8(badJson8, JsonCallback::Ptr());
         MPF_TEST_ASSERT(!parser8.parse());
-        
+
         csvsqldb::json::Parser parser9(badJson9, JsonCallback::Ptr());
         MPF_TEST_ASSERT(!parser9.parse());
-        
+
         csvsqldb::json::Parser parser10(badJson10, JsonCallback::Ptr());
         MPF_TEST_ASSERT(!parser10.parse());
     }
-    
+
     void jsonObjectTest()
     {
         std::shared_ptr<csvsqldb::json::JsonObjectCallback> callback = std::make_shared<csvsqldb::json::JsonObjectCallback>();

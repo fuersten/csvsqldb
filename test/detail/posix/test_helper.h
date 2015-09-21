@@ -26,7 +26,9 @@ public:
         if(_oldstdout == -1) {
             csvsqldb::throwSysError("RedirectStdOut");
         }
-        _fdo = ::open((CSVSQLDB_TEST_PATH + std::string("/stdout.txt")).c_str(), O_CREAT | O_TRUNC | O_APPEND | O_WRONLY, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+        _fdo = ::open((CSVSQLDB_TEST_PATH + std::string("/stdout.txt")).c_str(),
+                      O_CREAT | O_TRUNC | O_APPEND | O_WRONLY,
+                      S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
         if(_fdo == -1) {
             csvsqldb::throwSysError("RedirectStdOut");
         }
@@ -35,18 +37,18 @@ public:
             csvsqldb::throwSysError("RedirectStdOut");
         }
     }
-    
+
     void flush()
     {
         ::fflush(stdout);
     }
-    
+
     ~RedirectStdOut()
     {
         ::dup2(_oldstdout, _newstdout);
         ::close(_fdo);
     }
-    
+
 private:
     int _oldstdout;
     int _fdo;
@@ -62,7 +64,9 @@ public:
         if(_oldstderr == -1) {
             csvsqldb::throwSysError("RedirectStdErr");
         }
-        _fdo = ::open((CSVSQLDB_TEST_PATH + std::string("/stderr.txt")).c_str(), O_CREAT | O_TRUNC | O_APPEND | O_WRONLY, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+        _fdo = ::open((CSVSQLDB_TEST_PATH + std::string("/stderr.txt")).c_str(),
+                      O_CREAT | O_TRUNC | O_APPEND | O_WRONLY,
+                      S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
         if(_fdo == -1) {
             csvsqldb::throwSysError("RedirectStdErr");
         }
@@ -71,18 +75,18 @@ public:
             csvsqldb::throwSysError("RedirectStdErr");
         }
     }
-    
+
     void flush()
     {
         ::fflush(stderr);
     }
-    
+
     ~RedirectStdErr()
     {
         ::dup2(_oldstderr, _newstderr);
         ::close(_fdo);
     }
-    
+
 private:
     int _oldstderr;
     int _fdo;
