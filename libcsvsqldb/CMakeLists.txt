@@ -117,7 +117,6 @@ SET(LIB_CSVSQLDB_BASE_HEADERS
 SET(LIB_CSVSQLDB_COMPAT_HEADERS
     compat/get_time.h
     compat/put_time.h
-    compat/regex.h
 )
 
 IF(NOT APPLE AND UNIX)

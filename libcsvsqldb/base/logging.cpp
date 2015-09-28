@@ -36,7 +36,7 @@
 #include "logging.h"
 #include "string_helper.h"
 
-#include "compat/regex.h"
+#include <boost/regex.hpp>
 
 #include <memory>
 #include <vector>

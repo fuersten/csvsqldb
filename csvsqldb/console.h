@@ -46,22 +46,22 @@ namespace csvsqldb
         typedef std::function<bool(const std::string&)> DefaultCommandFunction;
 
         Console(const std::string& prompt, const fs::path& historyPath, SignalHandler& signalHandler);
-        
+
         ~Console();
 
         void run();
         void stop();
-        
+
         virtual int onSignal(int signum);
-        
+
         void addCommand(const std::string& command, CommandFunction function);
         void addDefault(DefaultCommandFunction function);
-        
+
         void clearHistory();
-        
+
     private:
         typedef std::map<std::string, CommandFunction> Commands;
-        
+
         csvsqldb::SetUpSignalEventHandler _guard;
         fs::path _historyPath;
         Commands _commands;

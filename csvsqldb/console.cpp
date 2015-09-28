@@ -33,26 +33,25 @@
 
 namespace csvsqldb
 {
-    
-    struct Console::Private
-    {
+
+    struct Console::Private {
         Private(const std::string& prompt)
         : _prompt(prompt)
         , _continue(true)
         , _ready(false)
         {
             _me = this;
-            
+
             if(::pipe(_pipeFD) < 0) {
                 CSVSQLDB_THROW(Exception, "could not initialize pipe");
             }
         }
-        
+
         ~Private()
         {
             rl_callback_handler_remove();
         }
-        
+
         void onSignal()
         {
             // write to pipe in order to trigger the select
@@ -60,14 +59,14 @@ namespace csvsqldb
             ::write(_pipeFD[1], buf, 1);
             _continue = false;
         }
-        
-        static void process_line(char *lineRead)
+
+        static void process_line(char* lineRead)
         {
             // TODO LCF: find a better solution
             _me->do_process_line(lineRead);
         }
-        
-        void do_process_line(char *lineRead)
+
+        void do_process_line(char* lineRead)
         {
             if(lineRead) {
                 _line = lineRead;
@@ -79,14 +78,14 @@ namespace csvsqldb
             rl_callback_handler_remove();
             _ready = true;
         }
-        
+
         void addToHistory(const std::string& line)
         {
             if(!line.empty()) {
                 int index = history_search_pos(line.c_str(), 0, 0);
                 if(index >= 0) {
                     HIST_ENTRY* entry = remove_history(index);
-#if RL_READLINE_VERSION	>= 0x0500
+#if RL_READLINE_VERSION >= 0x0500
                     free_history_entry(entry);
 #else
                     free(entry);
@@ -95,37 +94,37 @@ namespace csvsqldb
                 add_history(line.c_str());
             }
         }
-        
+
         std::string getLine()
         {
             rl_callback_handler_install(_prompt.c_str(), &Console::Private::process_line);
             while(_continue && !_ready) {
                 fd_set fds;
                 int maxFD = std::max(::fileno(rl_instream), _pipeFD[0]);
-                
+
                 FD_ZERO(&fds);
                 FD_SET(0, &fds);
                 FD_SET(_pipeFD[0], &fds);
 
-                select(maxFD+1, &fds, NULL, NULL, NULL);
-                
+                select(maxFD + 1, &fds, NULL, NULL, NULL);
+
                 for(int n = 0; n <= maxFD; ++n) {
                     if(FD_ISSET(n, &fds) && n == _pipeFD[0]) {
                         // pipe was written => quit
                         _line.clear();
                         rl_callback_handler_remove();
                         break;
-                    } else if(FD_ISSET(::fileno(rl_instream), &fds) && _continue){
+                    } else if(FD_ISSET(::fileno(rl_instream), &fds) && _continue) {
                         rl_callback_read_char();
                         break;
                     }
                 }
             }
-            
+
             _ready = false;
             return _line;
         }
-        
+
         std::string _prompt;
         std::string _line;
         bool _continue;
@@ -147,12 +146,12 @@ namespace csvsqldb
         stifle_history(40);
         read_history(_historyPath.c_str());
     }
-    
+
     Console::~Console()
     {
         write_history(_historyPath.c_str());
     }
-    
+
     int Console::onSignal(int signum)
     {
         _p->onSignal();
@@ -168,7 +167,7 @@ namespace csvsqldb
                 std::cout << std::endl;
                 continue;
             }
-            
+
             csvsqldb::StringVector params;
             csvsqldb::split(line, ' ', params, false);
 
@@ -186,25 +185,24 @@ namespace csvsqldb
             }
         }
     }
-    
+
     void Console::stop()
     {
         _p->onSignal();
     }
-    
+
     void Console::addCommand(const std::string& command, CommandFunction function)
     {
         _commands.insert(std::make_pair(csvsqldb::tolower_copy(command), function));
     }
-    
+
     void Console::addDefault(DefaultCommandFunction function)
     {
         _defaultCommand = function;
     }
-    
+
     void Console::clearHistory()
     {
         clear_history();
     }
-    
 }

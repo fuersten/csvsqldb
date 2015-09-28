@@ -36,7 +36,7 @@
 #define MPF_TEST_H
 
 
-#include "compat/regex.h"
+#include <boost/regex.hpp>
 
 #include <cmath>
 #include <stdexcept>

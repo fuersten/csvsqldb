@@ -51,10 +51,12 @@ IF(NOT READLINE_FOUND)
 ENDIF()
 
 IF(NOT WIN32)
-    INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/libcsvsqldb ${LUA_INCLUDE_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${Boost_INCLUDE_DIR} ${Readline_INCLUDE_DIR})
+    INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/libcsvsqldb ${CMAKE_CURRENT_BINARY_DIR})
+    INCLUDE_DIRECTORIES(SYSTEM ${LUA_INCLUDE_DIR} ${Boost_INCLUDE_DIR} ${Readline_INCLUDE_DIR})
     LINK_DIRECTORIES(/usr/local/lib ${Boost_LIBRARY_DIRS})
 ELSE()
-    INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR} ${LUA_INCLUDE_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${Boost_INCLUDE_DIR})
+    INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
+    INCLUDE_DIRECTORIES(SYSTEM ${LUA_INCLUDE_DIR} ${Boost_INCLUDE_DIR})
     LINK_DIRECTORIES(${CMAKE_LIBRARY_OUTPUT_DIRECTORY} ${LUA_LIBRARY_DIRS} ${Boost_LIBRARY_DIRS})
 ENDIF()
 
@@ -64,7 +66,7 @@ ENDIF()
 
 IF(NOT APPLE AND UNIX)
     SET(CSVSQLDB_PLATFORM_LIBS dl pthread)
-    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g --std=c++11 -Wall")
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g --std=c++11 -Wall -Werror")
     MESSAGE(STATUS "${SANITIZE}")
     IF(SANITIZE MATCHES "On")
         SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -O1 -fno-omit-frame-pointer")
@@ -76,6 +78,7 @@ IF(NOT APPLE AND UNIX)
       SET(CMAKE_CXX_COMPILER "clang++")
       SET(CSVSQLDB_PLATFORM_LIBS ${CSVSQLDB_PLATFORM_LIBS} c++abi)
       SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
+      SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -isystem ${Boost_INCLUDE_DIR}")
       ADD_DEFINITIONS(-DHAS_PUT_TIME -DHAS_GET_TIME)
     ENDIF()
 
@@ -88,12 +91,14 @@ ELSEIF(APPLE AND CMAKE_GENERATOR STREQUAL Xcode)
                          -Wimplicit-atomic-properties -Wmissing-declarations -Wmissing-prototypes -Woverlength-strings
                          -Wshadow -Wstrict-selector-match -Wundeclared-selector -Wunreachable-code -Wextra
                          -Wno-unused-parameter -Wpedantic -Werror")
+                         SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -isystem ${Boost_INCLUDE_DIR}")
 ELSEIF(APPLE)
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -stdlib=libc++")
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wheader-hygiene -Wcast-align -Wconversion -Wfloat-equal -Wformat=2
                          -Wimplicit-atomic-properties -Wmissing-declarations -Wmissing-prototypes -Woverlength-strings
                          -Wshadow -Wstrict-selector-match -Wundeclared-selector -Wunreachable-code -Wextra
                          -Wno-unused-parameter -Wpedantic -Werror")
+                         SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -isystem ${Boost_INCLUDE_DIR}")
 ELSEIF(WIN32)
     ADD_DEFINITIONS(-DNOMINMAX)
     SET(Boost_USE_STATIC_LIBS ON)

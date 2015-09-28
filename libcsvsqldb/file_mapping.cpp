@@ -36,7 +36,7 @@
 #include "base/json_object.h"
 #include "base/string_helper.h"
 
-#include "compat/regex.h"
+#include <boost/regex.hpp>
 
 #include <fstream>
 
@@ -58,7 +58,7 @@ namespace csvsqldb
             if(!regex_match(keyValue._mapping, match, r)) {
                 CSVSQLDB_THROW(MappingException, "not a valid file to table mapping '" << keyValue._mapping << "'");
             } else {
-                Mapping map = {match.str(1), keyValue._delimiter, keyValue._skipFirstLine};
+                Mapping map = { match.str(1), keyValue._delimiter, keyValue._skipFirstLine };
                 _fileTableMapping.insert(std::make_pair(csvsqldb::toupper_copy(match.str(2)), map));
             }
         }

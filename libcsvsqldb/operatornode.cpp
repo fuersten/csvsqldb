@@ -34,7 +34,7 @@
 #include "operatornode.h"
 #include "sql_astexpressionvisitor.h"
 
-#include "compat/regex.h"
+#include <boost/regex.hpp>
 
 #include <fstream>
 

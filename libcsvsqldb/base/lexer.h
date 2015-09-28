@@ -38,7 +38,7 @@
 
 #include "types.h"
 
-#include "compat/regex.h"
+#include <boost/regex.hpp>
 
 #include <functional>
 #include <string>
