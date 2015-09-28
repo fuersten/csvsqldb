@@ -138,6 +138,7 @@ public:
         types.push_back(csvsqldb::csv::BOOLEAN);
         types.push_back(csvsqldb::csv::TIME);
         types.push_back(csvsqldb::csv::TIMESTAMP);
+        types.push_back(csvsqldb::csv::LONG);
 
         DummyCSVParserCallback callback;
         csvsqldb::csv::CSVParserContext context;
@@ -149,29 +150,33 @@ public:
         }
 
         MPF_TEST_ASSERTEQUAL(2U, csvparser.getLineCount());
-        MPF_TEST_ASSERTEQUAL(20U, callback._results.size());
+        MPF_TEST_ASSERTEQUAL(22U, callback._results.size());
 
-        MPF_TEST_ASSERTEQUAL("Fürstenberg", callback._results[0]);
-        MPF_TEST_ASSERTEQUAL("<NULL>", callback._results[1]);
-        MPF_TEST_ASSERTEQUAL("1970-09-23", callback._results[2]);
-        MPF_TEST_ASSERTEQUAL("Mühlenstr., 115", callback._results[3]);
-        MPF_TEST_ASSERTEQUAL("21509", callback._results[4]);
-        MPF_TEST_ASSERTEQUAL("Glinde", callback._results[5]);
-        MPF_TEST_ASSERTEQUAL("12000.000000", callback._results[6]);
-        MPF_TEST_ASSERTEQUAL("true", callback._results[7]);
-        MPF_TEST_ASSERTEQUAL("08:09:11", callback._results[8]);
-        MPF_TEST_ASSERTEQUAL("2015-07-02T14:20:30", callback._results[9]);
+        const size_t firstRowBase = 0;
+        MPF_TEST_ASSERTEQUAL("Testologe", callback._results[firstRowBase + 0]);
+        MPF_TEST_ASSERTEQUAL("<NULL>", callback._results[firstRowBase + 1]);
+        MPF_TEST_ASSERTEQUAL("1970-09-23", callback._results[firstRowBase + 2]);
+        MPF_TEST_ASSERTEQUAL("Teststr., 315", callback._results[firstRowBase + 3]);
+        MPF_TEST_ASSERTEQUAL("33509", callback._results[firstRowBase + 4]);
+        MPF_TEST_ASSERTEQUAL("Gerlinde", callback._results[firstRowBase + 5]);
+        MPF_TEST_ASSERTEQUAL("12000.000000", callback._results[firstRowBase + 6]);
+        MPF_TEST_ASSERTEQUAL("true", callback._results[firstRowBase + 7]);
+        MPF_TEST_ASSERTEQUAL("08:09:11", callback._results[firstRowBase + 8]);
+        MPF_TEST_ASSERTEQUAL("2015-07-02T14:20:30", callback._results[firstRowBase + 9]);
+        MPF_TEST_ASSERTEQUAL("-735", callback._results[firstRowBase + 10]);
 
-        MPF_TEST_ASSERTEQUAL("Tello de Fürstenberg", callback._results[10]);
-        MPF_TEST_ASSERTEQUAL("Maria Angelica", callback._results[11]);
-        MPF_TEST_ASSERTEQUAL("1963-03-06", callback._results[12]);
-        MPF_TEST_ASSERTEQUAL("Mühlenstr., 115", callback._results[13]);
-        MPF_TEST_ASSERTEQUAL("<NULL>", callback._results[14]);
-        MPF_TEST_ASSERTEQUAL("Glinde", callback._results[15]);
-        MPF_TEST_ASSERTEQUAL("450.000000", callback._results[16]);
-        MPF_TEST_ASSERTEQUAL("false", callback._results[17]);
-        MPF_TEST_ASSERTEQUAL("<NULL>", callback._results[18]);
-        MPF_TEST_ASSERTEQUAL("<NULL>", callback._results[19]);
+        const size_t secondRowBase = 11;
+        MPF_TEST_ASSERTEQUAL("von Ravensbrück", callback._results[secondRowBase + 0]);
+        MPF_TEST_ASSERTEQUAL("Maria Angelica", callback._results[secondRowBase + 1]);
+        MPF_TEST_ASSERTEQUAL("1973-04-06", callback._results[secondRowBase + 2]);
+        MPF_TEST_ASSERTEQUAL("Teststr., 315", callback._results[secondRowBase + 3]);
+        MPF_TEST_ASSERTEQUAL("<NULL>", callback._results[secondRowBase + 4]);
+        MPF_TEST_ASSERTEQUAL("Gerlinde", callback._results[secondRowBase + 5]);
+        MPF_TEST_ASSERTEQUAL("450.000000", callback._results[secondRowBase + 6]);
+        MPF_TEST_ASSERTEQUAL("false", callback._results[secondRowBase + 7]);
+        MPF_TEST_ASSERTEQUAL("<NULL>", callback._results[secondRowBase + 8]);
+        MPF_TEST_ASSERTEQUAL("<NULL>", callback._results[secondRowBase + 9]);
+        MPF_TEST_ASSERTEQUAL("525", callback._results[secondRowBase + 10]);
     }
 
     void parseTest()

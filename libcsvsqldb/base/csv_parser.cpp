@@ -184,6 +184,13 @@ namespace csvsqldb
             _stringBuffer[0] = c;
             int64_t value = 0;
             int n = 0;
+            bool neg = false;
+            if(c == '-') {
+                c = readNextChar();
+                neg = true;
+            } else if(c == '+') {
+                c = readNextChar();
+            }
             while(c) {
                 n = c - 48;
                 if(n < 0 || n > 9) {
@@ -193,7 +200,7 @@ namespace csvsqldb
                 c = readNextChar();
             }
             if(_stringBuffer[0]) {
-                _callback.onLong(value, false);
+                _callback.onLong(neg ? value * (-1) : value, false);
             } else {
                 _callback.onLong(std::numeric_limits<int64_t>::max(), true);
             }
