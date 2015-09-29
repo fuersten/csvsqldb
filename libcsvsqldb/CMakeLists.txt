@@ -92,6 +92,7 @@ SET(LIB_CSVSQLDB_BASE_HEADERS
     base/exception.h
     base/float_helper.h
     base/function_traits.h
+    base/glob.h
     base/global_configuration.h
     base/hash_helper.h
     base/json_object.h
@@ -121,14 +122,17 @@ SET(LIB_CSVSQLDB_COMPAT_HEADERS
 
 IF(NOT APPLE AND UNIX)
     SET(LIB_CSVSQLDB_BASE_SOURCES ${LIB_CSVSQLDB_BASE_SOURCES}
+        base/detail/posix/glob.cpp
         base/detail/posix/signalhandler.cpp
     )
 ELSEIF(APPLE)
     SET(LIB_CSVSQLDB_BASE_SOURCES ${LIB_CSVSQLDB_BASE_SOURCES}
+        base/detail/posix/glob.cpp
         base/detail/posix/signalhandler.cpp
     )
 ELSEIF(WIN32)
     SET(LIB_CSVSQLDB_BASE_SOURCES ${LIB_CSVSQLDB_BASE_SOURCES}
+        base/detail/windows/glob.cpp
         base/detail/windows/signalhandler.cpp)
 ENDIF()
 

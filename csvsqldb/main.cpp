@@ -23,6 +23,7 @@
 #include "libcsvsqldb/base/application.h"
 #include "libcsvsqldb/base/default_configuration.h"
 #include "libcsvsqldb/base/exception.h"
+#include "libcsvsqldb/base/glob.h"
 #include "libcsvsqldb/base/global_configuration.h"
 #include "libcsvsqldb/base/logging.h"
 #include "libcsvsqldb/base/lua_configuration.h"
@@ -39,6 +40,7 @@
 #include <sstream>
 
 #include <stdio.h>
+
 
 namespace po = boost::program_options;
 
@@ -182,18 +184,19 @@ private:
     {
         std::string showHeader("on");
 
+        // clang-format off
         po::options_description desc("Options");
-        desc.add_options()("help", "shows this help")("version", "shows the version of the program")(
-        "interactive,i", "opens an interactive sql shell")("verbose,v", "output verbose statistics")(
-        "show-header-line",
-        po::value<std::string>(&showHeader),
-        "if set to 'on' outputs a header line")("datbase-path,p", po::value<std::string>(&_databasePath), "path to the database")(
-        "command-file,c",
-        po::value<std::string>(&_commandFile),
-        "command file with sql commands to process")("sql,s", po::value<std::string>(&_sql), "sql commands to call")(
-        "mapping,m",
-        po::value<csvsqldb::StringVector>()->composing(),
-        "mapping from csv file to table")("files,f", po::value<std::vector<std::string>>(&_files), "csv files to process");
+        desc.add_options()("help", "shows this help")
+        ("version", "shows the version of the program")
+        ("interactive,i", "opens an interactive sql shell")
+        ("verbose,v", "output verbose statistics")
+        ("show-header-line", po::value<std::string>(&showHeader), "if set to 'on' outputs a header line")
+        ("datbase-path,p", po::value<std::string>(&_databasePath), "path to the database")
+        ("command-file,c", po::value<std::string>(&_commandFile), "command file with sql commands to process")
+        ("sql,s", po::value<std::string>(&_sql), "sql commands to call")
+        ("mapping,m", po::value<csvsqldb::StringVector>()->composing(), "mapping from csv file to table")
+        ("files,f", po::value<std::vector<std::string>>(&_files), "csv files to process, can use expansion patterns like ~ or *");
+        // clang-format on
 
         po::positional_options_description p;
         p.add("files", -1);
@@ -343,8 +346,12 @@ private:
                                    if(params.size()) {
                                        if(csvsqldb::tolower_copy(params[0]) == "file") {
                                            if(params.size() == 2) {
-                                               csvDB.addFile(params[1]);
-                                               std::cout << "added new csv file for processing\n";
+                                               csvsqldb::StringVector files;
+                                               csvsqldb::expand(params[1], files);
+                                               for(const auto& file : files) {
+                                                   csvDB.addFile(file);
+                                               }
+                                               std::cout << "added " << files.size() << " new csv files for processing\n";
                                            } else {
                                                std::cout << "ERROR: csv file parameter missing\n";
                                            }

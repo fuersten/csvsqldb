@@ -53,7 +53,7 @@ IF(WIN32)
     INCLUDE_DIRECTORIES(detail/windows)
 ELSE()
     INCLUDE_DIRECTORIES(detail/posix)
-    SET(CSVSQLDB_TEST_SOURCES  ${CSVSQLDB_TEST_SOURCES} signalhandler_test.cpp)
+    SET(CSVSQLDB_TEST_SOURCES  ${CSVSQLDB_TEST_SOURCES} signalhandler_test.cpp glob_test.cpp)
 ENDIF()
 
 CONFIGURE_FILE(test_util.h.in ${CMAKE_CURRENT_BINARY_DIR}/test_util.h)
