@@ -119,7 +119,7 @@ public:
         std::stringstream ss;
         int64_t rowCount = engine.execute(
         "SELECT count(*) as \"count\",last_name,max(birth_date) as \"max birthdate\",min(hire_date) as \"min hire\" \
-                                          FROM employees group by last_name",
+                                          FROM employees group by employees.last_name",
         statistics,
         ss);
         MPF_TEST_ASSERTEQUAL(2, rowCount);
