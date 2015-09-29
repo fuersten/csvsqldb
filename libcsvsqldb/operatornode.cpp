@@ -224,7 +224,7 @@ namespace csvsqldb
                     if((!ident->_info->_name.empty() && (ident->_info->_name == info->_name))
                        || (!ident->_info->_qualifiedIdentifier.empty() && (ident->_info->_qualifiedIdentifier == info->_qualifiedIdentifier))
                        || (ident->_info->_prefix.empty() && ident->_info->_identifier == info->_identifier)) {
-                        sortOrders.push_back({n, orderExp.second});
+                        sortOrders.push_back({ n, orderExp.second });
                         found = true;
                     }
                 }
@@ -326,10 +326,11 @@ namespace csvsqldb
             ASTIdentifierPtr ident = std::dynamic_pointer_cast<ASTIdentifier>(groupExp);
             if(ident) {
                 addPathThrough(ident, groupingIndices, outputColumns, false);
-                auto result =
-                std::find_if(_groupByIdentifiers.begin(),
-                             _groupByIdentifiers.end(),
-                             [&](const ASTIdentifierPtr& identifier) { return ident->_info->_name == identifier->_identifier; });
+                auto result = std::find_if(_groupByIdentifiers.begin(),
+                                           _groupByIdentifiers.end(),
+                                           [&](const ASTIdentifierPtr& identifier) {
+                                               return ident->_info->_qualifiedIdentifier == identifier->_info->_qualifiedIdentifier;
+                                           });
                 if(result == std::end(_groupByIdentifiers)) {
                     CSVSQLDB_THROW(csvsqldb::Exception,
                                    "all elements of the select list of a group by have to be aggregations or contained in the "
@@ -377,10 +378,11 @@ namespace csvsqldb
             }
         }
         for(const auto& groupBy : _groupByIdentifiers) {
-            auto result =
-            std::find_if(foundGroupByIdentifiers.begin(),
-                         foundGroupByIdentifiers.end(),
-                         [&](const ASTIdentifierPtr& identifier) { return groupBy->_identifier == identifier->_identifier; });
+            auto result = std::find_if(foundGroupByIdentifiers.begin(),
+                                       foundGroupByIdentifiers.end(),
+                                       [&](const ASTIdentifierPtr& identifier) {
+                                           return groupBy->_qualifiedIdentifier == identifier->_qualifiedIdentifier;
+                                       });
             if(result == std::end(foundGroupByIdentifiers)) {
                 addPathThrough(groupBy, groupingIndices, outputColumns, true);
             }
