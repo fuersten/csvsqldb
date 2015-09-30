@@ -104,9 +104,13 @@ public:
         return _verbose;
     }
 
-    void addFile(const std::string& csvFile)
+    bool addFile(const std::string& csvFile)
     {
-        _files.push_back(csvFile);
+        if(std::find(_files.begin(), _files.end(), csvFile) == _files.end()) {
+            _files.push_back(csvFile);
+            return true;
+        }
+        return false;
     }
 
     const csvsqldb::StringVector& getFiles() const
@@ -348,10 +352,13 @@ private:
                                            if(params.size() == 2) {
                                                csvsqldb::StringVector files;
                                                csvsqldb::expand(params[1], files);
+                                               size_t count = 0;
                                                for(const auto& file : files) {
-                                                   csvDB.addFile(file);
+                                                   if(csvDB.addFile(file)) {
+                                                       ++count;
+                                                   }
                                                }
-                                               std::cout << "added " << files.size() << " new csv files for processing\n";
+                                               std::cout << "added " << count << " new csv files for processing\n";
                                            } else {
                                                std::cout << "ERROR: csv file parameter missing\n";
                                            }
