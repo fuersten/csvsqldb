@@ -1,8 +1,7 @@
-//
-//  test.h
 //  Based on MPF test framework
 //
-//  Created by Lars-Christian Fürstenberg on 07.04.13.
+//  csvsqldb test
+//
 //  BSD 3-Clause License
 //  Copyright (c) 2015, Lars-Christian Fürstenberg
 //  All rights reserved.

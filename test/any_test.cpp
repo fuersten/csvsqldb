@@ -1,7 +1,6 @@
 //
 //  csvsqldb test
 //
-//  Created by Lars-Christian Fürstenberg on 28.07.13.
 //  BSD 3-Clause License
 //  Copyright (c) 2015, Lars-Christian Fürstenberg
 //  All rights reserved.
@@ -30,7 +29,6 @@
 //  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 //  POSSIBILITY OF SUCH DAMAGE.
 //
-
 
 #include "test.h"
 #include "libcsvsqldb/base/any.h"

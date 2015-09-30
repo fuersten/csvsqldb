@@ -1,8 +1,6 @@
 //
-//  main.cpp
-//  csvsqldb test runner
+//  csvsqldb test
 //
-//  Created by Lars-Christian Fürstenberg on 28.07.13.
 //  BSD 3-Clause License
 //  Copyright (c) 2015, Lars-Christian Fürstenberg
 //  All rights reserved.
@@ -31,6 +29,7 @@
 //  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 //  POSSIBILITY OF SUCH DAMAGE.
 //
+
 
 #include "libcsvsqldb/base/default_configuration.h"
 #include "libcsvsqldb/base/global_configuration.h"

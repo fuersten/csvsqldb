@@ -1,7 +1,6 @@
 //
 //  csvsqldb test
 //
-//  Created by Lars-Christian Fürstenberg on 28.07.13.
 //  BSD 3-Clause License
 //  Copyright (c) 2015, Lars-Christian Fürstenberg
 //  All rights reserved.
