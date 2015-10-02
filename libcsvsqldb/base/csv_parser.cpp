@@ -58,7 +58,7 @@ namespace csvsqldb
             _stringBuffer.resize(_stringBufferSize);
             readBuffer();
             if(_context._skipFirstLine) {
-                findEndOfHeaderline();
+                findEndOfLine();
                 ++_lineCount;
             }
         }
@@ -71,34 +71,38 @@ namespace csvsqldb
             }
 
             while(_count > 0) {
-                switch(*_typeIterator) {
-                    case LONG:
-                        parseLong();
-                        break;
-                    case DOUBLE:
-                        parseDouble();
-                        break;
-                    case STRING:
-                        parseString();
-                        break;
-                    case DATE:
-                        parseDate();
-                        break;
-                    case TIME:
-                        parseTime();
-                        break;
-                    case TIMESTAMP:
-                        parseTimestamp();
-                        break;
-                    case BOOLEAN:
-                        parseBool();
-                        break;
-                }
-                ++_typeIterator;
-                if(_typeIterator == _types.end() && (_state != LINESTART && _state != END)) {
-                    CSVSQLDB_THROW(csvsqldb::Exception, "too many fields found in line " << _lineCount);
-                } else if(_typeIterator != _types.end() && (_state == LINESTART || _state == END)) {
-                    CSVSQLDB_THROW(csvsqldb::Exception, "too few fields found in line " << _lineCount);
+                try {
+                    switch(*_typeIterator) {
+                        case LONG:
+                            parseLong();
+                            break;
+                        case DOUBLE:
+                            parseDouble();
+                            break;
+                        case STRING:
+                            parseString();
+                            break;
+                        case DATE:
+                            parseDate();
+                            break;
+                        case TIME:
+                            parseTime();
+                            break;
+                        case TIMESTAMP:
+                            parseTimestamp();
+                            break;
+                        case BOOLEAN:
+                            parseBool();
+                            break;
+                    }
+                    ++_typeIterator;
+                    if(_typeIterator == _types.end() && (_state != LINESTART && _state != END)) {
+                        CSVSQLDB_THROW(csvsqldb::Exception, "too many fields found in line " << _lineCount);
+                    } else if(_typeIterator != _types.end() && (_state == LINESTART || _state == END)) {
+                        CSVSQLDB_THROW(csvsqldb::Exception, "too few fields found in line " << _lineCount);
+                    }
+                } catch(const csvsqldb::Exception& ex) {
+                    std::cerr << "ERROR: skipping line " << _lineCount << ": " << ex.what() << "\n";
                 }
 
                 if(_n == static_cast<size_t>(_count) && _state == LINESTART) {
@@ -312,8 +316,7 @@ namespace csvsqldb
                    || _stringBuffer[16] != ':') {
                     CSVSQLDB_THROW(csvsqldb::Exception,
                                    "expected a timestamp field (YYYY-mm-ddTHH:MM:SS) in line " << _lineCount << ", but got '"
-                                                                                               << &_stringBuffer[0]
-                                                                                               << "'");
+                                                                                               << &_stringBuffer[0] << "'");
                 }
 
                 uint16_t year = static_cast<uint16_t>(_stringBuffer[0] - 48) * 1000;
@@ -344,7 +347,7 @@ namespace csvsqldb
             }
         }
 
-        void CSVParser::findEndOfHeaderline()
+        void CSVParser::findEndOfLine()
         {
             readNextChar();
             while(_state != LINESTART) {

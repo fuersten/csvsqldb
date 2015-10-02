@@ -1,6 +1,5 @@
 AccessModifierOffset: -4
 AlignAfterOpenBracket: true
-AlignConsecutiveAssignments: false
 AlignEscapedNewlinesLeft: false
 AlignOperands: true
 AlignTrailingComments: true

@@ -32,6 +32,7 @@
 
 
 #include "test.h"
+#include "test_helper.h"
 #include "test/test_util.h"
 
 #include "libcsvsqldb/base/csv_parser.h"
@@ -248,9 +249,38 @@ public:
         MPF_TEST_ASSERTEQUAL("F", callback._results[76]);
         MPF_TEST_ASSERTEQUAL("2000-01-22", callback._results[77]);
     }
+
+    void parseErroneousCSV()
+    {
+        csvsqldb::csv::Types types;
+        types.push_back(csvsqldb::csv::LONG);
+        types.push_back(csvsqldb::csv::DATE);
+        types.push_back(csvsqldb::csv::STRING);
+
+        std::stringstream ss(R"(emp_no,birth_date,first_name
+47291,1960-09-09,"Ulf"
+60134,1964-04,Seshu
+72329,1953-02-09,Randi
+)");
+
+        DummyCSVParserCallback callback;
+        csvsqldb::csv::CSVParserContext context;
+        context._skipFirstLine = true;
+        csvsqldb::csv::CSVParser csvparser(context, ss, types, callback);
+
+        RedirectStdErr red;
+        while(csvparser.parseLine()) {
+        }
+        std::ifstream log((CSVSQLDB_TEST_PATH + std::string("/stderr.txt")));
+        MPF_TEST_ASSERTEQUAL(true, log.good());
+        std::string line;
+        MPF_TEST_ASSERT(std::getline(log, line).good());
+        MPF_TEST_ASSERTEQUAL("ERROR: skipping line 3: expected a date field (YYYY-mm-dd) in line 3", line);
+    }
 };
 
 MPF_REGISTER_TEST_START("CSVSuite", CSVParserTestCase);
 MPF_REGISTER_TEST(CSVParserTestCase::parseSimpleTest);
 MPF_REGISTER_TEST(CSVParserTestCase::parseTest);
+MPF_REGISTER_TEST(CSVParserTestCase::parseErroneousCSV);
 MPF_REGISTER_TEST_END();
