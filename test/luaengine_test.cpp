@@ -112,7 +112,7 @@ public:
                     break;
                 }
                 case 2: {
-                    MPF_TEST_ASSERT(line == "30");
+                    MPF_TEST_ASSERT(std::stoi(line) == 30);
                     break;
                 }
                 case 3: {
