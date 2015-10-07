@@ -58,12 +58,24 @@ namespace csvsqldb
     {
     }
 
-    Exception::Exception(const std::string& message) NOEXCEPT : std::system_error(0, std::generic_category(), message)
+    Exception::Exception(const std::string& message) NOEXCEPT : std::system_error(std::error_code(0, std::generic_category())),
+                                                                _message(message)
     {
     }
 
     Exception::Exception(const Exception& ex) NOEXCEPT : std::system_error(ex)
     {
+    }
+
+    const char* Exception::what() const NOEXCEPT
+    {
+        if(code().value() == 0) {
+            // a code value of 0 is seen as no code from csvsqldb
+            // some systems see a code value of 0 as a success and will write that to the message, which is not what I want
+            return _message.c_str();
+        } else {
+            return std::system_error::what();
+        }
     }
 
     CSVSQLDB_IMPLEMENT_EXCEPTION(TimeoutException, Exception);

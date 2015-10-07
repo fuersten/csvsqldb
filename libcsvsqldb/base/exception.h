@@ -83,6 +83,14 @@ namespace csvsqldb
         explicit Exception(const std::string& message) NOEXCEPT;
 
         Exception(const Exception& ex) NOEXCEPT;
+
+        /**
+         * Returns the explanatory string.
+         */
+        virtual const char* what() const NOEXCEPT;
+
+    private:
+        std::string _message;
     };
 
 
