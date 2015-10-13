@@ -53,9 +53,9 @@ namespace csvsqldb
      *  - [a-zA-Z]
      *  - [^a-z]
      *  - .
-     *  - \w
-     *  - \d
-     *  - \s
+     *  - \\w
+     *  - \\d
+     *  - \\s
      */
     class RegExp
     {
