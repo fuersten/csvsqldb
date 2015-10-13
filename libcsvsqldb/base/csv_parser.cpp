@@ -53,6 +53,7 @@ namespace csvsqldb
         , _stringBufferSize(256)
         , _n(0)
         , _count(0)
+        , _stringParser(_stringBuffer, _stringBufferSize, std::bind(&CSVParser::readNextChar, this, std::placeholders::_1))
         {
             _buffer.resize(_bufferLength);
             _stringBuffer.resize(_stringBufferSize);
@@ -133,53 +134,8 @@ namespace csvsqldb
 
         void CSVParser::parseString()
         {
-            size_t n = 0;
-            size_t start = 0;
-            size_t end = 0;
-            _stringBuffer[n] = readNextChar();
-
-            bool expectQuotationMarkAtEnd = false;
-            bool expectSingleQuotationMarkAtEnd = false;
-
-            if(_stringBuffer[0] == '"') {
-                expectQuotationMarkAtEnd = true;
-                ++start;
-            } else if(_stringBuffer[0] == '\'') {
-                expectSingleQuotationMarkAtEnd = true;
-                ++start;
-            }
-
-            bool ignoreDelimiter = expectQuotationMarkAtEnd | expectSingleQuotationMarkAtEnd;
-
-            while(_stringBuffer[n]) {
-                if(++n == _stringBufferSize - 1) {
-                    _stringBufferSize += _stringBufferSize;
-                    _stringBuffer.resize(_stringBufferSize);
-                }
-                _stringBuffer[n] = readNextChar(ignoreDelimiter);
-                if(expectQuotationMarkAtEnd && _stringBuffer[n] == '"') {
-                    ignoreDelimiter = false;
-                } else if(expectSingleQuotationMarkAtEnd && _stringBuffer[n] == '\'') {
-                    ignoreDelimiter = false;
-                }
-            }
-            end = n;
-            if(_stringBuffer[0] && (expectQuotationMarkAtEnd || expectSingleQuotationMarkAtEnd)) {
-                if(expectQuotationMarkAtEnd && _stringBuffer[n - 1] != '"') {
-                    CSVSQLDB_THROW(csvsqldb::Exception, "expected a '\"' at the end of the string in line " << _lineCount);
-                } else if(expectSingleQuotationMarkAtEnd && _stringBuffer[n - 1] != '\'') {
-                    CSVSQLDB_THROW(csvsqldb::Exception, "expected a '\'' at the end of the string in line " << _lineCount);
-                }
-                end = n - 1;
-                _stringBuffer[n - 1] = '\0';
-            }
-            if(_stringBuffer[0] && !(expectQuotationMarkAtEnd || expectSingleQuotationMarkAtEnd)) {
-                if(_stringBuffer[n - 1] == '"' || _stringBuffer[n - 1] == '\'') {
-                    CSVSQLDB_THROW(csvsqldb::Exception, "didn't expected a '\"' at the end of the string in line " << _lineCount);
-                }
-            }
-            size_t len = static_cast<size_t>(&_stringBuffer[end] - &_stringBuffer[start]);
-            _callback.onString(&_stringBuffer[start], len, !_stringBuffer[0]);
+            size_t len = _stringParser.parseToBuffer();
+            _callback.onString(&_stringBuffer[0], len, !_stringBuffer[0]);
         }
 
         void CSVParser::parseLong()
@@ -316,7 +272,8 @@ namespace csvsqldb
                    || _stringBuffer[16] != ':') {
                     CSVSQLDB_THROW(csvsqldb::Exception,
                                    "expected a timestamp field (YYYY-mm-ddTHH:MM:SS) in line " << _lineCount << ", but got '"
-                                                                                               << &_stringBuffer[0] << "'");
+                                                                                               << &_stringBuffer[0]
+                                                                                               << "'");
                 }
 
                 uint16_t year = static_cast<uint16_t>(_stringBuffer[0] - 48) * 1000;

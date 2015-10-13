@@ -36,6 +36,7 @@
 
 #include "libcsvsqldb/inc.h"
 
+#include "csv_string_parser.h"
 #include "date.h"
 #include "time.h"
 #include "timestamp.h"
@@ -92,7 +93,7 @@ namespace csvsqldb
         class CSVSQLDB_EXPORT CSVParser : noncopyable
         {
         public:
-            /*
+            /**
              * Constructs a CSV parser.
              * @param context The parametrising context to use
              * @param stream The input stream to parse
@@ -149,6 +150,7 @@ namespace csvsqldb
             size_t _stringBufferSize;
             size_t _n;
             std::streamsize _count;
+            CSVStringParser _stringParser;
             static const std::streamsize _bufferLength = 8192;
         };
     }

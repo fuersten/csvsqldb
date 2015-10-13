@@ -36,9 +36,13 @@
 #include "test/test_util.h"
 
 #include "libcsvsqldb/base/csv_parser.h"
+#include "libcsvsqldb/base/csv_string_parser.h"
 
 #include <fstream>
+#include <functional>
 #include <sstream>
+
+using namespace std::placeholders;
 
 
 class DummyCSVParserCallback : public csvsqldb::csv::CSVParserCallback
@@ -159,7 +163,7 @@ public:
         MPF_TEST_ASSERTEQUAL("1970-09-23", callback._results[firstRowBase + 2]);
         MPF_TEST_ASSERTEQUAL("Teststr., 315", callback._results[firstRowBase + 3]);
         MPF_TEST_ASSERTEQUAL("33509", callback._results[firstRowBase + 4]);
-        MPF_TEST_ASSERTEQUAL("Gerlinde", callback._results[firstRowBase + 5]);
+        MPF_TEST_ASSERTEQUAL("Ger\"linde", callback._results[firstRowBase + 5]);
         MPF_TEST_ASSERTEQUAL("12000.000000", callback._results[firstRowBase + 6]);
         MPF_TEST_ASSERTEQUAL("true", callback._results[firstRowBase + 7]);
         MPF_TEST_ASSERTEQUAL("08:09:11", callback._results[firstRowBase + 8]);
@@ -277,10 +281,169 @@ public:
         MPF_TEST_ASSERT(std::getline(log, line).good());
         MPF_TEST_ASSERTEQUAL("ERROR: skipping line 3: expected a date field (YYYY-mm-dd) in line 3", line);
     }
+
+    void parseStrings()
+    {
+        csvsqldb::csv::Types types;
+        types.push_back(csvsqldb::csv::LONG);
+        types.push_back(csvsqldb::csv::STRING);
+        types.push_back(csvsqldb::csv::DATE);
+
+        std::stringstream ss(R"(emp_no,first_name,birth_date
+47291,"Ulf",1960-09-09
+60134,Seshu,1964-04-21
+72329,'Randi',1953-02-09
+00001,"abc'def",1960-09-09
+00002,'abc"def',1960-09-09
+00003,"abc""def",1960-09-09
+00004,'abc''def',1960-09-09
+00005,"abc,def",1960-09-09
+00006,'abc,def',1960-09-09
+)");
+
+        DummyCSVParserCallback callback;
+        csvsqldb::csv::CSVParserContext context;
+        context._skipFirstLine = true;
+        csvsqldb::csv::CSVParser csvparser(context, ss, types, callback);
+        while(csvparser.parseLine()) {
+        }
+
+        // 10 because the header line is also count in order to output correct line numbers for errors
+        MPF_TEST_ASSERTEQUAL(10U, csvparser.getLineCount());
+        MPF_TEST_ASSERTEQUAL(27U, callback._results.size());
+
+        size_t nextRowBase = 0;
+        MPF_TEST_ASSERTEQUAL("47291", callback._results[nextRowBase + 0]);
+        MPF_TEST_ASSERTEQUAL("Ulf", callback._results[nextRowBase + 1]);
+        MPF_TEST_ASSERTEQUAL("1960-09-09", callback._results[nextRowBase + 2]);
+
+        nextRowBase = 3;
+        MPF_TEST_ASSERTEQUAL("60134", callback._results[nextRowBase + 0]);
+        MPF_TEST_ASSERTEQUAL("Seshu", callback._results[nextRowBase + 1]);
+        MPF_TEST_ASSERTEQUAL("1964-04-21", callback._results[nextRowBase + 2]);
+
+        nextRowBase = 6;
+        MPF_TEST_ASSERTEQUAL("72329", callback._results[nextRowBase + 0]);
+        MPF_TEST_ASSERTEQUAL("Randi", callback._results[nextRowBase + 1]);
+        MPF_TEST_ASSERTEQUAL("1953-02-09", callback._results[nextRowBase + 2]);
+
+        nextRowBase = 9;
+        MPF_TEST_ASSERTEQUAL("abc'def", callback._results[nextRowBase + 1]);
+
+        nextRowBase = 12;
+        MPF_TEST_ASSERTEQUAL("abc\"def", callback._results[nextRowBase + 1]);
+
+        nextRowBase = 15;
+        MPF_TEST_ASSERTEQUAL("abc\"def", callback._results[nextRowBase + 1]);
+
+        nextRowBase = 18;
+        MPF_TEST_ASSERTEQUAL("abc'def", callback._results[nextRowBase + 1]);
+
+        nextRowBase = 21;
+        MPF_TEST_ASSERTEQUAL("abc,def", callback._results[nextRowBase + 1]);
+
+        nextRowBase = 24;
+        MPF_TEST_ASSERTEQUAL("abc,def", callback._results[nextRowBase + 1]);
+    }
+
+    class StringReader
+    {
+    public:
+        void setString(const std::string& s)
+        {
+            _s = s;
+            _pos = s.begin();
+        }
+
+        char readNextChar(bool ignoreDelimiter)
+        {
+            if(_pos == _s.end()) {
+                return '\0';
+            }
+            if(!ignoreDelimiter && *_pos == ',') {
+                return '\0';
+            }
+            return *_pos++;
+        }
+
+    private:
+        std::string _s;
+        std::string::const_iterator _pos;
+    };
+
+    void stringParserTest()
+    {
+        csvsqldb::csv::CSVStringParser::BufferType buffer;
+        buffer.resize(2);
+        StringReader sr;
+        csvsqldb::csv::CSVStringParser sp(buffer, 1024, std::bind(&StringReader::readNextChar, std::ref(sr), _1));
+
+        sr.setString("test");
+        MPF_TEST_ASSERTEQUAL(4U, sp.parseToBuffer());
+        MPF_TEST_ASSERTEQUAL("test", std::string(&buffer[0]));
+
+        sr.setString("'test'");
+        MPF_TEST_ASSERTEQUAL(4U, sp.parseToBuffer());
+        MPF_TEST_ASSERTEQUAL("test", std::string(&buffer[0]));
+
+        sr.setString("\"test\"");
+        MPF_TEST_ASSERTEQUAL(4U, sp.parseToBuffer());
+        MPF_TEST_ASSERTEQUAL("test", std::string(&buffer[0]));
+
+        sr.setString("");
+        MPF_TEST_ASSERTEQUAL(0U, sp.parseToBuffer());
+        MPF_TEST_ASSERTEQUAL("", std::string(&buffer[0]));
+
+        sr.setString("''");
+        MPF_TEST_ASSERTEQUAL(0U, sp.parseToBuffer());
+        MPF_TEST_ASSERTEQUAL("", std::string(&buffer[0]));
+
+        sr.setString("\"\"");
+        MPF_TEST_ASSERTEQUAL(0U, sp.parseToBuffer());
+        MPF_TEST_ASSERTEQUAL("", std::string(&buffer[0]));
+
+        sr.setString("te'st");
+        MPF_TEST_ASSERTEQUAL(5U, sp.parseToBuffer());
+        MPF_TEST_ASSERTEQUAL("te'st", std::string(&buffer[0]));
+
+        sr.setString("te\"st");
+        MPF_TEST_ASSERTEQUAL(5U, sp.parseToBuffer());
+        MPF_TEST_ASSERTEQUAL("te\"st", std::string(&buffer[0]));
+
+        sr.setString("'te\"st'");
+        MPF_TEST_ASSERTEQUAL(5U, sp.parseToBuffer());
+        MPF_TEST_ASSERTEQUAL("te\"st", std::string(&buffer[0]));
+
+        sr.setString("\"te'st\"");
+        MPF_TEST_ASSERTEQUAL(5U, sp.parseToBuffer());
+        MPF_TEST_ASSERTEQUAL("te'st", std::string(&buffer[0]));
+
+        sr.setString("'te''st'");
+        MPF_TEST_ASSERTEQUAL(5U, sp.parseToBuffer());
+        MPF_TEST_ASSERTEQUAL("te'st", std::string(&buffer[0]));
+
+        sr.setString("\"te\"\"st\"");
+        MPF_TEST_ASSERTEQUAL(5U, sp.parseToBuffer());
+        MPF_TEST_ASSERTEQUAL("te\"st", std::string(&buffer[0]));
+
+        sr.setString("'te,st'");
+        MPF_TEST_ASSERTEQUAL(5U, sp.parseToBuffer());
+        MPF_TEST_ASSERTEQUAL("te,st", std::string(&buffer[0]));
+
+        sr.setString("te,st");
+        MPF_TEST_ASSERTEQUAL(2U, sp.parseToBuffer());
+        MPF_TEST_ASSERTEQUAL("te", std::string(&buffer[0]));
+
+        sr.setString("M");
+        MPF_TEST_ASSERTEQUAL(1U, sp.parseToBuffer());
+        MPF_TEST_ASSERTEQUAL("M", std::string(&buffer[0]));
+    }
 };
 
 MPF_REGISTER_TEST_START("CSVSuite", CSVParserTestCase);
 MPF_REGISTER_TEST(CSVParserTestCase::parseSimpleTest);
 MPF_REGISTER_TEST(CSVParserTestCase::parseTest);
 MPF_REGISTER_TEST(CSVParserTestCase::parseErroneousCSV);
+MPF_REGISTER_TEST(CSVParserTestCase::parseStrings);
+MPF_REGISTER_TEST(CSVParserTestCase::stringParserTest);
 MPF_REGISTER_TEST_END();
