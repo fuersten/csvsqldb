@@ -36,14 +36,6 @@
 #include "exception.h"
 
 
-/*
-
- enum eState { START = 0, DOUBLE_QUOTE_STRING = 1, DOUBLE_QUOTE_STRING_END = 2, SINGLE_QUOTE_STRING = 3, NO_QUOTE_STRING = 4,
- ERROR = 5, SINGLE_QUOTE_STRING_END = 6 };
- enum eCharCategory { SINGLE_QUOTE = 0, DOUBLE_QUOTE = 1, OTHER = 2 };
-
-*/
-
 namespace csvsqldb
 {
     namespace csv
