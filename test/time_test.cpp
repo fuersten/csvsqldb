@@ -64,15 +64,19 @@ public:
         y2k.tm_hour = 16;
         y2k.tm_min = 55;
         y2k.tm_sec = 22;
-        y2k.tm_year = 100;
+        y2k.tm_year = 2000 - 1900;
         y2k.tm_mon = 0;
         y2k.tm_mday = 1;
-        time_t time = mktime(&y2k);
+        y2k.tm_isdst = 0;
+        char utc[] = "UTC";
+        y2k.tm_zone = &utc[0];
+        time_t time = timegm(&y2k);
 
         csvsqldb::Time t3(time);
-        MPF_TEST_ASSERTEQUAL(y2k.tm_hour, t3.hour());
-        MPF_TEST_ASSERTEQUAL(y2k.tm_min, t3.minute());
-        MPF_TEST_ASSERTEQUAL(y2k.tm_sec, t3.second());
+        struct tm* ts = ::localtime(&time);
+        MPF_TEST_ASSERTEQUAL(ts->tm_hour, t3.hour());
+        MPF_TEST_ASSERTEQUAL(ts->tm_min, t3.minute());
+        MPF_TEST_ASSERTEQUAL(ts->tm_sec, t3.second());
 
         csvsqldb::Time t4(0, 0, 0, 0);
         MPF_TEST_ASSERTEQUAL(0, t4.hour());

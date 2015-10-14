@@ -60,18 +60,18 @@ public:
         y2k.tm_hour = 0;
         y2k.tm_min = 0;
         y2k.tm_sec = 0;
-        y2k.tm_year = 100;
+        y2k.tm_year = 2000 - 1900;
         y2k.tm_mon = 0;
         y2k.tm_mday = 1;
-        time_t time = mktime(&y2k);
-        // normalize the timezone in order to blend out time zone effects
-        struct tm* ptm = std::gmtime(&time);
-        time = mktime(ptm);
+        y2k.tm_isdst = 0;
+        char utc[] = "UTC";
+        y2k.tm_zone = &utc[0];
+        time_t time = timegm(&y2k);
 
         csvsqldb::Date d3(time);
-        MPF_TEST_ASSERTEQUAL(31, d3.day());
-        MPF_TEST_ASSERTEQUAL(12, d3.month());
-        MPF_TEST_ASSERTEQUAL(1999, d3.year());
+        MPF_TEST_ASSERTEQUAL(1, d3.day());
+        MPF_TEST_ASSERTEQUAL(1, d3.month());
+        MPF_TEST_ASSERTEQUAL(2000, d3.year());
 
         csvsqldb::Date d4(0, csvsqldb::Date::January, 1);
         MPF_TEST_ASSERTEQUAL(1, d4.day());

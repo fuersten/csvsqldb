@@ -73,11 +73,8 @@ namespace csvsqldb
         std::tm t;
         std::istringstream ss(time);
         ss >> get_time(&t, "%Y-%m-%dT%H:%M:%S");
-#ifndef _MSC_VER    // TODO LCF: find a valid workaround for Windows (maybe boost something?)
         time_t tt = timegm(&t);
-        localtime_r(&tt, &t);
-#endif
-        return std::chrono::system_clock::from_time_t(std::mktime(&t));
+        return std::chrono::system_clock::from_time_t(tt);
     }
 
     Date dateFromString(const std::string& date)
