@@ -74,6 +74,14 @@ namespace csvsqldb
         return false;
     }
 
+    void FileMapping::removeMapping(const std::string& tableName)
+    {
+        FileTableMapping::iterator iter = _fileTableMapping.find(csvsqldb::toupper_copy(tableName));
+        if(iter != _fileTableMapping.end()) {
+            _fileTableMapping.erase(iter);
+        }
+    }
+
     const Mapping& FileMapping::getMappingForTable(const std::string& tableName) const
     {
         FileTableMapping::const_iterator iter = _fileTableMapping.find(csvsqldb::toupper_copy(tableName));

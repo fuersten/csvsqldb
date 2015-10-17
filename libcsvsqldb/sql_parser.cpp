@@ -122,14 +122,21 @@ namespace csvsqldb
                 if(_currentToken._token == TOK_TABLE) {
                     astnode = parseCreateTable();
                 } else if(_currentToken._token == TOK_MAPPING) {
-                    astnode = parseMapping();
+                    astnode = parseCreateMapping();
                 } else {
                     reportUnexpectedToken("expected 'TABLE' or 'MAPPING', but found ", _currentToken);
                 }
             } else if(_currentToken._token == TOK_ALTER) {
                 astnode = parseAlterTable();
             } else if(_currentToken._token == TOK_DROP) {
-                astnode = parseDropTable();
+                expect(TOK_DROP);
+                if(_currentToken._token == TOK_TABLE) {
+                    astnode = parseDropTable();
+                } else if(_currentToken._token == TOK_MAPPING) {
+                    astnode = parseDropMapping();
+                } else {
+                    reportUnexpectedToken("expected 'TABLE' or 'MAPPING', but found ", _currentToken);
+                }
             } else if(_currentToken._token == TOK_EXPLAIN) {
                 astnode = parseExplain();
             } else {
@@ -169,7 +176,7 @@ namespace csvsqldb
         return std::make_shared<ASTExplainNode>(query->symbolTable(), desc, query);
     }
 
-    ASTMappingNodePtr SQLParser::parseMapping()
+    ASTMappingNodePtr SQLParser::parseCreateMapping()
     {
         expect(TOK_MAPPING);
         bool quoted = false;
@@ -182,17 +189,27 @@ namespace csvsqldb
             expect(TOK_QUOTED_IDENTIFIER);
         }
         char delimiter = ',';
-        if(canExpect(TOK_COMMA)) {
-            delimiter = expect(TOK_CONST_CHAR)[0];
-        }
         bool skipFirstLine = false;
         if(canExpect(TOK_COMMA)) {
-            skipFirstLine = csvsqldb::stringToBool(expect(TOK_CONST_BOOLEAN));
+            delimiter = expect(TOK_CONST_CHAR)[0];
+
+            if(canExpect(TOK_COMMA)) {
+                skipFirstLine = csvsqldb::stringToBool(expect(TOK_CONST_BOOLEAN));
+            }
         }
-        mappings.push_back({value, delimiter, skipFirstLine});
+        mappings.push_back({ value, delimiter, skipFirstLine });
         expect(TOK_RIGHT_PAREN);
 
         return std::make_shared<ASTMappingNode>(SymbolTable::createSymbolTable(), name, mappings);
+    }
+
+    ASTDropMappingNodePtr SQLParser::parseDropMapping()
+    {
+        expect(TOK_MAPPING);
+        bool quoted = false;
+        std::string name = parseQuotedIdentifier(quoted);
+
+        return std::make_shared<ASTDropMappingNode>(SymbolTable::createSymbolTable(), name);
     }
 
     ASTCreateTableNodePtr SQLParser::parseCreateTable()
@@ -458,7 +475,6 @@ namespace csvsqldb
     ASTDropTableNodePtr SQLParser::parseDropTable()
     {
         ASTDropTableNodePtr node;
-        expect(TOK_DROP);
         expect(TOK_TABLE);
 
         return std::make_shared<ASTDropTableNode>(SymbolTable::createSymbolTable(), expect(TOK_IDENTIFIER));

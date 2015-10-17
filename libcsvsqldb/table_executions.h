@@ -93,6 +93,20 @@ namespace csvsqldb
         std::string _tableName;
         FileMapping::Mappings _mappings;
     };
+
+    class CSVSQLDB_EXPORT DropMappingExecutionNode : public ExecutionNode
+    {
+    public:
+        DropMappingExecutionNode(Database& database, const std::string& tableName);
+
+        virtual int64_t execute();
+
+        virtual void dump(std::ostream& stream) const;
+
+    private:
+        Database& _database;
+        std::string _tableName;
+    };
 }
 
 #endif

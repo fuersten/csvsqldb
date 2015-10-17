@@ -138,8 +138,18 @@ namespace csvsqldb
         if(iter == _tables.end()) {
             CSVSQLDB_THROW(csvsqldb::Exception, "table '" << tableName << "' not found. Dropping nothing");
         }
-        fs::remove(tablePath() / iter->name());
+        boost::system::error_code ec;
+        fs::remove(tablePath() / tableName, ec);
+        if(ec) {
+            CSVSQLDB_THROW(csvsqldb::Exception, "could not remove table file (" << ec.message() << ")");
+        }
         _tables.erase(iter);
+
+        fs::remove(mappingPath() / tableName, ec);
+        if(ec) {
+            CSVSQLDB_THROW(csvsqldb::Exception, "could not remove mapping file (" << ec.message() << ")");
+        }
+        _mappings.removeMapping(tableName);
     }
 
     const Mapping& Database::getMappingForTable(const std::string& tableName) const
@@ -150,5 +160,10 @@ namespace csvsqldb
     void Database::addMapping(const FileMapping& mappings)
     {
         _mappings.mergeMapping(mappings);
+    }
+
+    void Database::removeMapping(const std::string& tableName)
+    {
+        _mappings.removeMapping(tableName);
     }
 }

@@ -215,8 +215,6 @@ public:
         node = parser.parse("SELECT a,b,c FROM Test where a > b and c is not null");
         MPF_TEST_ASSERT(node);
         MPF_TEST_ASSERT(std::dynamic_pointer_cast<csvsqldb::ASTQueryNode>(node));
-
-        // TODO LCF: to be done when is not null is handled right
     }
 
     void parseComment()
@@ -781,6 +779,38 @@ public:
         MPF_TEST_ASSERTEQUAL("test.csv", mapping->_mappings[0]._mapping);
         MPF_TEST_ASSERTEQUAL(';', mapping->_mappings[0]._delimiter);
         MPF_TEST_ASSERTEQUAL(true, mapping->_mappings[0]._skipFirstLine);
+
+        node = parser.parse("create mapping test('test.csv')");
+        MPF_TEST_ASSERT(node);
+        MPF_TEST_ASSERT(std::dynamic_pointer_cast<csvsqldb::ASTMappingNode>(node));
+        mapping = std::dynamic_pointer_cast<csvsqldb::ASTMappingNode>(node);
+        MPF_TEST_ASSERTEQUAL("test.csv", mapping->_mappings[0]._mapping);
+        MPF_TEST_ASSERTEQUAL(',', mapping->_mappings[0]._delimiter);
+        MPF_TEST_ASSERTEQUAL(false, mapping->_mappings[0]._skipFirstLine);
+
+        node = parser.parse("create mapping test('test.csv',';')");
+        MPF_TEST_ASSERT(node);
+        MPF_TEST_ASSERT(std::dynamic_pointer_cast<csvsqldb::ASTMappingNode>(node));
+        mapping = std::dynamic_pointer_cast<csvsqldb::ASTMappingNode>(node);
+        MPF_TEST_ASSERTEQUAL("test.csv", mapping->_mappings[0]._mapping);
+        MPF_TEST_ASSERTEQUAL(';', mapping->_mappings[0]._delimiter);
+        MPF_TEST_ASSERTEQUAL(false, mapping->_mappings[0]._skipFirstLine);
+    }
+
+    void createBadMappingTest()
+    {
+        csvsqldb::FunctionRegistry functions;
+        csvsqldb::SQLParser parser(functions);
+        MPF_TEST_EXPECTS(parser.parse("create mapping test('test.csv', true)"), csvsqldb::SqlParserException);
+    }
+
+    void dropMappingTest()
+    {
+        csvsqldb::FunctionRegistry functions;
+        csvsqldb::SQLParser parser(functions);
+        csvsqldb::ASTNodePtr node = parser.parse("drop mapping test");
+        MPF_TEST_ASSERT(node);
+        MPF_TEST_ASSERT(std::dynamic_pointer_cast<csvsqldb::ASTDropMappingNode>(node));
     }
 };
 
@@ -806,4 +836,6 @@ MPF_REGISTER_TEST(SQLParserTestCase::parseMappingFail);
 MPF_REGISTER_TEST(SQLParserTestCase::parseExpression);
 MPF_REGISTER_TEST(SQLParserTestCase::validateParsedSelect);
 MPF_REGISTER_TEST(SQLParserTestCase::createMappingTest);
+MPF_REGISTER_TEST(SQLParserTestCase::createBadMappingTest);
+MPF_REGISTER_TEST(SQLParserTestCase::dropMappingTest);
 MPF_REGISTER_TEST_END();

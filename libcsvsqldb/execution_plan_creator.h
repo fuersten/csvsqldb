@@ -103,6 +103,12 @@ namespace csvsqldb
             _executionPlan.addExecutionNode(execNode);
         }
 
+        virtual void visit(ASTDropMappingNode& node)
+        {
+            ExecutionNode::UniquePtr execNode(new DropMappingExecutionNode(_context._database, node._tableName));
+            _executionPlan.addExecutionNode(execNode);
+        }
+
         virtual void visit(ASTAlterTableAddNode& node)
         {
         }

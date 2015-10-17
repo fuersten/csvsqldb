@@ -74,6 +74,8 @@ namespace csvsqldb
 
         csvsqldb::StringVector asStringVector() const;
 
+        void removeMapping(const std::string& tableName);
+
         static FileMapping fromJson(std::istream& stream);
 
         static std::string asJson(const std::string& tableName, const Mappings& mappings);

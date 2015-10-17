@@ -121,6 +121,11 @@ namespace csvsqldb
             std::cout << "ASTMappingNode" << std::endl;
         }
 
+        virtual void visit(ASTDropMappingNode& node)
+        {
+            std::cout << "ASTDropMappingNode" << std::endl;
+        }
+
         virtual void visit(ASTAlterTableAddNode& node)
         {
             std::cout << "ASTAlterTableAdd" << std::endl;
@@ -612,6 +617,10 @@ namespace csvsqldb
         }
 
         virtual void visit(ASTMappingNode& node)
+        {
+        }
+        
+        virtual void visit(ASTDropMappingNode& node)
         {
         }
 

@@ -76,7 +76,8 @@ namespace csvsqldb
 
         ASTDescribeNodePtr parseExplain();
 
-        ASTMappingNodePtr parseMapping();
+        ASTMappingNodePtr parseCreateMapping();
+        ASTDropMappingNodePtr parseDropMapping();
 
         ASTQueryNodePtr parseQuery();
 

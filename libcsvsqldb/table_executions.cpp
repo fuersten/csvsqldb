@@ -37,6 +37,10 @@
 #include <fstream>
 #include <regex>
 
+#include <boost/filesystem.hpp>
+
+namespace fs = boost::filesystem;
+
 
 namespace csvsqldb
 {
@@ -46,6 +50,9 @@ namespace csvsqldb
 
     CSVSQLDB_DECLARE_EXCEPTION(CreateMappingException, SqlException);
     CSVSQLDB_IMPLEMENT_EXCEPTION(CreateMappingException, SqlException);
+
+    CSVSQLDB_DECLARE_EXCEPTION(DropMappingException, SqlException);
+    CSVSQLDB_IMPLEMENT_EXCEPTION(DropMappingException, SqlException);
 
 
     CreateTableExecutionNode::CreateTableExecutionNode(Database& database,
@@ -140,7 +147,6 @@ namespace csvsqldb
                 CSVSQLDB_THROW(CreateMappingException, "cant open mapping file");
             }
 
-            // TODO LCF: what the f**k?
             for(auto& mapping : _mappings) {
                 mapping._mapping = mapping._mapping + "->" + _tableName;
             }
@@ -162,6 +168,39 @@ namespace csvsqldb
     }
 
     void CreateMappingExecutionNode::dump(std::ostream& stream) const
+    {
+    }
+
+
+    DropMappingExecutionNode::DropMappingExecutionNode(Database& database, const std::string& tableName)
+    : _database(database)
+    , _tableName(tableName)
+    {
+    }
+
+    int64_t DropMappingExecutionNode::execute()
+    {
+        if(_tableName.substr(0, 7) == "SYSTEM_") {
+            CSVSQLDB_THROW(DropMappingException, "cant drop mapping for system tables");
+        }
+
+        fs::path mappingFile(_database.mappingPath() / _tableName);
+        if(!fs::exists(mappingFile)) {
+            CSVSQLDB_THROW(DropMappingException, "mapping file does not exist");
+        }
+
+        boost::system::error_code ec;
+        fs::remove(mappingFile, ec);
+        if(ec) {
+            CSVSQLDB_THROW(DropMappingException, "could not remove mapping file (" << ec.message() << ")");
+        }
+
+        _database.removeMapping(_tableName);
+
+        return 0;
+    }
+
+    void DropMappingExecutionNode::dump(std::ostream& stream) const
     {
     }
 }

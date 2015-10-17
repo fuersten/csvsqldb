@@ -81,6 +81,7 @@ namespace csvsqldb
 
         const Mapping& getMappingForTable(const std::string& tableName) const;
         void addMapping(const FileMapping& mappings);
+        void removeMapping(const std::string& tableName);
 
         void getTables(Tables& tables) const
         {

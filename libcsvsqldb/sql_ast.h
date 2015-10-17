@@ -51,6 +51,7 @@ namespace csvsqldb
     class ASTExplainNode;
     class ASTCreateTableNode;
     class ASTMappingNode;
+    class ASTDropMappingNode;
     class ASTAlterTableNode;
     class ASTAlterTableAddNode;
     class ASTAlterTableDropNode;
@@ -94,6 +95,7 @@ namespace csvsqldb
     typedef std::shared_ptr<ASTExplainNode> ASTDescribeNodePtr;
     typedef std::shared_ptr<ASTCreateTableNode> ASTCreateTableNodePtr;
     typedef std::shared_ptr<ASTMappingNode> ASTMappingNodePtr;
+    typedef std::shared_ptr<ASTDropMappingNode> ASTDropMappingNodePtr;
     typedef std::shared_ptr<ASTAlterTableNode> ASTAlterTableNodePtr;
     typedef std::shared_ptr<ASTDropTableNode> ASTDropTableNodePtr;
     typedef std::shared_ptr<ASTQueryNode> ASTQueryNodePtr;
@@ -197,6 +199,7 @@ namespace csvsqldb
 
         virtual void visit(ASTCreateTableNode& node) = 0;
         virtual void visit(ASTMappingNode& node) = 0;
+        virtual void visit(ASTDropMappingNode& node) = 0;
         virtual void visit(ASTAlterTableAddNode& node) = 0;
         virtual void visit(ASTAlterTableDropNode& node) = 0;
         virtual void visit(ASTDropTableNode& node) = 0;
@@ -263,6 +266,10 @@ namespace csvsqldb
             CSVSQLDB_THROW(SqlParserException, "Visting non expression node");
         }
         virtual void visit(ASTMappingNode& node)
+        {
+            CSVSQLDB_THROW(SqlParserException, "Visting non expression node");
+        }
+        virtual void visit(ASTDropMappingNode& node)
         {
             CSVSQLDB_THROW(SqlParserException, "Visting non expression node");
         }
@@ -471,6 +478,23 @@ namespace csvsqldb
 
         std::string _tableName;
         FileMapping::Mappings _mappings;
+    };
+
+    class CSVSQLDB_EXPORT ASTDropMappingNode : public ASTNode
+    {
+    public:
+        ASTDropMappingNode(const SymbolTablePtr& symbolTable, const std::string& tableName)
+        : ASTNode(symbolTable)
+        , _tableName(tableName)
+        {
+        }
+
+        virtual void accept(ASTNodeVisitor& visitor)
+        {
+            visitor.visit(*this);
+        }
+
+        std::string _tableName;
     };
 
     class CSVSQLDB_EXPORT ASTQueryNode : public ASTNode
