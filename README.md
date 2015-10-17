@@ -27,7 +27,6 @@ Most important issues, I am working on:
 - port to Windows (mainly the readline part, the rest was ported already)
 - extraction of the schema from csv files
 - extended projection step after aggregation operation in order to be able to calculate with aggregation results
-- drop mapping command
 - ORDER BY with expressions
 - GROUP BY with expressions
 - HAVING clause
@@ -72,6 +71,8 @@ csvsqldb --sql="SELECT emp_no,birth_date,last_name FROM employees WHERE birth_da
 10663,1965-01-09,'Noriega'
 ...
 ```
+
+You can find a detailed example here [Getting started](https://github.com/fuersten/csvsqldb/wiki/Getting-started).
 
 ## Interactive shell
 The interactive shell was implemented with the readline library and supports all default key bindings. 
