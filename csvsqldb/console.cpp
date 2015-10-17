@@ -120,6 +120,10 @@ namespace csvsqldb
                     }
                 }
             }
+            // remove closing semicolons
+            while(_line.back() == ';') {
+                _line.pop_back();
+            }
 
             _ready = false;
             return _line;

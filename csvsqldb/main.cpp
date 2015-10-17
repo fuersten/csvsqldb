@@ -190,7 +190,8 @@ private:
 
         // clang-format off
         po::options_description desc("Options");
-        desc.add_options()("help", "shows this help")
+        desc.add_options()
+        ("help", "shows this help")
         ("version", "shows the version of the program")
         ("interactive,i", "opens an interactive sql shell")
         ("verbose,v", "output verbose statistics")
@@ -209,15 +210,16 @@ private:
         po::store(po::command_line_parser(argc, argv).options(desc).positional(p).run(), vm);
         po::notify(vm);
 
-        if(vm.count("help")) {
-            printVersion();
-            std::cout << desc << std::endl;
-            return false;
-        }
         if(vm.count("version")) {
             printVersion();
             return false;
         }
+        if(vm.count("help") || (!vm.count("sql") && !vm.count("command-file") && !vm.count("interactive"))) {
+            printVersion();
+            std::cout << desc << std::endl;
+            return false;
+        }
+
         if(vm.count("sql") && vm.count("command-file")) {
             CSVSQLDB_THROW(csvsqldb::BadoptionException, "not allowed to specify 'sql' and 'command-file' option");
         }
@@ -362,6 +364,8 @@ private:
                                            } else {
                                                std::cout << "ERROR: csv file parameter missing\n";
                                            }
+                                       } else {
+                                           std::cout << "ERROR: unknown parameter for add, expected file\n";
                                        }
                                    }
                                    return true;
@@ -414,12 +418,22 @@ private:
                                                std::cout << ") -> " << typeToString(func->getReturnType()) << "\n";
                                            }
                                        } else if(csvsqldb::tolower_copy(params[0]) == "files") {
-                                           std::cout << "csv files for processing:\n";
-                                           for(const auto& file : csvDB.getFiles()) {
-                                               std::cout << file << "\n";
+                                           if(csvDB.getFiles().size()) {
+                                               std::cout << "csv files for processing:\n";
+                                               for(const auto& file : csvDB.getFiles()) {
+                                                   std::cout << file << "\n";
+                                               }
+                                           } else {
+                                               std::cout << "no csv files for processing";
                                            }
+                                       } else {
+                                           std::cout << "ERROR: unknown parameter for show, expected\n\ttables or mappings or "
+                                                        "columns or functions or files";
                                        }
                                        std::cout << "\n";
+                                   } else {
+                                       std::cout << "ERROR: expected parameter for show\n\ttables or mappings or "
+                                                    "columns or functions or files\n";
                                    }
                                    return true;
                                });
