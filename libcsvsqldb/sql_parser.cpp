@@ -1222,14 +1222,23 @@ namespace csvsqldb
                 case TOK_CURRENT_DATE:
                     expect(TOK_CURRENT_DATE);
                     funcName = "CURRENT_DATE";
+                    if(canExpect(TOK_LEFT_PAREN)) {
+                        expect(TOK_RIGHT_PAREN);
+                    }
                     break;
                 case TOK_CURRENT_TIME:
                     expect(TOK_CURRENT_TIME);
                     funcName = "CURRENT_TIME";
+                    if(canExpect(TOK_LEFT_PAREN)) {
+                        expect(TOK_RIGHT_PAREN);
+                    }
                     break;
                 case TOK_CURRENT_TIMESTAMP:
                     expect(TOK_CURRENT_TIMESTAMP);
                     funcName = "CURRENT_TIMESTAMP";
+                    if(canExpect(TOK_LEFT_PAREN)) {
+                        expect(TOK_RIGHT_PAREN);
+                    }
                     break;
                 case TOK_EXTRACT: {
                     expect(TOK_EXTRACT);

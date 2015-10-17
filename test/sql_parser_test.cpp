@@ -33,6 +33,7 @@
 
 #include "test.h"
 
+#include "libcsvsqldb/buildin_functions.h"
 #include "libcsvsqldb/sql_astexpressionvisitor.h"
 #include "libcsvsqldb/sql_astdump.h"
 #include "libcsvsqldb/sql_parser.h"
@@ -213,6 +214,29 @@ public:
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         node = parser.parse("SELECT a,b,c FROM Test where a > b and c is not null");
+        MPF_TEST_ASSERT(node);
+        MPF_TEST_ASSERT(std::dynamic_pointer_cast<csvsqldb::ASTQueryNode>(node));
+    }
+
+    void parseSelectExpression()
+    {
+        csvsqldb::ASTNodeSQLPrintVisitor visitor;
+        csvsqldb::FunctionRegistry functions;
+        csvsqldb::initBuildInFunctions(functions);
+        csvsqldb::SQLParser parser(functions);
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        csvsqldb::ASTNodePtr node = parser.parse("SELECT CURRENT_TIMESTAMP FROM SYSTEM_DUAL");
+        MPF_TEST_ASSERT(node);
+        MPF_TEST_ASSERT(std::dynamic_pointer_cast<csvsqldb::ASTQueryNode>(node));
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        node = parser.parse("SELECT CURRENT_TIMESTAMP() FROM SYSTEM_DUAL");
+        MPF_TEST_ASSERT(node);
+        MPF_TEST_ASSERT(std::dynamic_pointer_cast<csvsqldb::ASTQueryNode>(node));
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        node = parser.parse("SELECT 3+6 FROM SYSTEM_DUAL");
         MPF_TEST_ASSERT(node);
         MPF_TEST_ASSERT(std::dynamic_pointer_cast<csvsqldb::ASTQueryNode>(node));
     }
@@ -816,6 +840,7 @@ public:
 
 MPF_REGISTER_TEST_START("SQLParserTestSuite", SQLParserTestCase);
 MPF_REGISTER_TEST(SQLParserTestCase::parseSelect);
+MPF_REGISTER_TEST(SQLParserTestCase::parseSelectExpression);
 MPF_REGISTER_TEST(SQLParserTestCase::parseComment);
 MPF_REGISTER_TEST(SQLParserTestCase::parseUnion);
 MPF_REGISTER_TEST(SQLParserTestCase::parseExplain);
