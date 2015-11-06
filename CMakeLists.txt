@@ -87,17 +87,17 @@ ELSEIF(APPLE AND CMAKE_GENERATOR STREQUAL Xcode)
     SET(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD "c++11")
     SET(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LIBRARY "libc++")
     SET(CSVSQLDB_PLATFORM_LIBS )
-    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wheader-hygiene -Wcast-align -Wconversion -Wfloat-equal -Wformat=2
-                         -Wimplicit-atomic-properties -Wmissing-declarations -Wmissing-prototypes -Woverlength-strings
-                         -Wshadow -Wstrict-selector-match -Wundeclared-selector -Wunreachable-code -Wextra
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wheader-hygiene -Wcast-align -Wconversion -Wfloat-equal -Wformat=2 \
+                         -Wimplicit-atomic-properties -Wmissing-declarations -Wmissing-prototypes -Woverlength-strings \
+                         -Wshadow -Wstrict-selector-match -Wundeclared-selector -Wunreachable-code -Wextra \
                          -Wno-unused-parameter -Wpedantic -Werror")
                          SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -isystem ${Boost_INCLUDE_DIR}")
 ELSEIF(APPLE)
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -stdlib=libc++")
-    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wheader-hygiene -Wcast-align -Wconversion -Wfloat-equal -Wformat=2
-                         -Wimplicit-atomic-properties -Wmissing-declarations -Wmissing-prototypes -Woverlength-strings
-                         -Wshadow -Wstrict-selector-match -Wundeclared-selector -Wunreachable-code -Wextra
-                         -Wno-unused-parameter -Wpedantic -Werror")
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wheader-hygiene -Wcast-align -Wconversion -Wfloat-equal -Wformat=2 \
+                         -Wimplicit-atomic-properties -Wmissing-declarations -Wmissing-prototypes -Woverlength-strings \
+                         -Wshadow -Wstrict-selector-match -Wundeclared-selector -Wunreachable-code -Wextra \
+                         -Wno-unused-parameter -Wno-sign-conversion -Wpedantic -Werror")
                          SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -isystem ${Boost_INCLUDE_DIR}")
 ELSEIF(WIN32)
     ADD_DEFINITIONS(-DNOMINMAX)
