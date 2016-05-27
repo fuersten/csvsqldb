@@ -23,7 +23,6 @@
 
 #include "libcsvsqldb/inc.h"
 
-#include "libcsvsqldb/base/signalhandler.h"
 #include "types.h"
 
 #include <map>
@@ -37,22 +36,20 @@ namespace fs = boost::filesystem;
 namespace csvsqldb
 {
     /**
-     * A console class to support interactive shells. The implementation is based on the readline library.
+     * A console class to support interactive shells. The implementation is based on the linenoise library.
      */
-    class CSVSQLDB_EXPORT Console : public SignalEventHandler
+    class CSVSQLDB_EXPORT Console
     {
     public:
         typedef std::function<bool(const csvsqldb::StringVector&)> CommandFunction;
         typedef std::function<bool(const std::string&)> DefaultCommandFunction;
 
-        Console(const std::string& prompt, const fs::path& historyPath, SignalHandler& signalHandler);
+        Console(const std::string& prompt, const fs::path& historyPath);
 
         ~Console();
 
         void run();
         void stop();
-
-        virtual int onSignal(int signum);
 
         void addCommand(const std::string& command, CommandFunction function);
         void addDefault(DefaultCommandFunction function);
@@ -62,13 +59,11 @@ namespace csvsqldb
     private:
         typedef std::map<std::string, CommandFunction> Commands;
 
-        csvsqldb::SetUpSignalEventHandler _guard;
         fs::path _historyPath;
         Commands _commands;
         DefaultCommandFunction _defaultCommand;
-
-        struct Private;
-        std::unique_ptr<Private> _p;
+        std::string _prompt;
+        bool _stop;
     };
 }
 

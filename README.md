@@ -1,10 +1,10 @@
 # csvsqldb
-A read only sql database that gets its data from supplied csv files. 
-The data is accessed via an sql interface. 
-Most of the standard sql is supported, including joins. 
-The schema has to be specified beforehand, in a later version it shall be possible to guess it from the csv files. 
-The output is streamed in csv format to the standard output. 
-The tool can be used to rearrange, filter and process csv files. 
+A read only sql database that gets its data from supplied csv files.
+The data is accessed via an sql interface.
+Most of the standard sql is supported, including joins.
+The schema has to be specified beforehand, in a later version it shall be possible to guess it from the csv files.
+The output is streamed in csv format to the standard output.
+The tool can be used to rearrange, filter and process csv files.
 It is much easier to use than the classic grep, awk, sort, cut and sed commands.
 
 # Features
@@ -18,13 +18,13 @@ It is much easier to use than the classic grep, awk, sort, cut and sed commands.
 # Supported plattforms
 - Linux
 - Mac OS X
-- Windows (currently the readline part is not ported)
+- Windows (currently not functional)
 
 # Status
 It is not ready yet, but it is definitely usefull.
 
 Most important issues, I am working on:
-- port to Windows (mainly the readline part, the rest was ported already)
+- port to Windows
 - extraction of the schema from csv files
 - extended projection step after aggregation operation in order to be able to calculate with aggregation results
 - ORDER BY with expressions
@@ -42,8 +42,8 @@ Most important issues, I am working on:
 # Usage
 
 ```
-csvsqldb tool version 0.1.4
-©2015 Lars Fürstenberg
+csvsqldb tool version 0.1.6
+©2015-2016 Lars Fürstenberg
 Options:
   --help                    shows this help
   --version                 shows the version of the program
@@ -75,7 +75,7 @@ csvsqldb --sql="SELECT emp_no,birth_date,last_name FROM employees WHERE birth_da
 You can find a detailed example here [Getting started](https://github.com/fuersten/csvsqldb/wiki/Getting-started).
 
 ## Interactive shell
-The interactive shell was implemented with the readline library and supports all default key bindings. 
+The interactive shell was implemented with the linenoise library and supports most of the readline default key bindings.
 It also supports a command history. Typeing _help_ will show you all possible commands in interactive mode.
 
 # SQL support

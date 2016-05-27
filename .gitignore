@@ -30,6 +30,7 @@
 # temporary files
 *.swp
 *.swo
+tags
 
 # build directory
 build

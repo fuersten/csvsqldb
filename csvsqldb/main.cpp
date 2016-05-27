@@ -148,13 +148,12 @@ public:
 class CSVDBApp : public csvsqldb::Application, public csvsqldb::SignalEventHandler
 {
 public:
-    CSVDBApp(int argc, char** argv, csvsqldb::SignalHandler& signalHandler)
+    CSVDBApp(int argc, char** argv)
     : csvsqldb::Application(argc, argv)
     , _databasePath("./.csvdb")
     , _showHeaderLine(true)
     , _verbose(false)
     , _interactive(false)
-    , _signalHandler(signalHandler)
     {
         csvsqldb::GlobalConfiguration::create<CSVDBGlobalConfiguration>();
         try {
@@ -176,8 +175,6 @@ public:
     }
 
 private:
-    typedef std::unique_ptr<csvsqldb::Console> ConsolePtr;
-
     void printVersion()
     {
         std::cout << "csvsqldb tool version " << CSVSQLDB_VERSION_STRING << std::endl;
@@ -295,7 +292,7 @@ private:
         }
 
         if(_interactive) {
-            csvsqldb::Console console("sql> ", "./.csvdb/.history", _signalHandler);
+            csvsqldb::Console console("sql> ", "./.csvdb/.history");
             console.addCommand("quit",
                                [&console](const csvsqldb::StringVector&) -> bool {
                                    console.stop();
@@ -452,14 +449,13 @@ private:
     bool _verbose;
     bool _interactive;
     csvsqldb::StringVector _files;
-    csvsqldb::SignalHandler& _signalHandler;
 };
 
 
 int main(int argc, char** argv)
 {
     csvsqldb::SignalHandler sighandler;
-    CSVDBApp csvdb(argc, argv, sighandler);
+    CSVDBApp csvdb(argc, argv);
     csvsqldb::SetUpSignalEventHandler guard(SIGINT, &sighandler, &csvdb);
 
     int ret = csvdb.run();

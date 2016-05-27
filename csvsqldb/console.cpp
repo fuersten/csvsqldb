@@ -25,153 +25,39 @@
 
 #include <iostream>
 
-#include <unistd.h>
+#include <signal.h>
 
-#include <readline/readline.h>
-#include <readline/history.h>
+#include "linenoise-ng/linenoise.h"
 
 
 namespace csvsqldb
 {
 
-    struct Console::Private {
-        Private(const std::string& prompt)
-        : _prompt(prompt)
-        , _continue(true)
-        , _ready(false)
-        {
-            _me = this;
-
-            if(::pipe(_pipeFD) < 0) {
-                CSVSQLDB_THROW(Exception, "could not initialize pipe");
-            }
-        }
-
-        ~Private()
-        {
-            rl_callback_handler_remove();
-        }
-
-        void onSignal()
-        {
-            // write to pipe in order to trigger the select
-            const char buf[] = "stop";
-            ::write(_pipeFD[1], buf, 1);
-            _continue = false;
-        }
-
-        static void process_line(char* lineRead)
-        {
-            // TODO LCF: find a better solution
-            _me->do_process_line(lineRead);
-        }
-
-        void do_process_line(char* lineRead)
-        {
-            if(lineRead) {
-                _line = lineRead;
-                free(lineRead);
-            } else {
-                _line.clear();
-                std::cout << std::endl;
-            }
-            rl_callback_handler_remove();
-            _ready = true;
-        }
-
-        void addToHistory(const std::string& line)
-        {
-            if(!line.empty()) {
-                int index = history_search_pos(line.c_str(), 0, 0);
-                if(index >= 0) {
-                    HIST_ENTRY* entry = remove_history(index);
-#if RL_READLINE_VERSION >= 0x0500
-                    free_history_entry(entry);
-#else
-                    free(entry);
-#endif
-                }
-                add_history(line.c_str());
-            }
-        }
-
-        std::string getLine()
-        {
-            rl_callback_handler_install(_prompt.c_str(), &Console::Private::process_line);
-            while(_continue && !_ready) {
-                fd_set fds;
-                int maxFD = std::max(::fileno(rl_instream), _pipeFD[0]);
-
-                FD_ZERO(&fds);
-                FD_SET(0, &fds);
-                FD_SET(_pipeFD[0], &fds);
-
-                select(maxFD + 1, &fds, NULL, NULL, NULL);
-
-                for(int n = 0; n <= maxFD; ++n) {
-                    if(FD_ISSET(n, &fds) && n == _pipeFD[0]) {
-                        // pipe was written => quit
-                        _line.clear();
-                        rl_callback_handler_remove();
-                        break;
-                    } else if(FD_ISSET(::fileno(rl_instream), &fds) && _continue) {
-                        rl_callback_read_char();
-                        break;
-                    }
-                }
-            }
-            // remove closing semicolons
-            while(_line.back() == ';') {
-                _line.pop_back();
-            }
-
-            _ready = false;
-            return _line;
-        }
-
-        std::string _prompt;
-        std::string _line;
-        bool _continue;
-        bool _ready;
-        int _pipeFD[2];
-        static Private* _me;
-    };
-
-    Console::Private* Console::Private::_me = nullptr;
-
-
-    Console::Console(const std::string& prompt, const fs::path& historyPath, SignalHandler& signalHandler)
-    : _guard(SIGINT, &signalHandler, this)
-    , _historyPath(historyPath)
-    , _p(new Private(prompt))
+    Console::Console(const std::string& prompt, const fs::path& historyPath)
+    : _historyPath(historyPath)
+    , _prompt(prompt)
+    , _stop(false)
     {
-        rl_initialize();
-        using_history();
-        stifle_history(40);
-        read_history(_historyPath.c_str());
+        linenoiseHistoryLoad(_historyPath.c_str());
     }
 
     Console::~Console()
     {
-        write_history(_historyPath.c_str());
-    }
-
-    int Console::onSignal(int signum)
-    {
-        _p->onSignal();
-        return 0;
+        linenoiseHistorySave(_historyPath.c_str());
     }
 
     void Console::run()
     {
         std::string line;
-        while(_p->_continue) {
-            line = _p->getLine();
-            if(line.empty()) {
-                std::cout << std::endl;
-                continue;
+        while(!_stop) {
+            char* result = linenoise(_prompt.c_str());
+            if(!result) {
+                // no more to do
+                break;
             }
-
+            line = std::string(result);
+            free(result);
+            
             csvsqldb::StringVector params;
             csvsqldb::split(line, ' ', params, false);
 
@@ -180,11 +66,11 @@ namespace csvsqldb
                 // remove first entry as it is the command name
                 params.erase(params.begin());
                 if(it->second(params)) {
-                    _p->addToHistory(line);
+                    linenoiseHistoryAdd(line.c_str());
                 }
             } else if(_defaultCommand) {
                 if(_defaultCommand(line)) {
-                    _p->addToHistory(line);
+                    linenoiseHistoryAdd(line.c_str());
                 }
             }
         }
@@ -192,7 +78,7 @@ namespace csvsqldb
 
     void Console::stop()
     {
-        _p->onSignal();
+        _stop = true;
     }
 
     void Console::addCommand(const std::string& command, CommandFunction function)
@@ -207,6 +93,6 @@ namespace csvsqldb
 
     void Console::clearHistory()
     {
-        clear_history();
+        linenoiseHistoryFree();
     }
 }
