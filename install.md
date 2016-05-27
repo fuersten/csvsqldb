@@ -3,13 +3,10 @@
 - You will need the following software packages
   - boost-1.53 or higher
   - lua-5.1 or higher
-  - readline-6.0 or higher (only for the command line interface)
   - cmake-2.8 or higher
 
 - The easiest way to install these packages is using homebrew
 - Create a build directory in the source directory of csvsqldb and change to it
-- You have to tell cmake where to find the brew readline version, as Mac OS X has
-- an older version `export CMAKE_PREFIX_PATH=/usr/local/Cellar/readline/6.3.8`
 - Call `cmake -DCMAKE_BUILD_TYPE=Release ..`
 - Call `make`
 
@@ -17,7 +14,6 @@
 - You will need the following software packages
   - boost-1.53 or higher
   - lua-5.1 or higher
-  - readline-6.0 or higher (only for the command line interface)
   - cmake-2.8 or higher
   - clang++ 3.4 or higher compiler or g++ 4.8 or higher
   - libc++ 3.4 or higher
@@ -41,20 +37,17 @@
 - You will need the following software packages
   - boost-1.53 or higher
   - lua-5.1 or higher
-  - readline-5.0 or higher (only for the command line interface)
   - cmake-2.8 or higher
   - Visual Studio 2013 or newer
   - The Express version will also work
 
 - Precompiled boost libraries can be obtained from  [http://sourceforge.net/projects/boost/files/boost-binaries](http://sourceforge.net/projects/boost/files/boost-binaries)
 - Precompiled Lua binaries can be obtained from  [http://sourceforge.net/projects/luabinaries/files/?source=navbar](http://sourceforge.net/projects/luabinaries/files/?source=navbar)
-- Precompiled Windows binaries for a readline port can be obtained from [http://gnuwin32.sourceforge.net/packages/readline.htm](http://gnuwin32.sourceforge.net/packages/readline.htm)
 - CMake can be downloaded from [http://www.cmake.org/download](http://www.cmake.org/download)
 - Create a build directory in the source directory of csvsqldb and change to it
-- Now you have to tell cmake, where the boost, lua and readline libraries are
+- Now you have to tell cmake, where the boost and lua libraries are
 - `SET BOOST_ROOT=<path to the boost root directory>`
 - `SET BOOST_LIBRARYDIR=<path to the boost library directory>`
 - `SET LUA_DIR=<path to the Lua root directory>`
-- `SET Readline_ROOT_DIR=<path to the readline root directory>`
 - Call `cmake -DCMAKE_BUILD_TYPE=Release ..`
 - Call `make`
