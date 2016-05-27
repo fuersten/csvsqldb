@@ -32,11 +32,8 @@
 
 
 #include "test.h"
+#include "test/test_util.h"
 #include "libcsvsqldb/base/glob.h"
-
-#include <unistd.h>
-#include <sys/types.h>
-#include <pwd.h>
 
 
 class GlobTestCase
@@ -53,14 +50,12 @@ public:
     void expansionTest()
     {
         csvsqldb::StringVector files;
-        csvsqldb::expand("~", files);
-        MPF_TEST_ASSERTEQUAL(1U, files.size());
+        csvsqldb::expand(CSVSQLDB_TEST_PATH + std::string("/testdata/*"), files);
+        MPF_TEST_ASSERTEQUAL(2U, files.size());
 
-        const char* homedir;
-        if((homedir = getenv("HOME")) == NULL) {
-            homedir = getpwuid(getuid())->pw_dir;
-        }
-        MPF_TEST_ASSERTEQUAL(std::string(homedir), files[0]);
+        std::sort(files.begin(), files.end());
+        MPF_TEST_ASSERTEQUAL(CSVSQLDB_TEST_PATH + std::string("/testdata/csv"), files[0]);
+        MPF_TEST_ASSERTEQUAL(CSVSQLDB_TEST_PATH + std::string("/testdata/luaengine"), files[1]);
     }
 };
 
