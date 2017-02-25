@@ -61,16 +61,18 @@ namespace csvsqldb
             csvsqldb::StringVector params;
             csvsqldb::split(line, ' ', params, false);
 
-            Commands::iterator it = _commands.find(csvsqldb::tolower_copy(*(params.begin())));
-            if(it != _commands.end()) {
-                // remove first entry as it is the command name
-                params.erase(params.begin());
-                if(it->second(params)) {
-                    linenoiseHistoryAdd(line.c_str());
-                }
-            } else if(_defaultCommand) {
-                if(_defaultCommand(line)) {
-                    linenoiseHistoryAdd(line.c_str());
+            if(params.size()) {
+                Commands::iterator it = _commands.find(csvsqldb::tolower_copy(*(params.begin())));
+                if(it != _commands.end()) {
+                    // remove first entry as it is the command name
+                    params.erase(params.begin());
+                    if(it->second(params)) {
+                        linenoiseHistoryAdd(line.c_str());
+                    }
+                } else if(_defaultCommand) {
+                    if(_defaultCommand(line)) {
+                        linenoiseHistoryAdd(line.c_str());
+                    }
                 }
             }
         }
