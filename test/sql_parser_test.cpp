@@ -836,6 +836,15 @@ public:
         MPF_TEST_ASSERT(node);
         MPF_TEST_ASSERT(std::dynamic_pointer_cast<csvsqldb::ASTDropMappingNode>(node));
     }
+    
+    void loadTest()
+    {
+        csvsqldb::FunctionRegistry functions;
+        csvsqldb::SQLParser parser(functions);
+        csvsqldb::ASTNodePtr node = parser.parse("load '~/Downloads/csvsqldb_example/airports.csv' airport");
+        MPF_TEST_ASSERT(node);
+        MPF_TEST_ASSERT(std::dynamic_pointer_cast<csvsqldb::ASTLoadNode>(node));
+    }
 };
 
 MPF_REGISTER_TEST_START("SQLParserTestSuite", SQLParserTestCase);
@@ -863,4 +872,5 @@ MPF_REGISTER_TEST(SQLParserTestCase::validateParsedSelect);
 MPF_REGISTER_TEST(SQLParserTestCase::createMappingTest);
 MPF_REGISTER_TEST(SQLParserTestCase::createBadMappingTest);
 MPF_REGISTER_TEST(SQLParserTestCase::dropMappingTest);
+MPF_REGISTER_TEST(SQLParserTestCase::loadTest);
 MPF_REGISTER_TEST_END();

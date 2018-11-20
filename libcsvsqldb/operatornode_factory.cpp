@@ -111,4 +111,11 @@ namespace csvsqldb
     {
         return std::make_shared<TableScanOperatorNode>(context, symbolTable, tableInfo);
     }
+    
+    RowOperatorNodePtr
+    OperatorNodeFactory::createCsvScanOperatorNode(OperatorContext& context, const SymbolTablePtr& symbolTable, const SymbolInfo& tableInfo,
+                                                   const std::string& path)
+    {
+        return std::make_shared<CsvScanOperatorNode>(context, symbolTable, tableInfo, path);
+    }
 }

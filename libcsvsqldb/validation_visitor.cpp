@@ -53,6 +53,11 @@ namespace csvsqldb
     void ASTValidationVisitor::visit(ASTDropMappingNode& node)
     {
     }
+    
+    void ASTValidationVisitor::visit(ASTLoadNode& node)
+    {
+        node.symbolTable()->typeSymbolTable(_database);
+    }
 
     void ASTValidationVisitor::visit(ASTAlterTableAddNode& node)
     {

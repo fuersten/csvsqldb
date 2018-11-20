@@ -273,6 +273,8 @@ namespace csvsqldb
                 return "EXEC";
             case TOK_ARBITRARY:
                 return "ARBITRARY";
+            case TOK_LOAD:
+                return "LOAD";
         }
         throw std::runtime_error("just to make VC2013 happy");
     }
@@ -413,6 +415,7 @@ namespace csvsqldb
         _keywords["MAPPING"] = eToken(TOK_MAPPING);
         _keywords["EXEC"] = eToken(TOK_EXEC);
         _keywords["ARBITRARY"] = eToken(TOK_ARBITRARY);
+        _keywords["LOAD"] = eToken(TOK_LOAD);
     }
 
     void SQLLexer::inspectToken(csvsqldb::lexer::Token& token)

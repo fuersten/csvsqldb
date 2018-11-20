@@ -89,6 +89,11 @@ namespace csvsqldb
         static CSVSQLDB_EXPORT RowOperatorNodePtr createScanOperatorNode(OperatorContext& context,
                                                                          const SymbolTablePtr& symbolTable,
                                                                          const SymbolInfo& tableInfo);
+
+        static CSVSQLDB_EXPORT RowOperatorNodePtr createCsvScanOperatorNode(OperatorContext& context,
+                                                                            const SymbolTablePtr& symbolTable,
+                                                                            const SymbolInfo& tableInfo,
+                                                                            const std::string& path);
     };
 }
 

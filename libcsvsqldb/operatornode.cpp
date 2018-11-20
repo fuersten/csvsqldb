@@ -128,6 +128,54 @@ namespace csvsqldb
         _input->dump(stream);
     }
 
+    WriteRowOperatorNode::WriteRowOperatorNode(const OperatorContext& context, const SymbolTablePtr& symbolTable, const SymbolInfo& tableInfo)
+    : RootOperatorNode(context, symbolTable)
+    , _tableInfo(tableInfo)
+    {
+    }
+    
+    int64_t WriteRowOperatorNode::process()
+    {
+        SymbolInfos infos;
+        _input->getColumnInfos(infos);
+        
+        int64_t count = 0;
+        const Values* row = nullptr;
+        while((row = _input->getNextRow())) {
+            ++count;
+        }
+        return count;
+    }
+    
+    bool WriteRowOperatorNode::connect(const RowOperatorNodePtr& input)
+    {
+        _input = input;
+        return true;
+    }
+    
+    void WriteRowOperatorNode::getColumnInfos(SymbolInfos& outputSymbols)
+    {
+    }
+    
+    void WriteRowOperatorNode::dump(std::ostream& stream) const
+    {
+        stream << "WriteRowOperatorNode (";
+        SymbolInfos outputSymbols;
+        _input->getColumnInfos(outputSymbols);
+        bool first(true);
+        stream << _tableInfo._identifier << ":";
+        for(const auto& entry : outputSymbols) {
+            if(first) {
+                first = false;
+            } else {
+                stream << ",";
+            }
+            stream << entry->_name;
+        }
+        stream << ")\n-->";
+        _input->dump(stream);
+    }
+    
 
     LimitOperatorNode::LimitOperatorNode(const OperatorContext& context,
                                          const SymbolTablePtr& symbolTable,
@@ -1209,8 +1257,8 @@ namespace csvsqldb
         stream << "-->";
         _input->dump(stream);
     }
-
-
+    
+    
     ScanOperatorNode::ScanOperatorNode(const OperatorContext& context, const SymbolTablePtr& symbolTable, const SymbolInfo& tableInfo)
     : RowOperatorNode(context, symbolTable)
     , _tableData(_context._database.getTable(tableInfo._identifier))
@@ -1491,6 +1539,95 @@ namespace csvsqldb
     }
 
     void TableScanOperatorNode::dump(std::ostream& stream) const
+    {
+        stream << "TableScanOperator (" << _tableInfo._identifier << ")\n";
+    }
+    
+    
+    CsvScanOperatorNode::CsvScanOperatorNode(const OperatorContext& context, const SymbolTablePtr& symbolTable, const SymbolInfo& tableInfo,
+                                             const std::string& path)
+    : ScanOperatorNode(context, symbolTable, tableInfo)
+    , _blockReader(_context._blockManager)
+    , _path(path)
+    {
+    }
+    
+    void CsvScanOperatorNode::getColumnInfos(SymbolInfos& outputSymbols)
+    {
+        outputSymbols.clear();
+        
+        for(size_t n = 0; n < _tableData.columnCount(); ++n) {
+            const SymbolInfoPtr& info = getSymbolTable().findSymbolNameForTable(_tableInfo._name, _tableData.getColumn(n)._name);
+            outputSymbols.push_back(info);
+        }
+    }
+    
+    const Values* CsvScanOperatorNode::getNextRow()
+    {
+        if(!_blockReader.valid()) {
+            initializeBlockReader();
+        }
+        
+        return _iterator->getNextRow();
+    }
+    
+    BlockPtr CsvScanOperatorNode::getNextBlock()
+    {
+        return _blockReader.getNextBlock();
+    }
+    
+    void CsvScanOperatorNode::initializeBlockReader()
+    {
+        _iterator = std::make_shared<BlockIterator>(_types, *this, getBlockManager());
+        
+        csvsqldb::csv::Types types;
+        for(auto& type : _types) {
+            switch(type) {
+                case INT:
+                    types.push_back(csvsqldb::csv::LONG);
+                    break;
+                case REAL:
+                    types.push_back(csvsqldb::csv::DOUBLE);
+                    break;
+                case DATE:
+                    types.push_back(csvsqldb::csv::DATE);
+                    break;
+                case TIME:
+                    types.push_back(csvsqldb::csv::TIME);
+                    break;
+                case TIMESTAMP:
+                    types.push_back(csvsqldb::csv::TIMESTAMP);
+                    break;
+                case STRING:
+                    types.push_back(csvsqldb::csv::STRING);
+                    break;
+                case BOOLEAN:
+                    types.push_back(csvsqldb::csv::BOOLEAN);
+                    break;
+                default:
+                    CSVSQLDB_THROW(csvsqldb::Exception, "type not implemented yet");
+            }
+        }
+        
+        fs::path pathToCsvFile(_path);
+        
+        if(pathToCsvFile.string().empty()) {
+            CSVSQLDB_THROW(MappingException, "no file found '" << _path << "'");
+        }
+        
+        _stream = std::make_shared<std::fstream>(pathToCsvFile.string());
+        if(!_stream || _stream->fail()) {
+            std::cerr << csvsqldb::errnoText() << std::endl;
+            CSVSQLDB_THROW(csvsqldb::FilesystemException, "could not open file '" << pathToCsvFile << "'");
+        }
+        
+        _csvContext._skipFirstLine = true;
+        _csvContext._delimiter = ',';
+        _csvparser = std::make_shared<csvsqldb::csv::CSVParser>(_csvContext, *_stream, types, _blockReader);
+        _blockReader.initialize(_csvparser);
+    }
+    
+    void CsvScanOperatorNode::dump(std::ostream& stream) const
     {
         stream << "TableScanOperator (" << _tableInfo._identifier << ")\n";
     }

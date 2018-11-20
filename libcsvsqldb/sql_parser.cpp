@@ -139,6 +139,8 @@ namespace csvsqldb
                 }
             } else if(_currentToken._token == TOK_EXPLAIN) {
                 astnode = parseExplain();
+            } else if(_currentToken._token == TOK_LOAD) {
+                astnode = parseLoad();
             } else {
                 reportUnexpectedToken("unexpected token, found ", _currentToken);
             }
@@ -151,6 +153,28 @@ namespace csvsqldb
         }
 
         return astnode;
+    }
+    
+    ASTLoadNodePtr SQLParser::parseLoad()
+    {
+        SymbolTablePtr root = SymbolTable::createSymbolTable();
+        
+        expect(TOK_LOAD);
+        
+        std::string path = expect(TOK_CONST_STRING);
+        
+        bool quoted(false);
+        std::string tablename = parseQuotedIdentifier(quoted);
+        SymbolInfoPtr info = std::make_shared<SymbolInfo>();
+        info->_identifier = tablename;
+        info->_symbolType = TABLE;
+        info->_type = NONE;
+        info->_name = tablename;
+        root->addSymbol(tablename, info);
+        
+        ASTIdentifierPtr identifier = std::make_shared<ASTIdentifier>(root, root->findSymbol(tablename), "", info->_identifier, quoted);
+        
+        return std::make_shared<ASTLoadNode>(root, path, std::make_shared<ASTTableIdentifierNode>(root, identifier));
     }
 
     ASTExprNodePtr SQLParser::parseExpression(const std::string& expression)

@@ -113,6 +113,7 @@ namespace csvsqldb
         TOK_KEY,
         TOK_LEFT,
         TOK_LEFT_PAREN,
+        TOK_LOAD,
         TOK_LIKE,
         TOK_LIMIT,
         TOK_MAPPING,

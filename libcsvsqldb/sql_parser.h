@@ -79,6 +79,8 @@ namespace csvsqldb
         ASTMappingNodePtr parseCreateMapping();
         ASTDropMappingNodePtr parseDropMapping();
 
+        ASTLoadNodePtr parseLoad();
+
         ASTQueryNodePtr parseQuery();
 
         ASTQueryExpressionNodePtr parseQueryExpression(const SymbolTablePtr& symboltable);

@@ -109,6 +109,21 @@ namespace csvsqldb
             _executionPlan.addExecutionNode(execNode);
         }
 
+        virtual void visit(ASTLoadNode& node)
+        {
+            std::unique_ptr<QueryExecutionNode> execNode(new QueryExecutionNode(_context));
+            
+            RowOperatorNodePtr scan = OperatorFactory::createCsvScanOperatorNode(_context, node.symbolTable(), *(node._tableIdentifier->_factor->_info), node._path);
+            
+            RootOperatorNodePtr output = std::make_shared<WriteRowOperatorNode>(_context, node._tableIdentifier->symbolTable(), *(node._tableIdentifier->_factor->_info));
+            output->connect(scan);
+            
+            execNode->setRootOperatorNode(output);
+            
+            ExecutionNode::UniquePtr epn(std::move(execNode));
+            _executionPlan.addExecutionNode(epn);
+        }
+        
         virtual void visit(ASTAlterTableAddNode& node)
         {
         }

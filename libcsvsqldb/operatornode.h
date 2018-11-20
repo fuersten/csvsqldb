@@ -224,6 +224,25 @@ namespace csvsqldb
         bool _firstCall;
         RowOperatorNodePtr _input;
     };
+    
+    
+    class CSVSQLDB_EXPORT WriteRowOperatorNode : public RootOperatorNode
+    {
+    public:
+        WriteRowOperatorNode(const OperatorContext& context, const SymbolTablePtr& symbolTable, const SymbolInfo& tableInfo);
+        
+        virtual int64_t process();
+        
+        virtual bool connect(const RowOperatorNodePtr& input);
+        
+        virtual void getColumnInfos(SymbolInfos& outputSymbols);
+        
+        virtual void dump(std::ostream& stream) const;
+        
+    private:
+        RowOperatorNodePtr _input;
+        const SymbolInfo& _tableInfo;
+    };
 
 
     class CSVSQLDB_EXPORT LimitOperatorNode : public RowOperatorNode
@@ -569,6 +588,33 @@ namespace csvsqldb
     {
     public:
         TableScanOperatorNode(const OperatorContext& context, const SymbolTablePtr& symbolTable, const SymbolInfo& tableInfo);
+        
+        virtual void dump(std::ostream& stream) const;
+        
+        virtual const Values* getNextRow();
+        
+        /// BlockProvider interface
+        virtual BlockPtr getNextBlock();
+        
+    private:
+        typedef std::shared_ptr<std::istream> IStreamPtr;
+        typedef std::shared_ptr<csvsqldb::csv::CSVParser> CSVParserPtr;
+        
+        void initializeBlockReader();
+        
+        BlockReader _blockReader;
+        BlockIteratorPtr _iterator;
+        
+        IStreamPtr _stream;
+        CSVParserPtr _csvparser;
+        csvsqldb::csv::CSVParserContext _csvContext;
+    };
+    
+    
+    class CSVSQLDB_EXPORT CsvScanOperatorNode : public ScanOperatorNode, public BlockProvider
+    {
+    public:
+        CsvScanOperatorNode(const OperatorContext& context, const SymbolTablePtr& symbolTable, const SymbolInfo& tableInfo, const std::string& path);
 
         virtual void dump(std::ostream& stream) const;
 
@@ -576,6 +622,8 @@ namespace csvsqldb
 
         /// BlockProvider interface
         virtual BlockPtr getNextBlock();
+        
+        void getColumnInfos(SymbolInfos& outputSymbols);
 
     private:
         typedef std::shared_ptr<std::istream> IStreamPtr;
@@ -589,6 +637,7 @@ namespace csvsqldb
         IStreamPtr _stream;
         CSVParserPtr _csvparser;
         csvsqldb::csv::CSVParserContext _csvContext;
+        std::string _path;
     };
 }
 

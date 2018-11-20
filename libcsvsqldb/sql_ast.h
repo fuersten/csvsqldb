@@ -48,6 +48,7 @@ namespace csvsqldb
 {
 
     class ASTNode;
+    class ASTLoadNode;
     class ASTExplainNode;
     class ASTCreateTableNode;
     class ASTMappingNode;
@@ -92,6 +93,7 @@ namespace csvsqldb
     class ASTLimitNode;
 
     typedef std::shared_ptr<ASTNode> ASTNodePtr;
+    typedef std::shared_ptr<ASTLoadNode> ASTLoadNodePtr;
     typedef std::shared_ptr<ASTExplainNode> ASTDescribeNodePtr;
     typedef std::shared_ptr<ASTCreateTableNode> ASTCreateTableNodePtr;
     typedef std::shared_ptr<ASTMappingNode> ASTMappingNodePtr;
@@ -200,6 +202,7 @@ namespace csvsqldb
         virtual void visit(ASTCreateTableNode& node) = 0;
         virtual void visit(ASTMappingNode& node) = 0;
         virtual void visit(ASTDropMappingNode& node) = 0;
+        virtual void visit(ASTLoadNode& node) = 0;
         virtual void visit(ASTAlterTableAddNode& node) = 0;
         virtual void visit(ASTAlterTableDropNode& node) = 0;
         virtual void visit(ASTDropTableNode& node) = 0;
@@ -253,6 +256,10 @@ namespace csvsqldb
         virtual void visit(ASTIdentifier& node) = 0;
 
     private:
+        virtual void visit(ASTLoadNode& node)
+        {
+            CSVSQLDB_THROW(SqlParserException, "Visting non expression node");
+        }
         virtual void visit(ASTExplainNode& node)
         {
             CSVSQLDB_THROW(SqlParserException, "Visting non expression node");
@@ -392,6 +399,24 @@ namespace csvsqldb
         SymbolTablePtr _symbolTable;
     };
 
+    class CSVSQLDB_EXPORT ASTLoadNode : public ASTNode
+    {
+    public:
+        ASTLoadNode(const SymbolTablePtr& symbolTable, const std::string& path, const ASTTableIdentifierNodePtr& tableIdentifier)
+        : ASTNode(symbolTable)
+        , _path(path)
+        , _tableIdentifier(tableIdentifier)
+        {}
+        
+        virtual void accept(ASTNodeVisitor& visitor)
+        {
+            visitor.visit(*this);
+        }
+        
+        std::string _path;
+        ASTTableIdentifierNodePtr _tableIdentifier;
+    };
+    
     class CSVSQLDB_EXPORT ASTExprNode : public ASTNode
     {
     public:

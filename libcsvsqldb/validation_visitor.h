@@ -53,6 +53,8 @@ namespace csvsqldb
         virtual void visit(ASTMappingNode& node);
 
         virtual void visit(ASTDropMappingNode& node);
+        
+        virtual void visit(ASTLoadNode& node);
 
         virtual void visit(ASTAlterTableAddNode& node);
 
