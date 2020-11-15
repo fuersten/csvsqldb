@@ -412,6 +412,8 @@ namespace mpf
             typedef std::function<void(T*)> Function;
             typedef std::pair<std::string, Function> Item;
 
+            virtual ~TestcaseFixture() = default;
+
             static void run(T& testcase, Item item, const ProgressListener::Listener& progressListener)
             {
                 try {
@@ -460,6 +462,8 @@ namespace mpf
 
         struct TestcaseHolder {
             typedef std::shared_ptr<TestcaseHolder> Ptr;
+
+            virtual ~TestcaseHolder() = default;
 
             virtual size_t run(const std::string& name, const ProgressListener::Listener& progressListener) = 0;
             virtual size_t count(const std::string& name) const = 0;

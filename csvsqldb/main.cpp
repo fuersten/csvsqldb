@@ -458,7 +458,5 @@ int main(int argc, char** argv)
     CSVDBApp csvdb(argc, argv);
     csvsqldb::SetUpSignalEventHandler guard(SIGINT, &sighandler, &csvdb);
 
-    int ret = csvdb.run();
-
-    return ret;
+    return csvdb.run();
 }

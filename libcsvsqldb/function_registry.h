@@ -58,6 +58,8 @@ namespace csvsqldb
         {
         }
 
+        virtual ~Function() = default;
+
         const Variant call(const Variants& parameter) const
         {
             return doCall(parameter);

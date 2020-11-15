@@ -416,7 +416,7 @@ namespace csvsqldb
             CSVSQLDB_THROW(VariantException, "cannot add to non numeric types");
         }
         if(_type == INT) {
-            _storage._int += rhs;
+            _storage._int += static_cast<int64_t>(rhs);
         } else if(_type == REAL) {
             _storage._real += rhs;
         }
@@ -431,12 +431,12 @@ namespace csvsqldb
         if(_isNull || rhs._isNull) {
             CSVSQLDB_THROW(VariantException, "cannot devide with null");
         }
-        // TODO LCF: test for device through 0
+        // TODO LCF: test for devide through 0
         if(_type == INT) {
             if(rhs._type == INT) {
                 _storage._int /= rhs._storage._int;
             } else {
-                _storage._int /= rhs._storage._real;
+                _storage._int /= static_cast<int64_t>(rhs._storage._real);
             }
         } else if(_type == REAL) {
             if(rhs._type == INT) {

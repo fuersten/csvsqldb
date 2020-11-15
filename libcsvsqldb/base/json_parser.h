@@ -56,6 +56,8 @@ namespace csvsqldb
         public:
             typedef std::shared_ptr<Callback> Ptr;
 
+            virtual ~Callback() = default;
+
             /**
              * Called upon a left curly bracket, to introduce an object.
              */
