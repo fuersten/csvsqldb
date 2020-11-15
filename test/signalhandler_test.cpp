@@ -31,15 +31,15 @@
 //
 
 
-#include "test.h"
-
 #include "libcsvsqldb/base/signalhandler.h"
 
-#include <unistd.h>
-#include <signal.h>
+#include "test.h"
 #include <condition_variable>
+
 #include <mutex>
+#include <signal.h>
 #include <thread>
+#include <unistd.h>
 
 
 static std::mutex _test_mutex;
@@ -48,47 +48,47 @@ static std::condition_variable _test_condition;
 class HandlerTester : public csvsqldb::SignalEventHandler
 {
 public:
-    HandlerTester()
-    : _signalSet(false)
-    {
-    }
+  HandlerTester()
+  : _signalSet(false)
+  {
+  }
 
-    virtual int onSignal(int signum)
-    {
-        if(signum == SIGINT) {
-            _signalSet = true;
-        }
-        _test_condition.notify_one();
-        return 0;
+  virtual int onSignal(int signum)
+  {
+    if (signum == SIGINT) {
+      _signalSet = true;
     }
+    _test_condition.notify_one();
+    return 0;
+  }
 
-    bool _signalSet;
+  bool _signalSet;
 };
 
 class SignalHandlerTestCase
 {
 public:
-    void setUp()
-    {
-    }
+  void setUp()
+  {
+  }
 
-    void tearDown()
-    {
-    }
+  void tearDown()
+  {
+  }
 
-    void testSignalHandler()
-    {
-        csvsqldb::SignalHandler sighandler;
-        HandlerTester tester;
-        csvsqldb::SetUpSignalEventHandler guard(SIGINT, &sighandler, &tester);
+  void testSignalHandler()
+  {
+    csvsqldb::SignalHandler sighandler;
+    HandlerTester tester;
+    csvsqldb::SetUpSignalEventHandler guard(SIGINT, &sighandler, &tester);
 
-        ::kill(getpid(), SIGINT);
+    ::kill(getpid(), SIGINT);
 
-        std::unique_lock<std::mutex> condition_guard(_test_mutex);
-        _test_condition.wait_for(condition_guard, std::chrono::milliseconds(150), [&] { return tester._signalSet == true; });
+    std::unique_lock<std::mutex> condition_guard(_test_mutex);
+    _test_condition.wait_for(condition_guard, std::chrono::milliseconds(150), [&] { return tester._signalSet == true; });
 
-        MPF_TEST_ASSERTEQUAL(true, tester._signalSet);
-    }
+    MPF_TEST_ASSERTEQUAL(true, tester._signalSet);
+  }
 };
 
 MPF_REGISTER_TEST_START("ApplicationTestSuite", SignalHandlerTestCase);

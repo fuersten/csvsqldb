@@ -31,174 +31,178 @@
 //
 
 
-#include "test.h"
-
 #include "data_test_framework.h"
+#include "test.h"
 
 
 class SubQueryTestCase
 {
 public:
-    SubQueryTestCase()
+  SubQueryTestCase()
+  {
+  }
+
+  void setUp()
+  {
+  }
+
+  void tearDown()
+  {
+  }
+
+  void simpleSubqueryTest()
+  {
+    DatabaseTestWrapper dbWrapper;
+    dbWrapper.addTable(TableInitializer("employees", {{"id", csvsqldb::INT},
+                                                      {"first_name", csvsqldb::STRING},
+                                                      {"last_name", csvsqldb::STRING},
+                                                      {"birth_date", csvsqldb::DATE},
+                                                      {"hire_date", csvsqldb::DATE}}));
+
+    csvsqldb::ExecutionContext context(dbWrapper.getDatabase());
+    csvsqldb::ExecutionEngine<TestOperatorNodeFactory> engine(context);
+
+    TestRowProvider::setRows("employees",
+                             {{815, "Mark", "Fürstenberg", csvsqldb::Date(1969, csvsqldb::Date::May, 17),
+                               csvsqldb::Date(2003, csvsqldb::Date::April, 15)},
+                              {4711, "Lars", "Fürstenberg", csvsqldb::Date(1970, csvsqldb::Date::September, 23),
+                               csvsqldb::Date(2010, csvsqldb::Date::February, 1)},
+                              {9227, "Angelica", "Tello de Fürstenberg", csvsqldb::Date(1963, csvsqldb::Date::March, 6),
+                               csvsqldb::Date(2003, csvsqldb::Date::June, 15)}});
+
     {
+      csvsqldb::ExecutionStatistics statistics;
+      std::stringstream ss;
+      int64_t rowCount = engine.execute("SELECT count(*) FROM (SELECT id,first_name,last_name FROM employees)", statistics, ss);
+      MPF_TEST_ASSERTEQUAL(1, rowCount);
+      MPF_TEST_ASSERTEQUAL("#$alias_1\n3\n", ss.str());
     }
 
-    void setUp()
     {
-    }
-
-    void tearDown()
-    {
-    }
-
-    void simpleSubqueryTest()
-    {
-        DatabaseTestWrapper dbWrapper;
-        dbWrapper.addTable(TableInitializer("employees",
-                                            { { "id", csvsqldb::INT },
-                                              { "first_name", csvsqldb::STRING },
-                                              { "last_name", csvsqldb::STRING },
-                                              { "birth_date", csvsqldb::DATE },
-                                              { "hire_date", csvsqldb::DATE } }));
-
-        csvsqldb::ExecutionContext context(dbWrapper.getDatabase());
-        csvsqldb::ExecutionEngine<TestOperatorNodeFactory> engine(context);
-
-        TestRowProvider::setRows(
-        "employees",
-        { { 815, "Mark", "Fürstenberg", csvsqldb::Date(1969, csvsqldb::Date::May, 17), csvsqldb::Date(2003, csvsqldb::Date::April, 15) },
-          { 4711, "Lars", "Fürstenberg", csvsqldb::Date(1970, csvsqldb::Date::September, 23), csvsqldb::Date(2010, csvsqldb::Date::February, 1) },
-          { 9227, "Angelica", "Tello de Fürstenberg", csvsqldb::Date(1963, csvsqldb::Date::March, 6), csvsqldb::Date(2003, csvsqldb::Date::June, 15) } });
-
-        {
-            csvsqldb::ExecutionStatistics statistics;
-            std::stringstream ss;
-            int64_t rowCount = engine.execute("SELECT count(*) FROM (SELECT id,first_name,last_name FROM employees)", statistics, ss);
-            MPF_TEST_ASSERTEQUAL(1, rowCount);
-            MPF_TEST_ASSERTEQUAL("#$alias_1\n3\n", ss.str());
-        }
-
-        {
-            csvsqldb::ExecutionStatistics statistics;
-            std::stringstream ss;
-            int64_t rowCount = engine.execute(
-            "select count(*) as \"COUNT\",last_name from (select * from employees) group by last_name order by last_name limit 1", statistics, ss);
-            MPF_TEST_ASSERTEQUAL(1, rowCount);
-            std::string expected = R"(#COUNT,EMPLOYEES.LAST_NAME
+      csvsqldb::ExecutionStatistics statistics;
+      std::stringstream ss;
+      int64_t rowCount = engine.execute(
+        "select count(*) as \"COUNT\",last_name from (select * from employees) group by last_name order by last_name limit 1",
+        statistics, ss);
+      MPF_TEST_ASSERTEQUAL(1, rowCount);
+      std::string expected = R"(#COUNT,EMPLOYEES.LAST_NAME
 2,'Fürstenberg'
 )";
-            MPF_TEST_ASSERTEQUAL(expected, ss.str());
-        }
+      MPF_TEST_ASSERTEQUAL(expected, ss.str());
+    }
+  }
+
+  void subqueryWithAliasTest()
+  {
+    DatabaseTestWrapper dbWrapper;
+    dbWrapper.addTable(TableInitializer("employees", {{"id", csvsqldb::INT},
+                                                      {"first_name", csvsqldb::STRING},
+                                                      {"last_name", csvsqldb::STRING},
+                                                      {"birth_date", csvsqldb::DATE},
+                                                      {"hire_date", csvsqldb::DATE}}));
+
+    csvsqldb::ExecutionContext context(dbWrapper.getDatabase());
+    csvsqldb::ExecutionEngine<TestOperatorNodeFactory> engine(context);
+
+    TestRowProvider::setRows("employees",
+                             {{815, "Mark", "Fürstenberg", csvsqldb::Date(1969, csvsqldb::Date::May, 17),
+                               csvsqldb::Date(2003, csvsqldb::Date::April, 15)},
+                              {4711, "Lars", "Fürstenberg", csvsqldb::Date(1970, csvsqldb::Date::September, 23),
+                               csvsqldb::Date(2010, csvsqldb::Date::February, 1)},
+                              {9227, "Angelica", "Tello de Fürstenberg", csvsqldb::Date(1963, csvsqldb::Date::March, 6),
+                               csvsqldb::Date(2003, csvsqldb::Date::June, 15)}});
+
+    {
+      csvsqldb::ExecutionStatistics statistics;
+      std::stringstream ss;
+      int64_t rowCount = engine.execute(
+        "select emp.first_name,emp.last_name from (select emp.first_name,emp.last_name from employees as emp)", statistics, ss);
+      MPF_TEST_ASSERTEQUAL(3, rowCount);
+      std::string expected = R"(#EMP.FIRST_NAME,EMP.LAST_NAME
+'Mark','Fürstenberg'
+'Lars','Fürstenberg'
+'Angelica','Tello de Fürstenberg'
+)";
+      MPF_TEST_ASSERTEQUAL(expected, ss.str());
     }
 
-    void subqueryWithAliasTest()
     {
-        DatabaseTestWrapper dbWrapper;
-        dbWrapper.addTable(TableInitializer("employees",
-                                            { { "id", csvsqldb::INT },
-                                              { "first_name", csvsqldb::STRING },
-                                              { "last_name", csvsqldb::STRING },
-                                              { "birth_date", csvsqldb::DATE },
-                                              { "hire_date", csvsqldb::DATE } }));
-
-        csvsqldb::ExecutionContext context(dbWrapper.getDatabase());
-        csvsqldb::ExecutionEngine<TestOperatorNodeFactory> engine(context);
-
-        TestRowProvider::setRows(
-        "employees",
-        { { 815, "Mark", "Fürstenberg", csvsqldb::Date(1969, csvsqldb::Date::May, 17), csvsqldb::Date(2003, csvsqldb::Date::April, 15) },
-          { 4711, "Lars", "Fürstenberg", csvsqldb::Date(1970, csvsqldb::Date::September, 23), csvsqldb::Date(2010, csvsqldb::Date::February, 1) },
-          { 9227, "Angelica", "Tello de Fürstenberg", csvsqldb::Date(1963, csvsqldb::Date::March, 6), csvsqldb::Date(2003, csvsqldb::Date::June, 15) } });
-
-        {
-            csvsqldb::ExecutionStatistics statistics;
-            std::stringstream ss;
-            int64_t rowCount =
-            engine.execute("select emp.first_name,emp.last_name from (select emp.first_name,emp.last_name from employees as emp)", statistics, ss);
-            MPF_TEST_ASSERTEQUAL(3, rowCount);
-            std::string expected = R"(#EMP.FIRST_NAME,EMP.LAST_NAME
+      csvsqldb::ExecutionStatistics statistics;
+      std::stringstream ss;
+      int64_t rowCount =
+        engine.execute("select first_name,last_name from (select first_name,last_name from employees as emp)", statistics, ss);
+      MPF_TEST_ASSERTEQUAL(3, rowCount);
+      std::string expected = R"(#FIRST_NAME,LAST_NAME
 'Mark','Fürstenberg'
 'Lars','Fürstenberg'
 'Angelica','Tello de Fürstenberg'
 )";
-            MPF_TEST_ASSERTEQUAL(expected, ss.str());
-        }
-
-        {
-            csvsqldb::ExecutionStatistics statistics;
-            std::stringstream ss;
-            int64_t rowCount =
-            engine.execute("select first_name,last_name from (select first_name,last_name from employees as emp)", statistics, ss);
-            MPF_TEST_ASSERTEQUAL(3, rowCount);
-            std::string expected = R"(#FIRST_NAME,LAST_NAME
-'Mark','Fürstenberg'
-'Lars','Fürstenberg'
-'Angelica','Tello de Fürstenberg'
-)";
-            MPF_TEST_ASSERTEQUAL(expected, ss.str());
-        }
-
-        {
-            csvsqldb::ExecutionStatistics statistics;
-            std::stringstream ss;
-            int64_t rowCount =
-            engine.execute("select emp.first_name,emp.last_name from (select * from employees) as emp order by emp.first_name", statistics, ss);
-            MPF_TEST_ASSERTEQUAL(3, rowCount);
-            std::string expected = R"(#EMP.FIRST_NAME,EMP.LAST_NAME
-'Angelica','Tello de Fürstenberg'
-'Lars','Fürstenberg'
-'Mark','Fürstenberg'
-)";
-            MPF_TEST_ASSERTEQUAL(expected, ss.str());
-        }
+      MPF_TEST_ASSERTEQUAL(expected, ss.str());
     }
 
-    void subQueryWithJoinTest()
     {
-        DatabaseTestWrapper dbWrapper;
-        dbWrapper.addTable(TableInitializer("employees",
-                                            { { "id", csvsqldb::INT },
-                                              { "first_name", csvsqldb::STRING },
-                                              { "last_name", csvsqldb::STRING },
-                                              { "birth_date", csvsqldb::DATE },
-                                              { "hire_date", csvsqldb::DATE } }));
-        dbWrapper.addTable(TableInitializer(
-        "salaries", { { "id", csvsqldb::INT }, { "salary", csvsqldb::REAL }, { "from_date", csvsqldb::DATE }, { "to_date", csvsqldb::DATE } }));
+      csvsqldb::ExecutionStatistics statistics;
+      std::stringstream ss;
+      int64_t rowCount = engine.execute(
+        "select emp.first_name,emp.last_name from (select * from employees) as emp order by emp.first_name", statistics, ss);
+      MPF_TEST_ASSERTEQUAL(3, rowCount);
+      std::string expected = R"(#EMP.FIRST_NAME,EMP.LAST_NAME
+'Angelica','Tello de Fürstenberg'
+'Lars','Fürstenberg'
+'Mark','Fürstenberg'
+)";
+      MPF_TEST_ASSERTEQUAL(expected, ss.str());
+    }
+  }
 
-        csvsqldb::ExecutionContext context(dbWrapper.getDatabase());
-        csvsqldb::ExecutionEngine<TestOperatorNodeFactory> engine(context);
+  void subQueryWithJoinTest()
+  {
+    DatabaseTestWrapper dbWrapper;
+    dbWrapper.addTable(TableInitializer("employees", {{"id", csvsqldb::INT},
+                                                      {"first_name", csvsqldb::STRING},
+                                                      {"last_name", csvsqldb::STRING},
+                                                      {"birth_date", csvsqldb::DATE},
+                                                      {"hire_date", csvsqldb::DATE}}));
+    dbWrapper.addTable(TableInitializer(
+      "salaries",
+      {{"id", csvsqldb::INT}, {"salary", csvsqldb::REAL}, {"from_date", csvsqldb::DATE}, {"to_date", csvsqldb::DATE}}));
 
-        TestRowProvider::setRows(
-        "employees",
-        { { 9384, "John", "Doe", csvsqldb::Date(1965, csvsqldb::Date::August, 8), csvsqldb::Date(9999, csvsqldb::Date::December, 31) },
-          { 815, "Mark", "Fürstenberg", csvsqldb::Date(1969, csvsqldb::Date::May, 17), csvsqldb::Date(2003, csvsqldb::Date::April, 15) },
-          { 4711, "Lars", "Fürstenberg", csvsqldb::Date(1970, csvsqldb::Date::September, 23), csvsqldb::Date(2010, csvsqldb::Date::February, 1) },
-          { 9227, "Angelica", "Tello de Fürstenberg", csvsqldb::Date(1963, csvsqldb::Date::March, 6), csvsqldb::Date(2003, csvsqldb::Date::June, 15) } });
+    csvsqldb::ExecutionContext context(dbWrapper.getDatabase());
+    csvsqldb::ExecutionEngine<TestOperatorNodeFactory> engine(context);
 
-        TestRowProvider::setRows(
-        "salaries",
-        { { 815, 5000.00, csvsqldb::Date(2003, csvsqldb::Date::April, 15), csvsqldb::Date(2015, csvsqldb::Date::December, 31) },
-          { 4711, 12000.00, csvsqldb::Date(2010, csvsqldb::Date::February, 1), csvsqldb::Date(2015, csvsqldb::Date::December, 31) },
-          { 9227, 450.00, csvsqldb::Date(2003, csvsqldb::Date::June, 15), csvsqldb::Date(2015, csvsqldb::Date::December, 31) } });
+    TestRowProvider::setRows(
+      "employees",
+      {{9384, "John", "Doe", csvsqldb::Date(1965, csvsqldb::Date::August, 8), csvsqldb::Date(9999, csvsqldb::Date::December, 31)},
+       {815, "Mark", "Fürstenberg", csvsqldb::Date(1969, csvsqldb::Date::May, 17),
+        csvsqldb::Date(2003, csvsqldb::Date::April, 15)},
+       {4711, "Lars", "Fürstenberg", csvsqldb::Date(1970, csvsqldb::Date::September, 23),
+        csvsqldb::Date(2010, csvsqldb::Date::February, 1)},
+       {9227, "Angelica", "Tello de Fürstenberg", csvsqldb::Date(1963, csvsqldb::Date::March, 6),
+        csvsqldb::Date(2003, csvsqldb::Date::June, 15)}});
 
-        {
-            csvsqldb::ExecutionStatistics statistics;
-            std::stringstream ss;
-            int64_t rowCount = engine.execute(
-            "select emp.id,emp.first_name,emp.last_name,sal.salary from (SELECT * FROM employees emp INNER JOIN salaries sal ON "
-            "emp.id = sal.id) order by emp.id",
-            statistics,
-            ss);
-            MPF_TEST_ASSERTEQUAL(3, rowCount);
+    TestRowProvider::setRows(
+      "salaries",
+      {{815, 5000.00, csvsqldb::Date(2003, csvsqldb::Date::April, 15), csvsqldb::Date(2015, csvsqldb::Date::December, 31)},
+       {4711, 12000.00, csvsqldb::Date(2010, csvsqldb::Date::February, 1), csvsqldb::Date(2015, csvsqldb::Date::December, 31)},
+       {9227, 450.00, csvsqldb::Date(2003, csvsqldb::Date::June, 15), csvsqldb::Date(2015, csvsqldb::Date::December, 31)}});
 
-            std::string expected = R"(#EMP.ID,EMP.FIRST_NAME,EMP.LAST_NAME,SAL.SALARY
+    {
+      csvsqldb::ExecutionStatistics statistics;
+      std::stringstream ss;
+      int64_t rowCount = engine.execute(
+        "select emp.id,emp.first_name,emp.last_name,sal.salary from (SELECT * FROM employees emp INNER JOIN salaries sal ON "
+        "emp.id = sal.id) order by emp.id",
+        statistics, ss);
+      MPF_TEST_ASSERTEQUAL(3, rowCount);
+
+      std::string expected = R"(#EMP.ID,EMP.FIRST_NAME,EMP.LAST_NAME,SAL.SALARY
 815,'Mark','Fürstenberg',5000.000000
 4711,'Lars','Fürstenberg',12000.000000
 9227,'Angelica','Tello de Fürstenberg',450.000000
 )";
-            MPF_TEST_ASSERTEQUAL(expected, ss.str());
-        }
+      MPF_TEST_ASSERTEQUAL(expected, ss.str());
     }
+  }
 };
 
 MPF_REGISTER_TEST_START("QueryTestSuite", SubQueryTestCase);

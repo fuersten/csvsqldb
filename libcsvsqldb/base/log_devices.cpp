@@ -39,33 +39,32 @@
 
 namespace csvsqldb
 {
+  ConsoleLogDevice::ConsoleLogDevice()
+  {
+  }
 
-    ConsoleLogDevice::ConsoleLogDevice()
-    {
-    }
+  const std::string& ConsoleLogDevice::name() const
+  {
+    static std::string name("ConsoleLogDevice");
+    return name;
+  }
 
-    const std::string& ConsoleLogDevice::name() const
-    {
-        static std::string name("ConsoleLogDevice");
-        return name;
-    }
+  void ConsoleLogDevice::doLog(std::ostringstream& stream)
+  {
+    std::cerr << stream.str();
+  }
 
-    void ConsoleLogDevice::doLog(std::ostringstream& stream)
-    {
-        std::cerr << stream.str();
-    }
+  bool ConsoleLogDevice::doOpen()
+  {
+    return true;
+  }
 
-    bool ConsoleLogDevice::doOpen()
-    {
-        return true;
-    }
+  void ConsoleLogDevice::doClose()
+  {
+  }
 
-    void ConsoleLogDevice::doClose()
-    {
-    }
-
-    void ConsoleLogDevice::doFlush()
-    {
-        std::cerr.flush();
-    }
+  void ConsoleLogDevice::doFlush()
+  {
+    std::cerr.flush();
+  }
 }

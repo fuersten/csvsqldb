@@ -32,63 +32,64 @@
 //
 
 #include "default_configuration.h"
+
 #include "exception.h"
 
 
 namespace csvsqldb
 {
-    struct DefaultConfiguration::Private {
-        Private()
-        {
-        }
-    };
-
-    DefaultConfiguration::DefaultConfiguration()
-    : _p(new Private())
+  struct DefaultConfiguration::Private {
+    Private()
     {
     }
+  };
 
-    DefaultConfiguration::~DefaultConfiguration()
-    {
-    }
+  DefaultConfiguration::DefaultConfiguration()
+  : _p(new Private())
+  {
+  }
 
-    size_t DefaultConfiguration::doGetProperties(const std::string& path, StringVector& properties) const
-    {
-        return 0;
-    }
+  DefaultConfiguration::~DefaultConfiguration()
+  {
+  }
 
-    bool DefaultConfiguration::doHasProperty(const std::string& path) const
-    {
-        return false;
-    }
+  size_t DefaultConfiguration::doGetProperties(const std::string& path, StringVector& properties) const
+  {
+    return 0;
+  }
 
-    bool DefaultConfiguration::get(const std::string& path, Typer<bool> typer) const
-    {
-        return false;
-    }
+  bool DefaultConfiguration::doHasProperty(const std::string& path) const
+  {
+    return false;
+  }
 
-    int32_t DefaultConfiguration::get(const std::string& path, Typer<int32_t> typer) const
-    {
-        throw ConfigurationException("path '" + path + "' not found");
-    }
+  bool DefaultConfiguration::get(const std::string& path, Typer<bool> typer) const
+  {
+    return false;
+  }
 
-    int64_t DefaultConfiguration::get(const std::string& path, Typer<int64_t> typer) const
-    {
-        throw ConfigurationException("path '" + path + "' not found");
-    }
+  int32_t DefaultConfiguration::get(const std::string& path, Typer<int32_t> typer) const
+  {
+    throw ConfigurationException("path '" + path + "' not found");
+  }
 
-    float DefaultConfiguration::get(const std::string& path, Typer<float> typer) const
-    {
-        throw ConfigurationException("path '" + path + "' not found");
-    }
+  int64_t DefaultConfiguration::get(const std::string& path, Typer<int64_t> typer) const
+  {
+    throw ConfigurationException("path '" + path + "' not found");
+  }
 
-    double DefaultConfiguration::get(const std::string& path, Typer<double> typer) const
-    {
-        throw ConfigurationException("path '" + path + "' not found");
-    }
+  float DefaultConfiguration::get(const std::string& path, Typer<float> typer) const
+  {
+    throw ConfigurationException("path '" + path + "' not found");
+  }
 
-    std::string DefaultConfiguration::get(const std::string& path, Typer<std::string> typer) const
-    {
-        throw ConfigurationException("path '" + path + "' not found");
-    }
+  double DefaultConfiguration::get(const std::string& path, Typer<double> typer) const
+  {
+    throw ConfigurationException("path '" + path + "' not found");
+  }
+
+  std::string DefaultConfiguration::get(const std::string& path, Typer<std::string> typer) const
+  {
+    throw ConfigurationException("path '" + path + "' not found");
+  }
 }

@@ -41,14 +41,13 @@
 
 namespace csvsqldb
 {
-
-    /**
-     * Compares to floating point values for equality.
-     * @param lhs first value to compare
-     * @param rhs second value to compare
-     * @return true if the values are (at least approximately) equal, otherwise false
-     */
-    CSVSQLDB_EXPORT bool compare(double lhs, double rhs);
+  /**
+   * Compares to floating point values for equality.
+   * @param lhs first value to compare
+   * @param rhs second value to compare
+   * @return true if the values are (at least approximately) equal, otherwise false
+   */
+  CSVSQLDB_EXPORT bool compare(double lhs, double rhs);
 }
 
 #endif

@@ -39,224 +39,223 @@
 
 namespace csvsqldb
 {
+  CSVSQLDB_IMPLEMENT_EXCEPTION(SqlException, Exception);
+  CSVSQLDB_IMPLEMENT_EXCEPTION(SqlParserException, SqlException);
 
-    CSVSQLDB_IMPLEMENT_EXCEPTION(SqlException, Exception);
-    CSVSQLDB_IMPLEMENT_EXCEPTION(SqlParserException, SqlException);
 
+  std::string orderToString(eOrder order)
+  {
+    switch (order) {
+      case ASC:
+        return "ASC";
+      case DESC:
+        return "DESC";
+    }
+    throw std::runtime_error("just to make VC2013 happy");
+  }
 
-    std::string orderToString(eOrder order)
-    {
-        switch(order) {
-            case ASC:
-                return "ASC";
-            case DESC:
-                return "DESC";
+  std::string typeToString(eType type)
+  {
+    switch (type) {
+      case NONE:
+        return "none";
+      case BOOLEAN:
+        return "BOOLEAN";
+      case INT:
+        return "INTEGER";
+      case REAL:
+        return "REAL";
+      case STRING:
+        return "VARCHAR";
+      case DATE:
+        return "DATE";
+      case TIME:
+        return "TIME";
+      case TIMESTAMP:
+        return "TIMESTAMP";
+    }
+    throw std::runtime_error("just to make VC2013 happy");
+  }
+
+  eType stringToType(const std::string& s)
+  {
+    if (s == "BOOLEAN") {
+      return BOOLEAN;
+    } else if (s == "INTEGER") {
+      return INT;
+    } else if (s == "REAL") {
+      return REAL;
+    } else if (s == "VARCHAR") {
+      return STRING;
+    } else if (s == "DATE") {
+      return DATE;
+    } else if (s == "TIME") {
+      return TIME;
+    } else if (s == "TIMESTAMP") {
+      return TIMESTAMP;
+    } else {
+      CSVSQLDB_THROW(SqlException, "unknown type string '" << s << "'");
+    }
+  }
+
+  std::string printType(eType type, const csvsqldb::Any& value)
+  {
+    std::stringstream ss;
+    switch (type) {
+      case NONE:
+        ss << "NULL";
+        break;
+      case BOOLEAN:
+        ss << (csvsqldb::any_cast<bool>(value) ? "TRUE" : "FALSE");
+        break;
+      case REAL:
+        ss << std::fixed << std::showpoint << csvsqldb::any_cast<double>(value);
+        break;
+      case INT:
+        ss << csvsqldb::any_cast<int64_t>(value);
+        break;
+      case STRING:
+        ss << csvsqldb::any_cast<std::string>(value);
+        break;
+      case DATE:
+        ss << "DATE'" << csvsqldb::any_cast<csvsqldb::Date>(value).format("%Y-%m-%d") << "'";
+        break;
+      case TIME:
+        ss << "TIME'" << csvsqldb::any_cast<csvsqldb::Time>(value).format("%H:%M:%S") << "'";
+        break;
+      case TIMESTAMP:
+        ss << "TIMESTAMP'" << csvsqldb::any_cast<csvsqldb::Timestamp>(value).format("%Y-%m-%dT%H:%M:%S") << "'";
+        break;
+    }
+    return ss.str();
+  }
+
+  std::string printType(const TypedValue& value)
+  {
+    return printType(value._type, value._value);
+  }
+
+  TypedValue TypedValue::createValue(eType type, const std::string& value)
+  {
+    csvsqldb::Any any;
+
+    switch (type) {
+      case NONE:
+        break;
+      case BOOLEAN:
+        if (csvsqldb::toupper_copy(value) != "UNKNOWN") {
+          any = csvsqldb::stringToBool(value);
         }
-        throw std::runtime_error("just to make VC2013 happy");
+        break;
+      case REAL:
+        any = std::stod(value);
+        break;
+      case INT:
+        any = static_cast<int64_t>(std::stol(value));
+        break;
+      case STRING:
+        any = value;
+        break;
+      case DATE:
+        any = csvsqldb::dateFromString(value);
+        break;
+      case TIME:
+        any = csvsqldb::timeFromString(value);
+        break;
+      case TIMESTAMP:
+        any = csvsqldb::timestampFromString(value);
+        break;
     }
 
-    std::string typeToString(eType type)
-    {
-        switch(type) {
-            case NONE:
-                return "none";
-            case BOOLEAN:
-                return "BOOLEAN";
-            case INT:
-                return "INTEGER";
-            case REAL:
-                return "REAL";
-            case STRING:
-                return "VARCHAR";
-            case DATE:
-                return "DATE";
-            case TIME:
-                return "TIME";
-            case TIMESTAMP:
-                return "TIMESTAMP";
-        }
-        throw std::runtime_error("just to make VC2013 happy");
+    return TypedValue(type, any);
+  }
+
+  std::string aggregateFunctionToString(eAggregateFunction aggregate)
+  {
+    switch (aggregate) {
+      case SUM:
+        return "SUM";
+      case AVG:
+        return "AVG";
+      case COUNT:
+        return "COUNT";
+      case COUNT_STAR:
+        return "COUNT";
+      case MAX:
+        return "MAX";
+      case MIN:
+        return "MIN";
+      case ARBITRARY:
+        return "ARBITRARY";
     }
+    throw std::runtime_error("just to make VC2013 happy");
+  }
 
-    eType stringToType(const std::string& s)
-    {
-        if(s == "BOOLEAN") {
-            return BOOLEAN;
-        } else if(s == "INTEGER") {
-            return INT;
-        } else if(s == "REAL") {
-            return REAL;
-        } else if(s == "VARCHAR") {
-            return STRING;
-        } else if(s == "DATE") {
-            return DATE;
-        } else if(s == "TIME") {
-            return TIME;
-        } else if(s == "TIMESTAMP") {
-            return TIMESTAMP;
-        } else {
-            CSVSQLDB_THROW(SqlException, "unknown type string '" << s << "'");
-        }
+  std::string naturalJoinToString(eNaturalJoinType joinType)
+  {
+    switch (joinType) {
+      case NATURAL:
+        return "NATURAL";
+      case LEFT:
+        return "NATURAL LEFT OUTER";
+      case RIGHT:
+        return "NATURAL RIGHT OUTER";
+      case FULL:
+        return "NATURAL FULL OUTER";
     }
+    throw std::runtime_error("just to make VC2013 happy");
+  }
 
-    std::string printType(eType type, const csvsqldb::Any& value)
-    {
-        std::stringstream ss;
-        switch(type) {
-            case NONE:
-                ss << "NULL";
-                break;
-            case BOOLEAN:
-                ss << (csvsqldb::any_cast<bool>(value) ? "TRUE" : "FALSE");
-                break;
-            case REAL:
-                ss << std::fixed << std::showpoint << csvsqldb::any_cast<double>(value);
-                break;
-            case INT:
-                ss << csvsqldb::any_cast<int64_t>(value);
-                break;
-            case STRING:
-                ss << csvsqldb::any_cast<std::string>(value);
-                break;
-            case DATE:
-                ss << "DATE'" << csvsqldb::any_cast<csvsqldb::Date>(value).format("%Y-%m-%d") << "'";
-                break;
-            case TIME:
-                ss << "TIME'" << csvsqldb::any_cast<csvsqldb::Time>(value).format("%H:%M:%S") << "'";
-                break;
-            case TIMESTAMP:
-                ss << "TIMESTAMP'" << csvsqldb::any_cast<csvsqldb::Timestamp>(value).format("%Y-%m-%dT%H:%M:%S") << "'";
-                break;
-        }
-        return ss.str();
+  std::string operationTypeToString(eOperationType type)
+  {
+    switch (type) {
+      case OP_CONCAT:
+        return "||";
+      case OP_ADD:
+        return "+";
+      case OP_SUB:
+        return "-";
+      case OP_MUL:
+        return "*";
+      case OP_DIV:
+        return "/";
+      case OP_MOD:
+        return "%";
+      case OP_GT:
+        return ">";
+      case OP_GE:
+        return ">=";
+      case OP_LT:
+        return "<=";
+      case OP_LE:
+        return "<";
+      case OP_EQ:
+        return "=";
+      case OP_NEQ:
+        return "<>";
+      case OP_AND:
+        return "AND";
+      case OP_OR:
+        return "OR";
+      case OP_NOT:
+        return "NOT";
+      case OP_MINUS:
+        return "-";
+      case OP_PLUS:
+        return "+";
+      case OP_CAST:
+        return "CAST";
+      case OP_LIKE:
+        return "LIKE";
+      case OP_BETWEEN:
+        return "BETWEEN";
+      case OP_IN:
+        return "IN";
+      case OP_IS:
+        return "IS";
+      case OP_ISNOT:
+        return "IS NOT";
     }
-
-    std::string printType(const TypedValue& value)
-    {
-        return printType(value._type, value._value);
-    }
-
-    TypedValue TypedValue::createValue(eType type, const std::string& value)
-    {
-        csvsqldb::Any any;
-
-        switch(type) {
-            case NONE:
-                break;
-            case BOOLEAN:
-                if(csvsqldb::toupper_copy(value) != "UNKNOWN") {
-                    any = csvsqldb::stringToBool(value);
-                }
-                break;
-            case REAL:
-                any = std::stod(value);
-                break;
-            case INT:
-                any = static_cast<int64_t>(std::stol(value));
-                break;
-            case STRING:
-                any = value;
-                break;
-            case DATE:
-                any = csvsqldb::dateFromString(value);
-                break;
-            case TIME:
-                any = csvsqldb::timeFromString(value);
-                break;
-            case TIMESTAMP:
-                any = csvsqldb::timestampFromString(value);
-                break;
-        }
-
-        return TypedValue(type, any);
-    }
-
-    std::string aggregateFunctionToString(eAggregateFunction aggregate)
-    {
-        switch(aggregate) {
-            case SUM:
-                return "SUM";
-            case AVG:
-                return "AVG";
-            case COUNT:
-                return "COUNT";
-            case COUNT_STAR:
-                return "COUNT";
-            case MAX:
-                return "MAX";
-            case MIN:
-                return "MIN";
-            case ARBITRARY:
-                return "ARBITRARY";
-        }
-        throw std::runtime_error("just to make VC2013 happy");
-    }
-
-    std::string naturalJoinToString(eNaturalJoinType joinType)
-    {
-        switch(joinType) {
-            case NATURAL:
-                return "NATURAL";
-            case LEFT:
-                return "NATURAL LEFT OUTER";
-            case RIGHT:
-                return "NATURAL RIGHT OUTER";
-            case FULL:
-                return "NATURAL FULL OUTER";
-        }
-        throw std::runtime_error("just to make VC2013 happy");
-    }
-
-    std::string operationTypeToString(eOperationType type)
-    {
-        switch(type) {
-            case OP_CONCAT:
-                return "||";
-            case OP_ADD:
-                return "+";
-            case OP_SUB:
-                return "-";
-            case OP_MUL:
-                return "*";
-            case OP_DIV:
-                return "/";
-            case OP_MOD:
-                return "%";
-            case OP_GT:
-                return ">";
-            case OP_GE:
-                return ">=";
-            case OP_LT:
-                return "<=";
-            case OP_LE:
-                return "<";
-            case OP_EQ:
-                return "=";
-            case OP_NEQ:
-                return "<>";
-            case OP_AND:
-                return "AND";
-            case OP_OR:
-                return "OR";
-            case OP_NOT:
-                return "NOT";
-            case OP_MINUS:
-                return "-";
-            case OP_PLUS:
-                return "+";
-            case OP_CAST:
-                return "CAST";
-            case OP_LIKE:
-                return "LIKE";
-            case OP_BETWEEN:
-                return "BETWEEN";
-            case OP_IN:
-                return "IN";
-            case OP_IS:
-                return "IS";
-            case OP_ISNOT:
-                return "IS NOT";
-        }
-        throw std::runtime_error("just to make VC2013 happy");
-    }
+    throw std::runtime_error("just to make VC2013 happy");
+  }
 }

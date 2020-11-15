@@ -24,28 +24,26 @@
 #ifndef MPF_PARTIALDATE_H
 #define MPF_PARTIALDATE_H
 
-#include <mpfcore/inc.h>
-
 #include <mpfcore/date.h>
+#include <mpfcore/inc.h>
 
 
 namespace mpf
 {
+  /** This class calculates the date of the specified day and month for a given
+   *  year.
+   *  Example:
+   *  @code
+   *  PartialDate germanUnificationDay(3,10);
+   *  germanUnificationDay.date(2011);
+   *  @endcode
+   *  This generator calculates the german unification day, which is always on
+   *  the third October.
+   */
 
-/** This class calculates the date of the specified day and month for a given
- *  year.
- *  Example:
- *  @code
- *  PartialDate germanUnificationDay(3,10);
- *  germanUnificationDay.date(2011);
- *  @endcode
- *  This generator calculates the german unification day, which is always on
- *  the third October.
- */
-
-class MPFCORE_EXPORTS PartialDate
-{
-public:
+  class MPFCORE_EXPORTS PartialDate
+  {
+  public:
     /** Constructs a PartialDate.
      *  day and month are set to first and january.
      */
@@ -63,11 +61,11 @@ public:
      */
     Date date(UInt16 year) const;
 
-protected:
+  protected:
     UInt8 _day;
     UInt8 _month;
-};
+  };
 
 }
 
-#endif // MPF_PARTIALDATE_H
+#endif  // MPF_PARTIALDATE_H

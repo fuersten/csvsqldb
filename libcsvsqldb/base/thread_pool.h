@@ -36,8 +36,9 @@
 
 #include "libcsvsqldb/inc.h"
 
-#include <atomic>
 #include <condition_variable>
+
+#include <atomic>
 #include <functional>
 #include <mutex>
 #include <queue>
@@ -50,83 +51,83 @@
  */
 namespace csvsqldb
 {
+  /**
+   * A thread pool with a fixed thread number. Arbitrary <tt>std::function<void()></tt> functions can be enqueued.
+   */
+  class CSVSQLDB_EXPORT ThreadPool
+  {
+  public:
+    typedef std::function<void()> Callback;
+
     /**
-     * A thread pool with a fixed thread number. Arbitrary <tt>std::function<void()></tt> functions can be enqueued.
+     * Constructs a thread pool with the given number of threads to execute ThreadPool::Callback handler. The threads will be
+     * created and started
+     * upon calling the start() method.
+     * @param numberOfThreads Number of threads to spawn
      */
-    class CSVSQLDB_EXPORT ThreadPool
+    explicit ThreadPool(uint16_t numberOfThreads);
+
+    /**
+     * Destructs a thread pool. Will call stop, which will wait for thread termination. All things in currently execution will
+     * be
+     * finished before stopping.
+     */
+    ~ThreadPool();
+
+    /**
+     * Starts the construction of threads and the execution of ThreadPool::Callback handler. Will throw
+     * InvalidOperationException if
+     * the thread pool was already started. It is possible to call start() again, after stop() was called.
+     */
+    void start();
+
+    /**
+     * Stops the thread pool. Will wait for thread termination. All things currently in execution will be finished before
+     * stopping.
+     */
+    void stop();
+
+    /**
+     * Checks if the thread pool was already stopped.
+     * @return true if it was stopped already, false if not
+     */
+    bool isStopped() const
     {
-    public:
-        typedef std::function<void()> Callback;
+      return _quit.load();
+    }
 
-        /**
-         * Constructs a thread pool with the given number of threads to execute ThreadPool::Callback handler. The threads will be
-         * created and started
-         * upon calling the start() method.
-         * @param numberOfThreads Number of threads to spawn
-         */
-        explicit ThreadPool(uint16_t numberOfThreads);
+    /**
+     * Enqueues a ThreadPool::Callback handler for execution. Will throw InvalidOperationException if the thread pool was
+     * already stopped.
+     * @param task The ThreadPool::Callback handler to enqueue. This has to be a <tt>std::function<void()></tt> object. This
+     * can be created by using the
+     * std::bind template.
+     *
+     * @code{.cpp}
+     * ThreadPool tp(3);
+     * CallObject o;
+     * tp.start();
+     * tp.enqueueTask(std::bind(&CallObject::addToSum, o, 4711));
+     * @endcode
+     */
+    void enqueueTask(Callback task);
 
-        /**
-         * Destructs a thread pool. Will call stop, which will wait for thread termination. All things in currently execution will
-         * be
-         * finished before stopping.
-         */
-        ~ThreadPool();
+  private:
+    typedef std::vector<std::thread> ThreadGroup;
+    typedef std::queue<Callback> CallbackQueue;
 
-        /**
-         * Starts the construction of threads and the execution of ThreadPool::Callback handler. Will throw
-         * InvalidOperationException if
-         * the thread pool was already started. It is possible to call start() again, after stop() was called.
-         */
-        void start();
+    /**
+     * The thread entry function.
+     */
+    void run();
 
-        /**
-         * Stops the thread pool. Will wait for thread termination. All things currently in execution will be finished before
-         * stopping.
-         */
-        void stop();
-
-        /**
-         * Checks if the thread pool was already stopped.
-         * @return true if it was stopped already, false if not
-         */
-        bool isStopped() const
-        {
-            return _quit.load();
-        }
-
-        /**
-         * Enqueues a ThreadPool::Callback handler for execution. Will throw InvalidOperationException if the thread pool was
-         * already stopped.
-         * @param task The ThreadPool::Callback handler to enqueue. This has to be a <tt>std::function<void()></tt> object. This
-         * can be created by using the
-         * std::bind template.
-         *
-         * @code{.cpp}
-         * ThreadPool tp(3);
-         * CallObject o;
-         * tp.start();
-         * tp.enqueueTask(std::bind(&CallObject::addToSum, o, 4711));
-         * @endcode
-         */
-        void enqueueTask(Callback task);
-
-    private:
-        typedef std::vector<std::thread> ThreadGroup;
-        typedef std::queue<Callback> CallbackQueue;
-
-        /**
-         * The thread entry function.
-         */
-        void run();
-
-        CallbackQueue _taskQueue;
-        const uint16_t _numberOfThreads;
-        ThreadGroup _serviceThreads;
-        std::atomic<bool> _quit;
-        std::mutex _taskQueueMutex;
-        std::condition_variable _taskQueueCondition;
-    };
+    CallbackQueue _taskQueue;
+    const uint16_t _numberOfThreads;
+    ThreadGroup _serviceThreads;
+    std::atomic<bool> _quit;
+    std::mutex _taskQueueMutex;
+    std::condition_variable _taskQueueCondition;
+  };
 }
 
 #endif

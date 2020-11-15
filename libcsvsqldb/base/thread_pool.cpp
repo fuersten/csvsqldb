@@ -32,79 +32,75 @@
 //
 
 #include "thread_pool.h"
+
 #include "exception.h"
 
 #include <algorithm>
 
 namespace csvsqldb
 {
+  ThreadPool::ThreadPool(uint16_t numberOfThreads)
+  : _numberOfThreads(numberOfThreads)
+  , _quit(true)
+  {
+  }
 
-    ThreadPool::ThreadPool(uint16_t numberOfThreads)
-    : _numberOfThreads(numberOfThreads)
-    , _quit(true)
-    {
+  ThreadPool::~ThreadPool()
+  {
+    stop();
+  }
+
+  void ThreadPool::start()
+  {
+    if (!_quit.exchange(false)) {
+      throw InvalidOperationException("The thread pool was started.");
     }
 
-    ThreadPool::~ThreadPool()
-    {
-        stop();
+    for (int n = 0; n < _numberOfThreads; ++n) {
+      _serviceThreads.emplace_back(std::bind(&ThreadPool::run, this));
     }
+  }
 
-    void ThreadPool::start()
-    {
-        if(!_quit.exchange(false)) {
-            throw InvalidOperationException("The thread pool was started.");
+  void ThreadPool::stop()
+  {
+    if (!_quit.exchange(true)) {
+      _taskQueueCondition.notify_all();
+      std::for_each(_serviceThreads.begin(), _serviceThreads.end(), [](std::thread& t) {
+        if (t.joinable()) {
+          t.join();
         }
-
-        for(int n = 0; n < _numberOfThreads; ++n) {
-            _serviceThreads.emplace_back(std::bind(&ThreadPool::run, this));
-        }
+      });
     }
+  }
 
-    void ThreadPool::stop()
-    {
-        if(!_quit.exchange(true)) {
-            _taskQueueCondition.notify_all();
-            std::for_each(_serviceThreads.begin(),
-                          _serviceThreads.end(),
-                          [](std::thread& t) {
-                              if(t.joinable()) {
-                                  t.join();
-                              }
-                          });
-        }
+  void ThreadPool::enqueueTask(Callback task)
+  {
+    if (_quit.load()) {
+      throw InvalidOperationException("The thread pool was stopped.");
     }
+    std::unique_lock<std::mutex> guard(_taskQueueMutex);
+    _taskQueue.push(task);
+    _taskQueueCondition.notify_one();
+  }
 
-    void ThreadPool::enqueueTask(Callback task)
-    {
-        if(_quit.load()) {
-            throw InvalidOperationException("The thread pool was stopped.");
-        }
+  void ThreadPool::run()
+  {
+    while (!_quit.load()) {
+      Callback task;
+
+      {
         std::unique_lock<std::mutex> guard(_taskQueueMutex);
-        _taskQueue.push(task);
-        _taskQueueCondition.notify_one();
-    }
-
-    void ThreadPool::run()
-    {
-        while(!_quit.load()) {
-            Callback task;
-
-            {
-                std::unique_lock<std::mutex> guard(_taskQueueMutex);
-                _taskQueueCondition.wait_for(guard,
-                                             std::chrono::milliseconds(150),
-                                             [&] { return _quit.load() || !_taskQueue.empty(); });
-                if(_taskQueue.empty() || _quit.load()) {
-                    continue;
-                }
-                task = std::move(_taskQueue.front());
-                _taskQueue.pop();
-            }
-
-            if(task) {
-                task();
-            }
+        _taskQueueCondition.wait_for(guard, std::chrono::milliseconds(150), [&] { return _quit.load() || !_taskQueue.empty(); });
+        if (_taskQueue.empty() || _quit.load()) {
+          continue;
         }
+        task = std::move(_taskQueue.front());
+        _taskQueue.pop();
+      }
+
+      if (task) {
+        task();
+      }
     }
+  }
 }

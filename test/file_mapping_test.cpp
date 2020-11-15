@@ -31,86 +31,85 @@
 //
 
 
-#include "test.h"
-
+#include "libcsvsqldb/base/string_helper.h"
 #include "libcsvsqldb/file_mapping.h"
 
-#include "libcsvsqldb/base/string_helper.h"
+#include "test.h"
 
 
 class FileMappingTestCase
 {
 public:
-    FileMappingTestCase()
+  FileMappingTestCase()
+  {
+  }
+
+  void setUp()
+  {
+  }
+
+  void tearDown()
+  {
+  }
+
+  void mappgingTest()
+  {
+    csvsqldb::FileMapping::Mappings mappings;
+    mappings.push_back({"employees.csv->employees", ',', false});
+    mappings.push_back({"salaries.csv->salaries", ';', true});
+
+    csvsqldb::FileMapping mapping;
+    mapping.initialize(mappings);
+    MPF_TEST_ASSERTEQUAL("employees.csv", mapping.getMappingForTable("EMPLOYEES")._mapping);
+    MPF_TEST_ASSERTEQUAL(',', mapping.getMappingForTable("EMPLOYEES")._delimiter);
+    MPF_TEST_ASSERTEQUAL("salaries.csv", mapping.getMappingForTable("SALARIES")._mapping);
+    MPF_TEST_ASSERTEQUAL(';', mapping.getMappingForTable("SALARIES")._delimiter);
+    MPF_TEST_ASSERTEQUAL(true, mapping.getMappingForTable("SALARIES")._skipFirstLine);
+  }
+
+  void missingMappingTest()
+  {
+    csvsqldb::FileMapping::Mappings mappings;
+    mappings.push_back({"employees.csv->employees", ',', false});
+
+    csvsqldb::FileMapping mapping;
+    mapping.initialize(mappings);
+    MPF_TEST_ASSERTEQUAL("employees.csv", mapping.getMappingForTable("EMPLOYEES")._mapping);
+    MPF_TEST_EXPECTS(mapping.getMappingForTable("salaries"), csvsqldb::MappingException);
+    MPF_TEST_EXPECTS(mapping.getMappingForTable("employee"), csvsqldb::MappingException);
+  }
+
+  void asStringVectorTest()
+  {
+    csvsqldb::FileMapping::Mappings mappings;
+    mappings.push_back({"employees.csv->employees", ',', false});
+    mappings.push_back({"salaries.csv->salaries", ',', false});
+
+    csvsqldb::FileMapping mapping;
+    mapping.initialize(mappings);
+    MPF_TEST_ASSERTEQUAL("employees.csv->EMPLOYEES,salaries.csv->SALARIES", csvsqldb::join(mapping.asStringVector(), ","));
+  }
+
+  void JSONTest()
+  {
+    std::string JSON;
+
     {
+      csvsqldb::FileMapping::Mappings mappings;
+      mappings.push_back({"employees.csv->employees", ',', false});
+      mappings.push_back({"salaries.csv->salaries", ',', false});
+
+      csvsqldb::FileMapping mapping;
+      mapping.initialize(mappings);
+
+      JSON = mapping.asJson("employees", mappings);
     }
 
-    void setUp()
-    {
-    }
-
-    void tearDown()
-    {
-    }
-
-    void mappgingTest()
-    {
-        csvsqldb::FileMapping::Mappings mappings;
-        mappings.push_back({ "employees.csv->employees", ',', false });
-        mappings.push_back({ "salaries.csv->salaries", ';', true });
-
-        csvsqldb::FileMapping mapping;
-        mapping.initialize(mappings);
-        MPF_TEST_ASSERTEQUAL("employees.csv", mapping.getMappingForTable("EMPLOYEES")._mapping);
-        MPF_TEST_ASSERTEQUAL(',', mapping.getMappingForTable("EMPLOYEES")._delimiter);
-        MPF_TEST_ASSERTEQUAL("salaries.csv", mapping.getMappingForTable("SALARIES")._mapping);
-        MPF_TEST_ASSERTEQUAL(';', mapping.getMappingForTable("SALARIES")._delimiter);
-        MPF_TEST_ASSERTEQUAL(true, mapping.getMappingForTable("SALARIES")._skipFirstLine);
-    }
-
-    void missingMappingTest()
-    {
-        csvsqldb::FileMapping::Mappings mappings;
-        mappings.push_back({ "employees.csv->employees", ',', false });
-
-        csvsqldb::FileMapping mapping;
-        mapping.initialize(mappings);
-        MPF_TEST_ASSERTEQUAL("employees.csv", mapping.getMappingForTable("EMPLOYEES")._mapping);
-        MPF_TEST_EXPECTS(mapping.getMappingForTable("salaries"), csvsqldb::MappingException);
-        MPF_TEST_EXPECTS(mapping.getMappingForTable("employee"), csvsqldb::MappingException);
-    }
-
-    void asStringVectorTest()
-    {
-        csvsqldb::FileMapping::Mappings mappings;
-        mappings.push_back({ "employees.csv->employees", ',', false });
-        mappings.push_back({ "salaries.csv->salaries", ',', false });
-
-        csvsqldb::FileMapping mapping;
-        mapping.initialize(mappings);
-        MPF_TEST_ASSERTEQUAL("employees.csv->EMPLOYEES,salaries.csv->SALARIES", csvsqldb::join(mapping.asStringVector(), ","));
-    }
-
-    void JSONTest()
-    {
-        std::string JSON;
-
-        {
-            csvsqldb::FileMapping::Mappings mappings;
-            mappings.push_back({ "employees.csv->employees", ',', false });
-            mappings.push_back({ "salaries.csv->salaries", ',', false });
-
-            csvsqldb::FileMapping mapping;
-            mapping.initialize(mappings);
-
-            JSON = mapping.asJson("employees", mappings);
-        }
-
-        std::stringstream ss(JSON);
-        csvsqldb::FileMapping mapping = csvsqldb::FileMapping::fromJson(ss);
-        MPF_TEST_ASSERTEQUAL("employees.csv", mapping.getMappingForTable("EMPLOYEES")._mapping);
-        MPF_TEST_EXPECTS(mapping.getMappingForTable("SALARIES"), csvsqldb::MappingException);
-    }
+    std::stringstream ss(JSON);
+    csvsqldb::FileMapping mapping = csvsqldb::FileMapping::fromJson(ss);
+    MPF_TEST_ASSERTEQUAL("employees.csv", mapping.getMappingForTable("EMPLOYEES")._mapping);
+    MPF_TEST_EXPECTS(mapping.getMappingForTable("SALARIES"), csvsqldb::MappingException);
+  }
 };
 
 MPF_REGISTER_TEST_START("MappingTestSuite", FileMappingTestCase);

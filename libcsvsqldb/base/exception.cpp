@@ -32,111 +32,112 @@
 //
 
 #include "exception.h"
+
 #include "logging.h"
 
 #include <cstring>
 
 #if defined _MSC_VER
-#include <errno.h>
+  #include <errno.h>
 #else
-#include <sys/errno.h>
+  #include <sys/errno.h>
 #endif
 
 
 namespace csvsqldb
 {
+  Exception::Exception(std::error_code ec, const std::string& message) NOEXCEPT : std::system_error(ec, message)
+  {
+  }
 
-    Exception::Exception(std::error_code ec, const std::string& message) NOEXCEPT : std::system_error(ec, message)
-    {
+  Exception::Exception(int ev, const std::string& message) NOEXCEPT : std::system_error(ev, std::generic_category(), message)
+  {
+  }
+
+  Exception::Exception(std::errc ec, const std::string& message) NOEXCEPT : std::system_error(std::make_error_code(ec), message)
+  {
+  }
+
+  Exception::Exception(const std::string& message) NOEXCEPT
+  : std::system_error(std::error_code(0, std::generic_category()))
+  , _message(message)
+  {
+  }
+
+  Exception::Exception(const Exception& ex) NOEXCEPT : std::system_error(ex)
+  {
+  }
+
+  const char* Exception::what() const NOEXCEPT
+  {
+    if (code().value() == 0) {
+      // a code value of 0 is seen as no code from csvsqldb
+      // some systems see a code value of 0 as a success and will write that to the message, which is not what I want
+      return _message.c_str();
+    } else {
+      return std::system_error::what();
     }
+  }
 
-    Exception::Exception(int ev, const std::string& message) NOEXCEPT : std::system_error(ev, std::generic_category(), message)
-    {
-    }
-
-    Exception::Exception(std::errc ec, const std::string& message) NOEXCEPT : std::system_error(std::make_error_code(ec), message)
-    {
-    }
-
-    Exception::Exception(const std::string& message) NOEXCEPT : std::system_error(std::error_code(0, std::generic_category())),
-                                                                _message(message)
-    {
-    }
-
-    Exception::Exception(const Exception& ex) NOEXCEPT : std::system_error(ex)
-    {
-    }
-
-    const char* Exception::what() const NOEXCEPT
-    {
-        if(code().value() == 0) {
-            // a code value of 0 is seen as no code from csvsqldb
-            // some systems see a code value of 0 as a success and will write that to the message, which is not what I want
-            return _message.c_str();
-        } else {
-            return std::system_error::what();
-        }
-    }
-
-    CSVSQLDB_IMPLEMENT_EXCEPTION(TimeoutException, Exception);
-    CSVSQLDB_IMPLEMENT_EXCEPTION(ConfigurationException, Exception);
-    CSVSQLDB_IMPLEMENT_EXCEPTION(FilesystemException, Exception);
-    CSVSQLDB_IMPLEMENT_EXCEPTION(JsonException, Exception);
-    CSVSQLDB_IMPLEMENT_EXCEPTION(BadcastException, Exception);
-    CSVSQLDB_IMPLEMENT_EXCEPTION(BadoptionException, Exception);
-    CSVSQLDB_IMPLEMENT_EXCEPTION(IndexException, Exception);
-    CSVSQLDB_IMPLEMENT_EXCEPTION(InvalidParameterException, Exception);
-    CSVSQLDB_IMPLEMENT_EXCEPTION(InvalidOperationException, Exception);
-    CSVSQLDB_IMPLEMENT_EXCEPTION(LexicalAnalysisException, Exception);
-    CSVSQLDB_IMPLEMENT_EXCEPTION(TimeException, Exception);
-    CSVSQLDB_IMPLEMENT_EXCEPTION(TimestampException, Exception);
-    CSVSQLDB_IMPLEMENT_EXCEPTION(DateException, Exception);
-    CSVSQLDB_IMPLEMENT_EXCEPTION(DurationException, Exception);
-    CSVSQLDB_IMPLEMENT_EXCEPTION(NoMoreInputException, Exception);
-    CSVSQLDB_IMPLEMENT_EXCEPTION(NotImplementedException, Exception);
-    CSVSQLDB_IMPLEMENT_EXCEPTION(ChronoException, Exception);
-    CSVSQLDB_IMPLEMENT_EXCEPTION(RegExpException, Exception);
+  CSVSQLDB_IMPLEMENT_EXCEPTION(TimeoutException, Exception);
+  CSVSQLDB_IMPLEMENT_EXCEPTION(ConfigurationException, Exception);
+  CSVSQLDB_IMPLEMENT_EXCEPTION(FilesystemException, Exception);
+  CSVSQLDB_IMPLEMENT_EXCEPTION(JsonException, Exception);
+  CSVSQLDB_IMPLEMENT_EXCEPTION(BadcastException, Exception);
+  CSVSQLDB_IMPLEMENT_EXCEPTION(BadoptionException, Exception);
+  CSVSQLDB_IMPLEMENT_EXCEPTION(IndexException, Exception);
+  CSVSQLDB_IMPLEMENT_EXCEPTION(InvalidParameterException, Exception);
+  CSVSQLDB_IMPLEMENT_EXCEPTION(InvalidOperationException, Exception);
+  CSVSQLDB_IMPLEMENT_EXCEPTION(LexicalAnalysisException, Exception);
+  CSVSQLDB_IMPLEMENT_EXCEPTION(TimeException, Exception);
+  CSVSQLDB_IMPLEMENT_EXCEPTION(TimestampException, Exception);
+  CSVSQLDB_IMPLEMENT_EXCEPTION(DateException, Exception);
+  CSVSQLDB_IMPLEMENT_EXCEPTION(DurationException, Exception);
+  CSVSQLDB_IMPLEMENT_EXCEPTION(NoMoreInputException, Exception);
+  CSVSQLDB_IMPLEMENT_EXCEPTION(NotImplementedException, Exception);
+  CSVSQLDB_IMPLEMENT_EXCEPTION(ChronoException, Exception);
+  CSVSQLDB_IMPLEMENT_EXCEPTION(RegExpException, Exception);
 
 
-    std::string errnoText()
-    {
+  std::string errnoText()
+  {
 #if defined __linux__
-        char buf[256];
-        char* s = strerror_r(errno, buf, sizeof(buf));
-        return s ? s : buf;
+    char buf[256];
+    char* s = strerror_r(errno, buf, sizeof(buf));
+    return s ? s : buf;
 #elif defined _MSC_VER
-        std::system_error syserr(errno, std::generic_category(), "");
-        return syserr.what();
+    std::system_error syserr(errno, std::generic_category(), "");
+    return syserr.what();
 #else
-        char buf[256];
-        strerror_r(errno, buf, sizeof(buf));
-        return buf;
+    char buf[256];
+    strerror_r(errno, buf, sizeof(buf));
+    return buf;
 #endif
-    }
+  }
 
-    void throwSysError(const std::string& error_domain)
-    {
-        throw Exception(errno, error_domain);
-    }
+  void throwSysError(const std::string& error_domain)
+  {
+    throw Exception(errno, error_domain);
+  }
 
-    void evaluateException()
-    {
-        try {
-            throw;
-        } catch(Exception& ex) {
-            CSVSQLDB_ERRORLOG("csvsqldb exception caught: [" << ex.code().value() << "] " << ex.what());
-        } catch(std::system_error& ex) {
-            CSVSQLDB_ERRORLOG("std::system error caught: [" << ex.code().value() << "] " << ex.what());
-        } catch(std::exception& ex) {
-            CSVSQLDB_ERRORLOG("std::exception caught: " << ex.what());
-        } catch(...) {
-            CSVSQLDB_ERRORLOG("unknown exception caught");
-        }
+  void evaluateException()
+  {
+    try {
+      throw;
+    } catch (Exception& ex) {
+      CSVSQLDB_ERRORLOG("csvsqldb exception caught: [" << ex.code().value() << "] " << ex.what());
+    } catch (std::system_error& ex) {
+      CSVSQLDB_ERRORLOG("std::system error caught: [" << ex.code().value() << "] " << ex.what());
+    } catch (std::exception& ex) {
+      CSVSQLDB_ERRORLOG("std::exception caught: " << ex.what());
+    } catch (...) {
+      CSVSQLDB_ERRORLOG("unknown exception caught");
     }
+  }
 
-    void evaluateExceptionAndThrow()
-    {
-        evaluateException();
-        throw;
-    }
+  void evaluateExceptionAndThrow()
+  {
+    evaluateException();
+    throw;
+  }
 }

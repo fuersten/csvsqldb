@@ -31,87 +31,87 @@
 //
 
 
-#include "test.h"
-
 #include "libcsvsqldb/base/application.h"
+
+#include "test.h"
 
 
 class MyApplication : public csvsqldb::Application
 {
 public:
-    MyApplication(int argc, char** argv, bool setUp)
-    : csvsqldb::Application(argc, argv)
-    , _didSetup(false)
-    , _didRun(false)
-    , _didTearDown(false)
-    , _setUp(setUp)
-    {
-    }
+  MyApplication(int argc, char** argv, bool setUp)
+  : csvsqldb::Application(argc, argv)
+  , _didSetup(false)
+  , _didRun(false)
+  , _didTearDown(false)
+  , _setUp(setUp)
+  {
+  }
 
-    bool _didSetup;
-    bool _didRun;
-    bool _didTearDown;
+  bool _didSetup;
+  bool _didRun;
+  bool _didTearDown;
 
 private:
-    virtual bool setUp(int argc, char** argv)
-    {
-        _didSetup = true;
-        return _setUp;
-    }
+  virtual bool setUp(int argc, char** argv)
+  {
+    _didSetup = true;
+    return _setUp;
+  }
 
-    virtual int doRun()
-    {
-        _didRun = true;
-        return 0;
-    }
+  virtual int doRun()
+  {
+    _didRun = true;
+    return 0;
+  }
 
-    virtual void tearDown()
-    {
-        _didTearDown = true;
-    }
+  virtual void tearDown()
+  {
+    _didTearDown = true;
+  }
 
-    bool _setUp;
+  bool _setUp;
 };
 
 
 class ApplicationTestCase
 {
 public:
-    void setUp()
-    {
-    }
+  void setUp()
+  {
+  }
 
-    void tearDown()
-    {
-    }
+  void tearDown()
+  {
+  }
 
-    void run()
-    {
-        int argc = 2;
-        const char* args[] = { "MyApp", "Arg1" };
+  void run()
+  {
+    int argc = 2;
+    const char* args[] = {"MyApp", "Arg1"};
 
-        MyApplication myapp(argc, const_cast<char**>(args), true);
-        int ret = myapp.run();
+    MyApplication myapp(argc, const_cast<char**>(args), true);
+    int ret = myapp.run();
 
-        MPF_TEST_ASSERTEQUAL(0, ret);
-        MPF_TEST_ASSERTEQUAL(true, myapp._didSetup);
-        MPF_TEST_ASSERTEQUAL(true, myapp._didRun);
-        MPF_TEST_ASSERTEQUAL(true, myapp._didTearDown);
-    }
+    MPF_TEST_ASSERTEQUAL(0, ret);
+    MPF_TEST_ASSERTEQUAL(true, myapp._didSetup);
+    MPF_TEST_ASSERTEQUAL(true, myapp._didRun);
+    MPF_TEST_ASSERTEQUAL(true, myapp._didTearDown);
+  }
 
-    void dontRun()
-    {
-        int argc = 2;
-        const char* args[] = { "MyApp", "Arg1" };
+  void dontRun()
+  {
+    int argc = 2;
+    const char* args[] = {"MyApp", "Arg1"};
 
-        MyApplication myapp(argc, const_cast<char**>(args), false);
-        int ret = myapp.run();
+    MyApplication myapp(argc, const_cast<char**>(args), false);
+    int ret = myapp.run();
 
-        MPF_TEST_ASSERTEQUAL(-1, ret);
-        MPF_TEST_ASSERTEQUAL(true, myapp._didSetup);
-        MPF_TEST_ASSERTEQUAL(false, myapp._didRun);
-        MPF_TEST_ASSERTEQUAL(false, myapp._didTearDown);
-    }
+    MPF_TEST_ASSERTEQUAL(-1, ret);
+    MPF_TEST_ASSERTEQUAL(true, myapp._didSetup);
+    MPF_TEST_ASSERTEQUAL(false, myapp._didRun);
+    MPF_TEST_ASSERTEQUAL(false, myapp._didTearDown);
+  }
 };
 
 MPF_REGISTER_TEST_START("ApplicationTestSuite", ApplicationTestCase);

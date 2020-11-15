@@ -36,51 +36,50 @@
 
 namespace std
 {
-    std::ostream& operator<<(std::ostream& out, const csvsqldb::chrono::ProcessTimeDuration& duration)
-    {
-        out << "[user " << duration._user << "ms system " << duration._system << "ms real " << duration._real << "ms]";
-        return out;
-    }
+  std::ostream& operator<<(std::ostream& out, const csvsqldb::chrono::ProcessTimeDuration& duration)
+  {
+    out << "[user " << duration._user << "ms system " << duration._system << "ms real " << duration._real << "ms]";
+    return out;
+  }
 }
 
 namespace csvsqldb
 {
-    namespace chrono
+  namespace chrono
+  {
+    ProcessTimeDuration operator-(const ProcessTimePoint& lhs, const ProcessTimePoint& rhs)
     {
-
-        ProcessTimeDuration operator-(const ProcessTimePoint& lhs, const ProcessTimePoint& rhs)
-        {
-            ProcessTimeDuration duration;
-            duration._real = lhs._real - rhs._real;
-            duration._user = lhs._user - rhs._user;
-            duration._system = lhs._system - rhs._system;
-            return duration;
-        }
-
-        ProcessTimePoint ProcessTimeClock::now()
-        {
-            ProcessTimePoint timePoint;
-
-#ifndef _MSC_VER    // TODO LCF: find an adequat implementation for Windows
-            tms tm;
-            clock_t clock_ticks = ::times(&tm);
-            if(clock_ticks == static_cast<clock_t>(-1)) {
-                CSVSQLDB_THROW(ChronoException, "chrono internal error");
-            }
-            long factor = tickFactor();
-            if(factor == -1) {
-                CSVSQLDB_THROW(ChronoException, "chrono internal error");
-            }
-
-            timePoint._real = static_cast<long>(clock_ticks) * factor;
-            timePoint._user = static_cast<long>(tm.tms_utime + tm.tms_cutime) * factor;
-            timePoint._system = static_cast<long>(tm.tms_stime + tm.tms_cstime) * factor;
-#else
-            timePoint._real = 0;
-            timePoint._system = 0;
-            timePoint._user = 0;
-#endif
-            return timePoint;
-        }
+      ProcessTimeDuration duration;
+      duration._real = lhs._real - rhs._real;
+      duration._user = lhs._user - rhs._user;
+      duration._system = lhs._system - rhs._system;
+      return duration;
     }
+
+    ProcessTimePoint ProcessTimeClock::now()
+    {
+      ProcessTimePoint timePoint;
+
+#ifndef _MSC_VER  // TODO LCF: find an adequat implementation for Windows
+      tms tm;
+      clock_t clock_ticks = ::times(&tm);
+      if (clock_ticks == static_cast<clock_t>(-1)) {
+        CSVSQLDB_THROW(ChronoException, "chrono internal error");
+      }
+      long factor = tickFactor();
+      if (factor == -1) {
+        CSVSQLDB_THROW(ChronoException, "chrono internal error");
+      }
+
+      timePoint._real = static_cast<long>(clock_ticks) * factor;
+      timePoint._user = static_cast<long>(tm.tms_utime + tm.tms_cutime) * factor;
+      timePoint._system = static_cast<long>(tm.tms_stime + tm.tms_cstime) * factor;
+#else
+      timePoint._real = 0;
+      timePoint._system = 0;
+      timePoint._user = 0;
+#endif
+      return timePoint;
+    }
+  }
 }

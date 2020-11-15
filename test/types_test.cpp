@@ -31,59 +31,59 @@
 //
 
 
-#include "test.h"
-
 #include "libcsvsqldb/sql_ast.h"
+
+#include "test.h"
 
 
 class TypesTestCase
 {
 public:
-    TypesTestCase()
-    {
-    }
+  TypesTestCase()
+  {
+  }
 
-    void setUp()
-    {
-    }
+  void setUp()
+  {
+  }
 
-    void tearDown()
-    {
-    }
+  void tearDown()
+  {
+  }
 
-    void identifiersTest()
-    {
-        csvsqldb::IdentifierSet identifiers;
+  void identifiersTest()
+  {
+    csvsqldb::IdentifierSet identifiers;
 
-        csvsqldb::SymbolTablePtr symbolTable = csvsqldb::SymbolTable::createSymbolTable();
-        csvsqldb::SymbolInfoPtr info = std::make_shared<csvsqldb::SymbolInfo>();
-        info->_name = "BIRTHDATE";
+    csvsqldb::SymbolTablePtr symbolTable = csvsqldb::SymbolTable::createSymbolTable();
+    csvsqldb::SymbolInfoPtr info = std::make_shared<csvsqldb::SymbolInfo>();
+    info->_name = "BIRTHDATE";
 
-        csvsqldb::ASTIdentifier bd(symbolTable, info, "", "BIRTHDATE", false);
+    csvsqldb::ASTIdentifier bd(symbolTable, info, "", "BIRTHDATE", false);
 
-        identifiers.insert(bd);
-        MPF_TEST_ASSERT(identifiers.size() == 1);
+    identifiers.insert(bd);
+    MPF_TEST_ASSERT(identifiers.size() == 1);
 
-        csvsqldb::ASTIdentifier id(symbolTable, info, "", "ID", false);
-        identifiers.insert(id);
-        MPF_TEST_ASSERT(identifiers.size() == 2);
-        identifiers.insert(id);
-        MPF_TEST_ASSERT(identifiers.size() == 2);
+    csvsqldb::ASTIdentifier id(symbolTable, info, "", "ID", false);
+    identifiers.insert(id);
+    MPF_TEST_ASSERT(identifiers.size() == 2);
+    identifiers.insert(id);
+    MPF_TEST_ASSERT(identifiers.size() == 2);
 
-        csvsqldb::ASTIdentifier prefix_bd(symbolTable, info, "EMPLOYEES", "BIRTHDATE", false);
-        identifiers.insert(prefix_bd);
-        MPF_TEST_ASSERT(identifiers.size() == 3);
-    }
+    csvsqldb::ASTIdentifier prefix_bd(symbolTable, info, "EMPLOYEES", "BIRTHDATE", false);
+    identifiers.insert(prefix_bd);
+    MPF_TEST_ASSERT(identifiers.size() == 3);
+  }
 
-    void stringToBoolTest()
-    {
-        MPF_TEST_ASSERTEQUAL(true, csvsqldb::stringToBool("true"));
-        MPF_TEST_ASSERTEQUAL(false, csvsqldb::stringToBool("false"));
-        MPF_TEST_ASSERTEQUAL(true, csvsqldb::stringToBool("TRUE"));
-        MPF_TEST_ASSERTEQUAL(false, csvsqldb::stringToBool("FaLsE"));
-        MPF_TEST_ASSERTEQUAL(true, csvsqldb::stringToBool("1"));
-        MPF_TEST_ASSERTEQUAL(false, csvsqldb::stringToBool("0"));
-    }
+  void stringToBoolTest()
+  {
+    MPF_TEST_ASSERTEQUAL(true, csvsqldb::stringToBool("true"));
+    MPF_TEST_ASSERTEQUAL(false, csvsqldb::stringToBool("false"));
+    MPF_TEST_ASSERTEQUAL(true, csvsqldb::stringToBool("TRUE"));
+    MPF_TEST_ASSERTEQUAL(false, csvsqldb::stringToBool("FaLsE"));
+    MPF_TEST_ASSERTEQUAL(true, csvsqldb::stringToBool("1"));
+    MPF_TEST_ASSERTEQUAL(false, csvsqldb::stringToBool("0"));
+  }
 };
 
 MPF_REGISTER_TEST_START("TypesSuite", TypesTestCase);

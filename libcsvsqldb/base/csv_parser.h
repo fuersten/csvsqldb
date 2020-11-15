@@ -48,112 +48,111 @@
 
 namespace csvsqldb
 {
+  /**
+   * CSV related implementations
+   */
+  namespace csv
+  {
     /**
-     * CSV related implementations
+     * Context for the parametration of a CSV parser
      */
-    namespace csv
+    struct CSVSQLDB_EXPORT CSVParserContext {
+      CSVParserContext()
+      : _skipFirstLine(false)
+      , _delimiter(',')
+      {
+      }
+
+      bool _skipFirstLine;  //!< The parser will skip the first input line (e.g. the header), default is false
+      char _delimiter;      //!< Field delimiter, default is ','
+    };
+
+
+    /**
+     * The type methods of the callback will be called by the corresponding parser upon encountering the specific type
+     */
+    class CSVSQLDB_EXPORT CSVParserCallback
     {
+    public:
+      virtual void onLong(int64_t num, bool isNull) = 0;
+      virtual void onDouble(double num, bool isNull) = 0;
+      virtual void onString(const char* s, size_t len, bool isNull) = 0;
+      virtual void onDate(const csvsqldb::Date& date, bool isNull) = 0;
+      virtual void onTime(const csvsqldb::Time& time, bool isNull) = 0;
+      virtual void onTimestamp(const csvsqldb::Timestamp& timestamp, bool isNull) = 0;
+      virtual void onBoolean(bool boolean, bool isNull) = 0;
+    };
 
-        /**
-         * Context for the parametration of a CSV parser
-         */
-        struct CSVSQLDB_EXPORT CSVParserContext {
-            CSVParserContext()
-            : _skipFirstLine(false)
-            , _delimiter(',')
-            {
-            }
+    enum CsvTypes { LONG, DOUBLE, STRING, DATE, TIME, TIMESTAMP, BOOLEAN };
+    typedef std::vector<CsvTypes> Types;
 
-            bool _skipFirstLine;    //!< The parser will skip the first input line (e.g. the header), default is false
-            char _delimiter;        //!< Field delimiter, default is ','
-        };
+    /**
+     * A class used to parse CSV streams.
+     */
+    class CSVSQLDB_EXPORT CSVParser : noncopyable
+    {
+    public:
+      /**
+       * Constructs a CSV parser.
+       * @param context The parametrising context to use
+       * @param stream The input stream to parse
+       * @param types The column types of the input lines in the right order
+       * @param callback The callback to call type methods for
+       */
+      CSVParser(CSVParserContext context, std::istream& stream, Types types, CSVParserCallback& callback);
 
+      /**
+       * Parses one line of input and calls the corresponding type method callbacks. Skips the first line of input, if
+       * specified
+       * by the context.
+       * @return true if there are more lines to parse, false otherwise
+       */
+      bool parseLine();
 
-        /**
-         * The type methods of the callback will be called by the corresponding parser upon encountering the specific type
-         */
-        class CSVSQLDB_EXPORT CSVParserCallback
-        {
-        public:
-            virtual void onLong(int64_t num, bool isNull) = 0;
-            virtual void onDouble(double num, bool isNull) = 0;
-            virtual void onString(const char* s, size_t len, bool isNull) = 0;
-            virtual void onDate(const csvsqldb::Date& date, bool isNull) = 0;
-            virtual void onTime(const csvsqldb::Time& time, bool isNull) = 0;
-            virtual void onTimestamp(const csvsqldb::Timestamp& timestamp, bool isNull) = 0;
-            virtual void onBoolean(bool boolean, bool isNull) = 0;
-        };
+      /**
+       * Returns the current count of lines excluding skipped lines.
+       * @return The current line count starting with one.
+       */
+      size_t getLineCount() const
+      {
+        return _lineCount;
+      }
 
-        enum CsvTypes { LONG, DOUBLE, STRING, DATE, TIME, TIMESTAMP, BOOLEAN };
-        typedef std::vector<CsvTypes> Types;
+    private:
+      enum State { INIT, LINESTART, FIELDSTART, END };
 
-        /**
-         * A class used to parse CSV streams.
-         */
-        class CSVSQLDB_EXPORT CSVParser : noncopyable
-        {
-        public:
-            /**
-             * Constructs a CSV parser.
-             * @param context The parametrising context to use
-             * @param stream The input stream to parse
-             * @param types The column types of the input lines in the right order
-             * @param callback The callback to call type methods for
-             */
-            CSVParser(CSVParserContext context, std::istream& stream, Types types, CSVParserCallback& callback);
+      typedef std::vector<char> BufferType;
 
-            /**
-             * Parses one line of input and calls the corresponding type method callbacks. Skips the first line of input, if
-             * specified
-             * by the context.
-             * @return true if there are more lines to parse, false otherwise
-             */
-            bool parseLine();
+      void parseString();
+      void parseLong();
+      void parseDouble();
+      void parseBool();
+      void parseDate();
+      void parseTime();
+      void parseTimestamp();
 
-            /**
-             * Returns the current count of lines excluding skipped lines.
-             * @return The current line count starting with one.
-             */
-            size_t getLineCount() const
-            {
-                return _lineCount;
-            }
+      void findEndOfLine();
+      char readNextChar(bool ignoreDelimiter = false);
+      bool checkBuffer();
+      bool readBuffer();
 
-        private:
-            enum State { INIT, LINESTART, FIELDSTART, END };
+      CSVParserContext _context;
+      std::istream& _stream;
+      Types _types;
+      CSVParserCallback& _callback;
 
-            typedef std::vector<char> BufferType;
-
-            void parseString();
-            void parseLong();
-            void parseDouble();
-            void parseBool();
-            void parseDate();
-            void parseTime();
-            void parseTimestamp();
-
-            void findEndOfLine();
-            char readNextChar(bool ignoreDelimiter = false);
-            bool checkBuffer();
-            bool readBuffer();
-
-            CSVParserContext _context;
-            std::istream& _stream;
-            Types _types;
-            CSVParserCallback& _callback;
-
-            State _state;
-            Types::const_iterator _typeIterator;
-            size_t _lineCount;
-            BufferType _buffer;
-            BufferType _stringBuffer;
-            size_t _stringBufferSize;
-            size_t _n;
-            std::streamsize _count;
-            CSVStringParser _stringParser;
-            static const std::streamsize _bufferLength = 8192;
-        };
-    }
+      State _state;
+      Types::const_iterator _typeIterator;
+      size_t _lineCount;
+      BufferType _buffer;
+      BufferType _stringBuffer;
+      size_t _stringBufferSize;
+      size_t _n;
+      std::streamsize _count;
+      CSVStringParser _stringParser;
+      static const std::streamsize _bufferLength = 8192;
+    };
+  }
 }
 
 

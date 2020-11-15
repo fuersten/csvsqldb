@@ -40,61 +40,61 @@
 
 namespace csvsqldb
 {
+  /**
+   *  Regular expression matcher class. Supports most of the commen regular exression constructs. Does only matching and no
+   * capturing.
+   *  Supported constructs:
+   *  - ab
+   *  - a | b
+   *  - a*
+   *  - a+
+   *  - a?
+   *  - (a | b)
+   *  - [a-zA-Z]
+   *  - [^a-z]
+   *  - .
+   *  - \\w
+   *  - \\d
+   *  - \\s
+   */
+  class RegExp
+  {
+  public:
     /**
-     *  Regular expression matcher class. Supports most of the commen regular exression constructs. Does only matching and no
-     * capturing.
-     *  Supported constructs:
-     *  - ab
-     *  - a | b
-     *  - a*
-     *  - a+
-     *  - a?
-     *  - (a | b)
-     *  - [a-zA-Z]
-     *  - [^a-z]
-     *  - .
-     *  - \\w
-     *  - \\d
-     *  - \\s
+     *  Constructs an empty regular expression which will match nothing.
      */
-    class RegExp
-    {
-    public:
-        /**
-         *  Constructs an empty regular expression which will match nothing.
-         */
-        RegExp();
+    RegExp();
 
-        /**
-         * Constructs a regular expression from the given string.
-         * @param s The regular expression to construct. Will throw a RegExpException upon errors.
-         */
-        explicit RegExp(const std::string& s);
+    /**
+     * Constructs a regular expression from the given string.
+     * @param s The regular expression to construct. Will throw a RegExpException upon errors.
+     */
+    explicit RegExp(const std::string& s);
 
-        RegExp(const RegExp& s);
+    RegExp(const RegExp& s);
 
-        ~RegExp();
+    ~RegExp();
 
-        RegExp& operator=(const std::string& s);
+    RegExp& operator=(const std::string& s);
 
-        /**
-         * Matches the given string against the regular expression.
-         * @param s String to match
-         * @return true if the string matches, otherwise false
-         */
-        bool match(const std::string& s) const;
+    /**
+     * Matches the given string against the regular expression.
+     * @param s String to match
+     * @return true if the string matches, otherwise false
+     */
+    bool match(const std::string& s) const;
 
-        /**
-         * Matches the given string against the regular expression.
-         * @param s String to match
-         * @return true if the string matches, otherwise false
-         */
-        bool match(const char* s) const;
+    /**
+     * Matches the given string against the regular expression.
+     * @param s String to match
+     * @return true if the string matches, otherwise false
+     */
+    bool match(const char* s) const;
 
-    private:
-        struct Private;
-        std::unique_ptr<Private> _m;
-    };
+  private:
+    struct Private;
+    std::unique_ptr<Private> _m;
+  };
 }
 
 #endif

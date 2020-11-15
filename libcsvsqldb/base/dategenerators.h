@@ -24,34 +24,31 @@
 #ifndef MPF_DATEGENERATORS_H
 #define MPF_DATEGENERATORS_H
 
-#include <mpfcore/inc.h>
-
 #include <mpfcore/date.h>
+#include <mpfcore/inc.h>
 
 
 namespace mpf
 {
+  /** This dategenerator calculates the date of the first to fifth weekday of the specified
+   *  month for a given year.
+   *  Example:
+   *  @code
+   *  NthkDayOfMonth mothersday(NthkDayOfMonth::second, Date::Sunday, 5);
+   *  @endcode
+   *  This generator calculates the german mother's day, which is always on the second
+   *  sunday of May.
+   */
 
-/** This dategenerator calculates the date of the first to fifth weekday of the specified 
- *  month for a given year.
- *  Example:
- *  @code
- *  NthkDayOfMonth mothersday(NthkDayOfMonth::second, Date::Sunday, 5);
- *  @endcode
- *  This generator calculates the german mother's day, which is always on the second
- *  sunday of May.
- */
-
-class MPFCORE_EXPORTS NthkDayOfMonth
-{
-public:
-    enum enkDay
-    {
-        first=1, /**< First k-day of month */
-        second,  /**< Second k-day of month */
-        third,   /**< Third k-day of month */
-        fourth,  /**< Fourth k-day of month */
-        fifth    /**< Fifth k-day of month */
+  class MPFCORE_EXPORTS NthkDayOfMonth
+  {
+  public:
+    enum enkDay {
+      first = 1, /**< First k-day of month */
+      second,    /**< Second k-day of month */
+      third,     /**< Third k-day of month */
+      fourth,    /**< Fourth k-day of month */
+      fifth      /**< Fifth k-day of month */
     };
 
     /** Constructs a dategenerator.
@@ -67,24 +64,24 @@ public:
      */
     Date date(UInt16 year) const;
 
-protected:
+  protected:
     enkDay _kDay;
     Date::enDay _dayOfWeek;
     UInt8 _month;
-};
+  };
 
-/** This dategenerator calculates the date of the last weekday of the specified month 
- *  for a given year.
- *  Example:
- *  @code
- *  LastkDayOfMonth summerTime(Date::Sunday, 3);
- *  @endcode
- *  This generator calculates the start of the european summer time, which is
- *  always on the last sunday of March.
- */
-class MPFCORE_EXPORTS LastkDayOfMonth
-{
-public:
+  /** This dategenerator calculates the date of the last weekday of the specified month
+   *  for a given year.
+   *  Example:
+   *  @code
+   *  LastkDayOfMonth summerTime(Date::Sunday, 3);
+   *  @endcode
+   *  This generator calculates the start of the european summer time, which is
+   *  always on the last sunday of March.
+   */
+  class MPFCORE_EXPORTS LastkDayOfMonth
+  {
+  public:
     /** Constructs a dategenerator.
      *  If an invalid month is specified a DateException is thrown.
      *  @param dayOfWeek Specifies the day of the week.
@@ -97,22 +94,22 @@ public:
      */
     Date date(UInt16 year) const;
 
-protected:
+  protected:
     Date::enDay _dayOfWeek;
     UInt8 _month;
-};
+  };
 
-/** This dategenerator calculates the date of the first weekday of the specified month 
- *  for a given year.
- *  Example:
- *  @code
- *  FirstkDayOfMonth fkdom(Date::Monday, 9);
- *  @endcode
- *  This generator calculates the first monday of September.
- */
-class MPFCORE_EXPORTS FirstkDayOfMonth
-{
-public:
+  /** This dategenerator calculates the date of the first weekday of the specified month
+   *  for a given year.
+   *  Example:
+   *  @code
+   *  FirstkDayOfMonth fkdom(Date::Monday, 9);
+   *  @endcode
+   *  This generator calculates the first monday of September.
+   */
+  class MPFCORE_EXPORTS FirstkDayOfMonth
+  {
+  public:
     /** Constructs a dategenerator.
      *  If an invalid month is specified a DateException is thrown.
      *  @param dayOfWeek Specifies the day of the week.
@@ -125,22 +122,22 @@ public:
      */
     Date date(UInt16 year) const;
 
-protected:
+  protected:
     Date::enDay _dayOfWeek;
     UInt8 _month;
-};
+  };
 
-/** This dategenerator calculates the date of the first weekday after
- *  the given date.
- *  Example:
- *  @code
- *  FirstkDayAfter fkda(Date::Monday);
- *  @endcode
- *  This generator calculates the first monday after the given date.
- */
-class MPFCORE_EXPORTS FirstkDayAfter
-{
-public:
+  /** This dategenerator calculates the date of the first weekday after
+   *  the given date.
+   *  Example:
+   *  @code
+   *  FirstkDayAfter fkda(Date::Monday);
+   *  @endcode
+   *  This generator calculates the first monday after the given date.
+   */
+  class MPFCORE_EXPORTS FirstkDayAfter
+  {
+  public:
     /** Constructs a dategenerator.
      *  @param dayOfWeek Specifies the day of the week.
      */
@@ -151,21 +148,21 @@ public:
      */
     Date date(Date start) const;
 
-protected:
+  protected:
     Date::enDay _dayOfWeek;
-};
+  };
 
-/** This dategenerator calculates the date of the first weekday before
- *  the given date.
- *  Example:
- *  @code
- *  FirstkDayBefore fkdb(Date::Monday);
- *  @endcode
- *  This generator calculates the first monday before the given date.
- */
-class MPFCORE_EXPORTS FirstkDayBefore
-{
-public:
+  /** This dategenerator calculates the date of the first weekday before
+   *  the given date.
+   *  Example:
+   *  @code
+   *  FirstkDayBefore fkdb(Date::Monday);
+   *  @endcode
+   *  This generator calculates the first monday before the given date.
+   */
+  class MPFCORE_EXPORTS FirstkDayBefore
+  {
+  public:
     /** Constructs a dategenerator.
      *  @param dayOfWeek Specifies the day of the week.
      */
@@ -176,16 +173,16 @@ public:
      */
     Date date(Date start) const;
 
-protected:
+  protected:
     Date::enDay _dayOfWeek;
-};
+  };
 
-/** This dategenerator calculates the date of the Gregorian easter sunday 
- *  for the given year.
- */
-class MPFCORE_EXPORTS CalculateGregorianEaster
-{
-public:
+  /** This dategenerator calculates the date of the Gregorian easter sunday
+   *  for the given year.
+   */
+  class MPFCORE_EXPORTS CalculateGregorianEaster
+  {
+  public:
     /** Constructs a dategenerator.
      *  @param year The year for which Gregorian easter sunday shall be
      *  calculated.
@@ -196,22 +193,22 @@ public:
      */
     Date easterSunday();
 
-protected:
+  protected:
     Date _easterSunday;
-};
+  };
 
-/** This dategenerator calculates an offset to the date of the Gregorian
- *  easter sunday for the given year.
- *  Example:
- *  @code
- *  NthDayOfGregorianEaster carnivalMonday(-48);
- *  @endcode
- *  This generator calculates the carnival monday which is exactly 48 days
- *  before the Gregorian easter sunday.
- */
-class MPFCORE_EXPORTS NthDayOfGregorianEaster
-{
-public:
+  /** This dategenerator calculates an offset to the date of the Gregorian
+   *  easter sunday for the given year.
+   *  Example:
+   *  @code
+   *  NthDayOfGregorianEaster carnivalMonday(-48);
+   *  @endcode
+   *  This generator calculates the carnival monday which is exactly 48 days
+   *  before the Gregorian easter sunday.
+   */
+  class MPFCORE_EXPORTS NthDayOfGregorianEaster
+  {
+  public:
     /** Constructs a dategenerator.
      *  days are set to 0.
      */
@@ -227,11 +224,10 @@ public:
      */
     Date date(UInt16 year) const;
 
-protected:
+  protected:
     int _days;
-};
+  };
 
 }
 
-#endif // MPF_DATEGENERATORS_H
-
+#endif  // MPF_DATEGENERATORS_H

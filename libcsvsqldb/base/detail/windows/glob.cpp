@@ -38,11 +38,10 @@
 
 namespace csvsqldb
 {
-    size_t expand(const std::string& pattern, StringVector& files)
-    {
-        // sorry, no file pattern expansion on windows
-        files.push_back(pattern);
-        return files.size();
-    }
+  size_t expand(const std::string& pattern, StringVector& files)
+  {
+    // sorry, no file pattern expansion on windows
+    files.push_back(pattern);
+    return files.size();
+  }
 }
-

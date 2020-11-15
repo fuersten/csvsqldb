@@ -37,170 +37,169 @@
 #include "libcsvsqldb/inc.h"
 
 #include "exception.h"
-
 #include "types.h"
+#include <type_traits>
 
 #include <utility>
-#include <type_traits>
 
 
 namespace csvsqldb
 {
+  /**
+   * This class represents any type. The assigned value can be extracted with the any_cast operator.
+   */
+  class CSVSQLDB_EXPORT Any
+  {
+  public:
     /**
-     * This class represents any type. The assigned value can be extracted with the any_cast operator.
+     * Constructs an empty value.
      */
-    class CSVSQLDB_EXPORT Any
+    Any()
+    : _holder(nullptr)
     {
-    public:
-        /**
-         * Constructs an empty value.
-         */
-        Any()
-        : _holder(nullptr)
-        {
-        }
+    }
 
-        /**
-         * Constructs an Any from the given type and value.
-         * @param value The value to construct
-         */
-        template <typename T>
-        Any(const T& value)
-        : _holder(new ValueHolder<T>(value))
-        {
-        }
+    /**
+     * Constructs an Any from the given type and value.
+     * @param value The value to construct
+     */
+    template<typename T>
+    Any(const T& value)
+    : _holder(new ValueHolder<T>(value))
+    {
+    }
 
-        /**
-         * Copy constructs the Any from another Any.
-         * @param any Any to construct with
-         */
-        Any(const Any& any)
-        : _holder(any._holder ? any._holder->clone() : nullptr)
-        {
-        }
+    /**
+     * Copy constructs the Any from another Any.
+     * @param any Any to construct with
+     */
+    Any(const Any& any)
+    : _holder(any._holder ? any._holder->clone() : nullptr)
+    {
+    }
 
-        ~Any()
-        {
-            delete _holder;
-        }
+    ~Any()
+    {
+      delete _holder;
+    }
 
-        /**
-         * Swaps this Any with the given one.
-         * @param any Any to swap with
-         */
-        void swap(Any& any)
-        {
-            std::swap(_holder, any._holder);
-        }
+    /**
+     * Swaps this Any with the given one.
+     * @param any Any to swap with
+     */
+    void swap(Any& any)
+    {
+      std::swap(_holder, any._holder);
+    }
 
-        /**
-         * Assignes the given value to this Any.
-         * @param value The value to assign
-         * @return Returns this Any as reference.
-         */
-        template <typename T>
-        Any& operator=(const T& value)
-        {
-            Any(value).swap(*this);
-            return *this;
-        }
+    /**
+     * Assignes the given value to this Any.
+     * @param value The value to assign
+     * @return Returns this Any as reference.
+     */
+    template<typename T>
+    Any& operator=(const T& value)
+    {
+      Any(value).swap(*this);
+      return *this;
+    }
 
-        /**
-         * Assignes the given Any to this Any.
-         * @param any The Any to assign
-         * @return Returns this Any as reference.
-         */
-        Any& operator=(const Any& any)
-        {
-            Any(any).swap(*this);
-            return *this;
-        }
+    /**
+     * Assignes the given Any to this Any.
+     * @param any The Any to assign
+     * @return Returns this Any as reference.
+     */
+    Any& operator=(const Any& any)
+    {
+      Any(any).swap(*this);
+      return *this;
+    }
 
-        /**
-         * Tests if the object has a value.
-         * @return true if no value was assigned, otherwise false.
-         */
-        bool empty() const
-        {
-            return !_holder;
-        }
+    /**
+     * Tests if the object has a value.
+     * @return true if no value was assigned, otherwise false.
+     */
+    bool empty() const
+    {
+      return !_holder;
+    }
 
-    private:
-        struct ValueHolderBase {
-            virtual ~ValueHolderBase()
-            {
-            }
-            virtual ValueHolderBase* clone() const = 0;
-            virtual const std::type_info& type() const = 0;
-        };
-
-        template <typename T>
-        struct ValueHolder : public ValueHolderBase {
-            ValueHolder(const T& t)
-            : _value(t)
-            {
-            }
-
-            virtual ValueHolderBase* clone() const
-            {
-                return new ValueHolder<T>(_value);
-            }
-
-            virtual const std::type_info& type() const
-            {
-                return typeid(T);
-            }
-
-            T _value;
-        };
-
-        ValueHolderBase* _holder;
-
-        template <typename T>
-        friend T any_cast(const Any& any);
-
-        template <typename T>
-        friend T* any_cast(const Any* any);
+  private:
+    struct ValueHolderBase {
+      virtual ~ValueHolderBase()
+      {
+      }
+      virtual ValueHolderBase* clone() const = 0;
+      virtual const std::type_info& type() const = 0;
     };
 
-    /**
-     * Extracts the value from an Any. The type T has to match the underlying Any type.
-     * @param any The Any to extract the value from
-     * @return A pointer to the value or nullptr, if the value is empty or the type does not match.
-     */
-    template <typename T>
-    T* any_cast(const Any* any)
-    {
-        typedef typename std::remove_reference<T>::type noreftype;
-        typename std::remove_const<noreftype>::type tt;
+    template<typename T>
+    struct ValueHolder : public ValueHolderBase {
+      ValueHolder(const T& t)
+      : _value(t)
+      {
+      }
 
-        if(!any || any->empty() || typeid(tt) != any->_holder->type()) {
-            return 0;
-        }
-        Any::ValueHolder<T>* holder = static_cast<Any::ValueHolder<T>*>(any->_holder);
-        return &holder->_value;
+      virtual ValueHolderBase* clone() const
+      {
+        return new ValueHolder<T>(_value);
+      }
+
+      virtual const std::type_info& type() const
+      {
+        return typeid(T);
+      }
+
+      T _value;
+    };
+
+    ValueHolderBase* _holder;
+
+    template<typename T>
+    friend T any_cast(const Any& any);
+
+    template<typename T>
+    friend T* any_cast(const Any* any);
+  };
+
+  /**
+   * Extracts the value from an Any. The type T has to match the underlying Any type.
+   * @param any The Any to extract the value from
+   * @return A pointer to the value or nullptr, if the value is empty or the type does not match.
+   */
+  template<typename T>
+  T* any_cast(const Any* any)
+  {
+    typedef typename std::remove_reference<T>::type noreftype;
+    typename std::remove_const<noreftype>::type tt;
+
+    if (!any || any->empty() || typeid(tt) != any->_holder->type()) {
+      return 0;
     }
+    Any::ValueHolder<T>* holder = static_cast<Any::ValueHolder<T>*>(any->_holder);
+    return &holder->_value;
+  }
 
-    /**
-     * Extracts the value from an Any. The type T has to match the underlying Any type.
-     * Throws a BadcastException if the value is empty or the type does not match.
-     * @param any The Any to extract the value from
-     * @return The value of the any.
-     */
-    template <typename T>
-    T any_cast(const Any& any)
-    {
-        typedef typename std::remove_reference<T>::type noreftype;
+  /**
+   * Extracts the value from an Any. The type T has to match the underlying Any type.
+   * Throws a BadcastException if the value is empty or the type does not match.
+   * @param any The Any to extract the value from
+   * @return The value of the any.
+   */
+  template<typename T>
+  T any_cast(const Any& any)
+  {
+    typedef typename std::remove_reference<T>::type noreftype;
 
-        if(any.empty()) {
-            CSVSQLDB_THROW(BadcastException, "any_cast: any has no value");
-        }
-        noreftype* value = any_cast<noreftype>(&any);
-        if(!value) {
-            CSVSQLDB_THROW(BadcastException, "any_cast: cannot cast to given type '" << getTypename<T>() << "'");
-        }
-        return static_cast<T>(*value);
+    if (any.empty()) {
+      CSVSQLDB_THROW(BadcastException, "any_cast: any has no value");
     }
+    noreftype* value = any_cast<noreftype>(&any);
+    if (!value) {
+      CSVSQLDB_THROW(BadcastException, "any_cast: cannot cast to given type '" << getTypename<T>() << "'");
+    }
+    return static_cast<T>(*value);
+  }
 }
 
 #endif

@@ -43,185 +43,185 @@
 
 namespace csvsqldb
 {
+  /**
+   * Base class for configurations.
+   */
+  class CSVSQLDB_EXPORT Configuration
+  {
+  public:
+    typedef std::shared_ptr<const Configuration> Ptr;
+
+    virtual ~Configuration();
+
     /**
-     * Base class for configurations.
+     * Return all sub-properties of the given path.
+     * @param path Dot separated path to the properties
+     * @param properties Will be filled with the found properties
+     * @return Returns the number of found properties.
      */
-    class CSVSQLDB_EXPORT Configuration
+    size_t getProperties(const std::string& path, StringVector& properties) const;
+
+    /**
+     * Check if a configuration has a specific property.
+     * @param path Dot separated path to the property
+     * @return true if the configuration has the property, false otherwise.
+     */
+    bool hasProperty(const std::string& path) const;
+
+    /**
+     * Retrieve a configuration property of type bool with a possible default value.
+     * @param path Dot separated path to the property
+     * @param defaultValue Default value that gets returned, if the property was not found in the configuration
+     * @return Returns the bool value of the configuration property or the defaultValue if not found.
+     */
+    bool get(const std::string& path, bool defaultValue) const;
+
+    /**
+     * Retrieve a configuration property of type int with a possible default value.
+     * @param path Dot separated path to the property
+     * @param defaultValue Default value that gets returned, if the property was not found in the configuration
+     * @return Returns the int value of the configuration property or the defaultValue if not found.
+     */
+    int32_t get(const std::string& path, int32_t defaultValue) const;
+
+    /**
+     * Retrieve a configuration property of type long with a possible default value.
+     * @param path Dot separated path to the property
+     * @param defaultValue Default value that gets returned, if the property was not found in the configuration
+     * @return Returns the long value of the configuration property or the defaultValue if not found.
+     */
+    int64_t get(const std::string& path, int64_t defaultValue) const;
+
+    /**
+     * Retrieve a configuration property of type float with a possible default value.
+     * @param path Dot separated path to the property
+     * @param defaultValue Default value that gets returned, if the property was not found in the configuration
+     * @return Returns the float value of the configuration property or the defaultValue if not found.
+     */
+    float get(const std::string& path, float defaultValue) const;
+
+    /**
+     * Retrieve a configuration property of type double with a possible default value.
+     * @param path Dot separated path to the property
+     * @param defaultValue Default value that gets returned, if the property was not found in the configuration
+     * @return Returns the double value of the configuration property or the defaultValue if not found.
+     */
+    double get(const std::string& path, double defaultValue) const;
+
+    /**
+     * Retrieve a configuration property of type string with a possible default value.
+     * @param path Dot separated path to the property
+     * @param defaultValue Default value that gets returned, if the property was not found in the configuration
+     * @return Returns the string value of the configuration property or the defaultValue if not found.
+     */
+    std::string get(const std::string& path, const char* defaultValue) const;
+
+    /**
+     * Retrieve a configuration property of type string with a possible default value.
+     * @param path Dot separated path to the property
+     * @param defaultValue Default value that gets returned, if the property was not found in the configuration
+     * @return Returns the string value of the configuration property or the defaultValue if not found.
+     */
+    std::string get(const std::string& path, const std::string& defaultValue) const;
+
+    /**
+     * Retrieve a configuration property according to its given template type.
+     * Will throw a ConfigurationException if an error occurs, i.e. the property was not found or has the wrong type.
+     * @param path Dot separated path to the value
+     * @return Returns the value of the configuration property.
+     */
+    template<typename T>
+    T get(const std::string& path) const
     {
-    public:
-        typedef std::shared_ptr<const Configuration> Ptr;
+      Typer<T> typer;
+      return get(path, typer);
+    }
 
-        virtual ~Configuration();
+  protected:
+    Configuration();
 
-        /**
-         * Return all sub-properties of the given path.
-         * @param path Dot separated path to the properties
-         * @param properties Will be filled with the found properties
-         * @return Returns the number of found properties.
-         */
-        size_t getProperties(const std::string& path, StringVector& properties) const;
+  private:
+    /**
+     * Template method to return all sub-properties of the given path.
+     * @param path Dot separated path to the properties
+     * @param properties Will be filled with the found properties
+     * @return Returns the number of found properties.
+     */
+    virtual size_t doGetProperties(const std::string& path, StringVector& properties) const = 0;
 
-        /**
-         * Check if a configuration has a specific property.
-         * @param path Dot separated path to the property
-         * @return true if the configuration has the property, false otherwise.
-         */
-        bool hasProperty(const std::string& path) const;
+    /**
+     * Template method for the inspection of properties.
+     * @param path Dot separated path to the property
+     * @return true if the configuration has the property, false otherwise.
+     */
+    virtual bool doHasProperty(const std::string& path) const = 0;
 
-        /**
-         * Retrieve a configuration property of type bool with a possible default value.
-         * @param path Dot separated path to the property
-         * @param defaultValue Default value that gets returned, if the property was not found in the configuration
-         * @return Returns the bool value of the configuration property or the defaultValue if not found.
-         */
-        bool get(const std::string& path, bool defaultValue) const;
+    /**
+     * Template method for the generic fetching of a configuration property.
+     * Has to be implemented by the inheriting class. Has to throw a CofigurationException upon any error. The path can be a
+     * dot
+     * separated string, that stand for subentries of the property.
+     * @param path Dot separated path to the value
+     * @param typer The correct type object for the returning type
+     * @return Returns the corresponding value.
+     */
+    virtual bool get(const std::string& path, Typer<bool> typer) const = 0;
 
-        /**
-         * Retrieve a configuration property of type int with a possible default value.
-         * @param path Dot separated path to the property
-         * @param defaultValue Default value that gets returned, if the property was not found in the configuration
-         * @return Returns the int value of the configuration property or the defaultValue if not found.
-         */
-        int32_t get(const std::string& path, int32_t defaultValue) const;
+    /**
+     * Template method for the generic fetching of a configuration property.
+     * Has to be implemented by the inheriting class. Has to throw a CofigurationException upon any error. The path can be a
+     * dot
+     * separated string, that stand for subentries of the property.
+     * @param path Dot separated path to the value
+     * @param typer The correct type object for the returning type
+     * @return Returns the corresponding value.
+     */
+    virtual int32_t get(const std::string& path, Typer<int32_t> typer) const = 0;
 
-        /**
-         * Retrieve a configuration property of type long with a possible default value.
-         * @param path Dot separated path to the property
-         * @param defaultValue Default value that gets returned, if the property was not found in the configuration
-         * @return Returns the long value of the configuration property or the defaultValue if not found.
-         */
-        int64_t get(const std::string& path, int64_t defaultValue) const;
+    /**
+     * Template method for the generic fetching of a configuration property.
+     * Has to be implemented by the inheriting class. Has to throw a CofigurationException upon any error. The path can be a
+     * dot
+     * separated string, that stand for subentries of the property.
+     * @param path Dot separated path to the value
+     * @param typer The correct type object for the returning type
+     * @return Returns the corresponding value.
+     */
+    virtual int64_t get(const std::string& path, Typer<int64_t> typer) const = 0;
 
-        /**
-         * Retrieve a configuration property of type float with a possible default value.
-         * @param path Dot separated path to the property
-         * @param defaultValue Default value that gets returned, if the property was not found in the configuration
-         * @return Returns the float value of the configuration property or the defaultValue if not found.
-         */
-        float get(const std::string& path, float defaultValue) const;
+    /**
+     * Template method for the generic fetching of a configuration property.
+     * Has to be implemented by the inheriting class. Has to throw a CofigurationException upon any error. The path can be a
+     * dot
+     * separated string, that stand for subentries of the property.
+     * @param path Dot separated path to the value
+     * @param typer The correct type object for the returning type
+     * @return Returns the corresponding value.
+     */
+    virtual float get(const std::string& path, Typer<float> typer) const = 0;
 
-        /**
-         * Retrieve a configuration property of type double with a possible default value.
-         * @param path Dot separated path to the property
-         * @param defaultValue Default value that gets returned, if the property was not found in the configuration
-         * @return Returns the double value of the configuration property or the defaultValue if not found.
-         */
-        double get(const std::string& path, double defaultValue) const;
+    /**
+     * Template method for the generic fetching of a configuration property.
+     * Has to be implemented by the inheriting class. Has to throw a CofigurationException upon any error. The path can be a
+     * dot
+     * separated string, that stand for subentries of the property.
+     * @param path Dot separated path to the value
+     * @param typer The correct type object for the returning type
+     * @return Returns the corresponding value.
+     */
+    virtual double get(const std::string& path, Typer<double> typer) const = 0;
 
-        /**
-         * Retrieve a configuration property of type string with a possible default value.
-         * @param path Dot separated path to the property
-         * @param defaultValue Default value that gets returned, if the property was not found in the configuration
-         * @return Returns the string value of the configuration property or the defaultValue if not found.
-         */
-        std::string get(const std::string& path, const char* defaultValue) const;
-
-        /**
-         * Retrieve a configuration property of type string with a possible default value.
-         * @param path Dot separated path to the property
-         * @param defaultValue Default value that gets returned, if the property was not found in the configuration
-         * @return Returns the string value of the configuration property or the defaultValue if not found.
-         */
-        std::string get(const std::string& path, const std::string& defaultValue) const;
-
-        /**
-         * Retrieve a configuration property according to its given template type.
-         * Will throw a ConfigurationException if an error occurs, i.e. the property was not found or has the wrong type.
-         * @param path Dot separated path to the value
-         * @return Returns the value of the configuration property.
-         */
-        template <typename T>
-        T get(const std::string& path) const
-        {
-            Typer<T> typer;
-            return get(path, typer);
-        }
-
-    protected:
-        Configuration();
-
-    private:
-        /**
-         * Template method to return all sub-properties of the given path.
-         * @param path Dot separated path to the properties
-         * @param properties Will be filled with the found properties
-         * @return Returns the number of found properties.
-         */
-        virtual size_t doGetProperties(const std::string& path, StringVector& properties) const = 0;
-
-        /**
-         * Template method for the inspection of properties.
-         * @param path Dot separated path to the property
-         * @return true if the configuration has the property, false otherwise.
-         */
-        virtual bool doHasProperty(const std::string& path) const = 0;
-
-        /**
-         * Template method for the generic fetching of a configuration property.
-         * Has to be implemented by the inheriting class. Has to throw a CofigurationException upon any error. The path can be a
-         * dot
-         * separated string, that stand for subentries of the property.
-         * @param path Dot separated path to the value
-         * @param typer The correct type object for the returning type
-         * @return Returns the corresponding value.
-         */
-        virtual bool get(const std::string& path, Typer<bool> typer) const = 0;
-
-        /**
-         * Template method for the generic fetching of a configuration property.
-         * Has to be implemented by the inheriting class. Has to throw a CofigurationException upon any error. The path can be a
-         * dot
-         * separated string, that stand for subentries of the property.
-         * @param path Dot separated path to the value
-         * @param typer The correct type object for the returning type
-         * @return Returns the corresponding value.
-         */
-        virtual int32_t get(const std::string& path, Typer<int32_t> typer) const = 0;
-
-        /**
-         * Template method for the generic fetching of a configuration property.
-         * Has to be implemented by the inheriting class. Has to throw a CofigurationException upon any error. The path can be a
-         * dot
-         * separated string, that stand for subentries of the property.
-         * @param path Dot separated path to the value
-         * @param typer The correct type object for the returning type
-         * @return Returns the corresponding value.
-         */
-        virtual int64_t get(const std::string& path, Typer<int64_t> typer) const = 0;
-
-        /**
-         * Template method for the generic fetching of a configuration property.
-         * Has to be implemented by the inheriting class. Has to throw a CofigurationException upon any error. The path can be a
-         * dot
-         * separated string, that stand for subentries of the property.
-         * @param path Dot separated path to the value
-         * @param typer The correct type object for the returning type
-         * @return Returns the corresponding value.
-         */
-        virtual float get(const std::string& path, Typer<float> typer) const = 0;
-
-        /**
-         * Template method for the generic fetching of a configuration property.
-         * Has to be implemented by the inheriting class. Has to throw a CofigurationException upon any error. The path can be a
-         * dot
-         * separated string, that stand for subentries of the property.
-         * @param path Dot separated path to the value
-         * @param typer The correct type object for the returning type
-         * @return Returns the corresponding value.
-         */
-        virtual double get(const std::string& path, Typer<double> typer) const = 0;
-
-        /**
-         * Template method for the generic fetching of a configuration property.
-         * Has to be implemented by the inheriting class. Has to throw a CofigurationException upon any error. The path can be a
-         * dot
-         * separated string, that stand for subentries of the property.
-         * @param path Dot separated path to the value
-         * @param typer The correct type object for the returning type
-         * @return Returns the corresponding value.
-         */
-        virtual std::string get(const std::string& path, Typer<std::string> typer) const = 0;
-    };
+    /**
+     * Template method for the generic fetching of a configuration property.
+     * Has to be implemented by the inheriting class. Has to throw a CofigurationException upon any error. The path can be a
+     * dot
+     * separated string, that stand for subentries of the property.
+     * @param path Dot separated path to the value
+     * @param typer The correct type object for the returning type
+     * @return Returns the corresponding value.
+     */
+    virtual std::string get(const std::string& path, Typer<std::string> typer) const = 0;
+  };
 }
 
 #endif

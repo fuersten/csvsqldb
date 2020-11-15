@@ -41,55 +41,52 @@
 
 namespace csvsqldb
 {
+  struct OperatorNodeFactory : public csvsqldb::noncopyable {
+  public:
+    static CSVSQLDB_EXPORT RootOperatorNodePtr createOutputRowOperatorNode(OperatorContext& context,
+                                                                           const SymbolTablePtr& symbolTable,
+                                                                           std::ostream& stream);
 
-    struct OperatorNodeFactory : public csvsqldb::noncopyable {
-    public:
-        static CSVSQLDB_EXPORT RootOperatorNodePtr createOutputRowOperatorNode(OperatorContext& context,
-                                                                               const SymbolTablePtr& symbolTable,
-                                                                               std::ostream& stream);
+    static CSVSQLDB_EXPORT RowOperatorNodePtr createLimitOperatorNode(OperatorContext& context, const SymbolTablePtr& symbolTable,
+                                                                      const ASTExprNodePtr& limit, const ASTExprNodePtr& offset);
 
-        static CSVSQLDB_EXPORT RowOperatorNodePtr createLimitOperatorNode(OperatorContext& context,
-                                                                          const SymbolTablePtr& symbolTable,
-                                                                          const ASTExprNodePtr& limit,
-                                                                          const ASTExprNodePtr& offset);
+    static CSVSQLDB_EXPORT RowOperatorNodePtr createSortOperatorNode(OperatorContext& context, const SymbolTablePtr& symbolTable,
+                                                                     OrderExpressions orderExpressions);
 
-        static CSVSQLDB_EXPORT RowOperatorNodePtr createSortOperatorNode(OperatorContext& context,
+    static CSVSQLDB_EXPORT RowOperatorNodePtr createGroupingOperatorNode(OperatorContext& context,
                                                                          const SymbolTablePtr& symbolTable,
-                                                                         OrderExpressions orderExpressions);
+                                                                         const Expressions& nodes,
+                                                                         const Identifiers& groupByIdentifiers);
 
-        static CSVSQLDB_EXPORT RowOperatorNodePtr createGroupingOperatorNode(OperatorContext& context,
-                                                                             const SymbolTablePtr& symbolTable,
-                                                                             const Expressions& nodes,
-                                                                             const Identifiers& groupByIdentifiers);
+    static CSVSQLDB_EXPORT RowOperatorNodePtr createAggregationOperatorNode(OperatorContext& context,
+                                                                            const SymbolTablePtr& symbolTable,
+                                                                            const Expressions& nodes);
 
-        static CSVSQLDB_EXPORT RowOperatorNodePtr createAggregationOperatorNode(OperatorContext& context,
-                                                                                const SymbolTablePtr& symbolTable,
-                                                                                const Expressions& nodes);
+    static CSVSQLDB_EXPORT RowOperatorNodePtr createExtendedProjectionOperatorNode(OperatorContext& context,
+                                                                                   const SymbolTablePtr& symbolTable,
+                                                                                   const Expressions& nodes);
 
-        static CSVSQLDB_EXPORT RowOperatorNodePtr createExtendedProjectionOperatorNode(OperatorContext& context,
-                                                                                       const SymbolTablePtr& symbolTable,
-                                                                                       const Expressions& nodes);
+    static CSVSQLDB_EXPORT RowOperatorNodePtr createCrossJoinOperatorNode(OperatorContext& context,
+                                                                          const SymbolTablePtr& symbolTable);
 
-        static CSVSQLDB_EXPORT RowOperatorNodePtr createCrossJoinOperatorNode(OperatorContext& context, const SymbolTablePtr& symbolTable);
+    static CSVSQLDB_EXPORT RowOperatorNodePtr createInnerJoinOperatorNode(OperatorContext& context,
+                                                                          const SymbolTablePtr& symbolTable,
+                                                                          const ASTExprNodePtr& exp);
 
-        static CSVSQLDB_EXPORT RowOperatorNodePtr createInnerJoinOperatorNode(OperatorContext& context,
+    static CSVSQLDB_EXPORT RowOperatorNodePtr createInnerHashJoinOperatorNode(OperatorContext& context,
                                                                               const SymbolTablePtr& symbolTable,
                                                                               const ASTExprNodePtr& exp);
 
-        static CSVSQLDB_EXPORT RowOperatorNodePtr createInnerHashJoinOperatorNode(OperatorContext& context,
-                                                                                  const SymbolTablePtr& symbolTable,
-                                                                                  const ASTExprNodePtr& exp);
+    static CSVSQLDB_EXPORT RowOperatorNodePtr createUnionOperatorNode(OperatorContext& context,
+                                                                      const SymbolTablePtr& symbolTable);
 
-        static CSVSQLDB_EXPORT RowOperatorNodePtr createUnionOperatorNode(OperatorContext& context, const SymbolTablePtr& symbolTable);
+    static CSVSQLDB_EXPORT RowOperatorNodePtr createSelectOperatorNode(OperatorContext& context,
+                                                                       const SymbolTablePtr& symbolTable,
+                                                                       const ASTExprNodePtr& exp);
 
-        static CSVSQLDB_EXPORT RowOperatorNodePtr createSelectOperatorNode(OperatorContext& context,
-                                                                           const SymbolTablePtr& symbolTable,
-                                                                           const ASTExprNodePtr& exp);
-
-        static CSVSQLDB_EXPORT RowOperatorNodePtr createScanOperatorNode(OperatorContext& context,
-                                                                         const SymbolTablePtr& symbolTable,
-                                                                         const SymbolInfo& tableInfo);
-    };
+    static CSVSQLDB_EXPORT RowOperatorNodePtr createScanOperatorNode(OperatorContext& context, const SymbolTablePtr& symbolTable,
+                                                                     const SymbolInfo& tableInfo);
+  };
 }
 
 #endif

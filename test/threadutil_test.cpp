@@ -31,38 +31,38 @@
 //
 
 
-#include "test.h"
-
 #include "libcsvsqldb/base/thread_helper.h"
+
+#include "test.h"
 
 
 static bool stop = false;
 
 static void runTest()
 {
-    while(!stop) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    }
+  while (!stop) {
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+  }
 }
 
 class ThreadHelperTestCase
 {
 public:
-    void setUp()
-    {
-    }
+  void setUp()
+  {
+  }
 
-    void tearDown()
-    {
-    }
+  void tearDown()
+  {
+  }
 
-    void threadJoinGuardTest()
-    {
-        std::thread t(runTest);
-        csvsqldb::ThreadJoinGuard guard(t);
+  void threadJoinGuardTest()
+  {
+    std::thread t(runTest);
+    csvsqldb::ThreadJoinGuard guard(t);
 
-        stop = true;
-    }
+    stop = true;
+  }
 };
 
 MPF_REGISTER_TEST_START("ApplicationTestSuite", ThreadHelperTestCase);

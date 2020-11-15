@@ -41,26 +41,26 @@
 
 namespace csvsqldb
 {
+  /**
+   * Ensures, that the given thread is joined, before exiting the scope of this guard.
+   */
+  class CSVSQLDB_EXPORT ThreadJoinGuard
+  {
+  public:
     /**
-     * Ensures, that the given thread is joined, before exiting the scope of this guard.
+     * Constructs a guard for the given thread.
+     * @param t The thread to join
      */
-    class CSVSQLDB_EXPORT ThreadJoinGuard
-    {
-    public:
-        /**
-         * Constructs a guard for the given thread.
-         * @param t The thread to join
-         */
-        ThreadJoinGuard(std::thread& t);
+    ThreadJoinGuard(std::thread& t);
 
-        /**
-         * Joins the thread upon destruction.
-         */
-        ~ThreadJoinGuard();
+    /**
+     * Joins the thread upon destruction.
+     */
+    ~ThreadJoinGuard();
 
-    private:
-        std::thread& _t;
-    };
+  private:
+    std::thread& _t;
+  };
 }
 
 #endif

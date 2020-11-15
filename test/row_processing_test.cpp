@@ -31,292 +31,297 @@
 //
 
 
-#include "test.h"
-
 #include "libcsvsqldb/operatornode.h"
 #include "libcsvsqldb/sql_astdump.h"
 #include "libcsvsqldb/sql_parser.h"
 
+#include "test.h"
+
 #include <sstream>
 
 
-class DummyScanOperatorNode : public csvsqldb::ScanOperatorNode, public csvsqldb::BlockProvider
+class DummyScanOperatorNode
+: public csvsqldb::ScanOperatorNode
+, public csvsqldb::BlockProvider
 {
 public:
-    DummyScanOperatorNode(const csvsqldb::OperatorContext& context, const csvsqldb::SymbolTablePtr& symbolTable, const csvsqldb::SymbolInfo& tableInfo)
-    : csvsqldb::ScanOperatorNode(context, symbolTable, tableInfo)
-    , _block(nullptr)
-    {
+  DummyScanOperatorNode(const csvsqldb::OperatorContext& context, const csvsqldb::SymbolTablePtr& symbolTable,
+                        const csvsqldb::SymbolInfo& tableInfo)
+  : csvsqldb::ScanOperatorNode(context, symbolTable, tableInfo)
+  , _block(nullptr)
+  {
+  }
+
+  const csvsqldb::Values* getNextRow()
+  {
+    if (!_block) {
+      prepareBuffer();
     }
 
-    const csvsqldb::Values* getNextRow()
-    {
-        if(!_block) {
-            prepareBuffer();
-        }
+    return _iterator->getNextRow();
+  }
 
-        return _iterator->getNextRow();
-    }
+  virtual csvsqldb::BlockPtr getNextBlock()
+  {
+    return _block;
+  }
 
-    virtual csvsqldb::BlockPtr getNextBlock()
-    {
-        return _block;
-    }
-
-    virtual void dump(std::ostream& stream) const
-    {
-        stream << "DummyScanOperator\n";
-    }
+  virtual void dump(std::ostream& stream) const
+  {
+    stream << "DummyScanOperator\n";
+  }
 
 private:
-    void prepareBuffer()
-    {
-        _block = getBlockManager().createBlock();
+  void prepareBuffer()
+  {
+    _block = getBlockManager().createBlock();
 
-        if(_tableInfo._identifier == "EMPLOYEES") {
-            _block->addValue(csvsqldb::Variant(4711));
-            _block->addValue(csvsqldb::Variant(csvsqldb::Date(1970, csvsqldb::Date::September, 23)));
-            _block->addValue(csvsqldb::Variant("Lars"));
-            _block->addValue(csvsqldb::Variant("Fürstenberg"));
-            _block->addValue(csvsqldb::Variant("M"));
-            _block->addValue(csvsqldb::Variant(csvsqldb::Date(2012, csvsqldb::Date::February, 1)));
-            _block->nextRow();
-            _block->addValue(csvsqldb::Variant(815));
-            _block->addValue(csvsqldb::Variant(csvsqldb::Date(1969, csvsqldb::Date::May, 17)));
-            _block->addValue(csvsqldb::Variant("Mark"));
-            _block->addValue(csvsqldb::Variant("Fürstenberg"));
-            _block->addValue(csvsqldb::Variant("M"));
-            _block->addValue(csvsqldb::Variant(csvsqldb::Date(2003, csvsqldb::Date::April, 15)));
-            _block->nextRow();
-            _block->addValue(csvsqldb::Variant(9227));
-            _block->addValue(csvsqldb::Variant(csvsqldb::Date(1963, csvsqldb::Date::March, 6)));
-            _block->addValue(csvsqldb::Variant("Angelica"));
-            _block->addValue(csvsqldb::Variant("Tello de Fürstenberg"));
-            _block->addValue(csvsqldb::Variant("F"));
-            _block->addValue(csvsqldb::Variant(csvsqldb::Date(2003, csvsqldb::Date::June, 15)));
-            _block->nextRow();
-        } else if(_tableInfo._identifier == "SALARIES") {
-            _block->addValue(csvsqldb::Variant(4711));
-            _block->addValue(csvsqldb::Variant(12000.0));
-            _block->addValue(csvsqldb::Variant(csvsqldb::Date(2012, csvsqldb::Date::February, 1)));
-            _block->addValue(csvsqldb::Variant(csvsqldb::Date(2015, csvsqldb::Date::February, 1)));
-            _block->nextRow();
-            _block->addValue(csvsqldb::Variant(9227));
-            _block->addValue(csvsqldb::Variant(450.0));
-            _block->addValue(csvsqldb::Variant(csvsqldb::Date(2003, csvsqldb::Date::June, 15)));
-            _block->addValue(csvsqldb::Variant(csvsqldb::Date(2015, csvsqldb::Date::February, 1)));
-            _block->nextRow();
-            _block->addValue(csvsqldb::Variant(815));
-            _block->addValue(csvsqldb::Variant(6000.0));
-            _block->addValue(csvsqldb::Variant(csvsqldb::Date(2003, csvsqldb::Date::April, 15)));
-            _block->addValue(csvsqldb::Variant(csvsqldb::Date(2015, csvsqldb::Date::February, 1)));
-            _block->nextRow();
-        }
-        _block->endBlocks();
-
-        _iterator = std::make_shared<csvsqldb::BlockIterator>(_types, *this, getBlockManager());
+    if (_tableInfo._identifier == "EMPLOYEES") {
+      _block->addValue(csvsqldb::Variant(4711));
+      _block->addValue(csvsqldb::Variant(csvsqldb::Date(1970, csvsqldb::Date::September, 23)));
+      _block->addValue(csvsqldb::Variant("Lars"));
+      _block->addValue(csvsqldb::Variant("Fürstenberg"));
+      _block->addValue(csvsqldb::Variant("M"));
+      _block->addValue(csvsqldb::Variant(csvsqldb::Date(2012, csvsqldb::Date::February, 1)));
+      _block->nextRow();
+      _block->addValue(csvsqldb::Variant(815));
+      _block->addValue(csvsqldb::Variant(csvsqldb::Date(1969, csvsqldb::Date::May, 17)));
+      _block->addValue(csvsqldb::Variant("Mark"));
+      _block->addValue(csvsqldb::Variant("Fürstenberg"));
+      _block->addValue(csvsqldb::Variant("M"));
+      _block->addValue(csvsqldb::Variant(csvsqldb::Date(2003, csvsqldb::Date::April, 15)));
+      _block->nextRow();
+      _block->addValue(csvsqldb::Variant(9227));
+      _block->addValue(csvsqldb::Variant(csvsqldb::Date(1963, csvsqldb::Date::March, 6)));
+      _block->addValue(csvsqldb::Variant("Angelica"));
+      _block->addValue(csvsqldb::Variant("Tello de Fürstenberg"));
+      _block->addValue(csvsqldb::Variant("F"));
+      _block->addValue(csvsqldb::Variant(csvsqldb::Date(2003, csvsqldb::Date::June, 15)));
+      _block->nextRow();
+    } else if (_tableInfo._identifier == "SALARIES") {
+      _block->addValue(csvsqldb::Variant(4711));
+      _block->addValue(csvsqldb::Variant(12000.0));
+      _block->addValue(csvsqldb::Variant(csvsqldb::Date(2012, csvsqldb::Date::February, 1)));
+      _block->addValue(csvsqldb::Variant(csvsqldb::Date(2015, csvsqldb::Date::February, 1)));
+      _block->nextRow();
+      _block->addValue(csvsqldb::Variant(9227));
+      _block->addValue(csvsqldb::Variant(450.0));
+      _block->addValue(csvsqldb::Variant(csvsqldb::Date(2003, csvsqldb::Date::June, 15)));
+      _block->addValue(csvsqldb::Variant(csvsqldb::Date(2015, csvsqldb::Date::February, 1)));
+      _block->nextRow();
+      _block->addValue(csvsqldb::Variant(815));
+      _block->addValue(csvsqldb::Variant(6000.0));
+      _block->addValue(csvsqldb::Variant(csvsqldb::Date(2003, csvsqldb::Date::April, 15)));
+      _block->addValue(csvsqldb::Variant(csvsqldb::Date(2015, csvsqldb::Date::February, 1)));
+      _block->nextRow();
     }
+    _block->endBlocks();
 
-    csvsqldb::BlockPtr _block;
-    csvsqldb::BlockIteratorPtr _iterator;
+    _iterator = std::make_shared<csvsqldb::BlockIterator>(_types, *this, getBlockManager());
+  }
+
+  csvsqldb::BlockPtr _block;
+  csvsqldb::BlockIteratorPtr _iterator;
 };
 
 
 class RowProcessingTestCase
 {
 public:
-    RowProcessingTestCase()
-    {
-    }
+  RowProcessingTestCase()
+  {
+  }
 
-    void setUp()
-    {
-    }
+  void setUp()
+  {
+  }
 
-    void tearDown()
-    {
-    }
+  void tearDown()
+  {
+  }
 
-    void processingTest()
-    {
-        csvsqldb::FunctionRegistry functions;
-        csvsqldb::SQLParser parser(functions);
+  void processingTest()
+  {
+    csvsqldb::FunctionRegistry functions;
+    csvsqldb::SQLParser parser(functions);
 
-        csvsqldb::ASTNodePtr node = parser.parse(
-        "CREATE TABLE employees(emp_no INTEGER,birth_date DATE NOT NULL,first_name VARCHAR(25) NOT NULL,last_name VARCHAR(50) "
-        "NOT NULL,gender CHAR,hire_date DATE,PRIMARY KEY(emp_no))");
-        MPF_TEST_ASSERT(node);
-        MPF_TEST_ASSERT(std::dynamic_pointer_cast<csvsqldb::ASTCreateTableNode>(node));
-        csvsqldb::ASTCreateTableNodePtr createNode = std::dynamic_pointer_cast<csvsqldb::ASTCreateTableNode>(node);
+    csvsqldb::ASTNodePtr node = parser.parse(
+      "CREATE TABLE employees(emp_no INTEGER,birth_date DATE NOT NULL,first_name VARCHAR(25) NOT NULL,last_name VARCHAR(50) "
+      "NOT NULL,gender CHAR,hire_date DATE,PRIMARY KEY(emp_no))");
+    MPF_TEST_ASSERT(node);
+    MPF_TEST_ASSERT(std::dynamic_pointer_cast<csvsqldb::ASTCreateTableNode>(node));
+    csvsqldb::ASTCreateTableNodePtr createNode = std::dynamic_pointer_cast<csvsqldb::ASTCreateTableNode>(node);
 
-        csvsqldb::TableData tabledata = csvsqldb::TableData::fromCreateAST(createNode);
-        csvsqldb::FileMapping mapping;
+    csvsqldb::TableData tabledata = csvsqldb::TableData::fromCreateAST(createNode);
+    csvsqldb::FileMapping mapping;
 
-        csvsqldb::Database database("/tmp", mapping);
-        database.addTable(tabledata);
+    csvsqldb::Database database("/tmp", mapping);
+    database.addTable(tabledata);
 
-        node = parser.parse(
-        "SELECT emp.emp_no as id,(first_name || ' ' || last_name) as name,birth_date birthday, 7 * 5 / 4 as calc FROM employees "
-        "emp WHERE \"emp_no\" BETWEEN 100 AND 9999 AND emp.birth_date > DATE'1960-01-01'");
+    node = parser.parse(
+      "SELECT emp.emp_no as id,(first_name || ' ' || last_name) as name,birth_date birthday, 7 * 5 / 4 as calc FROM employees "
+      "emp WHERE \"emp_no\" BETWEEN 100 AND 9999 AND emp.birth_date > DATE'1960-01-01'");
 
-        //        ASTNodeDumpVisitor visitor;
-        //        std::cout << std::endl;
-        //        node->accept(visitor);
+    //        ASTNodeDumpVisitor visitor;
+    //        std::cout << std::endl;
+    //        node->accept(visitor);
 
-        csvsqldb::SymbolTablePtr symbolTable = node->symbolTable();
-        //        symbolTable->dump();
-        //        std::cout << std::endl;
+    csvsqldb::SymbolTablePtr symbolTable = node->symbolTable();
+    //        symbolTable->dump();
+    //        std::cout << std::endl;
 
-        symbolTable->typeSymbolTable(database);
+    symbolTable->typeSymbolTable(database);
 
-        //        symbolTable->dump();
-        //        std::cout << std::endl;
+    //        symbolTable->dump();
+    //        std::cout << std::endl;
 
-        csvsqldb::ASTQueryNodePtr query = std::dynamic_pointer_cast<csvsqldb::ASTQueryNode>(node);
-        csvsqldb::ASTExprNodePtr exp =
-        std::dynamic_pointer_cast<csvsqldb::ASTQuerySpecificationNode>(query->_query)->_tableExpression->_where->_exp;
-        csvsqldb::Expressions& selectList = std::dynamic_pointer_cast<csvsqldb::ASTQuerySpecificationNode>(query->_query)->_nodes;
-        csvsqldb::SymbolInfoPtr tableInfo =
-        std::dynamic_pointer_cast<csvsqldb::ASTTableIdentifierNode>(
-        std::dynamic_pointer_cast<csvsqldb::ASTQuerySpecificationNode>(query->_query)->_tableExpression->_from->_tableReferences[0])
-        ->_factor->_info;
+    csvsqldb::ASTQueryNodePtr query = std::dynamic_pointer_cast<csvsqldb::ASTQueryNode>(node);
+    csvsqldb::ASTExprNodePtr exp =
+      std::dynamic_pointer_cast<csvsqldb::ASTQuerySpecificationNode>(query->_query)->_tableExpression->_where->_exp;
+    csvsqldb::Expressions& selectList = std::dynamic_pointer_cast<csvsqldb::ASTQuerySpecificationNode>(query->_query)->_nodes;
+    csvsqldb::SymbolInfoPtr tableInfo = std::dynamic_pointer_cast<csvsqldb::ASTTableIdentifierNode>(
+                                          std::dynamic_pointer_cast<csvsqldb::ASTQuerySpecificationNode>(query->_query)
+                                            ->_tableExpression->_from->_tableReferences[0])
+                                          ->_factor->_info;
 
-        csvsqldb::BlockManager blockManager;
-        csvsqldb::StringVector files;
-        csvsqldb::OperatorContext context(database, functions, blockManager, files);
+    csvsqldb::BlockManager blockManager;
+    csvsqldb::StringVector files;
+    csvsqldb::OperatorContext context(database, functions, blockManager, files);
 
-        std::stringstream ss;
-        csvsqldb::RootOperatorNodePtr output = std::make_shared<csvsqldb::OutputRowOperatorNode>(context, symbolTable, ss);
-        csvsqldb::RowOperatorNodePtr projection = std::make_shared<csvsqldb::ExtendedProjectionOperatorNode>(context, symbolTable, selectList);
-        csvsqldb::RowOperatorNodePtr select = std::make_shared<csvsqldb::SelectOperatorNode>(context, symbolTable, exp);
-        csvsqldb::RowOperatorNodePtr scan = std::make_shared<DummyScanOperatorNode>(context, symbolTable, *tableInfo);
+    std::stringstream ss;
+    csvsqldb::RootOperatorNodePtr output = std::make_shared<csvsqldb::OutputRowOperatorNode>(context, symbolTable, ss);
+    csvsqldb::RowOperatorNodePtr projection =
+      std::make_shared<csvsqldb::ExtendedProjectionOperatorNode>(context, symbolTable, selectList);
+    csvsqldb::RowOperatorNodePtr select = std::make_shared<csvsqldb::SelectOperatorNode>(context, symbolTable, exp);
+    csvsqldb::RowOperatorNodePtr scan = std::make_shared<DummyScanOperatorNode>(context, symbolTable, *tableInfo);
 
-        select->connect(scan);
-        projection->connect(select);
-        output->connect(projection);
+    select->connect(scan);
+    projection->connect(select);
+    output->connect(projection);
 
-        MPF_TEST_ASSERTEQUAL(3, output->process());
-        MPF_TEST_ASSERTEQUAL(
-        "#ID,NAME,BIRTHDAY,CALC\n4711,'Lars Fürstenberg',1970-09-23,8\n815,'Mark Fürstenberg',1969-05-17,8\n9227,'Angelica Tello "
-        "de Fürstenberg',1963-03-06,8\n",
-        ss.str());
-    }
+    MPF_TEST_ASSERTEQUAL(3, output->process());
+    MPF_TEST_ASSERTEQUAL(
+      "#ID,NAME,BIRTHDAY,CALC\n4711,'Lars Fürstenberg',1970-09-23,8\n815,'Mark Fürstenberg',1969-05-17,8\n9227,'Angelica Tello "
+      "de Fürstenberg',1963-03-06,8\n",
+      ss.str());
+  }
 
-    void processingAsteriskTest()
-    {
-        csvsqldb::FunctionRegistry functions;
-        csvsqldb::SQLParser parser(functions);
+  void processingAsteriskTest()
+  {
+    csvsqldb::FunctionRegistry functions;
+    csvsqldb::SQLParser parser(functions);
 
-        csvsqldb::ASTNodePtr node = parser.parse(
-        "CREATE TABLE employees(emp_no INTEGER,birth_date DATE NOT NULL,first_name VARCHAR(25) NOT NULL,last_name VARCHAR(50) "
-        "NOT NULL,gender CHAR,hire_date DATE,PRIMARY KEY(emp_no))");
-        MPF_TEST_ASSERT(node);
-        MPF_TEST_ASSERT(std::dynamic_pointer_cast<csvsqldb::ASTCreateTableNode>(node));
-        csvsqldb::ASTCreateTableNodePtr createNode = std::dynamic_pointer_cast<csvsqldb::ASTCreateTableNode>(node);
+    csvsqldb::ASTNodePtr node = parser.parse(
+      "CREATE TABLE employees(emp_no INTEGER,birth_date DATE NOT NULL,first_name VARCHAR(25) NOT NULL,last_name VARCHAR(50) "
+      "NOT NULL,gender CHAR,hire_date DATE,PRIMARY KEY(emp_no))");
+    MPF_TEST_ASSERT(node);
+    MPF_TEST_ASSERT(std::dynamic_pointer_cast<csvsqldb::ASTCreateTableNode>(node));
+    csvsqldb::ASTCreateTableNodePtr createNode = std::dynamic_pointer_cast<csvsqldb::ASTCreateTableNode>(node);
 
-        csvsqldb::TableData tabledata = csvsqldb::TableData::fromCreateAST(createNode);
-        csvsqldb::FileMapping mapping;
+    csvsqldb::TableData tabledata = csvsqldb::TableData::fromCreateAST(createNode);
+    csvsqldb::FileMapping mapping;
 
-        csvsqldb::Database database("/tmp", mapping);
-        database.addTable(tabledata);
+    csvsqldb::Database database("/tmp", mapping);
+    database.addTable(tabledata);
 
-        node =
-        parser.parse("SELECT * FROM employees emp WHERE emp_no BETWEEN 100 AND 9999 AND emp.birth_date > DATE'1960-01-01'");
+    node = parser.parse("SELECT * FROM employees emp WHERE emp_no BETWEEN 100 AND 9999 AND emp.birth_date > DATE'1960-01-01'");
 
-        csvsqldb::SymbolTablePtr symbolTable = node->symbolTable();
-        //        symbolTable->dump();
-        //        std::cout << std::endl;
+    csvsqldb::SymbolTablePtr symbolTable = node->symbolTable();
+    //        symbolTable->dump();
+    //        std::cout << std::endl;
 
-        symbolTable->typeSymbolTable(database);
+    symbolTable->typeSymbolTable(database);
 
-        //        symbolTable->dump();
-        //        std::cout << std::endl;
+    //        symbolTable->dump();
+    //        std::cout << std::endl;
 
-        csvsqldb::ASTQueryNodePtr query = std::dynamic_pointer_cast<csvsqldb::ASTQueryNode>(node);
-        csvsqldb::ASTExprNodePtr exp =
-        std::dynamic_pointer_cast<csvsqldb::ASTQuerySpecificationNode>(query->_query)->_tableExpression->_where->_exp;
-        csvsqldb::Expressions& selectList = std::dynamic_pointer_cast<csvsqldb::ASTQuerySpecificationNode>(query->_query)->_nodes;
-        csvsqldb::SymbolInfoPtr tableInfo =
-        std::dynamic_pointer_cast<csvsqldb::ASTTableIdentifierNode>(
-        std::dynamic_pointer_cast<csvsqldb::ASTQuerySpecificationNode>(query->_query)->_tableExpression->_from->_tableReferences[0])
-        ->_factor->_info;
+    csvsqldb::ASTQueryNodePtr query = std::dynamic_pointer_cast<csvsqldb::ASTQueryNode>(node);
+    csvsqldb::ASTExprNodePtr exp =
+      std::dynamic_pointer_cast<csvsqldb::ASTQuerySpecificationNode>(query->_query)->_tableExpression->_where->_exp;
+    csvsqldb::Expressions& selectList = std::dynamic_pointer_cast<csvsqldb::ASTQuerySpecificationNode>(query->_query)->_nodes;
+    csvsqldb::SymbolInfoPtr tableInfo = std::dynamic_pointer_cast<csvsqldb::ASTTableIdentifierNode>(
+                                          std::dynamic_pointer_cast<csvsqldb::ASTQuerySpecificationNode>(query->_query)
+                                            ->_tableExpression->_from->_tableReferences[0])
+                                          ->_factor->_info;
 
-        csvsqldb::BlockManager blockManager;
-        csvsqldb::StringVector files;
-        csvsqldb::OperatorContext context(database, functions, blockManager, files);
+    csvsqldb::BlockManager blockManager;
+    csvsqldb::StringVector files;
+    csvsqldb::OperatorContext context(database, functions, blockManager, files);
 
-        std::stringstream ss;
-        csvsqldb::RootOperatorNodePtr output = std::make_shared<csvsqldb::OutputRowOperatorNode>(context, symbolTable, ss);
-        csvsqldb::RowOperatorNodePtr projection = std::make_shared<csvsqldb::ExtendedProjectionOperatorNode>(context, symbolTable, selectList);
-        csvsqldb::RowOperatorNodePtr select = std::make_shared<csvsqldb::SelectOperatorNode>(context, symbolTable, exp);
-        csvsqldb::RowOperatorNodePtr scan = std::make_shared<DummyScanOperatorNode>(context, symbolTable, *tableInfo);
+    std::stringstream ss;
+    csvsqldb::RootOperatorNodePtr output = std::make_shared<csvsqldb::OutputRowOperatorNode>(context, symbolTable, ss);
+    csvsqldb::RowOperatorNodePtr projection =
+      std::make_shared<csvsqldb::ExtendedProjectionOperatorNode>(context, symbolTable, selectList);
+    csvsqldb::RowOperatorNodePtr select = std::make_shared<csvsqldb::SelectOperatorNode>(context, symbolTable, exp);
+    csvsqldb::RowOperatorNodePtr scan = std::make_shared<DummyScanOperatorNode>(context, symbolTable, *tableInfo);
 
-        select->connect(scan);
-        projection->connect(select);
-        output->connect(projection);
+    select->connect(scan);
+    projection->connect(select);
+    output->connect(projection);
 
-        MPF_TEST_ASSERTEQUAL(3, output->process());
+    MPF_TEST_ASSERTEQUAL(3, output->process());
 
-        std::string expected = R"(#EMP_NO,EMP.BIRTH_DATE,EMP.FIRST_NAME,EMP.LAST_NAME,EMP.GENDER,EMP.HIRE_DATE
+    std::string expected = R"(#EMP_NO,EMP.BIRTH_DATE,EMP.FIRST_NAME,EMP.LAST_NAME,EMP.GENDER,EMP.HIRE_DATE
 4711,1970-09-23,'Lars','Fürstenberg','M',2012-02-01
 815,1969-05-17,'Mark','Fürstenberg','M',2003-04-15
 9227,1963-03-06,'Angelica','Tello de Fürstenberg','F',2003-06-15
 )";
-        MPF_TEST_ASSERTEQUAL(expected, ss.str());
-    }
+    MPF_TEST_ASSERTEQUAL(expected, ss.str());
+  }
 
-    void processingAggregationTest()
-    {
-        csvsqldb::FunctionRegistry functions;
-        csvsqldb::SQLParser parser(functions);
+  void processingAggregationTest()
+  {
+    csvsqldb::FunctionRegistry functions;
+    csvsqldb::SQLParser parser(functions);
 
-        csvsqldb::ASTNodePtr node = parser.parse(
-        "CREATE TABLE employees(emp_no INTEGER,birth_date DATE NOT NULL,first_name VARCHAR(25) NOT NULL,last_name VARCHAR(50) "
-        "NOT NULL,gender CHAR,hire_date DATE,PRIMARY KEY(emp_no))");
-        MPF_TEST_ASSERT(node);
-        MPF_TEST_ASSERT(std::dynamic_pointer_cast<csvsqldb::ASTCreateTableNode>(node));
-        csvsqldb::ASTCreateTableNodePtr createNode = std::dynamic_pointer_cast<csvsqldb::ASTCreateTableNode>(node);
+    csvsqldb::ASTNodePtr node = parser.parse(
+      "CREATE TABLE employees(emp_no INTEGER,birth_date DATE NOT NULL,first_name VARCHAR(25) NOT NULL,last_name VARCHAR(50) "
+      "NOT NULL,gender CHAR,hire_date DATE,PRIMARY KEY(emp_no))");
+    MPF_TEST_ASSERT(node);
+    MPF_TEST_ASSERT(std::dynamic_pointer_cast<csvsqldb::ASTCreateTableNode>(node));
+    csvsqldb::ASTCreateTableNodePtr createNode = std::dynamic_pointer_cast<csvsqldb::ASTCreateTableNode>(node);
 
-        csvsqldb::TableData tabledata = csvsqldb::TableData::fromCreateAST(createNode);
-        csvsqldb::FileMapping mapping;
+    csvsqldb::TableData tabledata = csvsqldb::TableData::fromCreateAST(createNode);
+    csvsqldb::FileMapping mapping;
 
-        csvsqldb::Database database("/tmp", mapping);
-        database.addTable(tabledata);
+    csvsqldb::Database database("/tmp", mapping);
+    database.addTable(tabledata);
 
-        node = parser.parse("SELECT count(*) FROM employees");
+    node = parser.parse("SELECT count(*) FROM employees");
 
-        //        csvsqldb::ASTNodeDumpVisitor visitor;
-        //        std::cout << std::endl;
-        //        node->accept(visitor);
+    //        csvsqldb::ASTNodeDumpVisitor visitor;
+    //        std::cout << std::endl;
+    //        node->accept(visitor);
 
-        csvsqldb::SymbolTablePtr symbolTable = node->symbolTable();
-        symbolTable->typeSymbolTable(database);
+    csvsqldb::SymbolTablePtr symbolTable = node->symbolTable();
+    symbolTable->typeSymbolTable(database);
 
-        //        symbolTable->dump();
-        //        std::cout << std::endl;
+    //        symbolTable->dump();
+    //        std::cout << std::endl;
 
-        csvsqldb::ASTQueryNodePtr query = std::dynamic_pointer_cast<csvsqldb::ASTQueryNode>(node);
-        csvsqldb::Expressions& selectList = std::dynamic_pointer_cast<csvsqldb::ASTQuerySpecificationNode>(query->_query)->_nodes;
-        csvsqldb::SymbolInfoPtr tableInfo =
-        std::dynamic_pointer_cast<csvsqldb::ASTTableIdentifierNode>(
-        std::dynamic_pointer_cast<csvsqldb::ASTQuerySpecificationNode>(query->_query)->_tableExpression->_from->_tableReferences[0])
-        ->_factor->_info;
+    csvsqldb::ASTQueryNodePtr query = std::dynamic_pointer_cast<csvsqldb::ASTQueryNode>(node);
+    csvsqldb::Expressions& selectList = std::dynamic_pointer_cast<csvsqldb::ASTQuerySpecificationNode>(query->_query)->_nodes;
+    csvsqldb::SymbolInfoPtr tableInfo = std::dynamic_pointer_cast<csvsqldb::ASTTableIdentifierNode>(
+                                          std::dynamic_pointer_cast<csvsqldb::ASTQuerySpecificationNode>(query->_query)
+                                            ->_tableExpression->_from->_tableReferences[0])
+                                          ->_factor->_info;
 
-        csvsqldb::BlockManager manager;
-        csvsqldb::StringVector files;
-        csvsqldb::OperatorContext context(database, functions, manager, files);
+    csvsqldb::BlockManager manager;
+    csvsqldb::StringVector files;
+    csvsqldb::OperatorContext context(database, functions, manager, files);
 
-        std::stringstream ss;
-        csvsqldb::RootOperatorNodePtr output = std::make_shared<csvsqldb::OutputRowOperatorNode>(context, symbolTable, ss);
-        csvsqldb::RowOperatorNodePtr projection = std::make_shared<csvsqldb::AggregationOperatorNode>(context, symbolTable, selectList);
-        csvsqldb::RowOperatorNodePtr scan = std::make_shared<DummyScanOperatorNode>(context, symbolTable, *tableInfo);
+    std::stringstream ss;
+    csvsqldb::RootOperatorNodePtr output = std::make_shared<csvsqldb::OutputRowOperatorNode>(context, symbolTable, ss);
+    csvsqldb::RowOperatorNodePtr projection =
+      std::make_shared<csvsqldb::AggregationOperatorNode>(context, symbolTable, selectList);
+    csvsqldb::RowOperatorNodePtr scan = std::make_shared<DummyScanOperatorNode>(context, symbolTable, *tableInfo);
 
-        projection->connect(scan);
-        output->connect(projection);
+    projection->connect(scan);
+    output->connect(projection);
 
-        MPF_TEST_ASSERTEQUAL(1, output->process());
-        MPF_TEST_ASSERTEQUAL("#$alias_1\n3\n", ss.str());
-    }
+    MPF_TEST_ASSERTEQUAL(1, output->process());
+    MPF_TEST_ASSERTEQUAL("#$alias_1\n3\n", ss.str());
+  }
 };
 
 MPF_REGISTER_TEST_START("RowProcessingTestSuite", RowProcessingTestCase);

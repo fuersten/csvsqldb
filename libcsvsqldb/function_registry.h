@@ -45,73 +45,72 @@
 
 namespace csvsqldb
 {
+  class CSVSQLDB_EXPORT Function
+  {
+  public:
+    typedef std::shared_ptr<Function> Ptr;
 
-    class CSVSQLDB_EXPORT Function
+    Function(std::string name, eType retType, const Types parameterTypes)
+    : _name(name)
+    , _retType(retType)
+    , _parameterTypes(parameterTypes)
     {
-    public:
-        typedef std::shared_ptr<Function> Ptr;
+    }
 
-        Function(std::string name, eType retType, const Types parameterTypes)
-        : _name(name)
-        , _retType(retType)
-        , _parameterTypes(parameterTypes)
-        {
-        }
+    virtual ~Function() = default;
 
-        virtual ~Function() = default;
-
-        const Variant call(const Variants& parameter) const
-        {
-            return doCall(parameter);
-        }
-
-        const std::string& getName() const
-        {
-            return _name;
-        }
-        eType getReturnType() const
-        {
-            return _retType;
-        }
-        const Types& getParameterTypes() const
-        {
-            return _parameterTypes;
-        }
-
-    private:
-        virtual const Variant doCall(const Variants& parameter) const = 0;
-
-        std::string _name;
-        eType _retType;
-        const Types _parameterTypes;
-    };
-
-
-    class CSVSQLDB_EXPORT FunctionRegistry
+    const Variant call(const Variants& parameter) const
     {
-    public:
-        typedef std::vector<Function::Ptr> FunctionVector;
+      return doCall(parameter);
+    }
 
-        FunctionRegistry()
-        {
-        }
+    const std::string& getName() const
+    {
+      return _name;
+    }
+    eType getReturnType() const
+    {
+      return _retType;
+    }
+    const Types& getParameterTypes() const
+    {
+      return _parameterTypes;
+    }
 
-        void registerFunction(const Function::Ptr& function);
+  private:
+    virtual const Variant doCall(const Variants& parameter) const = 0;
 
-        Function::Ptr getFunction(const std::string& funcname) const;
+    std::string _name;
+    eType _retType;
+    const Types _parameterTypes;
+  };
 
-        void getFunctions(FunctionVector& functions) const
-        {
-            for(const auto& entry : _functions) {
-                functions.push_back(entry.second);
-            }
-        }
 
-    private:
-        typedef std::map<std::string, Function::Ptr> Functions;
+  class CSVSQLDB_EXPORT FunctionRegistry
+  {
+  public:
+    typedef std::vector<Function::Ptr> FunctionVector;
 
-        Functions _functions;
-    };
+    FunctionRegistry()
+    {
+    }
+
+    void registerFunction(const Function::Ptr& function);
+
+    Function::Ptr getFunction(const std::string& funcname) const;
+
+    void getFunctions(FunctionVector& functions) const
+    {
+      for (const auto& entry : _functions) {
+        functions.push_back(entry.second);
+      }
+    }
+
+  private:
+    typedef std::map<std::string, Function::Ptr> Functions;
+
+    Functions _functions;
+  };
 }
 
 #endif

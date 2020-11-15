@@ -36,55 +36,54 @@
 
 namespace csvsqldb
 {
-
-    Value* createValue(eType type, const csvsqldb::Any& value)
-    {
-        switch(type) {
-            case NONE:
-                throw std::runtime_error("none not allowed as type here");
-            case STRING:
-                if(value.empty()) {
-                    return new ValString;
-                } else {
-                    return ValueCreator<std::string>::createValue(csvsqldb::any_cast<std::string>(value));
-                }
-            case BOOLEAN:
-                if(value.empty()) {
-                    return new ValBool;
-                } else {
-                    return new ValBool(csvsqldb::any_cast<bool>(value));
-                }
-            case DATE:
-                if(value.empty()) {
-                    return new ValDate;
-                } else {
-                    return new ValDate(csvsqldb::any_cast<csvsqldb::Date>(value));
-                }
-            case TIME:
-                if(value.empty()) {
-                    return new ValTime;
-                } else {
-                    return new ValTime(csvsqldb::any_cast<csvsqldb::Time>(value));
-                }
-            case TIMESTAMP:
-                if(value.empty()) {
-                    return new ValTimestamp;
-                } else {
-                    return new ValTimestamp(csvsqldb::any_cast<csvsqldb::Timestamp>(value));
-                }
-            case INT:
-                if(value.empty()) {
-                    return new ValInt;
-                } else {
-                    return new ValInt(csvsqldb::any_cast<int64_t>(value));
-                }
-            case REAL:
-                if(value.empty()) {
-                    return new ValDouble;
-                } else {
-                    return new ValDouble(csvsqldb::any_cast<double>(value));
-                }
+  Value* createValue(eType type, const csvsqldb::Any& value)
+  {
+    switch (type) {
+      case NONE:
+        throw std::runtime_error("none not allowed as type here");
+      case STRING:
+        if (value.empty()) {
+          return new ValString;
+        } else {
+          return ValueCreator<std::string>::createValue(csvsqldb::any_cast<std::string>(value));
         }
-        throw std::runtime_error("just to make VC2013 happy");
+      case BOOLEAN:
+        if (value.empty()) {
+          return new ValBool;
+        } else {
+          return new ValBool(csvsqldb::any_cast<bool>(value));
+        }
+      case DATE:
+        if (value.empty()) {
+          return new ValDate;
+        } else {
+          return new ValDate(csvsqldb::any_cast<csvsqldb::Date>(value));
+        }
+      case TIME:
+        if (value.empty()) {
+          return new ValTime;
+        } else {
+          return new ValTime(csvsqldb::any_cast<csvsqldb::Time>(value));
+        }
+      case TIMESTAMP:
+        if (value.empty()) {
+          return new ValTimestamp;
+        } else {
+          return new ValTimestamp(csvsqldb::any_cast<csvsqldb::Timestamp>(value));
+        }
+      case INT:
+        if (value.empty()) {
+          return new ValInt;
+        } else {
+          return new ValInt(csvsqldb::any_cast<int64_t>(value));
+        }
+      case REAL:
+        if (value.empty()) {
+          return new ValDouble;
+        } else {
+          return new ValDouble(csvsqldb::any_cast<double>(value));
+        }
     }
+    throw std::runtime_error("just to make VC2013 happy");
+  }
 }

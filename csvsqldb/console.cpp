@@ -23,78 +23,76 @@
 #include "libcsvsqldb/base/exception.h"
 #include "libcsvsqldb/base/string_helper.h"
 
-#include <iostream>
-
-#include <signal.h>
-
 #include "linenoise-ng/linenoise.h"
+
+#include <iostream>
+#include <signal.h>
 
 
 namespace csvsqldb
 {
+  Console::Console(const std::string& prompt, const fs::path& historyPath)
+  : _historyPath(historyPath)
+  , _prompt(prompt)
+  , _stop(false)
+  {
+    linenoiseHistoryLoad(_historyPath.c_str());
+  }
 
-    Console::Console(const std::string& prompt, const fs::path& historyPath)
-    : _historyPath(historyPath)
-    , _prompt(prompt)
-    , _stop(false)
-    {
-        linenoiseHistoryLoad(_historyPath.c_str());
-    }
+  Console::~Console()
+  {
+    linenoiseHistorySave(_historyPath.c_str());
+  }
 
-    Console::~Console()
-    {
-        linenoiseHistorySave(_historyPath.c_str());
-    }
+  void Console::run()
+  {
+    std::string line;
+    while (!_stop) {
+      char* result = linenoise(_prompt.c_str());
+      if (!result) {
+        // no more to do
+        break;
+      }
+      line = std::string(result);
+      free(result);
 
-    void Console::run()
-    {
-        std::string line;
-        while(!_stop) {
-            char* result = linenoise(_prompt.c_str());
-            if(!result) {
-                // no more to do
-                break;
-            }
-            line = std::string(result);
-            free(result);
-            
-            csvsqldb::StringVector params;
-            csvsqldb::split(line, ' ', params, false);
+      csvsqldb::StringVector params;
+      csvsqldb::split(line, ' ', params, false);
 
-            if(params.size()) {
-                Commands::iterator it = _commands.find(csvsqldb::tolower_copy(*(params.begin())));
-                if(it != _commands.end()) {
-                    // remove first entry as it is the command name
-                    params.erase(params.begin());
-                    if(it->second(params)) {
-                        linenoiseHistoryAdd(line.c_str());
-                    }
-                } else if(_defaultCommand) {
-                    if(_defaultCommand(line)) {
-                        linenoiseHistoryAdd(line.c_str());
-                    }
-                }
-            }
+      if (params.size()) {
+        Commands::iterator it = _commands.find(csvsqldb::tolower_copy(*(params.begin())));
+        if (it != _commands.end()) {
+          // remove first entry as it is the command name
+          params.erase(params.begin());
+          if (it->second(params)) {
+            linenoiseHistoryAdd(line.c_str());
+          }
+        } else if (_defaultCommand) {
+          if (_defaultCommand(line)) {
+            linenoiseHistoryAdd(line.c_str());
+          }
         }
+      }
     }
+  }
 
-    void Console::stop()
-    {
-        _stop = true;
-    }
+  void Console::stop()
+  {
+    _stop = true;
+  }
 
-    void Console::addCommand(const std::string& command, CommandFunction function)
-    {
-        _commands.insert(std::make_pair(csvsqldb::tolower_copy(command), function));
-    }
+  void Console::addCommand(const std::string& command, CommandFunction function)
+  {
+    _commands.insert(std::make_pair(csvsqldb::tolower_copy(command), function));
+  }
 
-    void Console::addDefault(DefaultCommandFunction function)
-    {
-        _defaultCommand = function;
-    }
+  void Console::addDefault(DefaultCommandFunction function)
+  {
+    _defaultCommand = function;
+  }
 
-    void Console::clearHistory()
-    {
-        linenoiseHistoryFree();
-    }
+  void Console::clearHistory()
+  {
+    linenoiseHistoryFree();
+  }
 }

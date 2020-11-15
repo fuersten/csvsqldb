@@ -32,9 +32,9 @@
 //
 
 #include "lua_configuration.h"
+
 #include "exception.h"
 #include "lua_engine.h"
-
 #include <boost/filesystem.hpp>
 
 namespace fs = boost::filesystem;
@@ -42,93 +42,93 @@ namespace fs = boost::filesystem;
 
 namespace csvsqldb
 {
-    struct LuaConfiguration::Private {
-        Private(const std::string& configFile)
-        {
-            if(fs::exists(configFile)) {
-                try {
-                    _lua.doFile(configFile);
-                } catch(std::exception& ex) {
-                    CSVSQLDB_THROW(ConfigurationException, "Could not process config file '" << configFile << "' error: " << ex.what());
-                }
-            } else {
-                CSVSQLDB_THROW(FilesystemException, "Lua config script '" << configFile << "' does not exist");
-            }
-        }
-
-        luaengine::LuaEngine _lua;
-    };
-
-    LuaConfiguration::LuaConfiguration(const std::string& configFile)
-    : _p(new Private(configFile))
+  struct LuaConfiguration::Private {
+    Private(const std::string& configFile)
     {
-    }
-
-    LuaConfiguration::~LuaConfiguration()
-    {
-    }
-
-    size_t LuaConfiguration::doGetProperties(const std::string& path, StringVector& properties) const
-    {
-        return _p->_lua.getProperties(path, properties);
-    }
-
-    bool LuaConfiguration::doHasProperty(const std::string& path) const
-    {
-        return _p->_lua.hasGlobal(path);
-    }
-
-    bool LuaConfiguration::get(const std::string& path, Typer<bool> typer) const
-    {
+      if (fs::exists(configFile)) {
         try {
-            return _p->_lua.getGlobal<bool>(path);
-        } catch(std::exception& ex) {
-            throw ConfigurationException("path '" + path + "' not found (" + ex.what() + ")");
+          _lua.doFile(configFile);
+        } catch (std::exception& ex) {
+          CSVSQLDB_THROW(ConfigurationException, "Could not process config file '" << configFile << "' error: " << ex.what());
         }
+      } else {
+        CSVSQLDB_THROW(FilesystemException, "Lua config script '" << configFile << "' does not exist");
+      }
     }
 
-    int32_t LuaConfiguration::get(const std::string& path, Typer<int32_t> typer) const
-    {
-        try {
-            return _p->_lua.getGlobal<int32_t>(path);
-        } catch(std::exception& ex) {
-            throw ConfigurationException("path '" + path + "' not found (" + ex.what() + ")");
-        }
-    }
+    luaengine::LuaEngine _lua;
+  };
 
-    int64_t LuaConfiguration::get(const std::string& path, Typer<int64_t> typer) const
-    {
-        try {
-            return _p->_lua.getGlobal<int64_t>(path);
-        } catch(std::exception& ex) {
-            throw ConfigurationException("path '" + path + "' not found (" + ex.what() + ")");
-        }
-    }
+  LuaConfiguration::LuaConfiguration(const std::string& configFile)
+  : _p(new Private(configFile))
+  {
+  }
 
-    float LuaConfiguration::get(const std::string& path, Typer<float> typer) const
-    {
-        try {
-            return _p->_lua.getGlobal<float>(path);
-        } catch(std::exception& ex) {
-            throw ConfigurationException("path '" + path + "' not found (" + ex.what() + ")");
-        }
-    }
+  LuaConfiguration::~LuaConfiguration()
+  {
+  }
 
-    double LuaConfiguration::get(const std::string& path, Typer<double> typer) const
-    {
-        try {
-            return _p->_lua.getGlobal<double>(path);
-        } catch(std::exception& ex) {
-            throw ConfigurationException("path '" + path + "' not found (" + ex.what() + ")");
-        }
-    }
+  size_t LuaConfiguration::doGetProperties(const std::string& path, StringVector& properties) const
+  {
+    return _p->_lua.getProperties(path, properties);
+  }
 
-    std::string LuaConfiguration::get(const std::string& path, Typer<std::string> typer) const
-    {
-        try {
-            return _p->_lua.getGlobal<std::string>(path);
-        } catch(std::exception& ex) {
-            throw ConfigurationException("path '" + path + "' not found (" + ex.what() + ")");
-        }
+  bool LuaConfiguration::doHasProperty(const std::string& path) const
+  {
+    return _p->_lua.hasGlobal(path);
+  }
+
+  bool LuaConfiguration::get(const std::string& path, Typer<bool> typer) const
+  {
+    try {
+      return _p->_lua.getGlobal<bool>(path);
+    } catch (std::exception& ex) {
+      throw ConfigurationException("path '" + path + "' not found (" + ex.what() + ")");
     }
+  }
+
+  int32_t LuaConfiguration::get(const std::string& path, Typer<int32_t> typer) const
+  {
+    try {
+      return _p->_lua.getGlobal<int32_t>(path);
+    } catch (std::exception& ex) {
+      throw ConfigurationException("path '" + path + "' not found (" + ex.what() + ")");
+    }
+  }
+
+  int64_t LuaConfiguration::get(const std::string& path, Typer<int64_t> typer) const
+  {
+    try {
+      return _p->_lua.getGlobal<int64_t>(path);
+    } catch (std::exception& ex) {
+      throw ConfigurationException("path '" + path + "' not found (" + ex.what() + ")");
+    }
+  }
+
+  float LuaConfiguration::get(const std::string& path, Typer<float> typer) const
+  {
+    try {
+      return _p->_lua.getGlobal<float>(path);
+    } catch (std::exception& ex) {
+      throw ConfigurationException("path '" + path + "' not found (" + ex.what() + ")");
+    }
+  }
+
+  double LuaConfiguration::get(const std::string& path, Typer<double> typer) const
+  {
+    try {
+      return _p->_lua.getGlobal<double>(path);
+    } catch (std::exception& ex) {
+      throw ConfigurationException("path '" + path + "' not found (" + ex.what() + ")");
+    }
+  }
+
+  std::string LuaConfiguration::get(const std::string& path, Typer<std::string> typer) const
+  {
+    try {
+      return _p->_lua.getGlobal<std::string>(path);
+    } catch (std::exception& ex) {
+      throw ConfigurationException("path '" + path + "' not found (" + ex.what() + ")");
+    }
+  }
 }

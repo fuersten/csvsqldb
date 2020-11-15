@@ -1,8 +1,5 @@
-SET(CSVSQLDB_TEST_SOURCES
+set(CSVSQLDB_TEST_SOURCES
     main.cpp
-
-    test.cpp
-    test.h
 
     aggregation_test.cpp
     any_test.cpp
@@ -49,20 +46,16 @@ SET(CSVSQLDB_TEST_SOURCES
     regexp_test.cpp
 )
 
-IF(WIN32)
-    INCLUDE_DIRECTORIES(detail/windows)
-ELSE()
-    INCLUDE_DIRECTORIES(detail/posix)
-    SET(CSVSQLDB_TEST_SOURCES  ${CSVSQLDB_TEST_SOURCES} signalhandler_test.cpp glob_test.cpp)
-ENDIF()
+if(WIN32)
+    include_directories(detail/windows)
+else()
+    include_directories(detail/posix)
+    set(CSVSQLDB_TEST_SOURCES  ${CSVSQLDB_TEST_SOURCES} signalhandler_test.cpp glob_test.cpp)
+endif()
 
-CONFIGURE_FILE(test_util.h.in ${CMAKE_CURRENT_BINARY_DIR}/test_util.h)
-SET(CSVSQLDB_TEST_SOURCES ${CSVSQLDB_TEST_SOURCES} ${CMAKE_CURRENT_BINARY_DIR}/test_util.h)
+configure_file(test_util.h.in ${CMAKE_CURRENT_BINARY_DIR}/test_util.h)
+set(CSVSQLDB_TEST_SOURCES ${CSVSQLDB_TEST_SOURCES} ${CMAKE_CURRENT_BINARY_DIR}/test_util.h)
 
-ADD_EXECUTABLE(csvsqldbtest ${CSVSQLDB_TEST_SOURCES})
+add_executable(csvsqldbtest ${CSVSQLDB_TEST_SOURCES})
 
-IF(CMAKE_BUILD_TYPE MATCHES "Debug")
-	TARGET_LINK_LIBRARIES(csvsqldbtest ${CSVSQLDB_PROJECT_LIBS} ${CSVSQLDB_PLATFORM_LIBS} csvsqldb)
-ELSE()
-	TARGET_LINK_LIBRARIES(csvsqldbtest ${CSVSQLDB_PROJECT_LIBS} ${CSVSQLDB_PLATFORM_LIBS} csvsqldb)
-ENDIF()
+target_link_libraries(csvsqldbtest ${CSVSQLDB_PROJECT_LIBS} ${CSVSQLDB_PLATFORM_LIBS} csvsqldb)

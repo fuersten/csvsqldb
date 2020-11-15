@@ -41,23 +41,23 @@
 
 namespace csvsqldb
 {
-    /**
-     * Log device for console output. Outputs to std::cerr.
-     */
-    class CSVSQLDB_EXPORT ConsoleLogDevice : public LogDevice
-    {
-    public:
-        ConsoleLogDevice();
+  /**
+   * Log device for console output. Outputs to std::cerr.
+   */
+  class CSVSQLDB_EXPORT ConsoleLogDevice : public LogDevice
+  {
+  public:
+    ConsoleLogDevice();
 
-        virtual const std::string& name() const;
+    virtual const std::string& name() const;
 
-    private:
-        virtual void doLog(std::ostringstream& stream);
+  private:
+    virtual void doLog(std::ostringstream& stream);
 
-        virtual bool doOpen();
-        virtual void doClose();
-        virtual void doFlush();
-    };
+    virtual bool doOpen();
+    virtual void doClose();
+    virtual void doFlush();
+  };
 }
 
 #endif

@@ -36,11 +36,11 @@ PartialDate::PartialDate(UInt8 day, UInt8 month)
 : _day(day)
 , _month(month)
 {
-    MPF_THROW_IF((_month < 1 || _month > 12) || (_day < 1 && _day > 31), DateException, 
-             ("Invalid month/day specified: month %d, day %d") % month % day);
+  MPF_THROW_IF((_month < 1 || _month > 12) || (_day < 1 && _day > 31), DateException,
+               ("Invalid month/day specified: month %d, day %d") % month % day);
 }
 
 mpf::Date PartialDate::date(UInt16 year) const
 {
-    return Date(year, _month, _day);
+  return Date(year, _month, _day);
 }

@@ -36,29 +36,29 @@
 
 namespace csvsqldb
 {
-    GlobalConfiguration::Ptr GlobalConfiguration::_config;
+  GlobalConfiguration::Ptr GlobalConfiguration::_config;
 
-    void GlobalConfiguration::configure(const Configuration::Ptr& configuration)
-    {
-        _configuration = configuration;
+  void GlobalConfiguration::configure(const Configuration::Ptr& configuration)
+  {
+    _configuration = configuration;
 
-        logging.device = _configuration->get("logging.device", "None");
-        logging.separator = " " + _configuration->get("logging.separator", "|") + " ";
-        logging.escape_newline = _configuration->get("logging.escape_newline", false);
+    logging.device = _configuration->get("logging.device", "None");
+    logging.separator = " " + _configuration->get("logging.separator", "|") + " ";
+    logging.escape_newline = _configuration->get("logging.escape_newline", false);
 
-        debug.global_level = _configuration->get("debug.global_level", 0);
-        if(_configuration->hasProperty("debug.level")) {
-            StringVector properties;
-            _configuration->getProperties("debug.level", properties);
-            for(auto& property : properties) {
-                debug.level.insert(std::make_pair(property, _configuration->get<int32_t>("debug.level." + property)));
-            }
-        }
-
-        doConfigure(_configuration);
+    debug.global_level = _configuration->get("debug.global_level", 0);
+    if (_configuration->hasProperty("debug.level")) {
+      StringVector properties;
+      _configuration->getProperties("debug.level", properties);
+      for (auto& property : properties) {
+        debug.level.insert(std::make_pair(property, _configuration->get<int32_t>("debug.level." + property)));
+      }
     }
 
-    void GlobalConfiguration::doConfigure(const Configuration::Ptr&)
-    {
-    }
+    doConfigure(_configuration);
+  }
+
+  void GlobalConfiguration::doConfigure(const Configuration::Ptr&)
+  {
+  }
 }

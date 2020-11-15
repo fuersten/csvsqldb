@@ -31,116 +31,121 @@
 //
 
 
-#include "test.h"
-
 #include "data_test_framework.h"
+#include "test.h"
 
 
 class UnionTestCase
 {
 public:
-    UnionTestCase()
-    {
-    }
+  UnionTestCase()
+  {
+  }
 
-    void setUp()
-    {
-    }
+  void setUp()
+  {
+  }
 
-    void tearDown()
-    {
-    }
+  void tearDown()
+  {
+  }
 
-    void simpleUnionTest()
-    {
-        DatabaseTestWrapper dbWrapper;
-        dbWrapper.addTable(TableInitializer("employees",
-                                            { { "id", csvsqldb::INT },
-                                              { "first_name", csvsqldb::STRING },
-                                              { "last_name", csvsqldb::STRING },
-                                              { "birth_date", csvsqldb::DATE },
-                                              { "hire_date", csvsqldb::DATE } }));
+  void simpleUnionTest()
+  {
+    DatabaseTestWrapper dbWrapper;
+    dbWrapper.addTable(TableInitializer("employees", {{"id", csvsqldb::INT},
+                                                      {"first_name", csvsqldb::STRING},
+                                                      {"last_name", csvsqldb::STRING},
+                                                      {"birth_date", csvsqldb::DATE},
+                                                      {"hire_date", csvsqldb::DATE}}));
 
-        csvsqldb::ExecutionContext context(dbWrapper.getDatabase());
-        csvsqldb::ExecutionEngine<TestOperatorNodeFactory> engine(context);
+    csvsqldb::ExecutionContext context(dbWrapper.getDatabase());
+    csvsqldb::ExecutionEngine<TestOperatorNodeFactory> engine(context);
 
-        TestRowProvider::setRows(
-        "employees",
-        { { 815, "Mark", "Fürstenberg", csvsqldb::Date(1969, csvsqldb::Date::May, 17), csvsqldb::Date(2003, csvsqldb::Date::April, 15) },
-          { 4711, "Lars", "Fürstenberg", csvsqldb::Date(1970, csvsqldb::Date::September, 23), csvsqldb::Date(2010, csvsqldb::Date::February, 1) },
-          { 9227, "Angelica", "Tello de Fürstenberg", csvsqldb::Date(1963, csvsqldb::Date::March, 6), csvsqldb::Date(2003, csvsqldb::Date::June, 15) } });
+    TestRowProvider::setRows("employees",
+                             {{815, "Mark", "Fürstenberg", csvsqldb::Date(1969, csvsqldb::Date::May, 17),
+                               csvsqldb::Date(2003, csvsqldb::Date::April, 15)},
+                              {4711, "Lars", "Fürstenberg", csvsqldb::Date(1970, csvsqldb::Date::September, 23),
+                               csvsqldb::Date(2010, csvsqldb::Date::February, 1)},
+                              {9227, "Angelica", "Tello de Fürstenberg", csvsqldb::Date(1963, csvsqldb::Date::March, 6),
+                               csvsqldb::Date(2003, csvsqldb::Date::June, 15)}});
 
-        csvsqldb::ExecutionStatistics statistics;
-        std::stringstream ss;
-        int64_t rowCount =
-        engine.execute("SELECT * FROM employees WHERE id < 4700 UNION (SELECT * FROM employees WHERE id >= 4700)", statistics, ss);
-        MPF_TEST_ASSERTEQUAL(3, rowCount);
-        MPF_TEST_ASSERTEQUAL(
-        "#ID,EMPLOYEES.FIRST_NAME,EMPLOYEES.LAST_NAME,EMPLOYEES.BIRTH_DATE,EMPLOYEES.HIRE_DATE\n4711,'Lars','Fürstenberg',1970-"
-        "09-23,2010-02-01\n9227,'Angelica','Tello de "
-        "Fürstenberg',1963-03-06,2003-06-15\n815,'Mark','Fürstenberg',1969-05-17,2003-04-15\n",
-        ss.str());
-    }
+    csvsqldb::ExecutionStatistics statistics;
+    std::stringstream ss;
+    int64_t rowCount =
+      engine.execute("SELECT * FROM employees WHERE id < 4700 UNION (SELECT * FROM employees WHERE id >= 4700)", statistics, ss);
+    MPF_TEST_ASSERTEQUAL(3, rowCount);
+    MPF_TEST_ASSERTEQUAL(
+      "#ID,EMPLOYEES.FIRST_NAME,EMPLOYEES.LAST_NAME,EMPLOYEES.BIRTH_DATE,EMPLOYEES.HIRE_DATE\n4711,'Lars','Fürstenberg',1970-"
+      "09-23,2010-02-01\n9227,'Angelica','Tello de "
+      "Fürstenberg',1963-03-06,2003-06-15\n815,'Mark','Fürstenberg',1969-05-17,2003-04-15\n",
+      ss.str());
+  }
 
-    void failedUnionTest()
-    {
-        DatabaseTestWrapper dbWrapper;
-        dbWrapper.addTable(TableInitializer("employees",
-                                            { { "id", csvsqldb::INT },
-                                              { "first_name", csvsqldb::STRING },
-                                              { "last_name", csvsqldb::STRING },
-                                              { "birth_date", csvsqldb::DATE },
-                                              { "hire_date", csvsqldb::DATE } }));
-        dbWrapper.addTable(TableInitializer(
-        "salaries", { { "id", csvsqldb::INT }, { "salary", csvsqldb::REAL }, { "from_date", csvsqldb::DATE }, { "to_date", csvsqldb::DATE } }));
+  void failedUnionTest()
+  {
+    DatabaseTestWrapper dbWrapper;
+    dbWrapper.addTable(TableInitializer("employees", {{"id", csvsqldb::INT},
+                                                      {"first_name", csvsqldb::STRING},
+                                                      {"last_name", csvsqldb::STRING},
+                                                      {"birth_date", csvsqldb::DATE},
+                                                      {"hire_date", csvsqldb::DATE}}));
+    dbWrapper.addTable(TableInitializer(
+      "salaries",
+      {{"id", csvsqldb::INT}, {"salary", csvsqldb::REAL}, {"from_date", csvsqldb::DATE}, {"to_date", csvsqldb::DATE}}));
 
-        csvsqldb::ExecutionContext context(dbWrapper.getDatabase());
-        csvsqldb::ExecutionEngine<TestOperatorNodeFactory> engine(context);
+    csvsqldb::ExecutionContext context(dbWrapper.getDatabase());
+    csvsqldb::ExecutionEngine<TestOperatorNodeFactory> engine(context);
 
-        TestRowProvider::setRows(
-        "employees",
-        { { 815, "Mark", "Fürstenberg", csvsqldb::Date(1969, csvsqldb::Date::May, 17), csvsqldb::Date(2003, csvsqldb::Date::April, 15) },
-          { 4711, "Lars", "Fürstenberg", csvsqldb::Date(1970, csvsqldb::Date::September, 23), csvsqldb::Date(2010, csvsqldb::Date::February, 1) },
-          { 9227, "Angelica", "Tello de Fürstenberg", csvsqldb::Date(1963, csvsqldb::Date::March, 6), csvsqldb::Date(2003, csvsqldb::Date::June, 15) } });
+    TestRowProvider::setRows("employees",
+                             {{815, "Mark", "Fürstenberg", csvsqldb::Date(1969, csvsqldb::Date::May, 17),
+                               csvsqldb::Date(2003, csvsqldb::Date::April, 15)},
+                              {4711, "Lars", "Fürstenberg", csvsqldb::Date(1970, csvsqldb::Date::September, 23),
+                               csvsqldb::Date(2010, csvsqldb::Date::February, 1)},
+                              {9227, "Angelica", "Tello de Fürstenberg", csvsqldb::Date(1963, csvsqldb::Date::March, 6),
+                               csvsqldb::Date(2003, csvsqldb::Date::June, 15)}});
 
-        csvsqldb::ExecutionStatistics statistics;
-        std::stringstream ss;
-        MPF_TEST_EXPECTS(engine.execute("SELECT * FROM employees emp UNION (SELECT * FROM salaries)", statistics, ss), csvsqldb::SqlParserException);
-    }
+    csvsqldb::ExecutionStatistics statistics;
+    std::stringstream ss;
+    MPF_TEST_EXPECTS(engine.execute("SELECT * FROM employees emp UNION (SELECT * FROM salaries)", statistics, ss),
+                     csvsqldb::SqlParserException);
+  }
 
-    void complexUnionTest()
-    {
-        DatabaseTestWrapper dbWrapper;
-        dbWrapper.addTable(TableInitializer("employees",
-                                            { { "id", csvsqldb::INT },
-                                              { "first_name", csvsqldb::STRING },
-                                              { "last_name", csvsqldb::STRING },
-                                              { "birth_date", csvsqldb::DATE },
-                                              { "hire_date", csvsqldb::DATE } }));
-        dbWrapper.addTable(TableInitializer(
-        "salaries", { { "id", csvsqldb::INT }, { "salary", csvsqldb::REAL }, { "from_date", csvsqldb::DATE }, { "to_date", csvsqldb::DATE } }));
+  void complexUnionTest()
+  {
+    DatabaseTestWrapper dbWrapper;
+    dbWrapper.addTable(TableInitializer("employees", {{"id", csvsqldb::INT},
+                                                      {"first_name", csvsqldb::STRING},
+                                                      {"last_name", csvsqldb::STRING},
+                                                      {"birth_date", csvsqldb::DATE},
+                                                      {"hire_date", csvsqldb::DATE}}));
+    dbWrapper.addTable(TableInitializer(
+      "salaries",
+      {{"id", csvsqldb::INT}, {"salary", csvsqldb::REAL}, {"from_date", csvsqldb::DATE}, {"to_date", csvsqldb::DATE}}));
 
-        csvsqldb::ExecutionContext context(dbWrapper.getDatabase());
-        csvsqldb::ExecutionEngine<TestOperatorNodeFactory> engine(context);
+    csvsqldb::ExecutionContext context(dbWrapper.getDatabase());
+    csvsqldb::ExecutionEngine<TestOperatorNodeFactory> engine(context);
 
-        TestRowProvider::setRows(
-        "employees",
-        { { 815, "Mark", "Fürstenberg", csvsqldb::Date(1969, csvsqldb::Date::May, 17), csvsqldb::Date(2003, csvsqldb::Date::April, 15) },
-          { 4711, "Lars", "Fürstenberg", csvsqldb::Date(1970, csvsqldb::Date::September, 23), csvsqldb::Date(2010, csvsqldb::Date::February, 1) },
-          { 9227, "Angelica", "Tello de Fürstenberg", csvsqldb::Date(1963, csvsqldb::Date::March, 6), csvsqldb::Date(2003, csvsqldb::Date::June, 15) } });
+    TestRowProvider::setRows("employees",
+                             {{815, "Mark", "Fürstenberg", csvsqldb::Date(1969, csvsqldb::Date::May, 17),
+                               csvsqldb::Date(2003, csvsqldb::Date::April, 15)},
+                              {4711, "Lars", "Fürstenberg", csvsqldb::Date(1970, csvsqldb::Date::September, 23),
+                               csvsqldb::Date(2010, csvsqldb::Date::February, 1)},
+                              {9227, "Angelica", "Tello de Fürstenberg", csvsqldb::Date(1963, csvsqldb::Date::March, 6),
+                               csvsqldb::Date(2003, csvsqldb::Date::June, 15)}});
 
-        TestRowProvider::setRows(
-        "salaries",
-        { { 815, 5000.00, csvsqldb::Date(2003, csvsqldb::Date::April, 15), csvsqldb::Date(2015, csvsqldb::Date::December, 31) },
-          { 4711, 12000.00, csvsqldb::Date(2010, csvsqldb::Date::February, 1), csvsqldb::Date(2015, csvsqldb::Date::December, 31) },
-          { 9227, 450.00, csvsqldb::Date(2003, csvsqldb::Date::June, 15), csvsqldb::Date(2015, csvsqldb::Date::December, 31) } });
+    TestRowProvider::setRows(
+      "salaries",
+      {{815, 5000.00, csvsqldb::Date(2003, csvsqldb::Date::April, 15), csvsqldb::Date(2015, csvsqldb::Date::December, 31)},
+       {4711, 12000.00, csvsqldb::Date(2010, csvsqldb::Date::February, 1), csvsqldb::Date(2015, csvsqldb::Date::December, 31)},
+       {9227, 450.00, csvsqldb::Date(2003, csvsqldb::Date::June, 15), csvsqldb::Date(2015, csvsqldb::Date::December, 31)}});
 
-        csvsqldb::ExecutionStatistics statistics;
-        std::stringstream ss;
-        int64_t rowCount = engine.execute("SELECT id FROM employees UNION (SELECT id FROM salaries)", statistics, ss);
-        MPF_TEST_ASSERTEQUAL(6, rowCount);
-        MPF_TEST_ASSERTEQUAL("#ID\n815\n4711\n9227\n815\n4711\n9227\n", ss.str());
-    }
+    csvsqldb::ExecutionStatistics statistics;
+    std::stringstream ss;
+    int64_t rowCount = engine.execute("SELECT id FROM employees UNION (SELECT id FROM salaries)", statistics, ss);
+    MPF_TEST_ASSERTEQUAL(6, rowCount);
+    MPF_TEST_ASSERTEQUAL("#ID\n815\n4711\n9227\n815\n4711\n9227\n", ss.str());
+  }
 };
 
 MPF_REGISTER_TEST_START("UnionTestSuite", UnionTestCase);

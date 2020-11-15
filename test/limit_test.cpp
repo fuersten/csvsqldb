@@ -31,99 +31,106 @@
 //
 
 
-#include "test.h"
-
 #include "libcsvsqldb/block.h"
 
 #include "data_test_framework.h"
+#include "test.h"
 
 
 class LimitTestCase
 {
 public:
-    LimitTestCase()
-    {
-    }
+  LimitTestCase()
+  {
+  }
 
-    void setUp()
-    {
-    }
+  void setUp()
+  {
+  }
 
-    void tearDown()
-    {
-    }
+  void tearDown()
+  {
+  }
 
-    void simpleLimitTest()
-    {
-        DatabaseTestWrapper dbWrapper;
-        dbWrapper.addTable(TableInitializer("employees",
-                                            { { "id", csvsqldb::INT },
-                                              { "first_name", csvsqldb::STRING },
-                                              { "last_name", csvsqldb::STRING },
-                                              { "birth_date", csvsqldb::DATE },
-                                              { "hire_date", csvsqldb::DATE } }));
+  void simpleLimitTest()
+  {
+    DatabaseTestWrapper dbWrapper;
+    dbWrapper.addTable(TableInitializer("employees", {{"id", csvsqldb::INT},
+                                                      {"first_name", csvsqldb::STRING},
+                                                      {"last_name", csvsqldb::STRING},
+                                                      {"birth_date", csvsqldb::DATE},
+                                                      {"hire_date", csvsqldb::DATE}}));
 
-        csvsqldb::ExecutionContext context(dbWrapper.getDatabase());
-        csvsqldb::ExecutionEngine<TestOperatorNodeFactory> engine(context);
+    csvsqldb::ExecutionContext context(dbWrapper.getDatabase());
+    csvsqldb::ExecutionEngine<TestOperatorNodeFactory> engine(context);
 
-        TestRowProvider::setRows(
-        "employees",
-        { { 815, "Mark", "Fürstenberg", csvsqldb::Date(1969, csvsqldb::Date::May, 17), csvsqldb::Date(2003, csvsqldb::Date::April, 15) },
-          { 4711, "Lars", "Fürstenberg", csvsqldb::Date(1970, csvsqldb::Date::September, 23), csvsqldb::Date(2010, csvsqldb::Date::February, 1) },
-          { 3467, "Ingo", "Fürstenberg", csvsqldb::Date(1946, csvsqldb::Date::May, 4), csvsqldb::Date(1969, csvsqldb::Date::June, 1) },
-          { 1423, "Tilo", "Bürstenbinder", csvsqldb::Date(1973, csvsqldb::Date::January, 8), csvsqldb::Date(2001, csvsqldb::Date::October, 1) },
-          { 192, "Anette", "Zipiriski", csvsqldb::Date(1956, csvsqldb::Date::August, 5), csvsqldb::Date(1978, csvsqldb::Date::February, 25) },
-          { 9227, "Angelica", "Tello de Fürstenberg", csvsqldb::Date(1963, csvsqldb::Date::March, 6), csvsqldb::Date(2003, csvsqldb::Date::June, 15) } });
+    TestRowProvider::setRows(
+      "employees",
+      {{815, "Mark", "Fürstenberg", csvsqldb::Date(1969, csvsqldb::Date::May, 17),
+        csvsqldb::Date(2003, csvsqldb::Date::April, 15)},
+       {4711, "Lars", "Fürstenberg", csvsqldb::Date(1970, csvsqldb::Date::September, 23),
+        csvsqldb::Date(2010, csvsqldb::Date::February, 1)},
+       {3467, "Ingo", "Fürstenberg", csvsqldb::Date(1946, csvsqldb::Date::May, 4), csvsqldb::Date(1969, csvsqldb::Date::June, 1)},
+       {1423, "Tilo", "Bürstenbinder", csvsqldb::Date(1973, csvsqldb::Date::January, 8),
+        csvsqldb::Date(2001, csvsqldb::Date::October, 1)},
+       {192, "Anette", "Zipiriski", csvsqldb::Date(1956, csvsqldb::Date::August, 5),
+        csvsqldb::Date(1978, csvsqldb::Date::February, 25)},
+       {9227, "Angelica", "Tello de Fürstenberg", csvsqldb::Date(1963, csvsqldb::Date::March, 6),
+        csvsqldb::Date(2003, csvsqldb::Date::June, 15)}});
 
-        csvsqldb::ExecutionStatistics statistics;
-        std::stringstream ss;
-        int64_t rowCount =
-        engine.execute("SELECT id,first_name,last_name,birth_date,hire_date FROM employees order by id limit 3", statistics, ss);
-        MPF_TEST_ASSERTEQUAL(3, rowCount);
+    csvsqldb::ExecutionStatistics statistics;
+    std::stringstream ss;
+    int64_t rowCount =
+      engine.execute("SELECT id,first_name,last_name,birth_date,hire_date FROM employees order by id limit 3", statistics, ss);
+    MPF_TEST_ASSERTEQUAL(3, rowCount);
 
-        std::string expected = R"(#ID,FIRST_NAME,LAST_NAME,BIRTH_DATE,HIRE_DATE
+    std::string expected = R"(#ID,FIRST_NAME,LAST_NAME,BIRTH_DATE,HIRE_DATE
 192,'Anette','Zipiriski',1956-08-05,1978-02-25
 815,'Mark','Fürstenberg',1969-05-17,2003-04-15
 1423,'Tilo','Bürstenbinder',1973-01-08,2001-10-01
 )";
-        MPF_TEST_ASSERTEQUAL(expected, ss.str());
-    }
+    MPF_TEST_ASSERTEQUAL(expected, ss.str());
+  }
 
-    void simpleLimitOffsetTest()
-    {
-        DatabaseTestWrapper dbWrapper;
-        dbWrapper.addTable(TableInitializer("employees",
-                                            { { "id", csvsqldb::INT },
-                                              { "first_name", csvsqldb::STRING },
-                                              { "last_name", csvsqldb::STRING },
-                                              { "birth_date", csvsqldb::DATE },
-                                              { "hire_date", csvsqldb::DATE } }));
+  void simpleLimitOffsetTest()
+  {
+    DatabaseTestWrapper dbWrapper;
+    dbWrapper.addTable(TableInitializer("employees", {{"id", csvsqldb::INT},
+                                                      {"first_name", csvsqldb::STRING},
+                                                      {"last_name", csvsqldb::STRING},
+                                                      {"birth_date", csvsqldb::DATE},
+                                                      {"hire_date", csvsqldb::DATE}}));
 
-        csvsqldb::ExecutionContext context(dbWrapper.getDatabase());
-        csvsqldb::ExecutionEngine<TestOperatorNodeFactory> engine(context);
+    csvsqldb::ExecutionContext context(dbWrapper.getDatabase());
+    csvsqldb::ExecutionEngine<TestOperatorNodeFactory> engine(context);
 
-        TestRowProvider::setRows(
-        "employees",
-        { { 815, "Mark", "Fürstenberg", csvsqldb::Date(1969, csvsqldb::Date::May, 17), csvsqldb::Date(2003, csvsqldb::Date::April, 15) },
-          { 4711, "Lars", "Fürstenberg", csvsqldb::Date(1970, csvsqldb::Date::September, 23), csvsqldb::Date(2010, csvsqldb::Date::February, 1) },
-          { 3467, "Ingo", "Fürstenberg", csvsqldb::Date(1946, csvsqldb::Date::May, 4), csvsqldb::Date(1969, csvsqldb::Date::June, 1) },
-          { 1423, "Tilo", "Bürstenbinder", csvsqldb::Date(1973, csvsqldb::Date::January, 8), csvsqldb::Date(2001, csvsqldb::Date::October, 1) },
-          { 192, "Anette", "Zipiriski", csvsqldb::Date(1956, csvsqldb::Date::August, 5), csvsqldb::Date(1978, csvsqldb::Date::February, 25) },
-          { 9227, "Angelica", "Tello de Fürstenberg", csvsqldb::Date(1963, csvsqldb::Date::March, 6), csvsqldb::Date(2003, csvsqldb::Date::June, 15) } });
+    TestRowProvider::setRows(
+      "employees",
+      {{815, "Mark", "Fürstenberg", csvsqldb::Date(1969, csvsqldb::Date::May, 17),
+        csvsqldb::Date(2003, csvsqldb::Date::April, 15)},
+       {4711, "Lars", "Fürstenberg", csvsqldb::Date(1970, csvsqldb::Date::September, 23),
+        csvsqldb::Date(2010, csvsqldb::Date::February, 1)},
+       {3467, "Ingo", "Fürstenberg", csvsqldb::Date(1946, csvsqldb::Date::May, 4), csvsqldb::Date(1969, csvsqldb::Date::June, 1)},
+       {1423, "Tilo", "Bürstenbinder", csvsqldb::Date(1973, csvsqldb::Date::January, 8),
+        csvsqldb::Date(2001, csvsqldb::Date::October, 1)},
+       {192, "Anette", "Zipiriski", csvsqldb::Date(1956, csvsqldb::Date::August, 5),
+        csvsqldb::Date(1978, csvsqldb::Date::February, 25)},
+       {9227, "Angelica", "Tello de Fürstenberg", csvsqldb::Date(1963, csvsqldb::Date::March, 6),
+        csvsqldb::Date(2003, csvsqldb::Date::June, 15)}});
 
-        csvsqldb::ExecutionStatistics statistics;
-        std::stringstream ss;
-        int64_t rowCount =
-        engine.execute("SELECT id,first_name,last_name,birth_date,hire_date FROM employees order by id limit 3 offset 3", statistics, ss);
-        MPF_TEST_ASSERTEQUAL(3, rowCount);
+    csvsqldb::ExecutionStatistics statistics;
+    std::stringstream ss;
+    int64_t rowCount = engine.execute(
+      "SELECT id,first_name,last_name,birth_date,hire_date FROM employees order by id limit 3 offset 3", statistics, ss);
+    MPF_TEST_ASSERTEQUAL(3, rowCount);
 
-        std::string expected = R"(#ID,FIRST_NAME,LAST_NAME,BIRTH_DATE,HIRE_DATE
+    std::string expected = R"(#ID,FIRST_NAME,LAST_NAME,BIRTH_DATE,HIRE_DATE
 3467,'Ingo','Fürstenberg',1946-05-04,1969-06-01
 4711,'Lars','Fürstenberg',1970-09-23,2010-02-01
 9227,'Angelica','Tello de Fürstenberg',1963-03-06,2003-06-15
 )";
-        MPF_TEST_ASSERTEQUAL(expected, ss.str());
-    }
+    MPF_TEST_ASSERTEQUAL(expected, ss.str());
+  }
 };
 
 MPF_REGISTER_TEST_START("LimitTestSuite", LimitTestCase);

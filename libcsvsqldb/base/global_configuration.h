@@ -43,97 +43,97 @@
 
 namespace csvsqldb
 {
-    /**
-     * The global configuration is an abstraction that separates the configuration mechanism from the actual configuration.
-     * All relevant configuration values are accessible through the global instance. By calling the GlobalConfiguration::configure
-     * method
-     * again, the configuraiton can be changed for the running system. Currently you have to beware of race condition!
-     */
-    class CSVSQLDB_EXPORT GlobalConfiguration
+  /**
+   * The global configuration is an abstraction that separates the configuration mechanism from the actual configuration.
+   * All relevant configuration values are accessible through the global instance. By calling the GlobalConfiguration::configure
+   * method
+   * again, the configuraiton can be changed for the running system. Currently you have to beware of race condition!
+   */
+  class CSVSQLDB_EXPORT GlobalConfiguration
+  {
+  public:
+    typedef std::shared_ptr<GlobalConfiguration> Ptr;
+    typedef std::map<std::string, int> DebugLevel;
+
+    virtual ~GlobalConfiguration()
     {
-    public:
-        typedef std::shared_ptr<GlobalConfiguration> Ptr;
-        typedef std::map<std::string, int> DebugLevel;
+    }
 
-        virtual ~GlobalConfiguration()
-        {
-        }
-
-        /**
-         * Appilcation relevant configurations.
-         */
-        struct Application {
-        };
-
-        /**
-         * Debug logging relevant configurations.
-         */
-        struct Debug {
-            int32_t global_level;
-            DebugLevel level;
-        };
-
-        /**
-         * Logging relevant configurations.
-         */
-        struct Logging {
-            std::string device;
-            std::string separator;
-            bool escape_newline;
-        };
-
-        /**
-         * Creates a new global configuration instance and makes it accessible to the GlobalConfiguration::instance method. The
-         * type should
-         * be your inherited global configuration class. It should be called once before accessing global configuration values.
-         */
-        template <typename T>
-        static void create()
-        {
-            _config = std::make_shared<T>();
-        }
-
-        /**
-         * Returns the only global configuration instance.
-         * @return The global configuration instance.
-         */
-        template <typename T>
-        static std::shared_ptr<T> instance()
-        {
-            return std::dynamic_pointer_cast<T>(_config);
-        }
-
-        /**
-         * Configures the global configuration instance using the given configuration.
-         * @param configuration The configuration to configure the global configuraiton with
-         */
-        void configure(const Configuration::Ptr& configuration);
-
-        Application application;
-        Debug debug;
-        Logging logging;
-
-    private:
-        /**
-         * Template method that can be overloaded in order to configure own configuration values.
-         * Configures the global configuration instance using the given configuration.
-         * @param configuration The configuration to configure the global configuraiton with
-         */
-        virtual void doConfigure(const Configuration::Ptr& configuration);
-
-        static Ptr _config;
-        Configuration::Ptr _configuration;
+    /**
+     * Appilcation relevant configurations.
+     */
+    struct Application {
     };
 
     /**
-     * Convenience template to extract the global config in a shorter way.
+     * Debug logging relevant configurations.
+     */
+    struct Debug {
+      int32_t global_level;
+      DebugLevel level;
+    };
+
+    /**
+     * Logging relevant configurations.
+     */
+    struct Logging {
+      std::string device;
+      std::string separator;
+      bool escape_newline;
+    };
+
+    /**
+     * Creates a new global configuration instance and makes it accessible to the GlobalConfiguration::instance method. The
+     * type should
+     * be your inherited global configuration class. It should be called once before accessing global configuration values.
+     */
+    template<typename T>
+    static void create()
+    {
+      _config = std::make_shared<T>();
+    }
+
+    /**
+     * Returns the only global configuration instance.
      * @return The global configuration instance.
      */
-    template <typename T>
-    static std::shared_ptr<T> config()
+    template<typename T>
+    static std::shared_ptr<T> instance()
     {
-        return GlobalConfiguration::instance<T>();
+      return std::dynamic_pointer_cast<T>(_config);
     }
+
+    /**
+     * Configures the global configuration instance using the given configuration.
+     * @param configuration The configuration to configure the global configuraiton with
+     */
+    void configure(const Configuration::Ptr& configuration);
+
+    Application application;
+    Debug debug;
+    Logging logging;
+
+  private:
+    /**
+     * Template method that can be overloaded in order to configure own configuration values.
+     * Configures the global configuration instance using the given configuration.
+     * @param configuration The configuration to configure the global configuraiton with
+     */
+    virtual void doConfigure(const Configuration::Ptr& configuration);
+
+    static Ptr _config;
+    Configuration::Ptr _configuration;
+  };
+
+  /**
+   * Convenience template to extract the global config in a shorter way.
+   * @return The global configuration instance.
+   */
+  template<typename T>
+  static std::shared_ptr<T> config()
+  {
+    return GlobalConfiguration::instance<T>();
+  }
 }
 
 #endif

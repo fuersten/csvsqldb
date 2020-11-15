@@ -38,7 +38,6 @@
 
 #include "file_mapping.h"
 #include "tabledata.h"
-
 #include <boost/filesystem.hpp>
 
 namespace fs = boost::filesystem;
@@ -46,61 +45,60 @@ namespace fs = boost::filesystem;
 
 namespace csvsqldb
 {
+  class CSVSQLDB_EXPORT Database
+  {
+  public:
+    typedef std::vector<TableData> Tables;
 
-    class CSVSQLDB_EXPORT Database
+    Database(const fs::path& path, FileMapping mappings);
+
+    void setUp();
+
+    fs::path databasePath() const
     {
-    public:
-        typedef std::vector<TableData> Tables;
+      return _path;
+    }
+    fs::path tablePath() const
+    {
+      return _path / "tables";
+    }
+    fs::path functionPath() const
+    {
+      return _path / "functions";
+    }
+    fs::path mappingPath() const
+    {
+      return _path / "mappings";
+    }
 
-        Database(const fs::path& path, FileMapping mappings);
+    bool hasTable(const std::string& tableName) const;
+    const TableData& getTable(const std::string& tableName) const;
 
-        void setUp();
+    void addTable(const TableData& table);
+    void dropTable(const std::string& tableName);
 
-        fs::path databasePath() const
-        {
-            return _path;
-        }
-        fs::path tablePath() const
-        {
-            return _path / "tables";
-        }
-        fs::path functionPath() const
-        {
-            return _path / "functions";
-        }
-        fs::path mappingPath() const
-        {
-            return _path / "mappings";
-        }
+    const Mapping& getMappingForTable(const std::string& tableName) const;
+    void addMapping(const FileMapping& mappings);
+    void removeMapping(const std::string& tableName);
 
-        bool hasTable(const std::string& tableName) const;
-        const TableData& getTable(const std::string& tableName) const;
+    void getTables(Tables& tables) const
+    {
+      tables = _tables;
+    }
+    void getMappings(csvsqldb::StringVector& mappings) const
+    {
+      mappings = _mappings.asStringVector();
+    }
 
-        void addTable(const TableData& table);
-        void dropTable(const std::string& tableName);
+  private:
+    void addSystemTables();
+    void readTablesFromPath();
+    void readMappingsFromPath();
 
-        const Mapping& getMappingForTable(const std::string& tableName) const;
-        void addMapping(const FileMapping& mappings);
-        void removeMapping(const std::string& tableName);
-
-        void getTables(Tables& tables) const
-        {
-            tables = _tables;
-        }
-        void getMappings(csvsqldb::StringVector& mappings) const
-        {
-            mappings = _mappings.asStringVector();
-        }
-
-    private:
-        void addSystemTables();
-        void readTablesFromPath();
-        void readMappingsFromPath();
-
-        fs::path _path;
-        Tables _tables;
-        FileMapping _mappings;
-    };
+    fs::path _path;
+    Tables _tables;
+    FileMapping _mappings;
+  };
 }
 
 #endif

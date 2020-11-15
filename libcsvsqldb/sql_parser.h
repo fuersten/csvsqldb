@@ -43,80 +43,79 @@
 
 namespace csvsqldb
 {
+  class CSVSQLDB_EXPORT SQLParser
+  {
+  public:
+    SQLParser(const FunctionRegistry& functionRegistry);
 
-    class CSVSQLDB_EXPORT SQLParser
-    {
-    public:
-        SQLParser(const FunctionRegistry& functionRegistry);
+    ASTNodePtr parse(const std::string& input);
+    ASTNodePtr parse();
 
-        ASTNodePtr parse(const std::string& input);
-        ASTNodePtr parse();
+    ASTExprNodePtr parseExpression(const std::string& expression);
 
-        ASTExprNodePtr parseExpression(const std::string& expression);
+    void setInput(const std::string& input);
 
-        void setInput(const std::string& input);
+  private:
+    void reportUnexpectedToken(const std::string& message, const csvsqldb::lexer::Token& token);
 
-    private:
-        void reportUnexpectedToken(const std::string& message, const csvsqldb::lexer::Token& token);
+    std::string expect(eToken tok);
+    bool canExpect(eToken tok);
+    csvsqldb::lexer::Token parseNext();
 
-        std::string expect(eToken tok);
-        bool canExpect(eToken tok);
-        csvsqldb::lexer::Token parseNext();
+    ASTCreateTableNodePtr parseCreateTable();
+    eType parseType();
+    ColumnDefinition parseColumnDefinition();
+    TableConstraint parseTableConstraint();
+    void parseConstraint(ColumnDefinition& definition);
+    csvsqldb::StringVector parseColumnList();
 
-        ASTCreateTableNodePtr parseCreateTable();
-        eType parseType();
-        ColumnDefinition parseColumnDefinition();
-        TableConstraint parseTableConstraint();
-        void parseConstraint(ColumnDefinition& definition);
-        csvsqldb::StringVector parseColumnList();
+    ASTAlterTableNodePtr parseAlterTable();
 
-        ASTAlterTableNodePtr parseAlterTable();
+    ASTDropTableNodePtr parseDropTable();
 
-        ASTDropTableNodePtr parseDropTable();
+    ASTDescribeNodePtr parseExplain();
 
-        ASTDescribeNodePtr parseExplain();
+    ASTMappingNodePtr parseCreateMapping();
+    ASTDropMappingNodePtr parseDropMapping();
 
-        ASTMappingNodePtr parseCreateMapping();
-        ASTDropMappingNodePtr parseDropMapping();
+    ASTQueryNodePtr parseQuery();
 
-        ASTQueryNodePtr parseQuery();
+    ASTQueryExpressionNodePtr parseQueryExpression(const SymbolTablePtr& symboltable);
+    ASTTableExpressionNodePtr parseTableExpression(const SymbolTablePtr& symboltable);
+    ASTTableReferenceNodePtr parseTableReference(const SymbolTablePtr& symboltable);
+    ASTIdentifierPtr parseAliasedIdentifier(const SymbolTablePtr& symboltable);
+    ASTTableFactorNodePtr parseTableFactor(const SymbolTablePtr& symboltable);
+    eJoinType parseJoinType();
+    bool isJoin();
+    ASTJoinNodePtr parseJoinClause(const ASTTableReferenceNodePtr& reference, eJoinType joinType);
+    ASTExprNodePtr parseQualifiedIdentifierOrAsterisk(const SymbolTablePtr& symboltable);
+    ASTIdentifierPtr parseQualifiedIdentifier(const SymbolTablePtr& symboltable);
+    std::string parseQuotedIdentifier(bool& quoted);
+    Identifiers parseIdentifierList(const SymbolTablePtr& symboltable);
+    Parameters parseParameterList(const SymbolTablePtr& symboltable);
+    Expressions parseSelectList(const SymbolTablePtr& symboltable);
+    ASTExprNodePtr parseDerivedColumn(const SymbolTablePtr& symboltable);
+    ASTExprNodePtr parseExpression(const SymbolTablePtr& symboltable);
+    Expressions parseExprList(const SymbolTablePtr& symboltable);
+    ASTFromNodePtr parseFrom(const SymbolTablePtr& symboltable);
+    ASTWhereNodePtr parseWhere(const SymbolTablePtr& symboltable);
+    ASTGroupByNodePtr parseGroupBy(const SymbolTablePtr& symboltable);
+    ASTHavingNodePtr parseHaving(const SymbolTablePtr& symboltable);
+    ASTOrderByNodePtr parseOrderBy(const SymbolTablePtr& symboltable);
+    ASTLimitNodePtr parseLimit(const SymbolTablePtr& symboltable);
 
-        ASTQueryExpressionNodePtr parseQueryExpression(const SymbolTablePtr& symboltable);
-        ASTTableExpressionNodePtr parseTableExpression(const SymbolTablePtr& symboltable);
-        ASTTableReferenceNodePtr parseTableReference(const SymbolTablePtr& symboltable);
-        ASTIdentifierPtr parseAliasedIdentifier(const SymbolTablePtr& symboltable);
-        ASTTableFactorNodePtr parseTableFactor(const SymbolTablePtr& symboltable);
-        eJoinType parseJoinType();
-        bool isJoin();
-        ASTJoinNodePtr parseJoinClause(const ASTTableReferenceNodePtr& reference, eJoinType joinType);
-        ASTExprNodePtr parseQualifiedIdentifierOrAsterisk(const SymbolTablePtr& symboltable);
-        ASTIdentifierPtr parseQualifiedIdentifier(const SymbolTablePtr& symboltable);
-        std::string parseQuotedIdentifier(bool& quoted);
-        Identifiers parseIdentifierList(const SymbolTablePtr& symboltable);
-        Parameters parseParameterList(const SymbolTablePtr& symboltable);
-        Expressions parseSelectList(const SymbolTablePtr& symboltable);
-        ASTExprNodePtr parseDerivedColumn(const SymbolTablePtr& symboltable);
-        ASTExprNodePtr parseExpression(const SymbolTablePtr& symboltable);
-        Expressions parseExprList(const SymbolTablePtr& symboltable);
-        ASTFromNodePtr parseFrom(const SymbolTablePtr& symboltable);
-        ASTWhereNodePtr parseWhere(const SymbolTablePtr& symboltable);
-        ASTGroupByNodePtr parseGroupBy(const SymbolTablePtr& symboltable);
-        ASTHavingNodePtr parseHaving(const SymbolTablePtr& symboltable);
-        ASTOrderByNodePtr parseOrderBy(const SymbolTablePtr& symboltable);
-        ASTLimitNodePtr parseLimit(const SymbolTablePtr& symboltable);
+    ASTExprNodePtr parseJoin(const SymbolTablePtr& symboltable);
+    ASTExprNodePtr parseEquality(const SymbolTablePtr& symboltable);
+    ASTExprNodePtr parseRelation(const SymbolTablePtr& symboltable);
+    ASTExprNodePtr parseAdd(const SymbolTablePtr& symboltable);
+    ASTExprNodePtr parseMul(const SymbolTablePtr& symboltable);
+    ASTExprNodePtr parseFactor(const SymbolTablePtr& symboltable);
+    ASTExprNodePtr parseUnary(const SymbolTablePtr& symboltable);
 
-        ASTExprNodePtr parseJoin(const SymbolTablePtr& symboltable);
-        ASTExprNodePtr parseEquality(const SymbolTablePtr& symboltable);
-        ASTExprNodePtr parseRelation(const SymbolTablePtr& symboltable);
-        ASTExprNodePtr parseAdd(const SymbolTablePtr& symboltable);
-        ASTExprNodePtr parseMul(const SymbolTablePtr& symboltable);
-        ASTExprNodePtr parseFactor(const SymbolTablePtr& symboltable);
-        ASTExprNodePtr parseUnary(const SymbolTablePtr& symboltable);
-
-        SQLLexer _lexer;
-        csvsqldb::lexer::Token _currentToken;
-        const FunctionRegistry& _functionRegistry;
-    };
+    SQLLexer _lexer;
+    csvsqldb::lexer::Token _currentToken;
+    const FunctionRegistry& _functionRegistry;
+  };
 }
 
 #endif

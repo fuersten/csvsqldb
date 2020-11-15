@@ -31,76 +31,72 @@
 //
 
 
-#include "test.h"
-
 #include "data_test_framework.h"
+#include "test.h"
 
 
 class SortOperationTestCase
 {
 public:
-    SortOperationTestCase()
-    {
-    }
+  SortOperationTestCase()
+  {
+  }
 
-    void setUp()
-    {
-    }
+  void setUp()
+  {
+  }
 
-    void tearDown()
-    {
-    }
+  void tearDown()
+  {
+  }
 
-    void simpleSortTest()
-    {
-        DatabaseTestWrapper dbWrapper;
-        dbWrapper.addTable(TableInitializer("employees",
-                                            { { "id", csvsqldb::INT },
-                                              { "first_name", csvsqldb::STRING },
-                                              { "last_name", csvsqldb::STRING },
-                                              { "birth_date", csvsqldb::DATE },
-                                              { "hire_date", csvsqldb::DATE } }));
+  void simpleSortTest()
+  {
+    DatabaseTestWrapper dbWrapper;
+    dbWrapper.addTable(TableInitializer("employees", {{"id", csvsqldb::INT},
+                                                      {"first_name", csvsqldb::STRING},
+                                                      {"last_name", csvsqldb::STRING},
+                                                      {"birth_date", csvsqldb::DATE},
+                                                      {"hire_date", csvsqldb::DATE}}));
 
-        csvsqldb::ExecutionContext context(dbWrapper.getDatabase());
-        csvsqldb::ExecutionEngine<TestOperatorNodeFactory> engine(context);
+    csvsqldb::ExecutionContext context(dbWrapper.getDatabase());
+    csvsqldb::ExecutionEngine<TestOperatorNodeFactory> engine(context);
 
-        TestRowProvider::setRows(
-        "employees",
-        { { 815, "Mark", "Fürstenberg", csvsqldb::Date(1969, csvsqldb::Date::May, 17), csvsqldb::Date(2003, csvsqldb::Date::April, 15) },
-          { csvsqldb::Variant(csvsqldb::INT),
-            "Lars",
-            "Fürstenberg",
-            csvsqldb::Date(1970, csvsqldb::Date::September, 23),
-            csvsqldb::Date(2010, csvsqldb::Date::February, 1) },
-          { 9227, "Angelica", "Tello de Fürstenberg", csvsqldb::Date(1963, csvsqldb::Date::March, 6), csvsqldb::Date(2003, csvsqldb::Date::June, 15) } });
+    TestRowProvider::setRows(
+      "employees", {{815, "Mark", "Fürstenberg", csvsqldb::Date(1969, csvsqldb::Date::May, 17),
+                     csvsqldb::Date(2003, csvsqldb::Date::April, 15)},
+                    {csvsqldb::Variant(csvsqldb::INT), "Lars", "Fürstenberg", csvsqldb::Date(1970, csvsqldb::Date::September, 23),
+                     csvsqldb::Date(2010, csvsqldb::Date::February, 1)},
+                    {9227, "Angelica", "Tello de Fürstenberg", csvsqldb::Date(1963, csvsqldb::Date::March, 6),
+                     csvsqldb::Date(2003, csvsqldb::Date::June, 15)}});
 
-        csvsqldb::ExecutionStatistics statistics;
-        std::stringstream ss;
-        int64_t rowCount =
-        engine.execute("SELECT id,first_name,last_name,hire_date,birth_date FROM employees order by birth_date", statistics, ss);
-        MPF_TEST_ASSERTEQUAL(3, rowCount);
+    csvsqldb::ExecutionStatistics statistics;
+    std::stringstream ss;
+    int64_t rowCount =
+      engine.execute("SELECT id,first_name,last_name,hire_date,birth_date FROM employees order by birth_date", statistics, ss);
+    MPF_TEST_ASSERTEQUAL(3, rowCount);
 
-        std::string expected = R"(#ID,FIRST_NAME,LAST_NAME,HIRE_DATE,BIRTH_DATE
+    std::string expected = R"(#ID,FIRST_NAME,LAST_NAME,HIRE_DATE,BIRTH_DATE
 9227,'Angelica','Tello de Fürstenberg',2003-06-15,1963-03-06
 815,'Mark','Fürstenberg',2003-04-15,1969-05-17
 NULL,'Lars','Fürstenberg',2010-02-01,1970-09-23
 )";
-        MPF_TEST_ASSERTEQUAL(expected, ss.str());
+    MPF_TEST_ASSERTEQUAL(expected, ss.str());
 
-        ss.clear();
-        ss.str("");
-        rowCount =
-        engine.execute("SELECT id,first_name,last_name,hire_date,birth_date FROM employees order by birth_date desc", statistics, ss);
-        MPF_TEST_ASSERTEQUAL(3, rowCount);
+    ss.clear();
+    ss.str("");
+    rowCount = engine.execute("SELECT id,first_name,last_name,hire_date,birth_date FROM employees order by birth_date desc",
+                              statistics, ss);
+    MPF_TEST_ASSERTEQUAL(3, rowCount);
 
-        expected = R"(#ID,FIRST_NAME,LAST_NAME,HIRE_DATE,BIRTH_DATE
+    expected = R"(#ID,FIRST_NAME,LAST_NAME,HIRE_DATE,BIRTH_DATE
 NULL,'Lars','Fürstenberg',2010-02-01,1970-09-23
 815,'Mark','Fürstenberg',2003-04-15,1969-05-17
 9227,'Angelica','Tello de Fürstenberg',2003-06-15,1963-03-06
 )";
 
-        MPF_TEST_ASSERTEQUAL(expected, ss.str());
-    }
+    MPF_TEST_ASSERTEQUAL(expected, ss.str());
+  }
 };
 
 MPF_REGISTER_TEST_START("OperationTestSuite", SortOperationTestCase);

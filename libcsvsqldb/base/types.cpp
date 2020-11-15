@@ -32,108 +32,109 @@
 //
 
 #include "types.h"
+
 #include "string_helper.h"
 
 #if defined(__GNUC__)
-#include <cxxabi.h>
-#include <stdlib.h>
-#include <strings.h>
+  #include <cxxabi.h>
+  #include <stdlib.h>
+  #include <strings.h>
 #endif
 
 
 namespace csvsqldb
 {
-    char* itoa(int i, char* buffer)
-    {
-        if(i == 0) {
-            buffer[0] = '0';
-            buffer[1] = '\0';
-            return &buffer[0];
-        }
-
-        size_t n = 0;
-        if(i < 0) {
-            buffer[n] = '-';
-            i *= -1;
-        }
-
-        int tmp = i / 10;
-        int factor = 1;
-        while(tmp) {
-            factor = factor * 10;
-            tmp = tmp / 10;
-        }
-        tmp = i;
-        while(factor) {
-            int part = tmp / factor;
-            buffer[n++] = static_cast<char>(part + 48);
-            tmp = tmp - (part * factor);
-            factor = factor / 10;
-        }
-        buffer[n] = '\0';
-        return &buffer[0];
+  char* itoa(int i, char* buffer)
+  {
+    if (i == 0) {
+      buffer[0] = '0';
+      buffer[1] = '\0';
+      return &buffer[0];
     }
 
-    bool stringToBool(const std::string& value)
-    {
-        if(toupper_copy(value) == "TRUE") {
-            return true;
-        } else if(toupper_copy(value) == "FALSE") {
-            return false;
-        } else if(std::stoi(value) != 0) {
-            return true;
-        }
-        return false;
+    size_t n = 0;
+    if (i < 0) {
+      buffer[n] = '-';
+      i *= -1;
     }
+
+    int tmp = i / 10;
+    int factor = 1;
+    while (tmp) {
+      factor = factor * 10;
+      tmp = tmp / 10;
+    }
+    tmp = i;
+    while (factor) {
+      int part = tmp / factor;
+      buffer[n++] = static_cast<char>(part + 48);
+      tmp = tmp - (part * factor);
+      factor = factor / 10;
+    }
+    buffer[n] = '\0';
+    return &buffer[0];
+  }
+
+  bool stringToBool(const std::string& value)
+  {
+    if (toupper_copy(value) == "TRUE") {
+      return true;
+    } else if (toupper_copy(value) == "FALSE") {
+      return false;
+    } else if (std::stoi(value) != 0) {
+      return true;
+    }
+    return false;
+  }
 
 #if defined(__GNUC__)
 
-    static std::string demangle(const std::string& s)
-    {
-        int status(0);
-        std::string result;
+  static std::string demangle(const std::string& s)
+  {
+    int status(0);
+    std::string result;
 
-        char* ss = abi::__cxa_demangle(s.c_str(), 0, 0, &status);
+    char* ss = abi::__cxa_demangle(s.c_str(), 0, 0, &status);
 
-        if(status == -1) {
-            throw std::bad_alloc();
-        } else if(status == -2) {
-            result = s;
-        } else if(status == -3) {
-            throw std::runtime_error("__cxa_demangle returned -3");
-        } else {
-            result = ss;
-        }
-
-        if(ss) {
-            ::free(ss);
-        }
-
-        if(result[result.length() - 1] == '*') {
-            result.erase(result.length() - 1);
-        }
-        std::string::size_type pos = 0;
-        while((pos = result.find(", ", pos)) != std::string::npos) {
-            result.erase(pos + 1, 1);
-        }
-
-        return result;
+    if (status == -1) {
+      throw std::bad_alloc();
+    } else if (status == -2) {
+      result = s;
+    } else if (status == -3) {
+      throw std::runtime_error("__cxa_demangle returned -3");
+    } else {
+      result = ss;
     }
+
+    if (ss) {
+      ::free(ss);
+    }
+
+    if (result[result.length() - 1] == '*') {
+      result.erase(result.length() - 1);
+    }
+    std::string::size_type pos = 0;
+    while ((pos = result.find(", ", pos)) != std::string::npos) {
+      result.erase(pos + 1, 1);
+    }
+
+    return result;
+  }
 
 #endif
 
-    std::string stripTypeName(const std::string& classname)
-    {
+  std::string stripTypeName(const std::string& classname)
+  {
 #if defined _MSC_VER
-        std::string::size_type pos1 = classname.find_first_of(" ");
-        std::string::size_type pos3 = classname.find_last_of(">");
-        if(pos3 != std::string::npos) {
-            return classname.substr(pos1 + 1, (pos3 - pos1));
-        }
-        std::string::size_type pos2 = classname.find_last_of(" ");
-        return classname.substr(pos1 + 1, (pos2 - pos1) - 1);
-#else
-        return demangle(classname);
-#endif
+    std::string::size_type pos1 = classname.find_first_of(" ");
+    std::string::size_type pos3 = classname.find_last_of(">");
+    if (pos3 != std::string::npos) {
+      return classname.substr(pos1 + 1, (pos3 - pos1));
     }
+    std::string::size_type pos2 = classname.find_last_of(" ");
+    return classname.substr(pos1 + 1, (pos2 - pos1) - 1);
+#else
+    return demangle(classname);
+#endif
+  }
 }

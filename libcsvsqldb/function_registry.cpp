@@ -36,18 +36,17 @@
 
 namespace csvsqldb
 {
+  void FunctionRegistry::registerFunction(const Function::Ptr& function)
+  {
+    _functions.emplace(function->getName(), function);
+  }
 
-    void FunctionRegistry::registerFunction(const Function::Ptr& function)
-    {
-        _functions.emplace(function->getName(), function);
+  Function::Ptr FunctionRegistry::getFunction(const std::string& funcname) const
+  {
+    Functions::const_iterator iter = _functions.find(funcname);
+    if (iter == _functions.end()) {
+      return Function::Ptr();
     }
-
-    Function::Ptr FunctionRegistry::getFunction(const std::string& funcname) const
-    {
-        Functions::const_iterator iter = _functions.find(funcname);
-        if(iter == _functions.end()) {
-            return Function::Ptr();
-        }
-        return iter->second;
-    }
+    return iter->second;
+  }
 }

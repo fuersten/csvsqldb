@@ -35,54 +35,53 @@
 #define csvsqldb_function_traits_h
 
 #include <type_traits>
+
 #include <utility>
 
 
 namespace csvsqldb
 {
+  /**
+   * With the function_traits template, a C++ function can be decomposed into its components. The components consist of the
+   * return type,
+   * the number of arguments and the type of the arguments.
+   */
+  template<class F>
+  struct function_traits;
 
-    /**
-     * With the function_traits template, a C++ function can be decomposed into its components. The components consist of the
-     * return type,
-     * the number of arguments and the type of the arguments.
-     */
-    template <class F>
-    struct function_traits;
+  /**
+   * With the function_traits template, a C++ function can be decomposed into its components. The components consist of the
+   * return type,
+   * the number of arguments and the type of the arguments.
+   */
+  template<class R, class... Args>
+  struct function_traits<R (*)(Args...)> : public function_traits<R(Args...)> {
+  };
 
-    /**
-     * With the function_traits template, a C++ function can be decomposed into its components. The components consist of the
-     * return type,
-     * the number of arguments and the type of the arguments.
-     */
-    template <class R, class... Args>
-    struct function_traits<R (*)(Args...)> : public function_traits<R(Args...)> {
-    };
-
-    /**
-     * With the function_traits template, a C++ function can be decomposed into its components. The components consist of the
-     * return type,
-     * the number of arguments and the type of the arguments.
-     */
-    template <class R, class... Args>
-    struct function_traits<R(Args...)> {
-        using return_type = R;    //!< The return type of the function
+  /**
+   * With the function_traits template, a C++ function can be decomposed into its components. The components consist of the
+   * return type,
+   * the number of arguments and the type of the arguments.
+   */
+  template<class R, class... Args>
+  struct function_traits<R(Args...)> {
+    using return_type = R;  //!< The return type of the function
 #if defined _MSC_VER
-        static const std::size_t arity = sizeof...(Args);    //!< The number of arguments of the function
+    static const std::size_t arity = sizeof...(Args);  //!< The number of arguments of the function
 #else
-        static constexpr std::size_t arity = sizeof...(Args);    //!< The number of arguments of the function
+    static constexpr std::size_t arity = sizeof...(Args);  //!< The number of arguments of the function
 #endif
 
-        /**
-         * Inner helper template for the extraction of argument types of functions.
-         *
-         */
-        template <std::size_t N>
-        struct argument {
-            static_assert(N < arity, "error: invalid parameter index.");
-            using type =
-            typename std::tuple_element<N, std::tuple<Args...>>::type;    //!< The type of the Nth argument of the function
-        };
+    /**
+     * Inner helper template for the extraction of argument types of functions.
+     *
+     */
+    template<std::size_t N>
+    struct argument {
+      static_assert(N < arity, "error: invalid parameter index.");
+      using type = typename std::tuple_element<N, std::tuple<Args...>>::type;  //!< The type of the Nth argument of the function
     };
+  };
 }
 
 #endif

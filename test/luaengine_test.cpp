@@ -32,135 +32,135 @@
 //
 
 
-#include "test.h"
-#include "test_helper.h"
-#include "test/test_util.h"
-
 #include "libcsvsqldb/base/lua_engine.h"
 
-#include <set>
+#include "test.h"
+#include "test/test_util.h"
+#include "test_helper.h"
+
 #include <fstream>
+#include <set>
 
 
 static void doit(int n, double d)
 {
-    std::cout << n * d << std::endl;
+  std::cout << n * d << std::endl;
 }
 
 static int testit(int n)
 {
-    return 2 * n;
+  return 2 * n;
 }
 
 static void done()
 {
-    std::cout << "done" << std::endl;
+  std::cout << "done" << std::endl;
 }
 
 
 class LuaEngineTestCase
 {
 public:
-    void setUp()
-    {
-    }
+  void setUp()
+  {
+  }
 
-    void tearDown()
-    {
-    }
+  void tearDown()
+  {
+  }
 
-    void engineTest()
-    {
-        csvsqldb::luaengine::LuaEngine lua;
+  void engineTest()
+  {
+    csvsqldb::luaengine::LuaEngine lua;
 
-        registerFunction(lua, "mul", testit);
-        registerFunction(lua, "doit", doit);
-        registerFunction(lua, "done", done);
+    registerFunction(lua, "mul", testit);
+    registerFunction(lua, "doit", doit);
+    registerFunction(lua, "done", done);
 
-        std::string text("This is cool!");
-        int i = 2;
-        int n = 3;
+    std::string text("This is cool!");
+    int i = 2;
+    int n = 3;
 
-        lua.doFile(CSVSQLDB_TEST_PATH + std::string("/testdata/luaengine/test.lua"));
+    lua.doFile(CSVSQLDB_TEST_PATH + std::string("/testdata/luaengine/test.lua"));
 
-        MPF_TEST_ASSERTEQUAL(10474, lua.getGlobal<int>("port"));
-        MPF_TEST_ASSERT(std::fabs(47.11 - lua.getGlobal<double>("factor")) < 0.0001);
-        MPF_TEST_ASSERTEQUAL("Thor", lua.getGlobal<std::string>("hostname"));
-        MPF_TEST_ASSERTEQUAL(true, lua.hasGlobal("hostname"));
-        MPF_TEST_ASSERTEQUAL(false, lua.hasGlobal("hutzli"));
-        MPF_TEST_ASSERTEQUAL(true, lua.hasGlobal("server.threads"));
-        MPF_TEST_ASSERTEQUAL(100, lua.getGlobal<int>("server.threads"));
+    MPF_TEST_ASSERTEQUAL(10474, lua.getGlobal<int>("port"));
+    MPF_TEST_ASSERT(std::fabs(47.11 - lua.getGlobal<double>("factor")) < 0.0001);
+    MPF_TEST_ASSERTEQUAL("Thor", lua.getGlobal<std::string>("hostname"));
+    MPF_TEST_ASSERTEQUAL(true, lua.hasGlobal("hostname"));
+    MPF_TEST_ASSERTEQUAL(false, lua.hasGlobal("hutzli"));
+    MPF_TEST_ASSERTEQUAL(true, lua.hasGlobal("server.threads"));
+    MPF_TEST_ASSERTEQUAL(100, lua.getGlobal<int>("server.threads"));
 
-        MPF_TEST_ASSERTEQUAL("This is a test: This is cool!", lua.callFunction<std::string>("testparams", text, i, n));
+    MPF_TEST_ASSERTEQUAL("This is a test: This is cool!", lua.callFunction<std::string>("testparams", text, i, n));
 
-        RedirectStdOut red;
-        lua.callFunction<void>("dosomething");
-        red.flush();
+    RedirectStdOut red;
+    lua.callFunction<void>("dosomething");
+    red.flush();
 
-        std::ifstream log((CSVSQLDB_TEST_PATH + std::string("/stdout.txt")));
-        MPF_TEST_ASSERTEQUAL(true, log.good());
-        std::string line;
-        int line_count(0);
-        while(std::getline(log, line).good()) {
-            switch(line_count) {
-                case 0: {
-                    MPF_TEST_ASSERT(line == "14");
-                    break;
-                }
-                case 1: {
-                    MPF_TEST_ASSERT(line == "done");
-                    break;
-                }
-                case 2: {
-                    MPF_TEST_ASSERT(std::stoi(line) == 30);
-                    break;
-                }
-                case 3: {
-                    MPF_TEST_ASSERT(line == "hi ho");
-                    break;
-                }
-            }
-            ++line_count;
+    std::ifstream log((CSVSQLDB_TEST_PATH + std::string("/stdout.txt")));
+    MPF_TEST_ASSERTEQUAL(true, log.good());
+    std::string line;
+    int line_count(0);
+    while (std::getline(log, line).good()) {
+      switch (line_count) {
+        case 0: {
+          MPF_TEST_ASSERT(line == "14");
+          break;
         }
-        log.close();
-        MPF_TEST_ASSERTEQUAL(4, line_count);
-
-        // TODO: this is not good
-        // remove header static object from luaengine and replace with better implementation!!!
-        csvsqldb::luaengine::sFunctions.clear();
-    }
-
-    void doStringTest()
-    {
-        csvsqldb::luaengine::LuaEngine lua;
-
-        std::string script = "port = 4711";
-        lua.doString(script);
-
-        MPF_TEST_ASSERTEQUAL(true, lua.hasGlobal("port"));
-    }
-
-    void propertiesTest()
-    {
-        csvsqldb::luaengine::LuaEngine lua;
-
-        lua.doFile(CSVSQLDB_TEST_PATH + std::string("/testdata/luaengine/properties.lua"));
-
-        csvsqldb::StringVector properties;
-        lua.getProperties("debug.level", properties);
-
-        MPF_TEST_ASSERTEQUAL(4u, properties.size());
-        std::set<std::string> props;
-        for(auto& property : properties) {
-            props.insert(property);
+        case 1: {
+          MPF_TEST_ASSERT(line == "done");
+          break;
         }
-        MPF_TEST_ASSERTEQUAL(4u, props.size());
-        MPF_TEST_ASSERTEQUAL(1u, props.count("csvsqldb::Filesystem"));
-        MPF_TEST_ASSERTEQUAL(1u, props.count("csvsqldb::DirectoryMonitor"));
-        MPF_TEST_ASSERTEQUAL(1u, props.count("csvsqldb::TcpServer"));
-        MPF_TEST_ASSERTEQUAL(1u, props.count("csvsqldb::application::ApophisServer"));
-        MPF_TEST_ASSERTEQUAL(3, lua.getGlobal<int>("debug.level.csvsqldb::DirectoryMonitor"));
+        case 2: {
+          MPF_TEST_ASSERT(std::stoi(line) == 30);
+          break;
+        }
+        case 3: {
+          MPF_TEST_ASSERT(line == "hi ho");
+          break;
+        }
+      }
+      ++line_count;
     }
+    log.close();
+    MPF_TEST_ASSERTEQUAL(4, line_count);
+
+    // TODO: this is not good
+    // remove header static object from luaengine and replace with better implementation!!!
+    csvsqldb::luaengine::sFunctions.clear();
+  }
+
+  void doStringTest()
+  {
+    csvsqldb::luaengine::LuaEngine lua;
+
+    std::string script = "port = 4711";
+    lua.doString(script);
+
+    MPF_TEST_ASSERTEQUAL(true, lua.hasGlobal("port"));
+  }
+
+  void propertiesTest()
+  {
+    csvsqldb::luaengine::LuaEngine lua;
+
+    lua.doFile(CSVSQLDB_TEST_PATH + std::string("/testdata/luaengine/properties.lua"));
+
+    csvsqldb::StringVector properties;
+    lua.getProperties("debug.level", properties);
+
+    MPF_TEST_ASSERTEQUAL(4u, properties.size());
+    std::set<std::string> props;
+    for (auto& property : properties) {
+      props.insert(property);
+    }
+    MPF_TEST_ASSERTEQUAL(4u, props.size());
+    MPF_TEST_ASSERTEQUAL(1u, props.count("csvsqldb::Filesystem"));
+    MPF_TEST_ASSERTEQUAL(1u, props.count("csvsqldb::DirectoryMonitor"));
+    MPF_TEST_ASSERTEQUAL(1u, props.count("csvsqldb::TcpServer"));
+    MPF_TEST_ASSERTEQUAL(1u, props.count("csvsqldb::application::ApophisServer"));
+    MPF_TEST_ASSERTEQUAL(3, lua.getGlobal<int>("debug.level.csvsqldb::DirectoryMonitor"));
+  }
 };
 
 MPF_REGISTER_TEST_START("ApplicationTestSuite", LuaEngineTestCase);

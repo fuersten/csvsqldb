@@ -39,14 +39,13 @@
 
 namespace csvsqldb
 {
+  const double absTol = 0.0001;
 
-    const double absTol = 0.0001;
-
-    bool compare(double lhs, double rhs)
-    {
-        if(std::fabs(lhs - rhs) <= absTol * std::max({1.0, std::fabs(lhs), std::fabs(rhs)})) {
-            return true;
-        }
-        return false;
+  bool compare(double lhs, double rhs)
+  {
+    if (std::fabs(lhs - rhs) <= absTol * std::max({1.0, std::fabs(lhs), std::fabs(rhs)})) {
+      return true;
     }
+    return false;
+  }
 }

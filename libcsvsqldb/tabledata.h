@@ -44,71 +44,72 @@
 
 namespace csvsqldb
 {
+  class ASTExprNode;
+  typedef std::shared_ptr<ASTExprNode> ASTExprNodePtr;
+  class ASTCreateTableNode;
+  typedef std::shared_ptr<ASTCreateTableNode> ASTCreateTableNodePtr;
 
-    class ASTExprNode;
-    typedef std::shared_ptr<ASTExprNode> ASTExprNodePtr;
-    class ASTCreateTableNode;
-    typedef std::shared_ptr<ASTCreateTableNode> ASTCreateTableNodePtr;
+  class CSVSQLDB_EXPORT TableData
+  {
+  public:
+    struct CSVSQLDB_EXPORT Column {
+      Column()
+      : _type(NONE)
+      , _primaryKey(false)
+      , _unique(false)
+      , _notNull(false)
+      , _length(0)
+      {
+      }
 
-    class CSVSQLDB_EXPORT TableData
-    {
-    public:
-        struct CSVSQLDB_EXPORT Column {
-            Column()
-            : _type(NONE)
-            , _primaryKey(false)
-            , _unique(false)
-            , _notNull(false)
-            , _length(0)
-            {
-            }
-
-            std::string _name;
-            eType _type;
-            bool _primaryKey;
-            bool _unique;
-            bool _notNull;
-            csvsqldb::Any _defaultValue;
-            ASTExprNodePtr _check;
-            uint32_t _length;
-        };
-
-        TableData(const std::string& tableName);
-
-        void addColumn(const std::string name, eType type, bool primaryKey, bool unique, bool notNull, csvsqldb::Any defaultValue, const ASTExprNodePtr& check, uint32_t length);
-        void addConstraint(const csvsqldb::StringVector& primaryKey, const csvsqldb::StringVector& unique, const ASTExprNodePtr& check);
-
-        std::string asJson() const;
-        static TableData fromJson(std::istream& stream);
-
-        static TableData fromCreateAST(const ASTCreateTableNodePtr& createNode);
-
-        const std::string& name() const
-        {
-            return _tableName;
-        }
-        size_t columnCount() const
-        {
-            return _columns.size();
-        }
-        const Column& getColumn(const std::string& name) const;
-        const Column& getColumn(size_t index) const;
-        bool hasColumn(const std::string& name) const;
-
-    private:
-        typedef std::vector<Column> Columns;
-
-        struct TableConstraint {
-            csvsqldb::StringVector _primaryKey;
-            csvsqldb::StringVector _unique;
-            ASTExprNodePtr _check;
-        };
-        typedef std::vector<TableConstraint> TableConstraints;
-
-        std::string _tableName;
-        Columns _columns;
-        TableConstraints _constraints;
+      std::string _name;
+      eType _type;
+      bool _primaryKey;
+      bool _unique;
+      bool _notNull;
+      csvsqldb::Any _defaultValue;
+      ASTExprNodePtr _check;
+      uint32_t _length;
     };
+
+    TableData(const std::string& tableName);
+
+    void addColumn(const std::string name, eType type, bool primaryKey, bool unique, bool notNull, csvsqldb::Any defaultValue,
+                   const ASTExprNodePtr& check, uint32_t length);
+    void addConstraint(const csvsqldb::StringVector& primaryKey, const csvsqldb::StringVector& unique,
+                       const ASTExprNodePtr& check);
+
+    std::string asJson() const;
+    static TableData fromJson(std::istream& stream);
+
+    static TableData fromCreateAST(const ASTCreateTableNodePtr& createNode);
+
+    const std::string& name() const
+    {
+      return _tableName;
+    }
+    size_t columnCount() const
+    {
+      return _columns.size();
+    }
+    const Column& getColumn(const std::string& name) const;
+    const Column& getColumn(size_t index) const;
+    bool hasColumn(const std::string& name) const;
+
+  private:
+    typedef std::vector<Column> Columns;
+
+    struct TableConstraint {
+      csvsqldb::StringVector _primaryKey;
+      csvsqldb::StringVector _unique;
+      ASTExprNodePtr _check;
+    };
+    typedef std::vector<TableConstraint> TableConstraints;
+
+    std::string _tableName;
+    Columns _columns;
+    TableConstraints _constraints;
+  };
 }
 
 #endif

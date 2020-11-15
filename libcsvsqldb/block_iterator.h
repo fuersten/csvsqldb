@@ -38,230 +38,224 @@
 
 #include "aggregation_functions.h"
 #include "block.h"
-
 #include <unordered_map>
 
 
 namespace csvsqldb
 {
+  struct CSVSQLDB_EXPORT GroupingElement {
+    GroupingElement();
+    GroupingElement(const Variants& groupingValues);
 
-    struct CSVSQLDB_EXPORT GroupingElement {
-        GroupingElement();
-        GroupingElement(const Variants& groupingValues);
+    void disconnect();
+    size_t getHash() const;
+    bool operator==(const GroupingElement& rhs) const;
 
-        void disconnect();
-        size_t getHash() const;
-        bool operator==(const GroupingElement& rhs) const;
-
-        Variants _groupingValues;
-    };
+    Variants _groupingValues;
+  };
 }
 
 namespace std
 {
-    template <>
-    struct hash<csvsqldb::GroupingElement> {
-        size_t operator()(csvsqldb::GroupingElement const& element) const
-        {
-            return element.getHash();
-        }
-    };
+  template<>
+  struct hash<csvsqldb::GroupingElement> {
+    size_t operator()(csvsqldb::GroupingElement const& element) const
+    {
+      return element.getHash();
+    }
+  };
 }
 
 namespace csvsqldb
 {
+  class BlockIterator;
+  typedef std::shared_ptr<BlockIterator> BlockIteratorPtr;
 
-    class BlockIterator;
-    typedef std::shared_ptr<BlockIterator> BlockIteratorPtr;
+  class CachingBlockIterator;
+  typedef std::shared_ptr<CachingBlockIterator> CachingBlockIteratorPtr;
 
-    class CachingBlockIterator;
-    typedef std::shared_ptr<CachingBlockIterator> CachingBlockIteratorPtr;
+  class SortingBlockIterator;
+  typedef std::shared_ptr<SortingBlockIterator> SortingBlockIteratorPtr;
 
-    class SortingBlockIterator;
-    typedef std::shared_ptr<SortingBlockIterator> SortingBlockIteratorPtr;
+  class GroupingBlockIterator;
+  typedef std::shared_ptr<GroupingBlockIterator> GroupingBlockIteratorPtr;
 
-    class GroupingBlockIterator;
-    typedef std::shared_ptr<GroupingBlockIterator> GroupingBlockIteratorPtr;
+  class HashingBlockIterator;
+  typedef std::shared_ptr<HashingBlockIterator> HashingBlockIteratorPtr;
 
-    class HashingBlockIterator;
-    typedef std::shared_ptr<HashingBlockIterator> HashingBlockIteratorPtr;
+  struct CSVSQLDB_EXPORT BlockPosition {
+    size_t _block;
+    size_t _offset;
+  };
 
-    struct CSVSQLDB_EXPORT BlockPosition {
-        size_t _block;
-        size_t _offset;
+  typedef std::unordered_multimap<Variant, BlockPosition> HashTable;
+
+  struct CSVSQLDB_EXPORT HashingBlockIteratorContext {
+    HashTable::const_iterator _it;
+    HashTable::const_iterator _end;
+  };
+
+
+  class CSVSQLDB_EXPORT BlockIterator
+  {
+  public:
+    BlockIterator(const Types& types, BlockProvider& blockProvider, BlockManager& blockManager);
+
+    ~BlockIterator();
+
+    BlockIterator& operator=(const BlockIterator& iterator);
+
+    const Values* getNextRow();
+
+  private:
+    Value* getNextValue();
+
+    BlockProvider& _blockProvider;
+    BlockManager& _blockManager;
+    Values _row;
+    Types _types;
+    BlockPtr _block;
+    BlockPtr _previousBlock;
+    size_t _offset;
+    size_t _endOffset;
+    Types::iterator _typeOffset;
+  };
+
+
+  class CSVSQLDB_EXPORT CachingBlockIterator
+  {
+  public:
+    CachingBlockIterator(const Types& types, RowProvider& rowProvider, BlockManager& blockManager);
+
+    virtual ~CachingBlockIterator();
+
+    virtual const Values* getNextRow();
+
+    void rewind();
+
+  private:
+    Value* getNextValue();
+    void getNextBlock();
+
+    RowProvider& _rowProvider;
+    BlockManager& _blockManager;
+    Values _row;
+    Types _types;
+    Blocks _blocks;
+    size_t _currentBlock;
+    size_t _offset;
+    size_t _endOffset;
+    bool _useCache;
+    Types::iterator _typeOffset;
+  };
+
+
+  class CSVSQLDB_EXPORT SortingBlockIterator
+  {
+  public:
+    struct SortOrder {
+      size_t _index;
+      eOrder _order;
     };
 
-    typedef std::unordered_multimap<Variant, BlockPosition> HashTable;
+    typedef std::vector<SortOrder> SortOrders;
 
-    struct CSVSQLDB_EXPORT HashingBlockIteratorContext {
-        HashTable::const_iterator _it;
-        HashTable::const_iterator _end;
-    };
+    SortingBlockIterator(const Types& types, const SortOrders& sortOrders, RowProvider& rowProvider, BlockManager& blockManager);
 
+    virtual ~SortingBlockIterator();
 
-    class CSVSQLDB_EXPORT BlockIterator
-    {
-    public:
-        BlockIterator(const Types& types, BlockProvider& blockProvider, BlockManager& blockManager);
+    virtual const Values* getNextRow();
 
-        ~BlockIterator();
+  private:
+    typedef std::vector<BlockPosition> Rows;
 
-        BlockIterator& operator=(const BlockIterator& iterator);
+    Value* getNextValue();
+    void getNextBlock();
 
-        const Values* getNextRow();
-
-    private:
-        Value* getNextValue();
-
-        BlockProvider& _blockProvider;
-        BlockManager& _blockManager;
-        Values _row;
-        Types _types;
-        BlockPtr _block;
-        BlockPtr _previousBlock;
-        size_t _offset;
-        size_t _endOffset;
-        Types::iterator _typeOffset;
-    };
+    RowProvider& _rowProvider;
+    BlockManager& _blockManager;
+    Values _row;
+    const Types& _types;
+    Blocks _blocks;
+    size_t _currentBlock;
+    size_t _offset;
+    size_t _endOffset;
+    Rows _rows;
+    Rows::const_iterator _rowIter;
+    bool _initialize;
+    Types::const_iterator _typeOffset;
+    const SortOrders _sortOrders;
+  };
 
 
-    class CSVSQLDB_EXPORT CachingBlockIterator
-    {
-    public:
-        CachingBlockIterator(const Types& types, RowProvider& rowProvider, BlockManager& blockManager);
+  class CSVSQLDB_EXPORT GroupingBlockIterator
+  {
+  public:
+    GroupingBlockIterator(const Types& types, const csvsqldb::IndexVector groupingIndices,
+                          const csvsqldb::IndexVector outputIndices, AggregationFunctions& aggregateFunctions,
+                          RowProvider& rowProvider, BlockManager& blockManager);
 
-        virtual ~CachingBlockIterator();
+    virtual ~GroupingBlockIterator();
 
-        virtual const Values* getNextRow();
+    virtual const Values* getNextRow();
 
-        void rewind();
+  private:
+    typedef std::vector<AggregationFunction*> AggregationFunctionPtrs;
+    typedef std::unordered_map<GroupingElement, AggregationFunctionPtrs> GroupMap;
 
-    private:
-        Value* getNextValue();
-        void getNextBlock();
+    Value* getNextValue();
+    void getNextBlock();
 
-        RowProvider& _rowProvider;
-        BlockManager& _blockManager;
-        Values _row;
-        Types _types;
-        Blocks _blocks;
-        size_t _currentBlock;
-        size_t _offset;
-        size_t _endOffset;
-        bool _useCache;
-        Types::iterator _typeOffset;
-    };
-
-
-    class CSVSQLDB_EXPORT SortingBlockIterator
-    {
-    public:
-        struct SortOrder {
-            size_t _index;
-            eOrder _order;
-        };
-
-        typedef std::vector<SortOrder> SortOrders;
-
-        SortingBlockIterator(const Types& types, const SortOrders& sortOrders, RowProvider& rowProvider, BlockManager& blockManager);
-
-        virtual ~SortingBlockIterator();
-
-        virtual const Values* getNextRow();
-
-    private:
-        typedef std::vector<BlockPosition> Rows;
-
-        Value* getNextValue();
-        void getNextBlock();
-
-        RowProvider& _rowProvider;
-        BlockManager& _blockManager;
-        Values _row;
-        const Types& _types;
-        Blocks _blocks;
-        size_t _currentBlock;
-        size_t _offset;
-        size_t _endOffset;
-        Rows _rows;
-        Rows::const_iterator _rowIter;
-        bool _initialize;
-        Types::const_iterator _typeOffset;
-        const SortOrders _sortOrders;
-    };
+    RowProvider& _rowProvider;
+    BlockManager& _blockManager;
+    Values _row;
+    Types _types;
+    Blocks _blocks;
+    size_t _currentBlock;
+    size_t _offset;
+    size_t _endOffset;
+    Blocks _aggrFuncBlocks;
+    bool _useCache;
+    GroupMap _groupMap;
+    const csvsqldb::IndexVector _groupingIndices;
+    const csvsqldb::IndexVector _outputIndices;
+    Types::iterator _typeOffset;
+    AggregationFunctions _aggregateFunctions;
+  };
 
 
-    class CSVSQLDB_EXPORT GroupingBlockIterator
-    {
-    public:
-        GroupingBlockIterator(const Types& types,
-                              const csvsqldb::IndexVector groupingIndices,
-                              const csvsqldb::IndexVector outputIndices,
-                              AggregationFunctions& aggregateFunctions,
-                              RowProvider& rowProvider,
-                              BlockManager& blockManager);
+  class CSVSQLDB_EXPORT HashingBlockIterator
+  {
+  public:
+    HashingBlockIterator(const Types& types, RowProvider& rowProvider, BlockManager& blockManager, size_t hashTableKeyPosition);
 
-        virtual ~GroupingBlockIterator();
+    virtual ~HashingBlockIterator();
 
-        virtual const Values* getNextRow();
+    virtual const Values* getNextRow();
 
-    private:
-        typedef std::vector<AggregationFunction*> AggregationFunctionPtrs;
-        typedef std::unordered_map<GroupingElement, AggregationFunctionPtrs> GroupMap;
+    void setContextForKeyValue(const Value& keyValue);
+    const Values* getNextKeyValueRow();
 
-        Value* getNextValue();
-        void getNextBlock();
+    void reset();
 
-        RowProvider& _rowProvider;
-        BlockManager& _blockManager;
-        Values _row;
-        Types _types;
-        Blocks _blocks;
-        size_t _currentBlock;
-        size_t _offset;
-        size_t _endOffset;
-        Blocks _aggrFuncBlocks;
-        bool _useCache;
-        GroupMap _groupMap;
-        const csvsqldb::IndexVector _groupingIndices;
-        const csvsqldb::IndexVector _outputIndices;
-        Types::iterator _typeOffset;
-        AggregationFunctions _aggregateFunctions;
-    };
+  private:
+    Value* getNextValue();
+    void getNextBlock();
 
-
-    class CSVSQLDB_EXPORT HashingBlockIterator
-    {
-    public:
-        HashingBlockIterator(const Types& types, RowProvider& rowProvider, BlockManager& blockManager, size_t hashTableKeyPosition);
-
-        virtual ~HashingBlockIterator();
-
-        virtual const Values* getNextRow();
-
-        void setContextForKeyValue(const Value& keyValue);
-        const Values* getNextKeyValueRow();
-
-        void reset();
-
-    private:
-        Value* getNextValue();
-        void getNextBlock();
-
-        RowProvider& _rowProvider;
-        BlockManager& _blockManager;
-        Values _row;
-        Types _types;
-        Blocks _blocks;
-        size_t _currentBlock;
-        size_t _offset;
-        size_t _endOffset;
-        bool _useCache;
-        HashTable _hashTable;
-        size_t _hashTableKeyPosition;
-        HashingBlockIteratorContext _context;
-        Types::iterator _typeOffset;
-    };
+    RowProvider& _rowProvider;
+    BlockManager& _blockManager;
+    Values _row;
+    Types _types;
+    Blocks _blocks;
+    size_t _currentBlock;
+    size_t _offset;
+    size_t _endOffset;
+    bool _useCache;
+    HashTable _hashTable;
+    size_t _hashTableKeyPosition;
+    HashingBlockIteratorContext _context;
+    Types::iterator _typeOffset;
+  };
 }
 
 #endif

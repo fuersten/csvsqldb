@@ -30,76 +30,77 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-#include "test.h"
 #include "libcsvsqldb/base/any.h"
 #include "libcsvsqldb/base/float_helper.h"
 #include "libcsvsqldb/base/function_traits.h"
+
+#include "test.h"
 
 
 class AnyTestCase
 {
 public:
-    void setUp()
-    {
-    }
+  void setUp()
+  {
+  }
 
-    void tearDown()
-    {
-    }
+  void tearDown()
+  {
+  }
 
-    void constructionTest()
-    {
-        csvsqldb::Any any_float(47.11f);
-        csvsqldb::Any any_string(std::string("test"));
-        csvsqldb::Any any_integer(384765);
-        csvsqldb::Any any_char(static_cast<const char*>("test"));
-        csvsqldb::Any any_empty;
-        std::vector<std::string> strings;
-        csvsqldb::Any any_vector(strings);
+  void constructionTest()
+  {
+    csvsqldb::Any any_float(47.11f);
+    csvsqldb::Any any_string(std::string("test"));
+    csvsqldb::Any any_integer(384765);
+    csvsqldb::Any any_char(static_cast<const char*>("test"));
+    csvsqldb::Any any_empty;
+    std::vector<std::string> strings;
+    csvsqldb::Any any_vector(strings);
 
-        MPF_TEST_ASSERTEQUAL(true, any_empty.empty());
-        MPF_TEST_ASSERTEQUAL(false, any_float.empty());
-    }
+    MPF_TEST_ASSERTEQUAL(true, any_empty.empty());
+    MPF_TEST_ASSERTEQUAL(false, any_float.empty());
+  }
 
-    void copyTest()
-    {
-        csvsqldb::Any any_integer(384765);
-        csvsqldb::Any any_second(any_integer);
-        MPF_TEST_ASSERTEQUAL(false, any_second.empty());
-        MPF_TEST_ASSERTEQUAL(384765, csvsqldb::any_cast<int32_t>(any_second));
-    }
+  void copyTest()
+  {
+    csvsqldb::Any any_integer(384765);
+    csvsqldb::Any any_second(any_integer);
+    MPF_TEST_ASSERTEQUAL(false, any_second.empty());
+    MPF_TEST_ASSERTEQUAL(384765, csvsqldb::any_cast<int32_t>(any_second));
+  }
 
-    void assignmentTest()
-    {
-        csvsqldb::Any any_integer(384765);
-        csvsqldb::Any any_second = any_integer;
-        MPF_TEST_ASSERTEQUAL(false, any_second.empty());
-        MPF_TEST_ASSERTEQUAL(384765, csvsqldb::any_cast<int32_t>(any_second));
+  void assignmentTest()
+  {
+    csvsqldb::Any any_integer(384765);
+    csvsqldb::Any any_second = any_integer;
+    MPF_TEST_ASSERTEQUAL(false, any_second.empty());
+    MPF_TEST_ASSERTEQUAL(384765, csvsqldb::any_cast<int32_t>(any_second));
 
-        csvsqldb::Any any_third = std::string("Test");
-        MPF_TEST_ASSERTEQUAL(false, any_third.empty());
-        MPF_TEST_ASSERTEQUAL("Test", csvsqldb::any_cast<std::string>(any_third));
+    csvsqldb::Any any_third = std::string("Test");
+    MPF_TEST_ASSERTEQUAL(false, any_third.empty());
+    MPF_TEST_ASSERTEQUAL("Test", csvsqldb::any_cast<std::string>(any_third));
 
-        any_third = 47.11;
-        MPF_TEST_ASSERTEQUAL(false, any_third.empty());
-        MPF_TEST_ASSERT(csvsqldb::compare(47.11, csvsqldb::any_cast<double>(any_third)));
-    }
+    any_third = 47.11;
+    MPF_TEST_ASSERTEQUAL(false, any_third.empty());
+    MPF_TEST_ASSERT(csvsqldb::compare(47.11, csvsqldb::any_cast<double>(any_third)));
+  }
 
-    void castTest()
-    {
-        csvsqldb::Any any_double(47.11);
-        MPF_TEST_ASSERT(csvsqldb::compare(47.11, csvsqldb::any_cast<double>(any_double)));
-        MPF_TEST_EXPECTS(csvsqldb::any_cast<int32_t>(any_double), csvsqldb::BadcastException);
+  void castTest()
+  {
+    csvsqldb::Any any_double(47.11);
+    MPF_TEST_ASSERT(csvsqldb::compare(47.11, csvsqldb::any_cast<double>(any_double)));
+    MPF_TEST_EXPECTS(csvsqldb::any_cast<int32_t>(any_double), csvsqldb::BadcastException);
 
-        MPF_TEST_ASSERT(csvsqldb::compare(47.11, *csvsqldb::any_cast<double>(&any_double)));
-        MPF_TEST_ASSERT(!csvsqldb::any_cast<int32_t>(&any_double));
-    }
+    MPF_TEST_ASSERT(csvsqldb::compare(47.11, *csvsqldb::any_cast<double>(&any_double)));
+    MPF_TEST_ASSERT(!csvsqldb::any_cast<int32_t>(&any_double));
+  }
 
-    void constRefCastTest()
-    {
-        csvsqldb::Any any_integer(384765);
-        MPF_TEST_ASSERTEQUAL(384765, csvsqldb::any_cast<const int&>(any_integer));
-    }
+  void constRefCastTest()
+  {
+    csvsqldb::Any any_integer(384765);
+    MPF_TEST_ASSERTEQUAL(384765, csvsqldb::any_cast<const int&>(any_integer));
+  }
 };
 
 MPF_REGISTER_TEST_START("ApplicationTestSuite", AnyTestCase);

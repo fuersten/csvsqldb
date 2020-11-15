@@ -31,11 +31,11 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
+#include "logging.h"
+
 #include "global_configuration.h"
 #include "log_devices.h"
-#include "logging.h"
 #include "string_helper.h"
-
 #include <boost/regex.hpp>
 
 #include <memory>
@@ -44,65 +44,64 @@
 
 namespace csvsqldb
 {
+  typedef std::shared_ptr<LogDevice> LogDevicePtr;
 
-    typedef std::shared_ptr<LogDevice> LogDevicePtr;
+  LogDevice::~LogDevice()
+  {
+  }
 
-    LogDevice::~LogDevice()
-    {
+  void LogDevice::log(const LogEvent& event)
+  {
+    std::string separator = config<GlobalConfiguration>()->logging.separator;
+
+    std::ostringstream os;
+    os << event._time << separator;
+    os << event._categorie << separator;
+    os << event._tid << separator;
+    if (!event._classname.empty()) {
+      os << event._classname << separator;
     }
-
-    void LogDevice::log(const LogEvent& event)
-    {
-        std::string separator = config<GlobalConfiguration>()->logging.separator;
-
-        std::ostringstream os;
-        os << event._time << separator;
-        os << event._categorie << separator;
-        os << event._tid << separator;
-        if(!event._classname.empty()) {
-            os << event._classname << separator;
-        }
-        if(config<GlobalConfiguration>()->logging.escape_newline) {
-            boost::regex exp("\n|\r");
-            os << regex_replace(event._message, exp, std::string("\\n"));
-        } else {
-            os << event._message;
-        }
-        if(!event._file.empty()) {
-            os << separator << event._file << ":" << event._line;
-        }
-        os << std::endl;
-
-        doLog(os);
+    if (config<GlobalConfiguration>()->logging.escape_newline) {
+      boost::regex exp("\n|\r");
+      os << regex_replace(event._message, exp, std::string("\\n"));
+    } else {
+      os << event._message;
     }
-
-    struct LogDeviceFactory {
-        LogDevicePtr create(const std::string& device) const
-        {
-            if(device == "Console") {
-                return std::make_shared<ConsoleLogDevice>();
-            } else if(device == "None") {
-                return LogDevicePtr();
-            } else {
-                throw Exception("unknown log device " + device);
-            }
-        }
-    };
-
-    static LogDevicePtr s_logDevice;
-
-    void Logging::init()
-    {
-        s_logDevice = LogDeviceFactory().create(config<GlobalConfiguration>()->logging.device);
+    if (!event._file.empty()) {
+      os << separator << event._file << ":" << event._line;
     }
+    os << std::endl;
 
-    void Logging::log(const LogEvent& event)
+    doLog(os);
+  }
+
+  struct LogDeviceFactory {
+    LogDevicePtr create(const std::string& device) const
     {
-        static std::mutex _serializeLog;
-
-        if(s_logDevice) {
-            std::unique_lock<std::mutex> guard(_serializeLog);
-            s_logDevice->log(event);
-        }
+      if (device == "Console") {
+        return std::make_shared<ConsoleLogDevice>();
+      } else if (device == "None") {
+        return LogDevicePtr();
+      } else {
+        throw Exception("unknown log device " + device);
+      }
     }
+  };
+
+  static LogDevicePtr s_logDevice;
+
+  void Logging::init()
+  {
+    s_logDevice = LogDeviceFactory().create(config<GlobalConfiguration>()->logging.device);
+  }
+
+  void Logging::log(const LogEvent& event)
+  {
+    static std::mutex _serializeLog;
+
+    if (s_logDevice) {
+      std::unique_lock<std::mutex> guard(_serializeLog);
+      s_logDevice->log(event);
+    }
+  }
 }

@@ -31,53 +31,53 @@
 //
 
 
-#include "test.h"
-
 #include "libcsvsqldb/sql_parser.h"
 #include "libcsvsqldb/tabledata.h"
+
+#include "test.h"
 
 
 class TabledataTestCase
 {
 public:
-    TabledataTestCase()
-    {
-    }
+  TabledataTestCase()
+  {
+  }
 
-    void setUp()
-    {
-    }
+  void setUp()
+  {
+  }
 
-    void tearDown()
-    {
-    }
+  void tearDown()
+  {
+  }
 
-    void encodeDecodeTest()
-    {
-        csvsqldb::TableData tabledata("TestTable");
+  void encodeDecodeTest()
+  {
+    csvsqldb::TableData tabledata("TestTable");
 
-        csvsqldb::FunctionRegistry functions;
-        csvsqldb::SQLParser parser(functions);
-        csvsqldb::ASTExprNodePtr check;
-        tabledata.addColumn("id", csvsqldb::INT, true, false, false, csvsqldb::Any(), check, 0);
-        csvsqldb::Any defaultValue = std::string("Lars");
-        tabledata.addColumn("name", csvsqldb::STRING, false, false, false, defaultValue, check, 25);
-        check = parser.parseExpression("age >= 18");
-        tabledata.addColumn("age", csvsqldb::INT, false, false, false, csvsqldb::Any(), check, 0);
+    csvsqldb::FunctionRegistry functions;
+    csvsqldb::SQLParser parser(functions);
+    csvsqldb::ASTExprNodePtr check;
+    tabledata.addColumn("id", csvsqldb::INT, true, false, false, csvsqldb::Any(), check, 0);
+    csvsqldb::Any defaultValue = std::string("Lars");
+    tabledata.addColumn("name", csvsqldb::STRING, false, false, false, defaultValue, check, 25);
+    check = parser.parseExpression("age >= 18");
+    tabledata.addColumn("age", csvsqldb::INT, false, false, false, csvsqldb::Any(), check, 0);
 
-        check = csvsqldb::ASTExprNodePtr();
-        csvsqldb::StringVector primaryKeys = { "id", "name" };
-        tabledata.addConstraint(primaryKeys, csvsqldb::StringVector(), check);
-        csvsqldb::StringVector unique = { "age" };
-        tabledata.addConstraint(csvsqldb::StringVector(), unique, check);
-        check = parser.parseExpression("id > 4711 AND name = 'Lars'");
-        tabledata.addConstraint(csvsqldb::StringVector(), csvsqldb::StringVector(), check);
+    check = csvsqldb::ASTExprNodePtr();
+    csvsqldb::StringVector primaryKeys = {"id", "name"};
+    tabledata.addConstraint(primaryKeys, csvsqldb::StringVector(), check);
+    csvsqldb::StringVector unique = {"age"};
+    tabledata.addConstraint(csvsqldb::StringVector(), unique, check);
+    check = parser.parseExpression("id > 4711 AND name = 'Lars'");
+    tabledata.addConstraint(csvsqldb::StringVector(), csvsqldb::StringVector(), check);
 
-        std::string json = tabledata.asJson();
-        std::stringstream ss(json);
-        csvsqldb::TableData decoded = csvsqldb::TableData::fromJson(ss);
-        MPF_TEST_ASSERTEQUAL(json, decoded.asJson());
-    }
+    std::string json = tabledata.asJson();
+    std::stringstream ss(json);
+    csvsqldb::TableData decoded = csvsqldb::TableData::fromJson(ss);
+    MPF_TEST_ASSERTEQUAL(json, decoded.asJson());
+  }
 };
 
 MPF_REGISTER_TEST_START("TabledataTestSuite", TabledataTestCase);

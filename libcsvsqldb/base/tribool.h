@@ -39,97 +39,97 @@
 
 namespace csvsqldb
 {
+  /**
+   * This class implements a 3-state boolean. It has no concrete status before calling the set method.
+   */
+  class CSVSQLDB_EXPORT Tribool
+  {
+  public:
     /**
-     * This class implements a 3-state boolean. It has no concrete status before calling the set method.
+     * Constructs a tribool instance. The state is indeterminate.
      */
-    class CSVSQLDB_EXPORT Tribool
+    Tribool()
+    : _state(false)
+    , _isIndeterminate(true)
     {
-    public:
-        /**
-         * Constructs a tribool instance. The state is indeterminate.
-         */
-        Tribool()
-        : _state(false)
-        , _isIndeterminate(true)
-        {
-        }
+    }
 
-        /**
-         * Compares two tribool objects.
-         * @return false, if only one is indeterminate or if both are indeterminate. false, if both are not indeterminate and the
-         * states
-         * are not equal (e.g. one is true and the other false). true, if both are not indeterminate and the states are equal
-         * (e.g. both
-         * true or both false).
-         */
-        bool operator==(const Tribool& rhs)
-        {
-            if(_isIndeterminate != rhs._isIndeterminate || _isIndeterminate) {
-                return false;
-            }
+    /**
+     * Compares two tribool objects.
+     * @return false, if only one is indeterminate or if both are indeterminate. false, if both are not indeterminate and the
+     * states
+     * are not equal (e.g. one is true and the other false). true, if both are not indeterminate and the states are equal
+     * (e.g. both
+     * true or both false).
+     */
+    bool operator==(const Tribool& rhs)
+    {
+      if (_isIndeterminate != rhs._isIndeterminate || _isIndeterminate) {
+        return false;
+      }
 
-            return _state == rhs._state;
-        }
+      return _state == rhs._state;
+    }
 
-        /**
-         * Retrieves, if the tribool has a determined status and if it is true.
-         * @return true, if the tribool is not indeterminate and set to true, otherwise false.
-         */
-        bool isTrue() const
-        {
-            return _isIndeterminate ? false : _state;
-        }
+    /**
+     * Retrieves, if the tribool has a determined status and if it is true.
+     * @return true, if the tribool is not indeterminate and set to true, otherwise false.
+     */
+    bool isTrue() const
+    {
+      return _isIndeterminate ? false : _state;
+    }
 
-        /**
-         * Retrieves, if the tribool has a determined status and if it is false.
-         * @return true, if the tribool is not indeterminate and set to false, otherwise false.
-         */
-        bool isFalse() const
-        {
-            return _isIndeterminate ? false : !_state;
-        }
+    /**
+     * Retrieves, if the tribool has a determined status and if it is false.
+     * @return true, if the tribool is not indeterminate and set to false, otherwise false.
+     */
+    bool isFalse() const
+    {
+      return _isIndeterminate ? false : !_state;
+    }
 
-        /**
-         * Retrieves, if the tribool is in an indeterminate status.
-         * @return true, if the tribool is in an indeterminate status, otherwise false.
-         */
-        bool isIndeterminate() const
-        {
-            return _isIndeterminate;
-        }
+    /**
+     * Retrieves, if the tribool is in an indeterminate status.
+     * @return true, if the tribool is in an indeterminate status, otherwise false.
+     */
+    bool isIndeterminate() const
+    {
+      return _isIndeterminate;
+    }
 
-        /**
-         * Sets the concrete status of the tribool. After setting the state, isIndeterminate will return false.
-         * @param state The concrete status, that the tribool should have
-         */
-        void set(bool state)
-        {
-            _isIndeterminate = false;
-            _state = state;
-        }
+    /**
+     * Sets the concrete status of the tribool. After setting the state, isIndeterminate will return false.
+     * @param state The concrete status, that the tribool should have
+     */
+    void set(bool state)
+    {
+      _isIndeterminate = false;
+      _state = state;
+    }
 
-        /**
-         * Tests if the status of the tribool is true.
-         * @return true, if the tribool is not indeterminate and set to true, otherwise false.
-         */
-        explicit operator bool() const
-        {
-            return isTrue();
-        }
+    /**
+     * Tests if the status of the tribool is true.
+     * @return true, if the tribool is not indeterminate and set to true, otherwise false.
+     */
+    explicit operator bool() const
+    {
+      return isTrue();
+    }
 
-        /**
-         * Tests if the status of the tribool is false.
-         * @return true, if the tribool is not indeterminate and set to false, otherwise false.
-         */
-        bool operator!() const
-        {
-            return isFalse();
-        }
+    /**
+     * Tests if the status of the tribool is false.
+     * @return true, if the tribool is not indeterminate and set to false, otherwise false.
+     */
+    bool operator!() const
+    {
+      return isFalse();
+    }
 
-    private:
-        bool _state;
-        bool _isIndeterminate;
-    };
+  private:
+    bool _state;
+    bool _isIndeterminate;
+  };
 }
 
 #endif

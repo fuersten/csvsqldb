@@ -40,93 +40,92 @@
 
 namespace csvsqldb
 {
+  std::string& toupper(std::string& s)
+  {
+    std::transform(s.begin(), s.end(), s.begin(), ::toupper);
+    return s;
+  }
 
-    std::string& toupper(std::string& s)
-    {
-        std::transform(s.begin(), s.end(), s.begin(), ::toupper);
-        return s;
-    }
+  std::string toupper_copy(const std::string& s)
+  {
+    std::string str(s);
+    std::transform(str.begin(), str.end(), str.begin(), ::toupper);
+    return str;
+  }
 
-    std::string toupper_copy(const std::string& s)
-    {
-        std::string str(s);
-        std::transform(str.begin(), str.end(), str.begin(), ::toupper);
-        return str;
-    }
+  std::string& tolower(std::string& s)
+  {
+    std::transform(s.begin(), s.end(), s.begin(), ::tolower);
+    return s;
+  }
 
-    std::string& tolower(std::string& s)
-    {
-        std::transform(s.begin(), s.end(), s.begin(), ::tolower);
-        return s;
-    }
+  std::string tolower_copy(const std::string& s)
+  {
+    std::string str(s);
+    std::transform(str.begin(), str.end(), str.begin(), ::tolower);
+    return str;
+  }
 
-    std::string tolower_copy(const std::string& s)
-    {
-        std::string str(s);
-        std::transform(str.begin(), str.end(), str.begin(), ::tolower);
-        return str;
-    }
-
-    int stricmp(const char* str1, const char* str2)
-    {
+  int stricmp(const char* str1, const char* str2)
+  {
 #if defined _MSC_VER
-        return ::stricmp(str1, str2);
+    return ::stricmp(str1, str2);
 #else
-        return ::strcasecmp(str1, str2);
+    return ::strcasecmp(str1, str2);
 #endif
-    }
+  }
 
-    int strnicmp(const char* str1, const char* str2, size_t count)
-    {
+  int strnicmp(const char* str1, const char* str2, size_t count)
+  {
 #if defined _MSC_VER
-        return ::strnicmp(str1, str2, count);
+    return ::strnicmp(str1, str2, count);
 #else
-        return ::strncasecmp(str1, str2, count);
+    return ::strncasecmp(str1, str2, count);
 #endif
-    }
+  }
 
-    std::string trim_right(const std::string& s)
-    {
-        size_t endpos = s.find_last_not_of(" \t");
-        if(std::string::npos != endpos) {
-            return s.substr(0, endpos + 1);
-        }
-        return s;
+  std::string trim_right(const std::string& s)
+  {
+    size_t endpos = s.find_last_not_of(" \t");
+    if (std::string::npos != endpos) {
+      return s.substr(0, endpos + 1);
     }
+    return s;
+  }
 
-    std::string trim_left(const std::string& s)
-    {
-        size_t startpos = s.find_first_not_of(" \t");
-        if(std::string::npos != startpos) {
-            return s.substr(startpos);
-        }
-        return s;
+  std::string trim_left(const std::string& s)
+  {
+    size_t startpos = s.find_first_not_of(" \t");
+    if (std::string::npos != startpos) {
+      return s.substr(startpos);
     }
+    return s;
+  }
 
-    bool decode(const std::string& in, std::string& out)
-    {
-        out.clear();
-        out.reserve(in.size());
-        for(std::size_t i = 0; i < in.size(); ++i) {
-            if(in[i] == '%') {
-                if(i + 3 <= in.size()) {
-                    int value = 0;
-                    std::istringstream is(in.substr(i + 1, 2));
-                    if(is >> std::hex >> value) {
-                        out += static_cast<char>(value);
-                        i += 2;
-                    } else {
-                        return false;
-                    }
-                } else {
-                    return false;
-                }
-            } else if(in[i] == '+') {
-                out += ' ';
-            } else {
-                out += in[i];
-            }
+  bool decode(const std::string& in, std::string& out)
+  {
+    out.clear();
+    out.reserve(in.size());
+    for (std::size_t i = 0; i < in.size(); ++i) {
+      if (in[i] == '%') {
+        if (i + 3 <= in.size()) {
+          int value = 0;
+          std::istringstream is(in.substr(i + 1, 2));
+          if (is >> std::hex >> value) {
+            out += static_cast<char>(value);
+            i += 2;
+          } else {
+            return false;
+          }
+        } else {
+          return false;
         }
-        return true;
+      } else if (in[i] == '+') {
+        out += ' ';
+      } else {
+        out += in[i];
+      }
     }
+    return true;
+  }
 }

@@ -39,75 +39,76 @@
 #include "exception.h"
 #include "types.h"
 
+#include <chrono>
 #include <cstdint>
 #include <ctime>
-#include <chrono>
 #include <ostream>
 #include <ratio>
 
 #ifndef _MSC_VER
-#include <sys/times.h>
-#include <unistd.h>
+  #include <sys/times.h>
+
+  #include <unistd.h>
 #endif
 
 
 namespace csvsqldb
 {
-    /**
-     * Time measurement handling stuff
-     */
-    namespace chrono
+  /**
+   * Time measurement handling stuff
+   */
+  namespace chrono
+  {
+    // TODO LCF: move to detail
+    inline long tickFactor()
     {
-        // TODO LCF: move to detail
-        inline long tickFactor()
-        {
-            static long factor = 0;
-#ifndef _MSC_VER    // TODO LCF: find an adequat implementation for Windows
-            if(!factor) {
-                if((factor = ::sysconf(_SC_CLK_TCK)) <= 0) {
-                    factor = -1;
-                } else {
-                    factor = 1000l / factor;
-                    if(!factor) {
-                        factor = -1;
-                    }
-                }
-            }
-#endif
-            return factor;
+      static long factor = 0;
+#ifndef _MSC_VER  // TODO LCF: find an adequat implementation for Windows
+      if (!factor) {
+        if ((factor = ::sysconf(_SC_CLK_TCK)) <= 0) {
+          factor = -1;
+        } else {
+          factor = 1000l / factor;
+          if (!factor) {
+            factor = -1;
+          }
         }
-
-        struct CSVSQLDB_EXPORT ProcessTimeDuration {
-            long _real;
-            long _user;
-            long _system;
-        };
-
-        struct CSVSQLDB_EXPORT ProcessTimePoint {
-            long _real;
-            long _user;
-            long _system;
-
-            friend CSVSQLDB_EXPORT ProcessTimeDuration operator-(const ProcessTimePoint& lhs, const ProcessTimePoint& rhs);
-        };
-
-        CSVSQLDB_EXPORT ProcessTimeDuration operator-(const ProcessTimePoint& lhs, const ProcessTimePoint& rhs);
-
-        /**
-         * A clock for the retrieval of real, user and system time. Can be used to measure runtimes.
-         */
-        class CSVSQLDB_EXPORT ProcessTimeClock : noncopyable
-        {
-        public:
-            // TODO LCF: move implementation to detail
-            static ProcessTimePoint now();
-        };
+      }
+#endif
+      return factor;
     }
+
+    struct CSVSQLDB_EXPORT ProcessTimeDuration {
+      long _real;
+      long _user;
+      long _system;
+    };
+
+    struct CSVSQLDB_EXPORT ProcessTimePoint {
+      long _real;
+      long _user;
+      long _system;
+
+      friend CSVSQLDB_EXPORT ProcessTimeDuration operator-(const ProcessTimePoint& lhs, const ProcessTimePoint& rhs);
+    };
+
+    CSVSQLDB_EXPORT ProcessTimeDuration operator-(const ProcessTimePoint& lhs, const ProcessTimePoint& rhs);
+
+    /**
+     * A clock for the retrieval of real, user and system time. Can be used to measure runtimes.
+     */
+    class CSVSQLDB_EXPORT ProcessTimeClock : noncopyable
+    {
+    public:
+      // TODO LCF: move implementation to detail
+      static ProcessTimePoint now();
+    };
+  }
 }
 
 namespace std
 {
-    CSVSQLDB_EXPORT std::ostream& operator<<(std::ostream& out, const csvsqldb::chrono::ProcessTimeDuration& duration);
+  CSVSQLDB_EXPORT std::ostream& operator<<(std::ostream& out, const csvsqldb::chrono::ProcessTimeDuration& duration);
 }
 
 #endif

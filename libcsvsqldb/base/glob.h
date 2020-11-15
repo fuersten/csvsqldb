@@ -44,14 +44,13 @@
 
 namespace csvsqldb
 {
-
-    /** This function expands the given pattern to a number of files matching the expansion pattern.
-     *  Will throw an Exception upon failure.
-     *  @param pattern The expansion pattern to use for file expansion
-     *  @param files The files that match the expansion pattern
-     *  @return Number of files found.
-     */
-    CSVSQLDB_EXPORT size_t expand(const std::string& pattern, StringVector& files);
+  /** This function expands the given pattern to a number of files matching the expansion pattern.
+   *  Will throw an Exception upon failure.
+   *  @param pattern The expansion pattern to use for file expansion
+   *  @param files The files that match the expansion pattern
+   *  @return Number of files found.
+   */
+  CSVSQLDB_EXPORT size_t expand(const std::string& pattern, StringVector& files);
 }
 
 

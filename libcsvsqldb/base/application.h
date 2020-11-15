@@ -42,53 +42,53 @@
  */
 namespace csvsqldb
 {
+  /**
+   * The main application class used for all csvsqldb applications.
+   */
+  class CSVSQLDB_EXPORT Application
+  {
+  public:
     /**
-     * The main application class used for all csvsqldb applications.
+     * Constructs the application object.
+     * Normally the parameters are the same as to the main function.
+     * @param argc Number of arguments supplied by argv
+     * @param argv Arguments to the application
      */
-    class CSVSQLDB_EXPORT Application
-    {
-    public:
-        /**
-         * Constructs the application object.
-         * Normally the parameters are the same as to the main function.
-         * @param argc Number of arguments supplied by argv
-         * @param argv Arguments to the application
-         */
-        Application(int argc, char** argv);
+    Application(int argc, char** argv);
 
-        /**
-         * Starts the execution of the application code.
-         * Internally calls in sequence
-         * 1. setUp()
-         * 2. doRun()
-         * 3. tearDown()
-         * @return Returns the applications exit code directly to the operating system.
-         */
-        int run();
+    /**
+     * Starts the execution of the application code.
+     * Internally calls in sequence
+     * 1. setUp()
+     * 2. doRun()
+     * 3. tearDown()
+     * @return Returns the applications exit code directly to the operating system.
+     */
+    int run();
 
-    protected:
-        /**
-         * Used to configure the application.
-         * @return Should return true, if the application should go on calling doRun or false in order to terminate the
-         * application.
-         */
-        virtual bool setUp(int argc, char** argv) = 0;
+  protected:
+    /**
+     * Used to configure the application.
+     * @return Should return true, if the application should go on calling doRun or false in order to terminate the
+     * application.
+     */
+    virtual bool setUp(int argc, char** argv) = 0;
 
-        /**
-         * This template method should contain the actual application code. It gets called after the setUp method.
-         * @return Returns the applications exit code directly to the operating system.
-         */
-        virtual int doRun() = 0;
+    /**
+     * This template method should contain the actual application code. It gets called after the setUp method.
+     * @return Returns the applications exit code directly to the operating system.
+     */
+    virtual int doRun() = 0;
 
-        /**
-         * Used to deinitialize the application.
-         */
-        virtual void tearDown(){};
+    /**
+     * Used to deinitialize the application.
+     */
+    virtual void tearDown(){};
 
-    private:
-        int _argc;
-        char** _argv;
-    };
+  private:
+    int _argc;
+    char** _argv;
+  };
 }
 
 #endif

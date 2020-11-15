@@ -41,51 +41,51 @@
 
 namespace std
 {
-    template <>
-    struct hash<const char*> {
-        typedef const char* argument_type;
-        typedef std::size_t result_type;
+  template<>
+  struct hash<const char*> {
+    typedef const char* argument_type;
+    typedef std::size_t result_type;
 
-        result_type operator()(argument_type const& val) const
-        {
-            argument_type str = val;
-            result_type hash = 5381;
-            int c = 0;
+    result_type operator()(argument_type const& val) const
+    {
+      argument_type str = val;
+      result_type hash = 5381;
+      int c = 0;
 
-            while((c = *str++)) {
-                hash = ((hash << 5) + hash) ^ static_cast<result_type>(c);
-            }
+      while ((c = *str++)) {
+        hash = ((hash << 5) + hash) ^ static_cast<result_type>(c);
+      }
 
-            return hash;
-        }
-    };
+      return hash;
+    }
+  };
 }
 
 namespace csvsqldb
 {
-    // Extracted from the following paper:
-    // http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2014/n3876.pdf
+  // Extracted from the following paper:
+  // http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2014/n3876.pdf
 
-    template <typename T>
-    void hash_combine(std::size_t& seed, const T& val)
-    {
-        seed ^= std::hash<T>()(val) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
-    }
+  template<typename T>
+  void hash_combine(std::size_t& seed, const T& val)
+  {
+    seed ^= std::hash<T>()(val) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+  }
 
-    template <typename T, typename... Types>
-    void hash_combine(std::size_t& seed, const T& val, const Types&... args)
-    {
-        hash_combine(seed, val);
-        hash_combine(seed, args...);
-    }
+  template<typename T, typename... Types>
+  void hash_combine(std::size_t& seed, const T& val, const Types&... args)
+  {
+    hash_combine(seed, val);
+    hash_combine(seed, args...);
+  }
 
-    template <typename... Types>
-    std::size_t hash_val(const Types&... args)
-    {
-        std::size_t seed = 0;
-        hash_combine(seed, args...);
-        return seed;
-    }
+  template<typename... Types>
+  std::size_t hash_val(const Types&... args)
+  {
+    std::size_t seed = 0;
+    hash_combine(seed, args...);
+    return seed;
+  }
 }
 
 #endif

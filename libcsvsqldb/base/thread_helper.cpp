@@ -36,13 +36,13 @@
 
 namespace csvsqldb
 {
-    ThreadJoinGuard::ThreadJoinGuard(std::thread& t)
-    : _t(t)
-    {
-    }
+  ThreadJoinGuard::ThreadJoinGuard(std::thread& t)
+  : _t(t)
+  {
+  }
 
-    ThreadJoinGuard::~ThreadJoinGuard()
-    {
-        _t.join();
-    }
+  ThreadJoinGuard::~ThreadJoinGuard()
+  {
+    _t.join();
+  }
 }

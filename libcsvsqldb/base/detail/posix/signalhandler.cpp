@@ -32,160 +32,159 @@
 //
 
 #include "base/signalhandler.h"
+
 #include "base/exception.h"
 #include "base/logging.h"
 
 #include <map>
 #include <mutex>
-#include <thread>
-
-#include <unistd.h>
 #include <pthread.h>
 #include <signal.h>
+#include <thread>
+#include <unistd.h>
 
 
 namespace csvsqldb
 {
+  typedef std::map<int, SignalHandler::SignalEventHandlerList> SignalToHandlerMap;
 
-    typedef std::map<int, SignalHandler::SignalEventHandlerList> SignalToHandlerMap;
+  static std::mutex signal_mutex;
+  static sigset_t signal_mask;
 
-    static std::mutex signal_mutex;
-    static sigset_t signal_mask;
-
-    class SignalHandlerThreadObject
+  class SignalHandlerThreadObject
+  {
+  public:
+    SignalHandlerThreadObject(SignalHandler* sighandler)
+    : _quit(false)
+    , _sighandler(sighandler)
     {
-    public:
-        SignalHandlerThreadObject(SignalHandler* sighandler)
-        : _quit(false)
-        , _sighandler(sighandler)
-        {
-        }
+    }
 
-        void run()
-        {
-            int sig_caught = 0;
+    void run()
+    {
+      int sig_caught = 0;
 
-            while(!_quit) {
-                if(::sigwait(&signal_mask, &sig_caught) != -1) {
-                    if(!_quit) {
-                        switch(sig_caught) {
-                            case SIGTERM:
-                            case SIGINT:
-                            case SIGQUIT:
-                            case SIGHUP:
-                            case SIGALRM:
-                            case SIGUSR1:
-                            case SIGUSR2: {
-                                CSVSQLDB_CLASSLOG(SignalHandler, 1, "Signal " << sig_caught << " intercepted.");
-                                for(auto handler : _sighandler->handler(sig_caught)) {
-                                    if(handler->onSignal(sig_caught) < 0) {
-                                        break;
-                                    }
-                                }
-                                break;
-                            }
-                            case 0:
-                                // just ignore this signal
-                                break;
-                            default:
-                                CSVSQLDB_ERRORLOG("Unhandled signal caught " << sig_caught);
-                                break;
-                        }
-                    }
-                } else {
-                    CSVSQLDB_ERRORLOG("SignalHandler: " << errnoText());
+      while (!_quit) {
+        if (::sigwait(&signal_mask, &sig_caught) != -1) {
+          if (!_quit) {
+            switch (sig_caught) {
+              case SIGTERM:
+              case SIGINT:
+              case SIGQUIT:
+              case SIGHUP:
+              case SIGALRM:
+              case SIGUSR1:
+              case SIGUSR2: {
+                CSVSQLDB_CLASSLOG(SignalHandler, 1, "Signal " << sig_caught << " intercepted.");
+                for (auto handler : _sighandler->handler(sig_caught)) {
+                  if (handler->onSignal(sig_caught) < 0) {
                     break;
+                  }
                 }
+                break;
+              }
+              case 0:
+                // just ignore this signal
+                break;
+              default:
+                CSVSQLDB_ERRORLOG("Unhandled signal caught " << sig_caught);
+                break;
             }
-        }
-
-        bool _quit;
-        SignalHandler* _sighandler;
-    };
-
-    struct SignalHandler::Private {
-        Private(SignalHandler* sighandler)
-        : _stopSignalHandling(false)
-        , _threadObject(sighandler)
-        {
-        }
-
-        ~Private()
-        {
-            _threadObject._quit = true;
-            ::kill(getpid(), SIGINT);
-            _handlerThread.join();
-        }
-
-        void start()
-        {
-            _handlerThread = std::thread(std::bind(&SignalHandlerThreadObject::run, &_threadObject));
-        }
-
-        SignalToHandlerMap _handlerMap;
-        volatile bool _stopSignalHandling;
-        SignalHandlerThreadObject _threadObject;
-        std::thread _handlerThread;
-    };
-
-
-    SignalHandler::SignalHandler()
-    : _p(new Private(this))
-    {
-        sigemptyset(&signal_mask);
-        sigaddset(&signal_mask, SIGTERM);
-        sigaddset(&signal_mask, SIGINT);
-        sigaddset(&signal_mask, SIGQUIT);
-        sigaddset(&signal_mask, SIGHUP);
-        sigaddset(&signal_mask, SIGALRM);
-        sigaddset(&signal_mask, SIGUSR1);
-        sigaddset(&signal_mask, SIGUSR2);
-
-        /* any newly created threads inherit the signal mask */
-        if(::pthread_sigmask(SIG_BLOCK, &signal_mask, NULL) != 0) {
-            throwSysError("SignalHandler");
-        }
-
-        _p->start();
-    }
-
-    SignalHandler::~SignalHandler()
-    {
-    }
-
-    void SignalHandler::addHandler(int signum, SignalEventHandler* handler)
-    {
-        std::unique_lock<std::mutex> guard(signal_mutex);
-
-        auto iter = _p->_handlerMap.find(signum);
-        if(iter == _p->_handlerMap.end()) {
-            SignalEventHandlerList list;
-            list.push_back(handler);
-            _p->_handlerMap.insert(std::make_pair(signum, list));
+          }
         } else {
-            iter->second.push_back(handler);
+          CSVSQLDB_ERRORLOG("SignalHandler: " << errnoText());
+          break;
         }
+      }
     }
 
-    void SignalHandler::removeHandler(int signum, SignalEventHandler* handler)
+    bool _quit;
+    SignalHandler* _sighandler;
+  };
+
+  struct SignalHandler::Private {
+    Private(SignalHandler* sighandler)
+    : _stopSignalHandling(false)
+    , _threadObject(sighandler)
     {
-        std::unique_lock<std::mutex> guard(signal_mutex);
-
-        auto iter = _p->_handlerMap.find(signum);
-        if(iter != _p->_handlerMap.end()) {
-            std::remove(iter->second.begin(), iter->second.end(), handler);
-        }
     }
 
-    SignalHandler::SignalEventHandlerList SignalHandler::handler(int signum) const
+    ~Private()
     {
-        std::unique_lock<std::mutex> guard(signal_mutex);
-
-        auto iter = _p->_handlerMap.find(signum);
-        if(iter != _p->_handlerMap.end()) {
-            return iter->second;
-        }
-
-        return SignalHandler::SignalEventHandlerList();
+      _threadObject._quit = true;
+      ::kill(getpid(), SIGINT);
+      _handlerThread.join();
     }
+
+    void start()
+    {
+      _handlerThread = std::thread(std::bind(&SignalHandlerThreadObject::run, &_threadObject));
+    }
+
+    SignalToHandlerMap _handlerMap;
+    volatile bool _stopSignalHandling;
+    SignalHandlerThreadObject _threadObject;
+    std::thread _handlerThread;
+  };
+
+
+  SignalHandler::SignalHandler()
+  : _p(new Private(this))
+  {
+    sigemptyset(&signal_mask);
+    sigaddset(&signal_mask, SIGTERM);
+    sigaddset(&signal_mask, SIGINT);
+    sigaddset(&signal_mask, SIGQUIT);
+    sigaddset(&signal_mask, SIGHUP);
+    sigaddset(&signal_mask, SIGALRM);
+    sigaddset(&signal_mask, SIGUSR1);
+    sigaddset(&signal_mask, SIGUSR2);
+
+    /* any newly created threads inherit the signal mask */
+    if (::pthread_sigmask(SIG_BLOCK, &signal_mask, NULL) != 0) {
+      throwSysError("SignalHandler");
+    }
+
+    _p->start();
+  }
+
+  SignalHandler::~SignalHandler()
+  {
+  }
+
+  void SignalHandler::addHandler(int signum, SignalEventHandler* handler)
+  {
+    std::unique_lock<std::mutex> guard(signal_mutex);
+
+    auto iter = _p->_handlerMap.find(signum);
+    if (iter == _p->_handlerMap.end()) {
+      SignalEventHandlerList list;
+      list.push_back(handler);
+      _p->_handlerMap.insert(std::make_pair(signum, list));
+    } else {
+      iter->second.push_back(handler);
+    }
+  }
+
+  void SignalHandler::removeHandler(int signum, SignalEventHandler* handler)
+  {
+    std::unique_lock<std::mutex> guard(signal_mutex);
+
+    auto iter = _p->_handlerMap.find(signum);
+    if (iter != _p->_handlerMap.end()) {
+      std::remove(iter->second.begin(), iter->second.end(), handler);
+    }
+  }
+
+  SignalHandler::SignalEventHandlerList SignalHandler::handler(int signum) const
+  {
+    std::unique_lock<std::mutex> guard(signal_mutex);
+
+    auto iter = _p->_handlerMap.find(signum);
+    if (iter != _p->_handlerMap.end()) {
+      return iter->second;
+    }
+
+    return SignalHandler::SignalEventHandlerList();
+  }
 }

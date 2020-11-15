@@ -24,47 +24,46 @@
 #include "libcsvsqldb/inc.h"
 
 #include "types.h"
+#include <boost/filesystem.hpp>
 
 #include <map>
 #include <memory>
-
-#include <boost/filesystem.hpp>
 
 namespace fs = boost::filesystem;
 
 
 namespace csvsqldb
 {
-    /**
-     * A console class to support interactive shells. The implementation is based on the linenoise library.
-     */
-    class CSVSQLDB_EXPORT Console
-    {
-    public:
-        typedef std::function<bool(const csvsqldb::StringVector&)> CommandFunction;
-        typedef std::function<bool(const std::string&)> DefaultCommandFunction;
+  /**
+   * A console class to support interactive shells. The implementation is based on the linenoise library.
+   */
+  class CSVSQLDB_EXPORT Console
+  {
+  public:
+    typedef std::function<bool(const csvsqldb::StringVector&)> CommandFunction;
+    typedef std::function<bool(const std::string&)> DefaultCommandFunction;
 
-        Console(const std::string& prompt, const fs::path& historyPath);
+    Console(const std::string& prompt, const fs::path& historyPath);
 
-        ~Console();
+    ~Console();
 
-        void run();
-        void stop();
+    void run();
+    void stop();
 
-        void addCommand(const std::string& command, CommandFunction function);
-        void addDefault(DefaultCommandFunction function);
+    void addCommand(const std::string& command, CommandFunction function);
+    void addDefault(DefaultCommandFunction function);
 
-        void clearHistory();
+    void clearHistory();
 
-    private:
-        typedef std::map<std::string, CommandFunction> Commands;
+  private:
+    typedef std::map<std::string, CommandFunction> Commands;
 
-        fs::path _historyPath;
-        Commands _commands;
-        DefaultCommandFunction _defaultCommand;
-        std::string _prompt;
-        bool _stop;
-    };
+    fs::path _historyPath;
+    Commands _commands;
+    DefaultCommandFunction _defaultCommand;
+    std::string _prompt;
+    bool _stop;
+  };
 }
 
 #endif

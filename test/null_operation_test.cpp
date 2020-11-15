@@ -31,55 +31,51 @@
 //
 
 
-#include "test.h"
-
 #include "data_test_framework.h"
+#include "test.h"
 
 
 class NullOperationTestCase
 {
 public:
-    NullOperationTestCase()
-    {
-    }
+  NullOperationTestCase()
+  {
+  }
 
-    void setUp()
-    {
-    }
+  void setUp()
+  {
+  }
 
-    void tearDown()
-    {
-    }
+  void tearDown()
+  {
+  }
 
-    void countTest()
-    {
-        DatabaseTestWrapper dbWrapper;
-        dbWrapper.addTable(TableInitializer("employees",
-                                            { { "id", csvsqldb::INT },
-                                              { "first_name", csvsqldb::STRING },
-                                              { "last_name", csvsqldb::STRING },
-                                              { "birth_date", csvsqldb::DATE },
-                                              { "hire_date", csvsqldb::DATE } }));
+  void countTest()
+  {
+    DatabaseTestWrapper dbWrapper;
+    dbWrapper.addTable(TableInitializer("employees", {{"id", csvsqldb::INT},
+                                                      {"first_name", csvsqldb::STRING},
+                                                      {"last_name", csvsqldb::STRING},
+                                                      {"birth_date", csvsqldb::DATE},
+                                                      {"hire_date", csvsqldb::DATE}}));
 
-        csvsqldb::ExecutionContext context(dbWrapper.getDatabase());
-        csvsqldb::ExecutionEngine<TestOperatorNodeFactory> engine(context);
+    csvsqldb::ExecutionContext context(dbWrapper.getDatabase());
+    csvsqldb::ExecutionEngine<TestOperatorNodeFactory> engine(context);
 
-        TestRowProvider::setRows(
-        "employees",
-        { { 815, "Mark", "Fürstenberg", csvsqldb::Date(1969, csvsqldb::Date::May, 17), csvsqldb::Date(2003, csvsqldb::Date::April, 15) },
-          { csvsqldb::Variant(csvsqldb::INT),
-            "Lars",
-            "Fürstenberg",
-            csvsqldb::Date(1970, csvsqldb::Date::September, 23),
-            csvsqldb::Date(2010, csvsqldb::Date::February, 1) },
-          { 9227, "Angelica", "Tello de Fürstenberg", csvsqldb::Date(1963, csvsqldb::Date::March, 6), csvsqldb::Date(2003, csvsqldb::Date::June, 15) } });
+    TestRowProvider::setRows(
+      "employees", {{815, "Mark", "Fürstenberg", csvsqldb::Date(1969, csvsqldb::Date::May, 17),
+                     csvsqldb::Date(2003, csvsqldb::Date::April, 15)},
+                    {csvsqldb::Variant(csvsqldb::INT), "Lars", "Fürstenberg", csvsqldb::Date(1970, csvsqldb::Date::September, 23),
+                     csvsqldb::Date(2010, csvsqldb::Date::February, 1)},
+                    {9227, "Angelica", "Tello de Fürstenberg", csvsqldb::Date(1963, csvsqldb::Date::March, 6),
+                     csvsqldb::Date(2003, csvsqldb::Date::June, 15)}});
 
-        csvsqldb::ExecutionStatistics statistics;
-        std::stringstream ss;
-        int64_t rowCount = engine.execute("SELECT count(*) FROM employees WHERE id IS NOT NULL", statistics, ss);
-        MPF_TEST_ASSERTEQUAL(1, rowCount);
-        MPF_TEST_ASSERTEQUAL("#$alias_1\n2\n", ss.str());
-    }
+    csvsqldb::ExecutionStatistics statistics;
+    std::stringstream ss;
+    int64_t rowCount = engine.execute("SELECT count(*) FROM employees WHERE id IS NOT NULL", statistics, ss);
+    MPF_TEST_ASSERTEQUAL(1, rowCount);
+    MPF_TEST_ASSERTEQUAL("#$alias_1\n2\n", ss.str());
+  }
 };
 
 MPF_REGISTER_TEST_START("OperationTestSuite", NullOperationTestCase);

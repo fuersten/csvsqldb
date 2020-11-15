@@ -36,26 +36,25 @@
 
 namespace csvsqldb
 {
+  void ExecutionPlan::addExecutionNode(ExecutionNode::UniquePtr& node)
+  {
+    _executionNodes.push_back(std::move(node));
+  }
 
-    void ExecutionPlan::addExecutionNode(ExecutionNode::UniquePtr& node)
-    {
-        _executionNodes.push_back(std::move(node));
+  int64_t ExecutionPlan::execute()
+  {
+    int64_t count = 0;
+    for (auto& node : _executionNodes) {
+      count += node->execute();
     }
 
-    int64_t ExecutionPlan::execute()
-    {
-        int64_t count = 0;
-        for(auto& node : _executionNodes) {
-            count += node->execute();
-        }
+    return count;
+  }
 
-        return count;
+  void ExecutionPlan::dump(std::ostream& stream) const
+  {
+    for (const auto& node : _executionNodes) {
+      node->dump(stream);
     }
-
-    void ExecutionPlan::dump(std::ostream& stream) const
-    {
-        for(const auto& node : _executionNodes) {
-            node->dump(stream);
-        }
-    }
+  }
 }

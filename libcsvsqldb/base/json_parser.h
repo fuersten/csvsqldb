@@ -43,107 +43,107 @@
 
 namespace csvsqldb
 {
+  /**
+   * JSON related implementations
+   */
+  namespace json
+  {
     /**
-     * JSON related implementations
+     * Callback interface for the JSON parser.
      */
-    namespace json
+    class CSVSQLDB_EXPORT Callback
     {
-        /**
-         * Callback interface for the JSON parser.
-         */
-        class CSVSQLDB_EXPORT Callback
-        {
-        public:
-            typedef std::shared_ptr<Callback> Ptr;
+    public:
+      typedef std::shared_ptr<Callback> Ptr;
 
-            virtual ~Callback() = default;
+      virtual ~Callback() = default;
 
-            /**
-             * Called upon a left curly bracket, to introduce an object.
-             */
-            virtual void startObject() = 0;
+      /**
+       * Called upon a left curly bracket, to introduce an object.
+       */
+      virtual void startObject() = 0;
 
-            /**
-             * Called upon fetching the key for an obect value.
-             */
-            virtual void key(const std::string& key) = 0;
+      /**
+       * Called upon fetching the key for an obect value.
+       */
+      virtual void key(const std::string& key) = 0;
 
-            /**
-             * Called upon a right culry bracket, closing an object.
-             */
-            virtual void endObject() = 0;
+      /**
+       * Called upon a right culry bracket, closing an object.
+       */
+      virtual void endObject() = 0;
 
-            /**
-             * Called upon a left square bracket, to introduce an array.
-             */
-            virtual void startArray() = 0;
+      /**
+       * Called upon a left square bracket, to introduce an array.
+       */
+      virtual void startArray() = 0;
 
-            /**
-             * Called upon a right square bracket, closing an array.
-             */
-            virtual void endArray() = 0;
+      /**
+       * Called upon a right square bracket, closing an array.
+       */
+      virtual void endArray() = 0;
 
-            /**
-             * Called upon fetching a number value.
-             * @param val The number value
-             */
-            virtual void numberValue(double val) = 0;
+      /**
+       * Called upon fetching a number value.
+       * @param val The number value
+       */
+      virtual void numberValue(double val) = 0;
 
-            /**
-             * Called upon fetching a string value.
-             * @param val The string value
-             */
-            virtual void stringValue(const std::string& val) = 0;
+      /**
+       * Called upon fetching a string value.
+       * @param val The string value
+       */
+      virtual void stringValue(const std::string& val) = 0;
 
-            /**
-             * Called upon fetching a boolena value.
-             * @param val The value of the boolean
-             */
-            virtual void booleanValue(bool val) = 0;
+      /**
+       * Called upon fetching a boolena value.
+       * @param val The value of the boolean
+       */
+      virtual void booleanValue(bool val) = 0;
 
-            /**
-             * Called upon fetching a null value.
-             */
-            virtual void nullValue() = 0;
-        };
+      /**
+       * Called upon fetching a null value.
+       */
+      virtual void nullValue() = 0;
+    };
 
-        /**
-         * A JSON parser as specified by https://tools.ietf.org/html/rfc4627
-         *
-         * Does currently have the following limitations:
-         * - Strings have no unicode points
-         */
-        class CSVSQLDB_EXPORT Parser
-        {
-        public:
-            /**
-             * Construct a parser with a string.
-             * @param json The JSON string to parse
-             * @param callback The callback to call for parsing events. Is allowed to be null.
-             */
-            Parser(const std::string& json, const Callback::Ptr& callback);
+    /**
+     * A JSON parser as specified by https://tools.ietf.org/html/rfc4627
+     *
+     * Does currently have the following limitations:
+     * - Strings have no unicode points
+     */
+    class CSVSQLDB_EXPORT Parser
+    {
+    public:
+      /**
+       * Construct a parser with a string.
+       * @param json The JSON string to parse
+       * @param callback The callback to call for parsing events. Is allowed to be null.
+       */
+      Parser(const std::string& json, const Callback::Ptr& callback);
 
-            ~Parser();
+      ~Parser();
 
-            /**
-             * Construct a parser with a stream object.
-             * @param stream The JSON stream to parse
-             * @param callback The callback to call for parsing events. Is allowed to be null.
-             */
-            Parser(std::istream& stream, const Callback::Ptr& callback);
+      /**
+       * Construct a parser with a stream object.
+       * @param stream The JSON stream to parse
+       * @param callback The callback to call for parsing events. Is allowed to be null.
+       */
+      Parser(std::istream& stream, const Callback::Ptr& callback);
 
-            /**
-             * Does the actual parsing of the JSON and calls the given callback functions upon parsing events.
-             * Does throw JsonException upon any error, if a callback is specified. Otherwise returns false upon an error.
-             * @return true upon successful parsing, otherwise false. Depends on the given callback,
-             */
-            bool parse();
+      /**
+       * Does the actual parsing of the JSON and calls the given callback functions upon parsing events.
+       * Does throw JsonException upon any error, if a callback is specified. Otherwise returns false upon an error.
+       * @return true upon successful parsing, otherwise false. Depends on the given callback,
+       */
+      bool parse();
 
-        private:
-            struct Private;
-            std::unique_ptr<Private> _p;
-        };
-    }
+    private:
+      struct Private;
+      std::unique_ptr<Private> _p;
+    };
+  }
 }
 
 #endif

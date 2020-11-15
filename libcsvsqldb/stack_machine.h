@@ -36,11 +36,10 @@
 
 #include "libcsvsqldb/inc.h"
 
-#include "function_registry.h"
-#include "variant.h"
-
 #include "base/exception.h"
 #include "base/regexp.h"
+#include "function_registry.h"
+#include "variant.h"
 
 #include <stack>
 #include <vector>
@@ -48,171 +47,170 @@
 
 namespace csvsqldb
 {
+  CSVSQLDB_DECLARE_EXCEPTION(StackMachineException, csvsqldb::Exception);
 
-    CSVSQLDB_DECLARE_EXCEPTION(StackMachineException, csvsqldb::Exception);
+  class CSVSQLDB_EXPORT VariableStore
+  {
+  public:
+    VariableStore();
 
-    class CSVSQLDB_EXPORT VariableStore
-    {
-    public:
-        VariableStore();
+    void addVariable(size_t index, const Variant& value);
 
-        void addVariable(size_t index, const Variant& value);
+    const Variant& operator[](size_t index) const;
 
-        const Variant& operator[](size_t index) const;
+  private:
+    typedef std::vector<Variant> Variables;
 
-    private:
-        typedef std::vector<Variant> Variables;
+    Variables _variables;
+  };
 
-        Variables _variables;
+
+  class CSVSQLDB_EXPORT StackMachine
+  {
+  public:
+    typedef std::pair<std::string, size_t> VariableIndex;
+    typedef std::vector<VariableIndex> VariableMapping;
+
+    enum OpCode {
+      ADD,
+      AND,
+      BETWEEN,
+      CAST,
+      CONCAT,
+      DIV,
+      EQ,
+      FUNC,
+      GE,
+      GT,
+      IN,
+      IS,
+      ISNOT,
+      LE,
+      LIKE,
+      LT,
+      MINUS,
+      MOD,
+      MUL,
+      NEQ,
+      NOP,
+      NOT,
+      OR,
+      PLUS,
+      PUSH,
+      PUSHVAR,
+      SUB
     };
 
+    struct CSVSQLDB_EXPORT Instruction {
+      Instruction(OpCode opCode)
+      : _opCode(opCode)
+      , _value(NONE)
+      , _refCount(nullptr)
+      , _r(nullptr)
+      {
+      }
 
-    class CSVSQLDB_EXPORT StackMachine
-    {
-    public:
-        typedef std::pair<std::string, size_t> VariableIndex;
-        typedef std::vector<VariableIndex> VariableMapping;
+      Instruction(OpCode opCode, Variant value)
+      : _opCode(opCode)
+      , _value(value)
+      , _refCount(nullptr)
+      , _r(nullptr)
+      {
+      }
 
-        enum OpCode {
-            ADD,
-            AND,
-            BETWEEN,
-            CAST,
-            CONCAT,
-            DIV,
-            EQ,
-            FUNC,
-            GE,
-            GT,
-            IN,
-            IS,
-            ISNOT,
-            LE,
-            LIKE,
-            LT,
-            MINUS,
-            MOD,
-            MUL,
-            NEQ,
-            NOP,
-            NOT,
-            OR,
-            PLUS,
-            PUSH,
-            PUSHVAR,
-            SUB
-        };
+      Instruction(OpCode opCode, csvsqldb::RegExp* r)
+      : _opCode(opCode)
+      , _value(NONE)
+      , _refCount(new RefCount)
+      , _r(r)
+      {
+      }
 
-        struct CSVSQLDB_EXPORT Instruction {
-            Instruction(OpCode opCode)
-            : _opCode(opCode)
-            , _value(NONE)
-            , _refCount(nullptr)
-            , _r(nullptr)
-            {
-            }
-
-            Instruction(OpCode opCode, Variant value)
-            : _opCode(opCode)
-            , _value(value)
-            , _refCount(nullptr)
-            , _r(nullptr)
-            {
-            }
-
-            Instruction(OpCode opCode, csvsqldb::RegExp* r)
-            : _opCode(opCode)
-            , _value(NONE)
-            , _refCount(new RefCount)
-            , _r(r)
-            {
-            }
-
-            Instruction(const Instruction& rhs)
-            : _opCode(rhs._opCode)
-            , _value(rhs._value)
-            , _refCount(rhs._refCount)
-            , _r(rhs._r)
-            {
-                if(_refCount) {
-                    _refCount->inc();
-                }
-            }
-
-            ~Instruction()
-            {
-                if(_refCount) {
-                    if(_refCount->dec() == 0) {
-                        delete _r;
-                        _r = nullptr;
-                        delete _refCount;
-                    }
-                }
-            }
-
-            OpCode _opCode;
-            Variant _value;
-            RefCount* _refCount;
-            csvsqldb::RegExp* _r;
-        };
-
-        void addInstruction(const Instruction& instruction);
-
-        Variant& evaluate(const VariableStore& store, const FunctionRegistry& functions);
-
-        void reset();
-
-        void dump(std::ostream& stream) const;
-
-    private:
-        typedef std::vector<Instruction> Instructions;
-        typedef std::stack<Variant> ValueStack;
-
-        Variant& getTopValue();
-        const Variant getNextValue();
-        eOperationType mapOpCodeToBinaryOperationType(OpCode code)
-        {
-            switch(code) {
-                case ADD:
-                    return OP_ADD;
-                case SUB:
-                    return OP_SUB;
-                case DIV:
-                    return OP_DIV;
-                case MOD:
-                    return OP_MOD;
-                case MUL:
-                    return OP_MUL;
-                case EQ:
-                    return OP_EQ;
-                case NEQ:
-                    return OP_NEQ;
-                case IS:
-                    return OP_IS;
-                case ISNOT:
-                    return OP_ISNOT;
-                case GT:
-                    return OP_GT;
-                case GE:
-                    return OP_GE;
-                case LT:
-                    return OP_LT;
-                case LE:
-                    return OP_LE;
-                case AND:
-                    return OP_AND;
-                case OR:
-                    return OP_OR;
-                case CONCAT:
-                    return OP_CONCAT;
-                default:
-                    CSVSQLDB_THROW(StackMachineException, "op code " << code << " not supported as binary operation type");
-            }
+      Instruction(const Instruction& rhs)
+      : _opCode(rhs._opCode)
+      , _value(rhs._value)
+      , _refCount(rhs._refCount)
+      , _r(rhs._r)
+      {
+        if (_refCount) {
+          _refCount->inc();
         }
+      }
 
-        Instructions _instructions;
-        ValueStack _valueStack;
+      ~Instruction()
+      {
+        if (_refCount) {
+          if (_refCount->dec() == 0) {
+            delete _r;
+            _r = nullptr;
+            delete _refCount;
+          }
+        }
+      }
+
+      OpCode _opCode;
+      Variant _value;
+      RefCount* _refCount;
+      csvsqldb::RegExp* _r;
     };
+
+    void addInstruction(const Instruction& instruction);
+
+    Variant& evaluate(const VariableStore& store, const FunctionRegistry& functions);
+
+    void reset();
+
+    void dump(std::ostream& stream) const;
+
+  private:
+    typedef std::vector<Instruction> Instructions;
+    typedef std::stack<Variant> ValueStack;
+
+    Variant& getTopValue();
+    const Variant getNextValue();
+    eOperationType mapOpCodeToBinaryOperationType(OpCode code)
+    {
+      switch (code) {
+        case ADD:
+          return OP_ADD;
+        case SUB:
+          return OP_SUB;
+        case DIV:
+          return OP_DIV;
+        case MOD:
+          return OP_MOD;
+        case MUL:
+          return OP_MUL;
+        case EQ:
+          return OP_EQ;
+        case NEQ:
+          return OP_NEQ;
+        case IS:
+          return OP_IS;
+        case ISNOT:
+          return OP_ISNOT;
+        case GT:
+          return OP_GT;
+        case GE:
+          return OP_GE;
+        case LT:
+          return OP_LT;
+        case LE:
+          return OP_LE;
+        case AND:
+          return OP_AND;
+        case OR:
+          return OP_OR;
+        case CONCAT:
+          return OP_CONCAT;
+        default:
+          CSVSQLDB_THROW(StackMachineException, "op code " << code << " not supported as binary operation type");
+      }
+    }
+
+    Instructions _instructions;
+    ValueStack _valueStack;
+  };
 }
 
 #endif

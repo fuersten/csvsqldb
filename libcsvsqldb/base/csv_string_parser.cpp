@@ -38,50 +38,50 @@
 
 namespace csvsqldb
 {
-    namespace csv
+  namespace csv
+  {
+    CSVStringParser::CSVStringParser(BufferType& buffer, const size_t bufferSize, ReadFunction readFunction)
+    : _buffer(buffer)
+    , _bufferSize(bufferSize)
+    , _readFunction(readFunction)
+    , _currentBufferSize(_buffer.capacity())
+    , _currentState(START)
     {
-        CSVStringParser::CSVStringParser(BufferType& buffer, const size_t bufferSize, ReadFunction readFunction)
-        : _buffer(buffer)
-        , _bufferSize(bufferSize)
-        , _readFunction(readFunction)
-        , _currentBufferSize(_buffer.capacity())
-        , _currentState(START)
-        {
-            initializeTransitionTable();
+      initializeTransitionTable();
+    }
+
+    size_t CSVStringParser::parseToBuffer()
+    {
+      size_t pos = 0;
+      _currentState = START;
+      // bring the state machine into a final state
+      const auto* newState = &_transitionTable[NO_QUOTE_STRING][OTHER];
+      char c = _readFunction(false);
+      while (c) {
+        auto cat = charCategory(c);
+        newState = &_transitionTable[_currentState][cat];
+        _currentState = newState->_state;
+        if (newState->_copy) {
+          if (pos >= _currentBufferSize) {
+            _currentBufferSize += _bufferSize;
+            _buffer.resize(_bufferSize);
+          }
+          _buffer[pos] = c;
+          ++pos;
         }
+        c = _readFunction(newState->_ignoreDelimiter);
+      }
+      _buffer[pos] = '\0';
+      if (_currentState == ERROR || !newState->_final) {
+        throw Exception("wrong delimiters in string");
+      }
 
-        size_t CSVStringParser::parseToBuffer()
-        {
-            size_t pos = 0;
-            _currentState = START;
-            // bring the state machine into a final state
-            const auto* newState = &_transitionTable[NO_QUOTE_STRING][OTHER];
-            char c = _readFunction(false);
-            while(c) {
-                auto cat = charCategory(c);
-                newState = &_transitionTable[_currentState][cat];
-                _currentState = newState->_state;
-                if(newState->_copy) {
-                    if(pos >= _currentBufferSize) {
-                        _currentBufferSize += _bufferSize;
-                        _buffer.resize(_bufferSize);
-                    }
-                    _buffer[pos] = c;
-                    ++pos;
-                }
-                c = _readFunction(newState->_ignoreDelimiter);
-            }
-            _buffer[pos] = '\0';
-            if(_currentState == ERROR || !newState->_final) {
-                throw Exception("wrong delimiters in string");
-            }
+      return pos;
+    }
 
-            return pos;
-        }
-
-        void CSVStringParser::initializeTransitionTable()
-        {
-            // clang-format off
+    void CSVStringParser::initializeTransitionTable()
+    {
+      // clang-format off
             std::vector<std::vector<State>> transitionTable
             {
               { // START
@@ -121,7 +121,7 @@ namespace csvsqldb
               }
             };
             _transitionTable.swap(transitionTable);
-            // clang-format on
-        }
+      // clang-format on
     }
+  }
 }

@@ -35,13 +35,13 @@
 #define CSVSQLDB_INC_H
 
 #if defined _MSC_VER
-#if defined LIBCSVSQLDB
-#define CSVSQLDB_EXPORT __declspec(dllexport)
+  #if defined LIBCSVSQLDB
+    #define CSVSQLDB_EXPORT __declspec(dllexport)
+  #else
+    #define CSVSQLDB_EXPORT __declspec(dllimport)
+  #endif
 #else
-#define CSVSQLDB_EXPORT __declspec(dllimport)
-#endif
-#else
-#define CSVSQLDB_EXPORT
+  #define CSVSQLDB_EXPORT
 #endif
 
 #endif

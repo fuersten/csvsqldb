@@ -41,44 +41,44 @@
 
 namespace csvsqldb
 {
+  /**
+   * Configuratiion class for lua based configurations. A lua script file with the configuration is specified upon construction
+   * and
+   * processed. Afterwards the configuration values can be retrieved from the configuration.
+   */
+  class CSVSQLDB_EXPORT LuaConfiguration : public Configuration
+  {
+  public:
     /**
-     * Configuratiion class for lua based configurations. A lua script file with the configuration is specified upon construction
-     * and
-     * processed. Afterwards the configuration values can be retrieved from the configuration.
+     * Construct a lua configuration with the given lua script file. Will throw a ConfigurationException if an error occurs,
+     * i.e the
+     * a lua error occurs while compiling the script. Throws a FilesystemException if the file does not exist.
+     * @param configFile The lua script file to use as configuration
      */
-    class CSVSQLDB_EXPORT LuaConfiguration : public Configuration
-    {
-    public:
-        /**
-         * Construct a lua configuration with the given lua script file. Will throw a ConfigurationException if an error occurs,
-         * i.e the
-         * a lua error occurs while compiling the script. Throws a FilesystemException if the file does not exist.
-         * @param configFile The lua script file to use as configuration
-         */
-        LuaConfiguration(const std::string& configFile);
+    LuaConfiguration(const std::string& configFile);
 
-        virtual ~LuaConfiguration();
+    virtual ~LuaConfiguration();
 
-    private:
-        virtual size_t doGetProperties(const std::string& path, StringVector& properties) const;
+  private:
+    virtual size_t doGetProperties(const std::string& path, StringVector& properties) const;
 
-        virtual bool doHasProperty(const std::string& path) const;
+    virtual bool doHasProperty(const std::string& path) const;
 
-        virtual bool get(const std::string& path, Typer<bool> typer) const;
+    virtual bool get(const std::string& path, Typer<bool> typer) const;
 
-        virtual int32_t get(const std::string& path, Typer<int32_t> typer) const;
+    virtual int32_t get(const std::string& path, Typer<int32_t> typer) const;
 
-        virtual int64_t get(const std::string& path, Typer<int64_t> typer) const;
+    virtual int64_t get(const std::string& path, Typer<int64_t> typer) const;
 
-        virtual float get(const std::string& path, Typer<float> typer) const;
+    virtual float get(const std::string& path, Typer<float> typer) const;
 
-        virtual double get(const std::string& path, Typer<double> typer) const;
+    virtual double get(const std::string& path, Typer<double> typer) const;
 
-        virtual std::string get(const std::string& path, Typer<std::string> typer) const;
+    virtual std::string get(const std::string& path, Typer<std::string> typer) const;
 
-        struct Private;
-        std::unique_ptr<Private> _p;
-    };
+    struct Private;
+    std::unique_ptr<Private> _p;
+  };
 }
 
 #endif

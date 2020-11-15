@@ -36,59 +36,57 @@
 
 #include "libcsvsqldb/inc.h"
 
-#include "base/types.h"
 #include "base/exception.h"
+#include "base/types.h"
+#include <boost/filesystem.hpp>
 
 #include <map>
-
-#include <boost/filesystem.hpp>
 
 namespace fs = boost::filesystem;
 
 
 namespace csvsqldb
 {
-
-    CSVSQLDB_DECLARE_EXCEPTION(MappingException, csvsqldb::Exception);
-
-
-    struct CSVSQLDB_EXPORT Mapping {
-        std::string _mapping;
-        char _delimiter;
-        bool _skipFirstLine;
-    };
+  CSVSQLDB_DECLARE_EXCEPTION(MappingException, csvsqldb::Exception);
 
 
-    class CSVSQLDB_EXPORT FileMapping
-    {
-    public:
-        typedef std::vector<Mapping> Mappings;
+  struct CSVSQLDB_EXPORT Mapping {
+    std::string _mapping;
+    char _delimiter;
+    bool _skipFirstLine;
+  };
 
-        FileMapping();
 
-        void initialize(const Mappings& mapping);
+  class CSVSQLDB_EXPORT FileMapping
+  {
+  public:
+    typedef std::vector<Mapping> Mappings;
 
-        const Mapping& getMappingForTable(const std::string& tableName) const;
+    FileMapping();
 
-        void mergeMapping(const FileMapping& mappings);
+    void initialize(const Mappings& mapping);
 
-        csvsqldb::StringVector asStringVector() const;
+    const Mapping& getMappingForTable(const std::string& tableName) const;
 
-        void removeMapping(const std::string& tableName);
+    void mergeMapping(const FileMapping& mappings);
 
-        static FileMapping fromJson(std::istream& stream);
+    csvsqldb::StringVector asStringVector() const;
 
-        static std::string asJson(const std::string& tableName, const Mappings& mappings);
+    void removeMapping(const std::string& tableName);
 
-        static void readFromPath(FileMapping& fileMapping, const fs::path& path);
+    static FileMapping fromJson(std::istream& stream);
 
-    private:
-        typedef std::map<std::string, Mapping> FileTableMapping;
+    static std::string asJson(const std::string& tableName, const Mappings& mappings);
 
-        bool addMapping(const std::string& tableName, const Mapping& mapping);
+    static void readFromPath(FileMapping& fileMapping, const fs::path& path);
 
-        FileTableMapping _fileTableMapping;
-    };
+  private:
+    typedef std::map<std::string, Mapping> FileTableMapping;
+
+    bool addMapping(const std::string& tableName, const Mapping& mapping);
+
+    FileTableMapping _fileTableMapping;
+  };
 }
 
 #endif

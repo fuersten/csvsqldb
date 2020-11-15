@@ -39,87 +39,87 @@
 
 namespace csvsqldb
 {
-    namespace lexer
+  namespace lexer
+  {
+    Lexer::Lexer(InspectTokenCallback callback)
+    : _callback(callback)
+    , _pos(_input.cbegin())
+    , _end(_input.cend())
+    , _lineCount(1)
+    , _lineStart(_pos)
     {
-        Lexer::Lexer(InspectTokenCallback callback)
-        : _callback(callback)
-        , _pos(_input.cbegin())
-        , _end(_input.cend())
-        , _lineCount(1)
-        , _lineStart(_pos)
-        {
-            addDefinition("newline", R"(\r|\n)", NEWLINE);
-            addDefinition("whitespace", R"([ \t\f]+)", WHITESPACE);
-        }
-
-        void Lexer::addDefinition(const std::string& name, const std::string& r, int32_t token)
-        {
-            _tokenDefinitions.push_back(TokenDefinition(name, boost::regex(r), token));
-        }
-
-        void Lexer::setInput(const std::string& input)
-        {
-            _input = input;
-            _pos = _input.cbegin();
-            _end = _input.cend();
-            _lineCount = 1;
-            _lineStart = _pos;
-        }
-
-        Token Lexer::next()
-        {
-            if(_pos < _end) {
-                boost::smatch match;
-
-                for(const auto& r : _tokenDefinitions) {
-                    if(regex_search(_pos, _end, match, r._rx)) {
-                        if(_pos == _pos + match.position()) {
-                            Token token;
-                            token._name = r._name;
-                            token._token = r._token;
-                            if(match.size() > 1) {
-                                token._value = match[1].str();
-                            } else {
-                                token._value = match[0].str();
-                            }
-                            token._lineCount = _lineCount;
-                            token._charCount = static_cast<uint16_t>(std::distance(_lineStart, _pos)) + 1;
-
-                            _pos = _pos + match.length();
-
-                            if(token._token == WHITESPACE) {
-                                return next();
-                            } else if(token._token == NEWLINE) {
-                                ++_lineCount;
-                                _lineStart = _pos;
-                                return next();
-                            } else {
-                                boost::regex nl(R"(\r|\n)");
-
-                                boost::sregex_iterator it(token._value.begin(), token._value.end(), nl);
-                                boost::sregex_iterator it_end;
-
-                                while(it != it_end) {
-                                    ++_lineCount;
-                                    _lineStart = _pos;
-                                    ++it;
-                                }
-                            }
-                            if(_callback) {
-                                _callback(token);
-                            }
-                            return token;
-                        }
-                    }
-                }
-            } else {
-                Token ret;
-                ret._token = EOI;
-                return ret;
-            }
-            // didn't find any matching regex
-            CSVSQLDB_THROW(LexicalAnalysisException,
-                           "could not match any regex at line " << _lineCount << ":" << (std::distance(_lineStart, _pos) + 1));
-        }
+      addDefinition("newline", R"(\r|\n)", NEWLINE);
+      addDefinition("whitespace", R"([ \t\f]+)", WHITESPACE);
     }
+
+    void Lexer::addDefinition(const std::string& name, const std::string& r, int32_t token)
+    {
+      _tokenDefinitions.push_back(TokenDefinition(name, boost::regex(r), token));
+    }
+
+    void Lexer::setInput(const std::string& input)
+    {
+      _input = input;
+      _pos = _input.cbegin();
+      _end = _input.cend();
+      _lineCount = 1;
+      _lineStart = _pos;
+    }
+
+    Token Lexer::next()
+    {
+      if (_pos < _end) {
+        boost::smatch match;
+
+        for (const auto& r : _tokenDefinitions) {
+          if (regex_search(_pos, _end, match, r._rx)) {
+            if (_pos == _pos + match.position()) {
+              Token token;
+              token._name = r._name;
+              token._token = r._token;
+              if (match.size() > 1) {
+                token._value = match[1].str();
+              } else {
+                token._value = match[0].str();
+              }
+              token._lineCount = _lineCount;
+              token._charCount = static_cast<uint16_t>(std::distance(_lineStart, _pos)) + 1;
+
+              _pos = _pos + match.length();
+
+              if (token._token == WHITESPACE) {
+                return next();
+              } else if (token._token == NEWLINE) {
+                ++_lineCount;
+                _lineStart = _pos;
+                return next();
+              } else {
+                boost::regex nl(R"(\r|\n)");
+
+                boost::sregex_iterator it(token._value.begin(), token._value.end(), nl);
+                boost::sregex_iterator it_end;
+
+                while (it != it_end) {
+                  ++_lineCount;
+                  _lineStart = _pos;
+                  ++it;
+                }
+              }
+              if (_callback) {
+                _callback(token);
+              }
+              return token;
+            }
+          }
+        }
+      } else {
+        Token ret;
+        ret._token = EOI;
+        return ret;
+      }
+      // didn't find any matching regex
+      CSVSQLDB_THROW(LexicalAnalysisException,
+                     "could not match any regex at line " << _lineCount << ":" << (std::distance(_lineStart, _pos) + 1));
+    }
+  }
 }

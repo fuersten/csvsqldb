@@ -31,32 +31,33 @@
 //
 
 
+#include "libcsvsqldb/base/glob.h"
+
 #include "test.h"
 #include "test/test_util.h"
-#include "libcsvsqldb/base/glob.h"
 
 
 class GlobTestCase
 {
 public:
-    void setUp()
-    {
-    }
+  void setUp()
+  {
+  }
 
-    void tearDown()
-    {
-    }
+  void tearDown()
+  {
+  }
 
-    void expansionTest()
-    {
-        csvsqldb::StringVector files;
-        csvsqldb::expand(CSVSQLDB_TEST_PATH + std::string("/testdata/*"), files);
-        MPF_TEST_ASSERTEQUAL(2U, files.size());
+  void expansionTest()
+  {
+    csvsqldb::StringVector files;
+    csvsqldb::expand(CSVSQLDB_TEST_PATH + std::string("/testdata/*"), files);
+    MPF_TEST_ASSERTEQUAL(2U, files.size());
 
-        std::sort(files.begin(), files.end());
-        MPF_TEST_ASSERTEQUAL(CSVSQLDB_TEST_PATH + std::string("/testdata/csv"), files[0]);
-        MPF_TEST_ASSERTEQUAL(CSVSQLDB_TEST_PATH + std::string("/testdata/luaengine"), files[1]);
-    }
+    std::sort(files.begin(), files.end());
+    MPF_TEST_ASSERTEQUAL(CSVSQLDB_TEST_PATH + std::string("/testdata/csv"), files[0]);
+    MPF_TEST_ASSERTEQUAL(CSVSQLDB_TEST_PATH + std::string("/testdata/luaengine"), files[1]);
+  }
 };
 
 MPF_REGISTER_TEST_START("BaseTestSuite", GlobTestCase);

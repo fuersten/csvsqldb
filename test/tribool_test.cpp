@@ -31,74 +31,74 @@
 //
 
 
-#include "test.h"
-
 #include "libcsvsqldb/base/tribool.h"
+
+#include "test.h"
 
 #include <vector>
 
 
 static bool operatorBool(const csvsqldb::Tribool& tb)
 {
-    if(tb) {
-        return true;
-    }
+  if (tb) {
+    return true;
+  }
 
-    return false;
+  return false;
 }
 
 class TriboolTestCase
 {
 public:
-    void setUp()
-    {
-    }
+  void setUp()
+  {
+  }
 
-    void tearDown()
-    {
-    }
+  void tearDown()
+  {
+  }
 
-    void triboolTest()
-    {
-        csvsqldb::Tribool tb;
-        MPF_TEST_ASSERTEQUAL(false, !tb);
-        MPF_TEST_ASSERTEQUAL(false, operatorBool(tb));
-        MPF_TEST_ASSERTEQUAL(true, tb.isIndeterminate());
-        MPF_TEST_ASSERTEQUAL(false, tb.isTrue());
-        MPF_TEST_ASSERTEQUAL(false, tb.isFalse());
+  void triboolTest()
+  {
+    csvsqldb::Tribool tb;
+    MPF_TEST_ASSERTEQUAL(false, !tb);
+    MPF_TEST_ASSERTEQUAL(false, operatorBool(tb));
+    MPF_TEST_ASSERTEQUAL(true, tb.isIndeterminate());
+    MPF_TEST_ASSERTEQUAL(false, tb.isTrue());
+    MPF_TEST_ASSERTEQUAL(false, tb.isFalse());
 
-        tb.set(true);
-        MPF_TEST_ASSERTEQUAL(false, !tb);
-        MPF_TEST_ASSERTEQUAL(true, operatorBool(tb));
-        MPF_TEST_ASSERTEQUAL(false, tb.isIndeterminate());
-        MPF_TEST_ASSERTEQUAL(true, tb.isTrue());
-        MPF_TEST_ASSERTEQUAL(false, tb.isFalse());
+    tb.set(true);
+    MPF_TEST_ASSERTEQUAL(false, !tb);
+    MPF_TEST_ASSERTEQUAL(true, operatorBool(tb));
+    MPF_TEST_ASSERTEQUAL(false, tb.isIndeterminate());
+    MPF_TEST_ASSERTEQUAL(true, tb.isTrue());
+    MPF_TEST_ASSERTEQUAL(false, tb.isFalse());
 
-        tb.set(false);
-        MPF_TEST_ASSERTEQUAL(true, !tb);
-        MPF_TEST_ASSERTEQUAL(false, operatorBool(tb));
-        MPF_TEST_ASSERTEQUAL(false, tb.isIndeterminate());
-        MPF_TEST_ASSERTEQUAL(false, tb.isTrue());
-        MPF_TEST_ASSERTEQUAL(true, tb.isFalse());
-    }
+    tb.set(false);
+    MPF_TEST_ASSERTEQUAL(true, !tb);
+    MPF_TEST_ASSERTEQUAL(false, operatorBool(tb));
+    MPF_TEST_ASSERTEQUAL(false, tb.isIndeterminate());
+    MPF_TEST_ASSERTEQUAL(false, tb.isTrue());
+    MPF_TEST_ASSERTEQUAL(true, tb.isFalse());
+  }
 
-    void equalityTest()
-    {
-        csvsqldb::Tribool tb1;
-        csvsqldb::Tribool tb2;
+  void equalityTest()
+  {
+    csvsqldb::Tribool tb1;
+    csvsqldb::Tribool tb2;
 
-        MPF_TEST_ASSERTEQUAL(false, tb1 == tb2);
+    MPF_TEST_ASSERTEQUAL(false, tb1 == tb2);
 
-        tb1.set(true);
-        MPF_TEST_ASSERTEQUAL(false, tb1 == tb2);
-        tb2.set(false);
-        MPF_TEST_ASSERTEQUAL(false, tb1 == tb2);
-        tb2.set(true);
-        MPF_TEST_ASSERTEQUAL(true, tb1 == tb2);
-        tb1.set(false);
-        tb2.set(false);
-        MPF_TEST_ASSERTEQUAL(true, tb1 == tb2);
-    }
+    tb1.set(true);
+    MPF_TEST_ASSERTEQUAL(false, tb1 == tb2);
+    tb2.set(false);
+    MPF_TEST_ASSERTEQUAL(false, tb1 == tb2);
+    tb2.set(true);
+    MPF_TEST_ASSERTEQUAL(true, tb1 == tb2);
+    tb1.set(false);
+    tb2.set(false);
+    MPF_TEST_ASSERTEQUAL(true, tb1 == tb2);
+  }
 };
 
 MPF_REGISTER_TEST_START("ApplicationTestSuite", TriboolTestCase);

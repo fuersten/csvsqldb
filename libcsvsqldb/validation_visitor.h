@@ -42,85 +42,84 @@
 
 namespace csvsqldb
 {
+  class CSVSQLDB_EXPORT ASTValidationVisitor : public ASTNodeVisitor
+  {
+  public:
+    ASTValidationVisitor(const Database& database);
 
-    class CSVSQLDB_EXPORT ASTValidationVisitor : public ASTNodeVisitor
-    {
-    public:
-        ASTValidationVisitor(const Database& database);
+    virtual void visit(ASTCreateTableNode& node);
 
-        virtual void visit(ASTCreateTableNode& node);
+    virtual void visit(ASTMappingNode& node);
 
-        virtual void visit(ASTMappingNode& node);
+    virtual void visit(ASTDropMappingNode& node);
 
-        virtual void visit(ASTDropMappingNode& node);
+    virtual void visit(ASTAlterTableAddNode& node);
 
-        virtual void visit(ASTAlterTableAddNode& node);
+    virtual void visit(ASTAlterTableDropNode& node);
 
-        virtual void visit(ASTAlterTableDropNode& node);
+    virtual void visit(ASTDropTableNode& node);
 
-        virtual void visit(ASTDropTableNode& node);
+    virtual void visit(ASTExplainNode& node);
 
-        virtual void visit(ASTExplainNode& node);
+    virtual void visit(ASTUnionNode& node);
 
-        virtual void visit(ASTUnionNode& node);
+    virtual void visit(ASTQueryNode& node);
 
-        virtual void visit(ASTQueryNode& node);
+    virtual void visit(ASTQuerySpecificationNode& node);
 
-        virtual void visit(ASTQuerySpecificationNode& node);
+    virtual void visit(ASTTableExpressionNode& node);
 
-        virtual void visit(ASTTableExpressionNode& node);
+    virtual void visit(ASTBinaryNode& node);
 
-        virtual void visit(ASTBinaryNode& node);
+    virtual void visit(ASTUnaryNode& node);
 
-        virtual void visit(ASTUnaryNode& node);
+    virtual void visit(ASTValueNode& node);
 
-        virtual void visit(ASTValueNode& node);
+    virtual void visit(ASTLikeNode& node);
 
-        virtual void visit(ASTLikeNode& node);
+    virtual void visit(ASTBetweenNode& node);
 
-        virtual void visit(ASTBetweenNode& node);
+    virtual void visit(ASTInNode& node);
 
-        virtual void visit(ASTInNode& node);
+    virtual void visit(ASTFunctionNode& node);
 
-        virtual void visit(ASTFunctionNode& node);
+    virtual void visit(ASTAggregateFunctionNode& node);
 
-        virtual void visit(ASTAggregateFunctionNode& node);
+    virtual void visit(ASTIdentifier& node);
 
-        virtual void visit(ASTIdentifier& node);
+    virtual void visit(ASTQualifiedAsterisk& node);
 
-        virtual void visit(ASTQualifiedAsterisk& node);
+    virtual void visit(ASTFromNode& node);
 
-        virtual void visit(ASTFromNode& node);
+    virtual void visit(ASTTableIdentifierNode& node);
 
-        virtual void visit(ASTTableIdentifierNode& node);
+    virtual void visit(ASTTableSubqueryNode& node);
 
-        virtual void visit(ASTTableSubqueryNode& node);
+    virtual void visit(ASTCrossJoinNode& node);
 
-        virtual void visit(ASTCrossJoinNode& node);
+    virtual void visit(ASTNaturalJoinNode& node);
 
-        virtual void visit(ASTNaturalJoinNode& node);
+    virtual void visit(ASTInnerJoinNode& node);
 
-        virtual void visit(ASTInnerJoinNode& node);
+    virtual void visit(ASTLeftJoinNode& node);
 
-        virtual void visit(ASTLeftJoinNode& node);
+    virtual void visit(ASTRightJoinNode& node);
 
-        virtual void visit(ASTRightJoinNode& node);
+    virtual void visit(ASTFullJoinNode& node);
 
-        virtual void visit(ASTFullJoinNode& node);
+    virtual void visit(ASTWhereNode& node);
 
-        virtual void visit(ASTWhereNode& node);
+    virtual void visit(ASTGroupByNode& node);
 
-        virtual void visit(ASTGroupByNode& node);
+    virtual void visit(ASTHavingNode& node);
 
-        virtual void visit(ASTHavingNode& node);
+    virtual void visit(ASTOrderByNode& node);
 
-        virtual void visit(ASTOrderByNode& node);
+    virtual void visit(ASTLimitNode& node);
 
-        virtual void visit(ASTLimitNode& node);
-
-    private:
-        const Database& _database;
-    };
+  private:
+    const Database& _database;
+  };
 }
 
 #endif

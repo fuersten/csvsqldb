@@ -40,16 +40,16 @@
 
 namespace csvsqldb
 {
-    size_t expand(const std::string& pattern, StringVector& files)
-    {
-        wordexp_t p;
-        if(wordexp(pattern.c_str(), &p, 0) != 0) {
-            CSVSQLDB_THROW(csvsqldb::Exception, "could not expand word: " << csvsqldb::errnoText());
-        }
-        for(size_t i = 0; i < p.we_wordc; ++i) {
-            files.push_back(p.we_wordv[i]);
-        }
-        wordfree(&p);
-        return files.size();
+  size_t expand(const std::string& pattern, StringVector& files)
+  {
+    wordexp_t p;
+    if (wordexp(pattern.c_str(), &p, 0) != 0) {
+      CSVSQLDB_THROW(csvsqldb::Exception, "could not expand word: " << csvsqldb::errnoText());
     }
+    for (size_t i = 0; i < p.we_wordc; ++i) {
+      files.push_back(p.we_wordv[i]);
+    }
+    wordfree(&p);
+    return files.size();
+  }
 }

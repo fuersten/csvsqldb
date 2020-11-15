@@ -31,9 +31,9 @@
 //
 
 
-#include "test.h"
-
 #include "libcsvsqldb/base/exception.h"
+
+#include "test.h"
 
 #include <iostream>
 
@@ -41,43 +41,43 @@
 class ExceptionTestCase
 {
 public:
-    void setUp()
-    {
-    }
+  void setUp()
+  {
+  }
 
-    void tearDown()
-    {
-    }
+  void tearDown()
+  {
+  }
 
-    void exceptionTest()
-    {
-        try {
-            throw csvsqldb::FilesystemException(ENOENT, "Filesystem");
-        } catch(csvsqldb::Exception& ex) {
-            MPF_TEST_ASSERTEQUAL(ENOENT, ex.code().value());
-            // csvsqldb::evaluateException();
-        }
+  void exceptionTest()
+  {
+    try {
+      throw csvsqldb::FilesystemException(ENOENT, "Filesystem");
+    } catch (csvsqldb::Exception& ex) {
+      MPF_TEST_ASSERTEQUAL(ENOENT, ex.code().value());
+      // csvsqldb::evaluateException();
     }
+  }
 
-    void errnoTest()
-    {
-        errno = EWOULDBLOCK;
-        std::string txt = csvsqldb::errnoText();
-        MPF_TEST_ASSERTEQUAL(strerror(EWOULDBLOCK), txt);
-    }
+  void errnoTest()
+  {
+    errno = EWOULDBLOCK;
+    std::string txt = csvsqldb::errnoText();
+    MPF_TEST_ASSERTEQUAL(strerror(EWOULDBLOCK), txt);
+  }
 
-    void sysException()
-    {
-        errno = EWOULDBLOCK;
-        try {
-            csvsqldb::throwSysError("mydomain");
-        } catch(csvsqldb::Exception& ex) {
-            MPF_TEST_ASSERTEQUAL(EWOULDBLOCK, ex.code().value());
-            errno = EWOULDBLOCK;
-            std::string expected = csvsqldb::errnoText();
-            MPF_TEST_ASSERTEQUAL("mydomain" + std::string(": ") + expected, ex.what());
-        }
+  void sysException()
+  {
+    errno = EWOULDBLOCK;
+    try {
+      csvsqldb::throwSysError("mydomain");
+    } catch (csvsqldb::Exception& ex) {
+      MPF_TEST_ASSERTEQUAL(EWOULDBLOCK, ex.code().value());
+      errno = EWOULDBLOCK;
+      std::string expected = csvsqldb::errnoText();
+      MPF_TEST_ASSERTEQUAL("mydomain" + std::string(": ") + expected, ex.what());
     }
+  }
 };
 
 MPF_REGISTER_TEST_START("ApplicationTestSuite", ExceptionTestCase);

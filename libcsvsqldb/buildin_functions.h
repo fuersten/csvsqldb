@@ -41,126 +41,125 @@
 
 namespace csvsqldb
 {
-
-    CSVSQLDB_EXPORT void initBuildInFunctions(FunctionRegistry& registry);
-
-
-    class CSVSQLDB_EXPORT CurrentDateFunction : public Function
-    {
-    public:
-        CurrentDateFunction();
-
-    private:
-        virtual const Variant doCall(const Variants& parameter) const;
-    };
+  CSVSQLDB_EXPORT void initBuildInFunctions(FunctionRegistry& registry);
 
 
-    class CSVSQLDB_EXPORT CurrentTimeFunction : public Function
-    {
-    public:
-        CurrentTimeFunction();
+  class CSVSQLDB_EXPORT CurrentDateFunction : public Function
+  {
+  public:
+    CurrentDateFunction();
 
-    private:
-        virtual const Variant doCall(const Variants& parameter) const;
-    };
-
-
-    class CSVSQLDB_EXPORT CurrentTimestampFunction : public Function
-    {
-    public:
-        CurrentTimestampFunction();
-
-    private:
-        virtual const Variant doCall(const Variants& parameter) const;
-    };
+  private:
+    virtual const Variant doCall(const Variants& parameter) const;
+  };
 
 
-    class CSVSQLDB_EXPORT ExtractFunction : public Function
-    {
-    public:
-        ExtractFunction();
+  class CSVSQLDB_EXPORT CurrentTimeFunction : public Function
+  {
+  public:
+    CurrentTimeFunction();
 
-    private:
-        virtual const Variant doCall(const Variants& parameter) const;
-    };
-
-
-    class CSVSQLDB_EXPORT DateFormatFunction : public Function
-    {
-    public:
-        DateFormatFunction();
-
-    private:
-        virtual const Variant doCall(const Variants& parameter) const;
-    };
+  private:
+    virtual const Variant doCall(const Variants& parameter) const;
+  };
 
 
-    class CSVSQLDB_EXPORT TimeFormatFunction : public Function
-    {
-    public:
-        TimeFormatFunction();
+  class CSVSQLDB_EXPORT CurrentTimestampFunction : public Function
+  {
+  public:
+    CurrentTimestampFunction();
 
-    private:
-        virtual const Variant doCall(const Variants& parameter) const;
-    };
-
-
-    class CSVSQLDB_EXPORT TimestampFormatFunction : public Function
-    {
-    public:
-        TimestampFormatFunction();
-
-    private:
-        virtual const Variant doCall(const Variants& parameter) const;
-    };
+  private:
+    virtual const Variant doCall(const Variants& parameter) const;
+  };
 
 
-    class CSVSQLDB_EXPORT PowerFunction : public Function
-    {
-    public:
-        PowerFunction();
+  class CSVSQLDB_EXPORT ExtractFunction : public Function
+  {
+  public:
+    ExtractFunction();
 
-    private:
-        virtual const Variant doCall(const Variants& parameter) const;
-    };
-
-
-    class CSVSQLDB_EXPORT UpperFunction : public Function
-    {
-    public:
-        UpperFunction();
-
-    private:
-        virtual const Variant doCall(const Variants& parameter) const;
-    };
+  private:
+    virtual const Variant doCall(const Variants& parameter) const;
+  };
 
 
-    class CSVSQLDB_EXPORT LowerFunction : public Function
-    {
-    public:
-        LowerFunction();
+  class CSVSQLDB_EXPORT DateFormatFunction : public Function
+  {
+  public:
+    DateFormatFunction();
 
-    private:
-        virtual const Variant doCall(const Variants& parameter) const;
-    };
+  private:
+    virtual const Variant doCall(const Variants& parameter) const;
+  };
 
-    class CSVSQLDB_EXPORT CharLengthFunction : public Function
-    {
-    public:
-        CharLengthFunction(const std::string& name);
 
-    private:
-        virtual const Variant doCall(const Variants& parameter) const;
-    };
+  class CSVSQLDB_EXPORT TimeFormatFunction : public Function
+  {
+  public:
+    TimeFormatFunction();
 
-    class CSVSQLDB_EXPORT VersionFunction : public Function
-    {
-    public:
-        VersionFunction();
+  private:
+    virtual const Variant doCall(const Variants& parameter) const;
+  };
 
-    private:
-        virtual const Variant doCall(const Variants& parameter) const;
-    };
+
+  class CSVSQLDB_EXPORT TimestampFormatFunction : public Function
+  {
+  public:
+    TimestampFormatFunction();
+
+  private:
+    virtual const Variant doCall(const Variants& parameter) const;
+  };
+
+
+  class CSVSQLDB_EXPORT PowerFunction : public Function
+  {
+  public:
+    PowerFunction();
+
+  private:
+    virtual const Variant doCall(const Variants& parameter) const;
+  };
+
+
+  class CSVSQLDB_EXPORT UpperFunction : public Function
+  {
+  public:
+    UpperFunction();
+
+  private:
+    virtual const Variant doCall(const Variants& parameter) const;
+  };
+
+
+  class CSVSQLDB_EXPORT LowerFunction : public Function
+  {
+  public:
+    LowerFunction();
+
+  private:
+    virtual const Variant doCall(const Variants& parameter) const;
+  };
+
+  class CSVSQLDB_EXPORT CharLengthFunction : public Function
+  {
+  public:
+    CharLengthFunction(const std::string& name);
+
+  private:
+    virtual const Variant doCall(const Variants& parameter) const;
+  };
+
+  class CSVSQLDB_EXPORT VersionFunction : public Function
+  {
+  public:
+    VersionFunction();
+
+  private:
+    virtual const Variant doCall(const Variants& parameter) const;
+  };
 }
 
 #endif

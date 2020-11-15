@@ -31,183 +31,169 @@
 //
 
 
-#include "test.h"
-
 #include "libcsvsqldb/block.h"
 
 #include "data_test_framework.h"
-
+#include "test.h"
 #include <unordered_set>
 
 
 class GroupByTestCase
 {
 public:
-    GroupByTestCase()
-    {
-    }
+  GroupByTestCase()
+  {
+  }
 
-    void setUp()
-    {
-    }
+  void setUp()
+  {
+  }
 
-    void tearDown()
-    {
-    }
+  void tearDown()
+  {
+  }
 
-    void groupingElementTest()
-    {
-        csvsqldb::Variants first;
-        first.push_back(csvsqldb::Variant(4711));
-        first.push_back(csvsqldb::Variant("Fürstenberg"));
+  void groupingElementTest()
+  {
+    csvsqldb::Variants first;
+    first.push_back(csvsqldb::Variant(4711));
+    first.push_back(csvsqldb::Variant("Fürstenberg"));
 
-        csvsqldb::Variants second;
-        second.push_back(csvsqldb::Variant(815));
-        second.push_back(csvsqldb::Variant("Fürstenberg"));
+    csvsqldb::Variants second;
+    second.push_back(csvsqldb::Variant(815));
+    second.push_back(csvsqldb::Variant("Fürstenberg"));
 
-        csvsqldb::GroupingElement elementLeft(first);
-        csvsqldb::GroupingElement elementRight(second);
+    csvsqldb::GroupingElement elementLeft(first);
+    csvsqldb::GroupingElement elementRight(second);
 
-        MPF_TEST_ASSERT(elementLeft.getHash() != elementRight.getHash());
-        MPF_TEST_ASSERT(!(elementLeft == elementRight));
-        MPF_TEST_ASSERT(elementLeft == elementLeft);
+    MPF_TEST_ASSERT(elementLeft.getHash() != elementRight.getHash());
+    MPF_TEST_ASSERT(!(elementLeft == elementRight));
+    MPF_TEST_ASSERT(elementLeft == elementLeft);
 
 
-        typedef std::unordered_set<csvsqldb::GroupingElement> HashSet;
-        HashSet hashSet;
-        hashSet.insert(elementLeft);
-        hashSet.insert(elementRight);
+    typedef std::unordered_set<csvsqldb::GroupingElement> HashSet;
+    HashSet hashSet;
+    hashSet.insert(elementLeft);
+    hashSet.insert(elementRight);
 
-        MPF_TEST_ASSERTEQUAL(2UL, hashSet.size());
+    MPF_TEST_ASSERTEQUAL(2UL, hashSet.size());
 
-        HashSet::const_iterator found = hashSet.find(elementRight);
-        MPF_TEST_ASSERT(found != hashSet.end());
+    HashSet::const_iterator found = hashSet.find(elementRight);
+    MPF_TEST_ASSERT(found != hashSet.end());
 
-        csvsqldb::Variants third;
-        third.push_back(csvsqldb::Variant(815));
-        third.push_back(csvsqldb::Variant("Fürstenberg"));
-        csvsqldb::GroupingElement compareElement(third);
+    csvsqldb::Variants third;
+    third.push_back(csvsqldb::Variant(815));
+    third.push_back(csvsqldb::Variant("Fürstenberg"));
+    csvsqldb::GroupingElement compareElement(third);
 
-        found = hashSet.find(compareElement);
-        MPF_TEST_ASSERT(found != hashSet.end());
-    }
+    found = hashSet.find(compareElement);
+    MPF_TEST_ASSERT(found != hashSet.end());
+  }
 
-    void simpleGroupByTest()
-    {
-        DatabaseTestWrapper dbWrapper;
-        dbWrapper.addTable(TableInitializer("employees",
-                                            { { "id", csvsqldb::INT },
-                                              { "first_name", csvsqldb::STRING },
-                                              { "last_name", csvsqldb::STRING },
-                                              { "birth_date", csvsqldb::DATE },
-                                              { "hire_date", csvsqldb::DATE } }));
+  void simpleGroupByTest()
+  {
+    DatabaseTestWrapper dbWrapper;
+    dbWrapper.addTable(TableInitializer("employees", {{"id", csvsqldb::INT},
+                                                      {"first_name", csvsqldb::STRING},
+                                                      {"last_name", csvsqldb::STRING},
+                                                      {"birth_date", csvsqldb::DATE},
+                                                      {"hire_date", csvsqldb::DATE}}));
 
-        csvsqldb::ExecutionContext context(dbWrapper.getDatabase());
-        csvsqldb::ExecutionEngine<TestOperatorNodeFactory> engine(context);
+    csvsqldb::ExecutionContext context(dbWrapper.getDatabase());
+    csvsqldb::ExecutionEngine<TestOperatorNodeFactory> engine(context);
 
-        TestRowProvider::setRows(
-        "employees",
-        { { 815, "Mark", "Fürstenberg", csvsqldb::Date(1969, csvsqldb::Date::May, 17), csvsqldb::Date(2003, csvsqldb::Date::April, 15) },
-          { csvsqldb::Variant(csvsqldb::INT),
-            "Lars",
-            "Fürstenberg",
-            csvsqldb::Date(1970, csvsqldb::Date::September, 23),
-            csvsqldb::Date(2010, csvsqldb::Date::February, 1) },
-          { 9227, "Angelica", "Tello de Fürstenberg", csvsqldb::Date(1963, csvsqldb::Date::March, 6), csvsqldb::Date(2003, csvsqldb::Date::June, 15) } });
+    TestRowProvider::setRows(
+      "employees", {{815, "Mark", "Fürstenberg", csvsqldb::Date(1969, csvsqldb::Date::May, 17),
+                     csvsqldb::Date(2003, csvsqldb::Date::April, 15)},
+                    {csvsqldb::Variant(csvsqldb::INT), "Lars", "Fürstenberg", csvsqldb::Date(1970, csvsqldb::Date::September, 23),
+                     csvsqldb::Date(2010, csvsqldb::Date::February, 1)},
+                    {9227, "Angelica", "Tello de Fürstenberg", csvsqldb::Date(1963, csvsqldb::Date::March, 6),
+                     csvsqldb::Date(2003, csvsqldb::Date::June, 15)}});
 
-        csvsqldb::ExecutionStatistics statistics;
-        std::stringstream ss;
-        int64_t rowCount = engine.execute(
-        "SELECT count(*) as \"count\",last_name,max(birth_date) as \"max birthdate\",min(hire_date) as \"min hire\" \
+    csvsqldb::ExecutionStatistics statistics;
+    std::stringstream ss;
+    int64_t rowCount =
+      engine.execute("SELECT count(*) as \"count\",last_name,max(birth_date) as \"max birthdate\",min(hire_date) as \"min hire\" \
                                           FROM employees group by employees.last_name",
-        statistics,
-        ss);
-        MPF_TEST_ASSERTEQUAL(2, rowCount);
+                     statistics, ss);
+    MPF_TEST_ASSERTEQUAL(2, rowCount);
 
-        std::string expected = R"(#COUNT,LAST_NAME,MAX BIRTHDATE,MIN HIRE
+    std::string expected = R"(#COUNT,LAST_NAME,MAX BIRTHDATE,MIN HIRE
 1,'Tello de Fürstenberg',1963-03-06,2003-06-15
 2,'Fürstenberg',1970-09-23,2003-04-15
 )";
-        MPF_TEST_ASSERTEQUAL(expected, ss.str());
-    }
+    MPF_TEST_ASSERTEQUAL(expected, ss.str());
+  }
 
-    void simpleGroupByCountWithNullTest()
-    {
-        DatabaseTestWrapper dbWrapper;
-        dbWrapper.addTable(TableInitializer("employees",
-                                            { { "id", csvsqldb::INT },
-                                              { "first_name", csvsqldb::STRING },
-                                              { "last_name", csvsqldb::STRING },
-                                              { "birth_date", csvsqldb::DATE },
-                                              { "hire_date", csvsqldb::DATE } }));
+  void simpleGroupByCountWithNullTest()
+  {
+    DatabaseTestWrapper dbWrapper;
+    dbWrapper.addTable(TableInitializer("employees", {{"id", csvsqldb::INT},
+                                                      {"first_name", csvsqldb::STRING},
+                                                      {"last_name", csvsqldb::STRING},
+                                                      {"birth_date", csvsqldb::DATE},
+                                                      {"hire_date", csvsqldb::DATE}}));
 
-        csvsqldb::ExecutionContext context(dbWrapper.getDatabase());
-        csvsqldb::ExecutionEngine<TestOperatorNodeFactory> engine(context);
+    csvsqldb::ExecutionContext context(dbWrapper.getDatabase());
+    csvsqldb::ExecutionEngine<TestOperatorNodeFactory> engine(context);
 
-        TestRowProvider::setRows(
-        "employees",
-        { { 815, "Mark", "Fürstenberg", csvsqldb::Date(1969, csvsqldb::Date::May, 17), csvsqldb::Date(2003, csvsqldb::Date::April, 15) },
-          { csvsqldb::Variant(csvsqldb::INT),
-            "Lars",
-            "Fürstenberg",
-            csvsqldb::Date(1970, csvsqldb::Date::September, 23),
-            csvsqldb::Date(2010, csvsqldb::Date::February, 1) },
-          { 9227, "Angelica", "Tello de Fürstenberg", csvsqldb::Date(1963, csvsqldb::Date::March, 6), csvsqldb::Date(2003, csvsqldb::Date::June, 15) } });
+    TestRowProvider::setRows(
+      "employees", {{815, "Mark", "Fürstenberg", csvsqldb::Date(1969, csvsqldb::Date::May, 17),
+                     csvsqldb::Date(2003, csvsqldb::Date::April, 15)},
+                    {csvsqldb::Variant(csvsqldb::INT), "Lars", "Fürstenberg", csvsqldb::Date(1970, csvsqldb::Date::September, 23),
+                     csvsqldb::Date(2010, csvsqldb::Date::February, 1)},
+                    {9227, "Angelica", "Tello de Fürstenberg", csvsqldb::Date(1963, csvsqldb::Date::March, 6),
+                     csvsqldb::Date(2003, csvsqldb::Date::June, 15)}});
 
-        csvsqldb::ExecutionStatistics statistics;
-        std::stringstream ss;
-        int64_t rowCount = engine.execute(
-        "SELECT count(id) as \"count\",last_name,max(birth_date) as \"max birthdate\",min(hire_date) as \"min hire\" \
+    csvsqldb::ExecutionStatistics statistics;
+    std::stringstream ss;
+    int64_t rowCount = engine.execute(
+      "SELECT count(id) as \"count\",last_name,max(birth_date) as \"max birthdate\",min(hire_date) as \"min hire\" \
                                           FROM employees group by last_name",
-        statistics,
-        ss);
-        MPF_TEST_ASSERTEQUAL(2, rowCount);
+      statistics, ss);
+    MPF_TEST_ASSERTEQUAL(2, rowCount);
 
-        std::string expected = R"(#COUNT,LAST_NAME,MAX BIRTHDATE,MIN HIRE
+    std::string expected = R"(#COUNT,LAST_NAME,MAX BIRTHDATE,MIN HIRE
 1,'Tello de Fürstenberg',1963-03-06,2003-06-15
 1,'Fürstenberg',1970-09-23,2003-04-15
 )";
-        MPF_TEST_ASSERTEQUAL(expected, ss.str());
-    }
+    MPF_TEST_ASSERTEQUAL(expected, ss.str());
+  }
 
-    void groupByWithSupressedGroupBy()
-    {
-        DatabaseTestWrapper dbWrapper;
-        dbWrapper.addTable(TableInitializer("employees",
-                                            { { "id", csvsqldb::INT },
-                                              { "first_name", csvsqldb::STRING },
-                                              { "last_name", csvsqldb::STRING },
-                                              { "birth_date", csvsqldb::DATE },
-                                              { "hire_date", csvsqldb::DATE } }));
+  void groupByWithSupressedGroupBy()
+  {
+    DatabaseTestWrapper dbWrapper;
+    dbWrapper.addTable(TableInitializer("employees", {{"id", csvsqldb::INT},
+                                                      {"first_name", csvsqldb::STRING},
+                                                      {"last_name", csvsqldb::STRING},
+                                                      {"birth_date", csvsqldb::DATE},
+                                                      {"hire_date", csvsqldb::DATE}}));
 
-        csvsqldb::ExecutionContext context(dbWrapper.getDatabase());
-        csvsqldb::ExecutionEngine<TestOperatorNodeFactory> engine(context);
+    csvsqldb::ExecutionContext context(dbWrapper.getDatabase());
+    csvsqldb::ExecutionEngine<TestOperatorNodeFactory> engine(context);
 
-        TestRowProvider::setRows(
-        "employees",
-        { { 815, "Mark", "Fürstenberg", csvsqldb::Date(1969, csvsqldb::Date::May, 17), csvsqldb::Date(2003, csvsqldb::Date::April, 15) },
-          { csvsqldb::Variant(csvsqldb::INT),
-            "Lars",
-            "Fürstenberg",
-            csvsqldb::Date(1970, csvsqldb::Date::September, 23),
-            csvsqldb::Date(2010, csvsqldb::Date::February, 1) },
-          { 9227, "Angelica", "Tello de Fürstenberg", csvsqldb::Date(1963, csvsqldb::Date::March, 6), csvsqldb::Date(2003, csvsqldb::Date::June, 15) } });
+    TestRowProvider::setRows(
+      "employees", {{815, "Mark", "Fürstenberg", csvsqldb::Date(1969, csvsqldb::Date::May, 17),
+                     csvsqldb::Date(2003, csvsqldb::Date::April, 15)},
+                    {csvsqldb::Variant(csvsqldb::INT), "Lars", "Fürstenberg", csvsqldb::Date(1970, csvsqldb::Date::September, 23),
+                     csvsqldb::Date(2010, csvsqldb::Date::February, 1)},
+                    {9227, "Angelica", "Tello de Fürstenberg", csvsqldb::Date(1963, csvsqldb::Date::March, 6),
+                     csvsqldb::Date(2003, csvsqldb::Date::June, 15)}});
 
-        csvsqldb::ExecutionStatistics statistics;
-        std::stringstream ss;
-        int64_t rowCount = engine.execute(
-        "SELECT count(*) as \"count\",max(birth_date) as \"max birthdate\",min(hire_date) as \"min hire\" \
+    csvsqldb::ExecutionStatistics statistics;
+    std::stringstream ss;
+    int64_t rowCount =
+      engine.execute("SELECT count(*) as \"count\",max(birth_date) as \"max birthdate\",min(hire_date) as \"min hire\" \
                                           FROM employees group by last_name",
-        statistics,
-        ss);
-        MPF_TEST_ASSERTEQUAL(2, rowCount);
+                     statistics, ss);
+    MPF_TEST_ASSERTEQUAL(2, rowCount);
 
-        std::string expected = R"(#COUNT,MAX BIRTHDATE,MIN HIRE
+    std::string expected = R"(#COUNT,MAX BIRTHDATE,MIN HIRE
 1,1963-03-06,2003-06-15
 2,1970-09-23,2003-04-15
 )";
-        MPF_TEST_ASSERTEQUAL(expected, ss.str());
-    }
+    MPF_TEST_ASSERTEQUAL(expected, ss.str());
+  }
 };
 
 MPF_REGISTER_TEST_START("GroupByTestSuite", GroupByTestCase);

@@ -32,90 +32,90 @@
 //
 
 #include "configuration.h"
+
 #include "exception.h"
 
 
 namespace csvsqldb
 {
+  Configuration::Configuration()
+  {
+  }
 
-    Configuration::Configuration()
-    {
-    }
+  Configuration::~Configuration()
+  {
+  }
 
-    Configuration::~Configuration()
-    {
-    }
+  size_t Configuration::getProperties(const std::string& path, StringVector& properties) const
+  {
+    return doGetProperties(path, properties);
+  }
 
-    size_t Configuration::getProperties(const std::string& path, StringVector& properties) const
-    {
-        return doGetProperties(path, properties);
-    }
+  bool Configuration::hasProperty(const std::string& path) const
+  {
+    return doHasProperty(path);
+  }
 
-    bool Configuration::hasProperty(const std::string& path) const
-    {
-        return doHasProperty(path);
+  bool Configuration::get(const std::string& path, bool defaultValue) const
+  {
+    try {
+      return get<bool>(path);
+    } catch (ConfigurationException&) {
+      return defaultValue;
     }
+  }
 
-    bool Configuration::get(const std::string& path, bool defaultValue) const
-    {
-        try {
-            return get<bool>(path);
-        } catch(ConfigurationException&) {
-            return defaultValue;
-        }
+  int32_t Configuration::get(const std::string& path, int32_t defaultValue) const
+  {
+    try {
+      return get<int32_t>(path);
+    } catch (ConfigurationException&) {
+      return defaultValue;
     }
+  }
 
-    int32_t Configuration::get(const std::string& path, int32_t defaultValue) const
-    {
-        try {
-            return get<int32_t>(path);
-        } catch(ConfigurationException&) {
-            return defaultValue;
-        }
+  int64_t Configuration::get(const std::string& path, int64_t defaultValue) const
+  {
+    try {
+      return get<int64_t>(path);
+    } catch (ConfigurationException&) {
+      return defaultValue;
     }
+  }
 
-    int64_t Configuration::get(const std::string& path, int64_t defaultValue) const
-    {
-        try {
-            return get<int64_t>(path);
-        } catch(ConfigurationException&) {
-            return defaultValue;
-        }
+  float Configuration::get(const std::string& path, float defaultValue) const
+  {
+    try {
+      return get<float>(path);
+    } catch (ConfigurationException&) {
+      return defaultValue;
     }
+  }
 
-    float Configuration::get(const std::string& path, float defaultValue) const
-    {
-        try {
-            return get<float>(path);
-        } catch(ConfigurationException&) {
-            return defaultValue;
-        }
+  double Configuration::get(const std::string& path, double defaultValue) const
+  {
+    try {
+      return get<double>(path);
+    } catch (ConfigurationException&) {
+      return defaultValue;
     }
+  }
 
-    double Configuration::get(const std::string& path, double defaultValue) const
-    {
-        try {
-            return get<double>(path);
-        } catch(ConfigurationException&) {
-            return defaultValue;
-        }
+  std::string Configuration::get(const std::string& path, const char* defaultValue) const
+  {
+    try {
+      return get<std::string>(path);
+    } catch (ConfigurationException&) {
+      return defaultValue;
     }
+  }
 
-    std::string Configuration::get(const std::string& path, const char* defaultValue) const
-    {
-        try {
-            return get<std::string>(path);
-        } catch(ConfigurationException&) {
-            return defaultValue;
-        }
+  std::string Configuration::get(const std::string& path, const std::string& defaultValue) const
+  {
+    try {
+      return get<std::string>(path);
+    } catch (ConfigurationException&) {
+      return defaultValue;
     }
-
-    std::string Configuration::get(const std::string& path, const std::string& defaultValue) const
-    {
-        try {
-            return get<std::string>(path);
-        } catch(ConfigurationException&) {
-            return defaultValue;
-        }
-    }
+  }
 }

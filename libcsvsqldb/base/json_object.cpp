@@ -32,179 +32,180 @@
 //
 
 #include "json_object.h"
+
 #include "exception.h"
 
 
 namespace csvsqldb
 {
-    namespace json
+  namespace json
+  {
+    const JsonObject::ObjectMap& JsonObject::getObjects() const
     {
-        const JsonObject::ObjectMap& JsonObject::getObjects() const
-        {
-            if(_type != Object) {
-                CSVSQLDB_THROW(csvsqldb::JsonException, "not an object");
-            }
-            return _objects;
-        }
-
-        const JsonObject::ObjectArray& JsonObject::getArray() const
-        {
-            if(_type != Array) {
-                CSVSQLDB_THROW(csvsqldb::JsonException, "not an array");
-            }
-            return _array;
-        }
-
-        double JsonObject::getAsDouble() const
-        {
-            return csvsqldb::any_cast<double>(_value);
-        }
-
-        long JsonObject::getAsLong() const
-        {
-            return static_cast<long>(csvsqldb::any_cast<double>(_value));
-        }
-
-        std::string JsonObject::getAsString() const
-        {
-            return csvsqldb::any_cast<std::string>(_value);
-        }
-
-        bool JsonObject::getAsBool() const
-        {
-            return csvsqldb::any_cast<bool>(_value);
-        }
-
-        const JsonObject& JsonObject::operator[](const std::string& name) const
-        {
-            if(_type != Object) {
-                CSVSQLDB_THROW(csvsqldb::JsonException, "not an object");
-            }
-            const auto iter = _objects.find(name);
-            if(iter != _objects.end()) {
-                return iter->second;
-            }
-            CSVSQLDB_THROW(csvsqldb::JsonException, "object with name '" << name << "' not found");
-        }
-
-        JsonObjectCallback::JsonObjectCallback()
-        {
-        }
-
-        const JsonObject& JsonObjectCallback::getObject() const
-        {
-            return _object;
-        }
-
-        void JsonObjectCallback::startObject()
-        {
-            JsonObject obj;
-            obj._type = JsonObject::Object;
-            _objectStack.push(obj);
-        }
-
-        void JsonObjectCallback::key(const std::string& key)
-        {
-            _keyStack.push(key);
-        }
-
-        void JsonObjectCallback::endObject()
-        {
-            JsonObject obj = _objectStack.top();
-            _objectStack.pop();
-            if(_objectStack.empty()) {
-                _object = obj;
-                return;
-            }
-            if(_objectStack.top()._type == JsonObject::Object) {
-                _objectStack.top()._objects.insert(std::make_pair(_keyStack.top(), obj));
-                _keyStack.pop();
-            } else if(_objectStack.top()._type == JsonObject::Array) {
-                _objectStack.top()._array.push_back(obj);
-            }
-        }
-
-        void JsonObjectCallback::startArray()
-        {
-            JsonObject obj;
-            obj._type = JsonObject::Array;
-            _objectStack.push(obj);
-        }
-
-        void JsonObjectCallback::endArray()
-        {
-            JsonObject obj = _objectStack.top();
-            _objectStack.pop();
-            if(!_objectStack.empty()) {
-                _objectStack.top()._objects.insert(std::make_pair(_keyStack.top(), obj));
-                _keyStack.pop();
-            }
-        }
-
-        void JsonObjectCallback::numberValue(double val)
-        {
-            if(_objectStack.top()._type == JsonObject::Object) {
-                JsonObject obj;
-                obj._value = val;
-                obj._type = JsonObject::Value;
-                _objectStack.top()._objects.insert(std::make_pair(_keyStack.top(), obj));
-                _keyStack.pop();
-            } else if(_objectStack.top()._type == JsonObject::Array) {
-                JsonObject obj;
-                obj._value = val;
-                _objectStack.top()._array.push_back(obj);
-            } else {
-                _objectStack.top()._value = val;
-            }
-        }
-
-        void JsonObjectCallback::stringValue(const std::string& val)
-        {
-            if(_objectStack.top()._type == JsonObject::Object) {
-                JsonObject obj;
-                obj._value = val;
-                obj._type = JsonObject::Value;
-                _objectStack.top()._objects.insert(std::make_pair(_keyStack.top(), obj));
-                _keyStack.pop();
-            } else if(_objectStack.top()._type == JsonObject::Array) {
-                JsonObject obj;
-                obj._value = val;
-                _objectStack.top()._array.push_back(obj);
-            } else {
-                _objectStack.top()._value = val;
-            }
-        }
-
-        void JsonObjectCallback::booleanValue(bool val)
-        {
-            if(_objectStack.top()._type == JsonObject::Object) {
-                JsonObject obj;
-                obj._value = val;
-                obj._type = JsonObject::Value;
-                _objectStack.top()._objects.insert(std::make_pair(_keyStack.top(), obj));
-                _keyStack.pop();
-            } else if(_objectStack.top()._type == JsonObject::Array) {
-                JsonObject obj;
-                obj._value = val;
-                _objectStack.top()._array.push_back(obj);
-            } else {
-                _objectStack.top()._value = val;
-            }
-        }
-
-        void JsonObjectCallback::nullValue()
-        {
-            if(_objectStack.top()._type == JsonObject::Object) {
-                JsonObject obj;
-                obj._type = JsonObject::Value;
-                _objectStack.top()._objects.insert(std::make_pair(_keyStack.top(), obj));
-                _keyStack.pop();
-            } else if(_objectStack.top()._type == JsonObject::Array) {
-                JsonObject obj;
-                _objectStack.top()._array.push_back(obj);
-            } else {
-                _objectStack.top()._value = Any();
-            }
-        }
+      if (_type != Object) {
+        CSVSQLDB_THROW(csvsqldb::JsonException, "not an object");
+      }
+      return _objects;
     }
+
+    const JsonObject::ObjectArray& JsonObject::getArray() const
+    {
+      if (_type != Array) {
+        CSVSQLDB_THROW(csvsqldb::JsonException, "not an array");
+      }
+      return _array;
+    }
+
+    double JsonObject::getAsDouble() const
+    {
+      return csvsqldb::any_cast<double>(_value);
+    }
+
+    long JsonObject::getAsLong() const
+    {
+      return static_cast<long>(csvsqldb::any_cast<double>(_value));
+    }
+
+    std::string JsonObject::getAsString() const
+    {
+      return csvsqldb::any_cast<std::string>(_value);
+    }
+
+    bool JsonObject::getAsBool() const
+    {
+      return csvsqldb::any_cast<bool>(_value);
+    }
+
+    const JsonObject& JsonObject::operator[](const std::string& name) const
+    {
+      if (_type != Object) {
+        CSVSQLDB_THROW(csvsqldb::JsonException, "not an object");
+      }
+      const auto iter = _objects.find(name);
+      if (iter != _objects.end()) {
+        return iter->second;
+      }
+      CSVSQLDB_THROW(csvsqldb::JsonException, "object with name '" << name << "' not found");
+    }
+
+    JsonObjectCallback::JsonObjectCallback()
+    {
+    }
+
+    const JsonObject& JsonObjectCallback::getObject() const
+    {
+      return _object;
+    }
+
+    void JsonObjectCallback::startObject()
+    {
+      JsonObject obj;
+      obj._type = JsonObject::Object;
+      _objectStack.push(obj);
+    }
+
+    void JsonObjectCallback::key(const std::string& key)
+    {
+      _keyStack.push(key);
+    }
+
+    void JsonObjectCallback::endObject()
+    {
+      JsonObject obj = _objectStack.top();
+      _objectStack.pop();
+      if (_objectStack.empty()) {
+        _object = obj;
+        return;
+      }
+      if (_objectStack.top()._type == JsonObject::Object) {
+        _objectStack.top()._objects.insert(std::make_pair(_keyStack.top(), obj));
+        _keyStack.pop();
+      } else if (_objectStack.top()._type == JsonObject::Array) {
+        _objectStack.top()._array.push_back(obj);
+      }
+    }
+
+    void JsonObjectCallback::startArray()
+    {
+      JsonObject obj;
+      obj._type = JsonObject::Array;
+      _objectStack.push(obj);
+    }
+
+    void JsonObjectCallback::endArray()
+    {
+      JsonObject obj = _objectStack.top();
+      _objectStack.pop();
+      if (!_objectStack.empty()) {
+        _objectStack.top()._objects.insert(std::make_pair(_keyStack.top(), obj));
+        _keyStack.pop();
+      }
+    }
+
+    void JsonObjectCallback::numberValue(double val)
+    {
+      if (_objectStack.top()._type == JsonObject::Object) {
+        JsonObject obj;
+        obj._value = val;
+        obj._type = JsonObject::Value;
+        _objectStack.top()._objects.insert(std::make_pair(_keyStack.top(), obj));
+        _keyStack.pop();
+      } else if (_objectStack.top()._type == JsonObject::Array) {
+        JsonObject obj;
+        obj._value = val;
+        _objectStack.top()._array.push_back(obj);
+      } else {
+        _objectStack.top()._value = val;
+      }
+    }
+
+    void JsonObjectCallback::stringValue(const std::string& val)
+    {
+      if (_objectStack.top()._type == JsonObject::Object) {
+        JsonObject obj;
+        obj._value = val;
+        obj._type = JsonObject::Value;
+        _objectStack.top()._objects.insert(std::make_pair(_keyStack.top(), obj));
+        _keyStack.pop();
+      } else if (_objectStack.top()._type == JsonObject::Array) {
+        JsonObject obj;
+        obj._value = val;
+        _objectStack.top()._array.push_back(obj);
+      } else {
+        _objectStack.top()._value = val;
+      }
+    }
+
+    void JsonObjectCallback::booleanValue(bool val)
+    {
+      if (_objectStack.top()._type == JsonObject::Object) {
+        JsonObject obj;
+        obj._value = val;
+        obj._type = JsonObject::Value;
+        _objectStack.top()._objects.insert(std::make_pair(_keyStack.top(), obj));
+        _keyStack.pop();
+      } else if (_objectStack.top()._type == JsonObject::Array) {
+        JsonObject obj;
+        obj._value = val;
+        _objectStack.top()._array.push_back(obj);
+      } else {
+        _objectStack.top()._value = val;
+      }
+    }
+
+    void JsonObjectCallback::nullValue()
+    {
+      if (_objectStack.top()._type == JsonObject::Object) {
+        JsonObject obj;
+        obj._type = JsonObject::Value;
+        _objectStack.top()._objects.insert(std::make_pair(_keyStack.top(), obj));
+        _keyStack.pop();
+      } else if (_objectStack.top()._type == JsonObject::Array) {
+        JsonObject obj;
+        _objectStack.top()._array.push_back(obj);
+      } else {
+        _objectStack.top()._value = Any();
+      }
+    }
+  }
 }

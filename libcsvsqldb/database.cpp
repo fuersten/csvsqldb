@@ -32,10 +32,10 @@
 //
 
 #include "database.h"
-#include "sql_parser.h"
 
 #include "base/exception.h"
 #include "base/string_helper.h"
+#include "sql_parser.h"
 
 #include <algorithm>
 #include <fstream>
@@ -43,127 +43,126 @@
 
 namespace csvsqldb
 {
+  Database::Database(const fs::path& path, FileMapping mappings)
+  : _path(path)
+  , _mappings(mappings)
+  {
+  }
 
-    Database::Database(const fs::path& path, FileMapping mappings)
-    : _path(path)
-    , _mappings(mappings)
-    {
+  void Database::setUp()
+  {
+    if (!fs::exists(_path)) {
+      fs::create_directory(_path);
+      fs::create_directory(tablePath());
+      fs::create_directory(functionPath());
+      fs::create_directory(mappingPath());
+    } else {
+      if (!fs::exists(tablePath())) {
+        fs::create_directory(tablePath());
+      }
+      if (!fs::exists(functionPath())) {
+        fs::create_directory(functionPath());
+      }
+      if (!fs::exists(mappingPath())) {
+        fs::create_directory(mappingPath());
+      }
     }
+    addSystemTables();
+    readTablesFromPath();
+    readMappingsFromPath();
+  }
 
-    void Database::setUp()
-    {
-        if(!fs::exists(_path)) {
-            fs::create_directory(_path);
-            fs::create_directory(tablePath());
-            fs::create_directory(functionPath());
-            fs::create_directory(mappingPath());
-        } else {
-            if(!fs::exists(tablePath())) {
-                fs::create_directory(tablePath());
-            }
-            if(!fs::exists(functionPath())) {
-                fs::create_directory(functionPath());
-            }
-            if(!fs::exists(mappingPath())) {
-                fs::create_directory(mappingPath());
-            }
-        }
-        addSystemTables();
-        readTablesFromPath();
-        readMappingsFromPath();
+  void Database::addSystemTables()
+  {
+    TableData tabledata("SYSTEM_DUAL");
+    tabledata.addColumn("x", BOOLEAN, false, false, false, csvsqldb::Any(), ASTExprNodePtr(), 0);
+    addTable(tabledata);
+  }
+
+  void Database::readTablesFromPath()
+  {
+    std::vector<fs::path> entries;
+    std::copy(fs::directory_iterator(tablePath()), fs::directory_iterator(), std::back_inserter(entries));
+
+    for (const auto& entry : entries) {
+      std::string tableEntry = entry.string();
+      std::ifstream tableStream(tableEntry);
+
+      TableData tabledata = TableData::fromJson(tableStream);
+
+      if (hasTable(tabledata.name())) {
+        CSVSQLDB_THROW(SqlException, "table '" << tabledata.name() << "' already added");
+      }
+      addTable(tabledata);
     }
+  }
 
-    void Database::addSystemTables()
-    {
-        TableData tabledata("SYSTEM_DUAL");
-        tabledata.addColumn("x", BOOLEAN, false, false, false, csvsqldb::Any(), ASTExprNodePtr(), 0);
-        addTable(tabledata);
+  void Database::readMappingsFromPath()
+  {
+    FileMapping::readFromPath(_mappings, mappingPath());
+  }
+
+  bool Database::hasTable(const std::string& tableName) const
+  {
+    for (const auto& table : _tables) {
+      if (table.name() == csvsqldb::toupper_copy(tableName)) {
+        return true;
+      }
     }
+    return false;
+  }
 
-    void Database::readTablesFromPath()
-    {
-        std::vector<fs::path> entries;
-        std::copy(fs::directory_iterator(tablePath()), fs::directory_iterator(), std::back_inserter(entries));
-
-        for(const auto& entry : entries) {
-            std::string tableEntry = entry.string();
-            std::ifstream tableStream(tableEntry);
-
-            TableData tabledata = TableData::fromJson(tableStream);
-
-            if(hasTable(tabledata.name())) {
-                CSVSQLDB_THROW(SqlException, "table '" << tabledata.name() << "' already added");
-            }
-            addTable(tabledata);
-        }
+  const TableData& Database::getTable(const std::string& tableName) const
+  {
+    for (const auto& table : _tables) {
+      if (table.name() == csvsqldb::toupper_copy(tableName)) {
+        return table;
+      }
     }
+    CSVSQLDB_THROW(csvsqldb::Exception, "table '" << tableName << "' not found");
+  }
 
-    void Database::readMappingsFromPath()
-    {
-        FileMapping::readFromPath(_mappings, mappingPath());
+  void Database::addTable(const TableData& table)
+  {
+    _tables.push_back(table);
+  }
+
+  void Database::dropTable(const std::string& tableName)
+  {
+    if (tableName.substr(0, 7) == "SYSTEM_") {
+      CSVSQLDB_THROW(csvsqldb::Exception, "table '" << tableName << "' is a system table. Dropping nothing");
     }
-
-    bool Database::hasTable(const std::string& tableName) const
-    {
-        for(const auto& table : _tables) {
-            if(table.name() == csvsqldb::toupper_copy(tableName)) {
-                return true;
-            }
-        }
-        return false;
+    Tables::iterator iter =
+      std::find_if(_tables.begin(), _tables.end(), [&](const TableData& data) { return data.name() == tableName; });
+    if (iter == _tables.end()) {
+      CSVSQLDB_THROW(csvsqldb::Exception, "table '" << tableName << "' not found. Dropping nothing");
     }
-
-    const TableData& Database::getTable(const std::string& tableName) const
-    {
-        for(const auto& table : _tables) {
-            if(table.name() == csvsqldb::toupper_copy(tableName)) {
-                return table;
-            }
-        }
-        CSVSQLDB_THROW(csvsqldb::Exception, "table '" << tableName << "' not found");
+    boost::system::error_code ec;
+    fs::remove(tablePath() / tableName, ec);
+    if (ec) {
+      CSVSQLDB_THROW(csvsqldb::Exception, "could not remove table file (" << ec.message() << ")");
     }
+    _tables.erase(iter);
 
-    void Database::addTable(const TableData& table)
-    {
-        _tables.push_back(table);
+    fs::remove(mappingPath() / tableName, ec);
+    if (ec) {
+      CSVSQLDB_THROW(csvsqldb::Exception, "could not remove mapping file (" << ec.message() << ")");
     }
+    _mappings.removeMapping(tableName);
+  }
 
-    void Database::dropTable(const std::string& tableName)
-    {
-        if(tableName.substr(0, 7) == "SYSTEM_") {
-            CSVSQLDB_THROW(csvsqldb::Exception, "table '" << tableName << "' is a system table. Dropping nothing");
-        }
-        Tables::iterator iter =
-        std::find_if(_tables.begin(), _tables.end(), [&](const TableData& data) { return data.name() == tableName; });
-        if(iter == _tables.end()) {
-            CSVSQLDB_THROW(csvsqldb::Exception, "table '" << tableName << "' not found. Dropping nothing");
-        }
-        boost::system::error_code ec;
-        fs::remove(tablePath() / tableName, ec);
-        if(ec) {
-            CSVSQLDB_THROW(csvsqldb::Exception, "could not remove table file (" << ec.message() << ")");
-        }
-        _tables.erase(iter);
+  const Mapping& Database::getMappingForTable(const std::string& tableName) const
+  {
+    return _mappings.getMappingForTable(tableName);
+  }
 
-        fs::remove(mappingPath() / tableName, ec);
-        if(ec) {
-            CSVSQLDB_THROW(csvsqldb::Exception, "could not remove mapping file (" << ec.message() << ")");
-        }
-        _mappings.removeMapping(tableName);
-    }
+  void Database::addMapping(const FileMapping& mappings)
+  {
+    _mappings.mergeMapping(mappings);
+  }
 
-    const Mapping& Database::getMappingForTable(const std::string& tableName) const
-    {
-        return _mappings.getMappingForTable(tableName);
-    }
-
-    void Database::addMapping(const FileMapping& mappings)
-    {
-        _mappings.mergeMapping(mappings);
-    }
-
-    void Database::removeMapping(const std::string& tableName)
-    {
-        _mappings.removeMapping(tableName);
-    }
+  void Database::removeMapping(const std::string& tableName)
+  {
+    _mappings.removeMapping(tableName);
+  }
 }

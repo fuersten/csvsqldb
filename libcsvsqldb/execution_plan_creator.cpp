@@ -32,71 +32,71 @@
 //
 
 #include "execution_plan_creator.h"
+
 #include "operatornode_factory.h"
 #include "validation_visitor.h"
 
 
 namespace csvsqldb
 {
+  QueryExecutionNode::QueryExecutionNode(const OperatorContext& context)
+  : _context(context)
+  {
+  }
 
-    QueryExecutionNode::QueryExecutionNode(const OperatorContext& context)
-    : _context(context)
-    {
+  const OperatorContext& QueryExecutionNode::getContext() const
+  {
+    return _context;
+  }
+
+  void QueryExecutionNode::setRootOperatorNode(const RootOperatorNodePtr& queryOperationRoot)
+  {
+    _queryOperationRoot = queryOperationRoot;
+  }
+
+  int64_t QueryExecutionNode::execute()
+  {
+    return _queryOperationRoot->process();
+  }
+
+  void QueryExecutionNode::dump(std::ostream& stream) const
+  {
+    _queryOperationRoot->dump(stream);
+  }
+
+
+  ExplainExecutionNode::ExplainExecutionNode(OperatorContext& context, eDescriptionType descType, const ASTQueryNodePtr& query)
+  : _context(context)
+  , _descType(descType)
+  , _query(query)
+  {
+  }
+
+  int64_t ExplainExecutionNode::execute()
+  {
+    switch (_descType) {
+      case AST: {
+        ASTNodeDumpVisitor visitor;
+        _query->accept(visitor);
+        std::cout << std::endl;
+        break;
+      }
+      case EXEC: {
+        std::stringstream ss;
+        ExecutionPlan execPlan;
+        ASTValidationVisitor validationVisitor(_context._database);
+        _query->accept(validationVisitor);
+        ExecutionPlanVisitor<OperatorNodeFactory> execVisitor(_context, execPlan, ss);
+        _query->accept(execVisitor);
+        execPlan.dump(std::cout);
+        break;
+      }
     }
 
-    const OperatorContext& QueryExecutionNode::getContext() const
-    {
-        return _context;
-    }
+    return 0;
+  }
 
-    void QueryExecutionNode::setRootOperatorNode(const RootOperatorNodePtr& queryOperationRoot)
-    {
-        _queryOperationRoot = queryOperationRoot;
-    }
-
-    int64_t QueryExecutionNode::execute()
-    {
-        return _queryOperationRoot->process();
-    }
-
-    void QueryExecutionNode::dump(std::ostream& stream) const
-    {
-        _queryOperationRoot->dump(stream);
-    }
-
-
-    ExplainExecutionNode::ExplainExecutionNode(OperatorContext& context, eDescriptionType descType, const ASTQueryNodePtr& query)
-    : _context(context)
-    , _descType(descType)
-    , _query(query)
-    {
-    }
-
-    int64_t ExplainExecutionNode::execute()
-    {
-        switch(_descType) {
-            case AST: {
-                ASTNodeDumpVisitor visitor;
-                _query->accept(visitor);
-                std::cout << std::endl;
-                break;
-            }
-            case EXEC: {
-                std::stringstream ss;
-                ExecutionPlan execPlan;
-                ASTValidationVisitor validationVisitor(_context._database);
-                _query->accept(validationVisitor);
-                ExecutionPlanVisitor<OperatorNodeFactory> execVisitor(_context, execPlan, ss);
-                _query->accept(execVisitor);
-                execPlan.dump(std::cout);
-                break;
-            }
-        }
-
-        return 0;
-    }
-
-    void ExplainExecutionNode::dump(std::ostream& stream) const
-    {
-    }
+  void ExplainExecutionNode::dump(std::ostream& stream) const
+  {
+  }
 }

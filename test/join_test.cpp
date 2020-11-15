@@ -31,58 +31,60 @@
 //
 
 
-#include "test.h"
-
 #include "data_test_framework.h"
+#include "test.h"
 
 
 class JoinTestCase
 {
 public:
-    JoinTestCase()
-    {
-    }
+  JoinTestCase()
+  {
+  }
 
-    void setUp()
-    {
-    }
+  void setUp()
+  {
+  }
 
-    void tearDown()
-    {
-    }
+  void tearDown()
+  {
+  }
 
-    void simpleCrossJoinTest()
-    {
-        DatabaseTestWrapper dbWrapper;
-        dbWrapper.addTable(TableInitializer("employees",
-                                            { { "id", csvsqldb::INT },
-                                              { "first_name", csvsqldb::STRING },
-                                              { "last_name", csvsqldb::STRING },
-                                              { "birth_date", csvsqldb::DATE },
-                                              { "hire_date", csvsqldb::DATE } }));
-        dbWrapper.addTable(TableInitializer(
-        "salaries", { { "id", csvsqldb::INT }, { "salary", csvsqldb::REAL }, { "from_date", csvsqldb::DATE }, { "to_date", csvsqldb::DATE } }));
+  void simpleCrossJoinTest()
+  {
+    DatabaseTestWrapper dbWrapper;
+    dbWrapper.addTable(TableInitializer("employees", {{"id", csvsqldb::INT},
+                                                      {"first_name", csvsqldb::STRING},
+                                                      {"last_name", csvsqldb::STRING},
+                                                      {"birth_date", csvsqldb::DATE},
+                                                      {"hire_date", csvsqldb::DATE}}));
+    dbWrapper.addTable(TableInitializer(
+      "salaries",
+      {{"id", csvsqldb::INT}, {"salary", csvsqldb::REAL}, {"from_date", csvsqldb::DATE}, {"to_date", csvsqldb::DATE}}));
 
-        csvsqldb::ExecutionContext context(dbWrapper.getDatabase());
-        csvsqldb::ExecutionEngine<TestOperatorNodeFactory> engine(context);
+    csvsqldb::ExecutionContext context(dbWrapper.getDatabase());
+    csvsqldb::ExecutionEngine<TestOperatorNodeFactory> engine(context);
 
-        TestRowProvider::setRows(
-        "employees",
-        { { 815, "Mark", "Fürstenberg", csvsqldb::Date(1969, csvsqldb::Date::May, 17), csvsqldb::Date(2003, csvsqldb::Date::April, 15) },
-          { 4711, "Lars", "Fürstenberg", csvsqldb::Date(1970, csvsqldb::Date::September, 23), csvsqldb::Date(2010, csvsqldb::Date::February, 1) },
-          { 9227, "Angelica", "Tello de Fürstenberg", csvsqldb::Date(1963, csvsqldb::Date::March, 6), csvsqldb::Date(2003, csvsqldb::Date::June, 15) } });
+    TestRowProvider::setRows("employees",
+                             {{815, "Mark", "Fürstenberg", csvsqldb::Date(1969, csvsqldb::Date::May, 17),
+                               csvsqldb::Date(2003, csvsqldb::Date::April, 15)},
+                              {4711, "Lars", "Fürstenberg", csvsqldb::Date(1970, csvsqldb::Date::September, 23),
+                               csvsqldb::Date(2010, csvsqldb::Date::February, 1)},
+                              {9227, "Angelica", "Tello de Fürstenberg", csvsqldb::Date(1963, csvsqldb::Date::March, 6),
+                               csvsqldb::Date(2003, csvsqldb::Date::June, 15)}});
 
-        TestRowProvider::setRows(
-        "salaries",
-        { { 815, 5000.00, csvsqldb::Date(2003, csvsqldb::Date::April, 15), csvsqldb::Date(2015, csvsqldb::Date::December, 31) },
-          { 4711, 12000.00, csvsqldb::Date(2010, csvsqldb::Date::February, 1), csvsqldb::Date(2015, csvsqldb::Date::December, 31) },
-          { 9227, 450.00, csvsqldb::Date(2003, csvsqldb::Date::June, 15), csvsqldb::Date(2015, csvsqldb::Date::December, 31) } });
+    TestRowProvider::setRows(
+      "salaries",
+      {{815, 5000.00, csvsqldb::Date(2003, csvsqldb::Date::April, 15), csvsqldb::Date(2015, csvsqldb::Date::December, 31)},
+       {4711, 12000.00, csvsqldb::Date(2010, csvsqldb::Date::February, 1), csvsqldb::Date(2015, csvsqldb::Date::December, 31)},
+       {9227, 450.00, csvsqldb::Date(2003, csvsqldb::Date::June, 15), csvsqldb::Date(2015, csvsqldb::Date::December, 31)}});
 
-        csvsqldb::ExecutionStatistics statistics;
-        std::stringstream ss;
-        int64_t rowCount = engine.execute("SELECT * FROM employees CROSS JOIN salaries", statistics, ss);
-        MPF_TEST_ASSERTEQUAL(9, rowCount);
-        std::string expected = R"(#EMPLOYEES.ID,EMPLOYEES.FIRST_NAME,EMPLOYEES.LAST_NAME,EMPLOYEES.BIRTH_DATE,EMPLOYEES.HIRE_DATE,SALARIES.ID,SALARIES.SALARY,SALARIES.FROM_DATE,SALARIES.TO_DATE
+    csvsqldb::ExecutionStatistics statistics;
+    std::stringstream ss;
+    int64_t rowCount = engine.execute("SELECT * FROM employees CROSS JOIN salaries", statistics, ss);
+    MPF_TEST_ASSERTEQUAL(9, rowCount);
+    std::string expected =
+      R"(#EMPLOYEES.ID,EMPLOYEES.FIRST_NAME,EMPLOYEES.LAST_NAME,EMPLOYEES.BIRTH_DATE,EMPLOYEES.HIRE_DATE,SALARIES.ID,SALARIES.SALARY,SALARIES.FROM_DATE,SALARIES.TO_DATE
 815,'Mark','Fürstenberg',1969-05-17,2003-04-15,815,5000.000000,2003-04-15,2015-12-31
 815,'Mark','Fürstenberg',1969-05-17,2003-04-15,4711,12000.000000,2010-02-01,2015-12-31
 815,'Mark','Fürstenberg',1969-05-17,2003-04-15,9227,450.000000,2003-06-15,2015-12-31
@@ -93,140 +95,145 @@ public:
 9227,'Angelica','Tello de Fürstenberg',1963-03-06,2003-06-15,4711,12000.000000,2010-02-01,2015-12-31
 9227,'Angelica','Tello de Fürstenberg',1963-03-06,2003-06-15,9227,450.000000,2003-06-15,2015-12-31
 )";
-        MPF_TEST_ASSERTEQUAL(expected, ss.str());
-    }
+    MPF_TEST_ASSERTEQUAL(expected, ss.str());
+  }
 
-    void simpleInnerJoinTest()
-    {
-        DatabaseTestWrapper dbWrapper;
-        dbWrapper.addTable(TableInitializer("employees",
-                                            { { "id", csvsqldb::INT },
-                                              { "first_name", csvsqldb::STRING },
-                                              { "last_name", csvsqldb::STRING },
-                                              { "birth_date", csvsqldb::DATE },
-                                              { "hire_date", csvsqldb::DATE } }));
-        dbWrapper.addTable(TableInitializer(
-        "salaries", { { "id", csvsqldb::INT }, { "salary", csvsqldb::REAL }, { "from_date", csvsqldb::DATE }, { "to_date", csvsqldb::DATE } }));
+  void simpleInnerJoinTest()
+  {
+    DatabaseTestWrapper dbWrapper;
+    dbWrapper.addTable(TableInitializer("employees", {{"id", csvsqldb::INT},
+                                                      {"first_name", csvsqldb::STRING},
+                                                      {"last_name", csvsqldb::STRING},
+                                                      {"birth_date", csvsqldb::DATE},
+                                                      {"hire_date", csvsqldb::DATE}}));
+    dbWrapper.addTable(TableInitializer(
+      "salaries",
+      {{"id", csvsqldb::INT}, {"salary", csvsqldb::REAL}, {"from_date", csvsqldb::DATE}, {"to_date", csvsqldb::DATE}}));
 
-        csvsqldb::ExecutionContext context(dbWrapper.getDatabase());
-        csvsqldb::ExecutionEngine<TestOperatorNodeFactory> engine(context);
+    csvsqldb::ExecutionContext context(dbWrapper.getDatabase());
+    csvsqldb::ExecutionEngine<TestOperatorNodeFactory> engine(context);
 
-        TestRowProvider::setRows(
-        "employees",
-        { { 9384, "John", "Doe", csvsqldb::Date(1965, csvsqldb::Date::August, 8), csvsqldb::Date(9999, csvsqldb::Date::December, 31) },
-          { 815, "Mark", "Fürstenberg", csvsqldb::Date(1969, csvsqldb::Date::May, 17), csvsqldb::Date(2003, csvsqldb::Date::April, 15) },
-          { 4711, "Lars", "Fürstenberg", csvsqldb::Date(1970, csvsqldb::Date::September, 23), csvsqldb::Date(2010, csvsqldb::Date::February, 1) },
-          { 9227, "Angelica", "Tello de Fürstenberg", csvsqldb::Date(1963, csvsqldb::Date::March, 6), csvsqldb::Date(2003, csvsqldb::Date::June, 15) } });
+    TestRowProvider::setRows(
+      "employees",
+      {{9384, "John", "Doe", csvsqldb::Date(1965, csvsqldb::Date::August, 8), csvsqldb::Date(9999, csvsqldb::Date::December, 31)},
+       {815, "Mark", "Fürstenberg", csvsqldb::Date(1969, csvsqldb::Date::May, 17),
+        csvsqldb::Date(2003, csvsqldb::Date::April, 15)},
+       {4711, "Lars", "Fürstenberg", csvsqldb::Date(1970, csvsqldb::Date::September, 23),
+        csvsqldb::Date(2010, csvsqldb::Date::February, 1)},
+       {9227, "Angelica", "Tello de Fürstenberg", csvsqldb::Date(1963, csvsqldb::Date::March, 6),
+        csvsqldb::Date(2003, csvsqldb::Date::June, 15)}});
 
-        TestRowProvider::setRows(
-        "salaries",
-        { { 815, 5000.00, csvsqldb::Date(2003, csvsqldb::Date::April, 15), csvsqldb::Date(2015, csvsqldb::Date::December, 31) },
-          { 4711, 12000.00, csvsqldb::Date(2010, csvsqldb::Date::February, 1), csvsqldb::Date(2015, csvsqldb::Date::December, 31) },
-          { 9227, 450.00, csvsqldb::Date(2003, csvsqldb::Date::June, 15), csvsqldb::Date(2015, csvsqldb::Date::December, 31) } });
+    TestRowProvider::setRows(
+      "salaries",
+      {{815, 5000.00, csvsqldb::Date(2003, csvsqldb::Date::April, 15), csvsqldb::Date(2015, csvsqldb::Date::December, 31)},
+       {4711, 12000.00, csvsqldb::Date(2010, csvsqldb::Date::February, 1), csvsqldb::Date(2015, csvsqldb::Date::December, 31)},
+       {9227, 450.00, csvsqldb::Date(2003, csvsqldb::Date::June, 15), csvsqldb::Date(2015, csvsqldb::Date::December, 31)}});
 
-        csvsqldb::ExecutionStatistics statistics;
-        std::stringstream ss;
-        int64_t rowCount = engine.execute("SELECT * FROM employees emp INNER JOIN salaries sal ON emp.id = sal.id", statistics, ss);
-        MPF_TEST_ASSERTEQUAL(3, rowCount);
-        std::string expected = R"(#EMP.ID,EMP.FIRST_NAME,EMP.LAST_NAME,EMP.BIRTH_DATE,EMP.HIRE_DATE,SAL.ID,SAL.SALARY,SAL.FROM_DATE,SAL.TO_DATE
+    csvsqldb::ExecutionStatistics statistics;
+    std::stringstream ss;
+    int64_t rowCount = engine.execute("SELECT * FROM employees emp INNER JOIN salaries sal ON emp.id = sal.id", statistics, ss);
+    MPF_TEST_ASSERTEQUAL(3, rowCount);
+    std::string expected =
+      R"(#EMP.ID,EMP.FIRST_NAME,EMP.LAST_NAME,EMP.BIRTH_DATE,EMP.HIRE_DATE,SAL.ID,SAL.SALARY,SAL.FROM_DATE,SAL.TO_DATE
 815,'Mark','Fürstenberg',1969-05-17,2003-04-15,815,5000.000000,2003-04-15,2015-12-31
 4711,'Lars','Fürstenberg',1970-09-23,2010-02-01,4711,12000.000000,2010-02-01,2015-12-31
 9227,'Angelica','Tello de Fürstenberg',1963-03-06,2003-06-15,9227,450.000000,2003-06-15,2015-12-31
 )";
-        MPF_TEST_ASSERTEQUAL(expected, ss.str());
-    }
+    MPF_TEST_ASSERTEQUAL(expected, ss.str());
+  }
 
-    void complexInnerJoinTest()
-    {
-        DatabaseTestWrapper dbWrapper;
-        dbWrapper.addTable(TableInitializer("employees",
-                                            { { "id", csvsqldb::INT },
-                                              { "first_name", csvsqldb::STRING },
-                                              { "last_name", csvsqldb::STRING },
-                                              { "birth_date", csvsqldb::DATE },
-                                              { "hire_date", csvsqldb::DATE } }));
-        dbWrapper.addTable(
-        TableInitializer("dept_emp",
-                         {
-                         { "id", csvsqldb::INT }, { "dept_no", csvsqldb::STRING }, { "from_date", csvsqldb::DATE }, { "to_date", csvsqldb::DATE },
-                         }));
-        dbWrapper.addTable(TableInitializer("departments",
-                                            {
-                                            { "dept_no", csvsqldb::STRING }, { "dept_name", csvsqldb::STRING },
-                                            }));
+  void complexInnerJoinTest()
+  {
+    DatabaseTestWrapper dbWrapper;
+    dbWrapper.addTable(TableInitializer("employees", {{"id", csvsqldb::INT},
+                                                      {"first_name", csvsqldb::STRING},
+                                                      {"last_name", csvsqldb::STRING},
+                                                      {"birth_date", csvsqldb::DATE},
+                                                      {"hire_date", csvsqldb::DATE}}));
+    dbWrapper.addTable(TableInitializer("dept_emp", {
+                                                      {"id", csvsqldb::INT},
+                                                      {"dept_no", csvsqldb::STRING},
+                                                      {"from_date", csvsqldb::DATE},
+                                                      {"to_date", csvsqldb::DATE},
+                                                    }));
+    dbWrapper.addTable(TableInitializer("departments", {
+                                                         {"dept_no", csvsqldb::STRING},
+                                                         {"dept_name", csvsqldb::STRING},
+                                                       }));
 
-        csvsqldb::ExecutionContext context(dbWrapper.getDatabase());
-        csvsqldb::ExecutionEngine<TestOperatorNodeFactory> engine(context);
+    csvsqldb::ExecutionContext context(dbWrapper.getDatabase());
+    csvsqldb::ExecutionEngine<TestOperatorNodeFactory> engine(context);
 
-        TestRowProvider::setRows(
-        "employees",
-        { { 9384, "John", "Doe", csvsqldb::Date(1965, csvsqldb::Date::August, 8), csvsqldb::Date(9999, csvsqldb::Date::December, 31) },
-          { 815, "Mark", "Fürstenberg", csvsqldb::Date(1969, csvsqldb::Date::May, 17), csvsqldb::Date(2003, csvsqldb::Date::April, 15) },
-          { 4711, "Lars", "Fürstenberg", csvsqldb::Date(1970, csvsqldb::Date::September, 23), csvsqldb::Date(2010, csvsqldb::Date::February, 1) },
-          { 9227, "Angelica", "Tello de Fürstenberg", csvsqldb::Date(1963, csvsqldb::Date::March, 6), csvsqldb::Date(2003, csvsqldb::Date::June, 15) } });
+    TestRowProvider::setRows(
+      "employees",
+      {{9384, "John", "Doe", csvsqldb::Date(1965, csvsqldb::Date::August, 8), csvsqldb::Date(9999, csvsqldb::Date::December, 31)},
+       {815, "Mark", "Fürstenberg", csvsqldb::Date(1969, csvsqldb::Date::May, 17),
+        csvsqldb::Date(2003, csvsqldb::Date::April, 15)},
+       {4711, "Lars", "Fürstenberg", csvsqldb::Date(1970, csvsqldb::Date::September, 23),
+        csvsqldb::Date(2010, csvsqldb::Date::February, 1)},
+       {9227, "Angelica", "Tello de Fürstenberg", csvsqldb::Date(1963, csvsqldb::Date::March, 6),
+        csvsqldb::Date(2003, csvsqldb::Date::June, 15)}});
 
-        TestRowProvider::setRows(
-        "dept_emp",
-        { { 4711, "d005", csvsqldb::Date(2010, csvsqldb::Date::February, 1), csvsqldb::Date(9999, csvsqldb::Date::December, 31) },
-          { 815, "d007", csvsqldb::Date(2003, csvsqldb::Date::April, 15), csvsqldb::Date(9999, csvsqldb::Date::December, 31) },
-          { 9227, "d003", csvsqldb::Date(2003, csvsqldb::Date::June, 15), csvsqldb::Date(9999, csvsqldb::Date::December, 31) } });
+    TestRowProvider::setRows(
+      "dept_emp",
+      {{4711, "d005", csvsqldb::Date(2010, csvsqldb::Date::February, 1), csvsqldb::Date(9999, csvsqldb::Date::December, 31)},
+       {815, "d007", csvsqldb::Date(2003, csvsqldb::Date::April, 15), csvsqldb::Date(9999, csvsqldb::Date::December, 31)},
+       {9227, "d003", csvsqldb::Date(2003, csvsqldb::Date::June, 15), csvsqldb::Date(9999, csvsqldb::Date::December, 31)}});
 
-        TestRowProvider::setRows("departments",
-                                 { { "d009", "Customer Service" },
-                                   { "d005", "Development" },
-                                   { "d002", "Finance" },
-                                   { "d003", "Human Resources" },
-                                   { "d001", "Marketing" },
-                                   { "d004", "Production" },
-                                   { "d006", "Quality Management" },
-                                   { "d008", "Research" },
-                                   { "d007", "Sales" } });
+    TestRowProvider::setRows("departments", {{"d009", "Customer Service"},
+                                             {"d005", "Development"},
+                                             {"d002", "Finance"},
+                                             {"d003", "Human Resources"},
+                                             {"d001", "Marketing"},
+                                             {"d004", "Production"},
+                                             {"d006", "Quality Management"},
+                                             {"d008", "Research"},
+                                             {"d007", "Sales"}});
 
-        csvsqldb::ExecutionStatistics statistics;
-        std::stringstream ss;
-        int64_t rowCount = engine.execute(
-        "SELECT emp.first_name,emp.last_name,dept_emp.dept_no,departments.dept_name FROM employees as emp JOIN dept_emp ON "
-        "emp.id = dept_emp.id JOIN departments ON dept_emp.dept_no = departments.dept_no",
-        statistics,
-        ss);
-        MPF_TEST_ASSERTEQUAL(3, rowCount);
-        std::string expected = R"(#EMP.FIRST_NAME,EMP.LAST_NAME,DEPT_EMP.DEPT_NO,DEPARTMENTS.DEPT_NAME
+    csvsqldb::ExecutionStatistics statistics;
+    std::stringstream ss;
+    int64_t rowCount = engine.execute(
+      "SELECT emp.first_name,emp.last_name,dept_emp.dept_no,departments.dept_name FROM employees as emp JOIN dept_emp ON "
+      "emp.id = dept_emp.id JOIN departments ON dept_emp.dept_no = departments.dept_no",
+      statistics, ss);
+    MPF_TEST_ASSERTEQUAL(3, rowCount);
+    std::string expected = R"(#EMP.FIRST_NAME,EMP.LAST_NAME,DEPT_EMP.DEPT_NO,DEPARTMENTS.DEPT_NAME
 'Mark','Fürstenberg','d007','Sales'
 'Lars','Fürstenberg','d005','Development'
 'Angelica','Tello de Fürstenberg','d003','Human Resources'
 )";
-        MPF_TEST_ASSERTEQUAL(expected, ss.str());
-    }
+    MPF_TEST_ASSERTEQUAL(expected, ss.str());
+  }
 
-    void selfJoinTest()
+  void selfJoinTest()
+  {
+    DatabaseTestWrapper dbWrapper;
+    dbWrapper.addTable(TableInitializer("creditcards", {{"nr", csvsqldb::INT},
+                                                        {"company", csvsqldb::STRING},
+                                                        {"expiration_date", csvsqldb::DATE},
+                                                        {"customer_nr", csvsqldb::INT}}));
+
+    csvsqldb::ExecutionContext context(dbWrapper.getDatabase());
+    csvsqldb::ExecutionEngine<TestOperatorNodeFactory> engine(context);
+
+    TestRowProvider::setRows("creditcards",
+                             {
+                               {4024007180543240UL, "Visa", csvsqldb::Date(2019, csvsqldb::Date::May, 01), 123457},
+                               {5397979799985804UL, "Master Card", csvsqldb::Date(2020, csvsqldb::Date::January, 01), 123459},
+                               {374580812235447UL, "American Express", csvsqldb::Date(2019, csvsqldb::Date::May, 01), 123459},
+                               {36010567235582UL, "Diners Club", csvsqldb::Date(2022, csvsqldb::Date::February, 01), 123458},
+                               {4916510282619314UL, "Visa", csvsqldb::Date(2017, csvsqldb::Date::March, 01), 123458},
+                             });
+
     {
-        DatabaseTestWrapper dbWrapper;
-        dbWrapper.addTable(TableInitializer(
-        "creditcards",
-        { { "nr", csvsqldb::INT }, { "company", csvsqldb::STRING }, { "expiration_date", csvsqldb::DATE }, { "customer_nr", csvsqldb::INT } }));
-
-        csvsqldb::ExecutionContext context(dbWrapper.getDatabase());
-        csvsqldb::ExecutionEngine<TestOperatorNodeFactory> engine(context);
-
-        TestRowProvider::setRows("creditcards",
-                                 {
-                                 { 4024007180543240UL, "Visa", csvsqldb::Date(2019, csvsqldb::Date::May, 01), 123457 },
-                                 { 5397979799985804UL, "Master Card", csvsqldb::Date(2020, csvsqldb::Date::January, 01), 123459 },
-                                 { 374580812235447UL, "American Express", csvsqldb::Date(2019, csvsqldb::Date::May, 01), 123459 },
-                                 { 36010567235582UL, "Diners Club", csvsqldb::Date(2022, csvsqldb::Date::February, 01), 123458 },
-                                 { 4916510282619314UL, "Visa", csvsqldb::Date(2017, csvsqldb::Date::March, 01), 123458 },
-                                 });
-
-        {
-            csvsqldb::ExecutionStatistics statistics;
-            std::stringstream ss;
-            int64_t rowCount = engine.execute(
-            "SELECT cc1.customer_nr,cc1.company,cc2.customer_nr,cc2.company FROM creditcards cc1 INNER JOIN creditcards cc2 ON "
-            "cc1.customer_nr = cc2.customer_nr order by cc1.company,cc2.company,cc1.customer_nr",
-            statistics,
-            ss);
-            MPF_TEST_ASSERTEQUAL(9, rowCount);
-            std::string expected = R"(#CC1.CUSTOMER_NR,CC1.COMPANY,CC2.CUSTOMER_NR,CC2.COMPANY
+      csvsqldb::ExecutionStatistics statistics;
+      std::stringstream ss;
+      int64_t rowCount = engine.execute(
+        "SELECT cc1.customer_nr,cc1.company,cc2.customer_nr,cc2.company FROM creditcards cc1 INNER JOIN creditcards cc2 ON "
+        "cc1.customer_nr = cc2.customer_nr order by cc1.company,cc2.company,cc1.customer_nr",
+        statistics, ss);
+      MPF_TEST_ASSERTEQUAL(9, rowCount);
+      std::string expected = R"(#CC1.CUSTOMER_NR,CC1.COMPANY,CC2.CUSTOMER_NR,CC2.COMPANY
 123459,'American Express',123459,'American Express'
 123459,'American Express',123459,'Master Card'
 123458,'Diners Club',123458,'Diners Club'
@@ -237,27 +244,26 @@ public:
 123457,'Visa',123457,'Visa'
 123458,'Visa',123458,'Visa'
 )";
-            MPF_TEST_ASSERTEQUAL(expected, ss.str());
-        }
+      MPF_TEST_ASSERTEQUAL(expected, ss.str());
+    }
 
-        {
-            csvsqldb::ExecutionStatistics statistics;
-            std::stringstream ss;
-            int64_t rowCount = engine.execute(
-            "SELECT cc1.customer_nr,cc1.company,cc2.customer_nr,cc2.company FROM creditcards cc1 INNER JOIN creditcards cc2 ON "
-            "cc1.customer_nr = cc2.customer_nr WHERE cc1.company <> cc2.company order by cc1.company",
-            statistics,
-            ss);
-            MPF_TEST_ASSERTEQUAL(4, rowCount);
-            std::string expected = R"(#CC1.CUSTOMER_NR,CC1.COMPANY,CC2.CUSTOMER_NR,CC2.COMPANY
+    {
+      csvsqldb::ExecutionStatistics statistics;
+      std::stringstream ss;
+      int64_t rowCount = engine.execute(
+        "SELECT cc1.customer_nr,cc1.company,cc2.customer_nr,cc2.company FROM creditcards cc1 INNER JOIN creditcards cc2 ON "
+        "cc1.customer_nr = cc2.customer_nr WHERE cc1.company <> cc2.company order by cc1.company",
+        statistics, ss);
+      MPF_TEST_ASSERTEQUAL(4, rowCount);
+      std::string expected = R"(#CC1.CUSTOMER_NR,CC1.COMPANY,CC2.CUSTOMER_NR,CC2.COMPANY
 123459,'American Express',123459,'Master Card'
 123458,'Diners Club',123458,'Visa'
 123459,'Master Card',123459,'American Express'
 123458,'Visa',123458,'Diners Club'
 )";
-            MPF_TEST_ASSERTEQUAL(expected, ss.str());
-        }
+      MPF_TEST_ASSERTEQUAL(expected, ss.str());
     }
+  }
 };
 
 MPF_REGISTER_TEST_START("JoinTestSuite", JoinTestCase);

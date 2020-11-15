@@ -45,54 +45,53 @@
 
 namespace csvsqldb
 {
+  class CSVSQLDB_EXPORT ExecutionNode : csvsqldb::noncopyable
+  {
+  public:
+    typedef std::unique_ptr<ExecutionNode> UniquePtr;
 
-    class CSVSQLDB_EXPORT ExecutionNode : csvsqldb::noncopyable
+    virtual ~ExecutionNode()
     {
-    public:
-        typedef std::unique_ptr<ExecutionNode> UniquePtr;
+    }
 
-        virtual ~ExecutionNode()
-        {
-        }
+    virtual int64_t execute() = 0;
 
-        virtual int64_t execute() = 0;
+    virtual void dump(std::ostream& stream) const = 0;
 
-        virtual void dump(std::ostream& stream) const = 0;
-
-    protected:
-        ExecutionNode()
-        {
-        }
-    };
-
-
-    class CSVSQLDB_EXPORT ExecutionPlan : csvsqldb::noncopyable
+  protected:
+    ExecutionNode()
     {
-    public:
-        ExecutionPlan()
-        {
-        }
+    }
+  };
 
-        void addExecutionNode(ExecutionNode::UniquePtr& node);
 
-        int64_t execute();
+  class CSVSQLDB_EXPORT ExecutionPlan : csvsqldb::noncopyable
+  {
+  public:
+    ExecutionPlan()
+    {
+    }
 
-        void dump(std::ostream& stream) const;
+    void addExecutionNode(ExecutionNode::UniquePtr& node);
 
-    private:
-        ExecutionPlan(const ExecutionPlan&)
-        {
-        }
+    int64_t execute();
 
-        ExecutionPlan& operator=(const ExecutionPlan&)
-        {
-            return *this;
-        }
+    void dump(std::ostream& stream) const;
 
-        typedef std::vector<ExecutionNode::UniquePtr> ExecutionNodes;
+  private:
+    ExecutionPlan(const ExecutionPlan&)
+    {
+    }
 
-        ExecutionNodes _executionNodes;
-    };
+    ExecutionPlan& operator=(const ExecutionPlan&)
+    {
+      return *this;
+    }
+
+    typedef std::vector<ExecutionNode::UniquePtr> ExecutionNodes;
+
+    ExecutionNodes _executionNodes;
+  };
 }
 
 #endif

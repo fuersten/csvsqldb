@@ -32,31 +32,31 @@
 //
 
 #include "application.h"
+
 #include "exception.h"
 
 
 namespace csvsqldb
 {
+  Application::Application(int argc, char** argv)
+  : _argc(argc)
+  , _argv(argv)
+  {
+  }
 
-    Application::Application(int argc, char** argv)
-    : _argc(argc)
-    , _argv(argv)
-    {
+  int Application::run()
+  {
+    int ret(-1);
+
+    try {
+      if (setUp(_argc, _argv)) {
+        ret = doRun();
+        tearDown();
+      }
+    } catch (...) {
+      evaluateException();
     }
 
-    int Application::run()
-    {
-        int ret(-1);
-
-        try {
-            if(setUp(_argc, _argv)) {
-                ret = doRun();
-                tearDown();
-            }
-        } catch(...) {
-            evaluateException();
-        }
-
-        return ret;
-    }
+    return ret;
+  }
 }
