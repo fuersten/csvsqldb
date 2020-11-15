@@ -103,4 +103,4 @@ TEST_CASE("Application Test", "[app]")
     CHECK(false == myapp._didRun);
     CHECK(false == myapp._didTearDown);
   }
-};
+}

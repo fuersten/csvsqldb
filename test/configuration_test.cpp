@@ -36,8 +36,9 @@
 #include "libcsvsqldb/base/global_configuration.h"
 #include "libcsvsqldb/base/lua_configuration.h"
 
-#include <catch2/catch.hpp>
 #include "test/test_util.h"
+
+#include <catch2/catch.hpp>
 
 #include <set>
 
@@ -57,67 +58,64 @@ public:
   Test test;
 };
 
-TEST_CASE("Configuration Test", "[config]")
+TEST_CASE("Configuration Test", "[config]"){SECTION("config"){csvsqldb::Configuration::Ptr config(
+  std::make_shared<csvsqldb::LuaConfiguration>(CSVSQLDB_TEST_PATH + std::string("/testdata/luaengine/test.lua")));
+
+CHECK(10474 == config->get("port", 9999));
+CHECK(std::fabs(47.11 - config->get("factor", 8.15)) < 0.0001);
+CHECK("Thor" == config->get("hostname", "horst"));
+CHECK(100 == config->get("server.threads", 10));
+CHECK("LUA" == config->get("server.api.code", "php"));
+CHECK(std::fabs(47.11 - config->get<double>("factor")) < 0.0001);
+CHECK(config->get<bool>("daemonize"));
+CHECK(2 == config->get<int32_t>("debug.level.tcp_server"));
+
+CHECK_THROWS_AS(csvsqldb::LuaConfiguration("not existent configuration"), csvsqldb::FilesystemException);
+}
+
+SECTION("config check")
 {
-  SECTION("config")
-  {
-    csvsqldb::Configuration::Ptr config(
-      std::make_shared<csvsqldb::LuaConfiguration>(CSVSQLDB_TEST_PATH + std::string("/testdata/luaengine/test.lua")));
+  csvsqldb::Configuration::Ptr config(
+    std::make_shared<csvsqldb::LuaConfiguration>(CSVSQLDB_TEST_PATH + std::string("/testdata/luaengine/test.lua")));
 
-    CHECK(10474 == config->get("port", 9999));
-    CHECK(std::fabs(47.11 - config->get("factor", 8.15)) < 0.0001);
-    CHECK("Thor" == config->get("hostname", "horst"));
-    CHECK(100 == config->get("server.threads", 10));
-    CHECK("LUA" == config->get("server.api.code", "php"));
-    CHECK(std::fabs(47.11 - config->get<double>("factor")) < 0.0001);
-    CHECK(config->get<bool>("daemonize"));
-    CHECK(2 == config->get<int32_t>("debug.level.tcp_server"));
+  CHECK(config->hasProperty("daemonize"));
+  CHECK(config->hasProperty("server.api.code"));
+  CHECK_FALSE(config->hasProperty("not_available_entry"));
 
-    CHECK_THROWS_AS(csvsqldb::LuaConfiguration("not existent configuration"), csvsqldb::FilesystemException);
-  }
+  CHECK(1 == config->get<int32_t>("debug.global_level"));
 
-  SECTION("config check")
-  {
-    csvsqldb::Configuration::Ptr config(
-      std::make_shared<csvsqldb::LuaConfiguration>(CSVSQLDB_TEST_PATH + std::string("/testdata/luaengine/test.lua")));
+  csvsqldb::StringVector properties;
+  CHECK(3u == config->getProperties("debug.level", properties));
 
-    CHECK(config->hasProperty("daemonize"));
-    CHECK(config->hasProperty("server.api.code"));
-    CHECK_FALSE(config->hasProperty("not_available_entry"));
+  std::set<std::string> props(properties.begin(), properties.end());
+  CHECK(props.find("tcp_server") != props.end());
+  CHECK(props.find("connection") != props.end());
+  CHECK(props.find("filesystem") != props.end());
+}
 
-    CHECK(1 == config->get<int32_t>("debug.global_level"));
+SECTION("default config")
+{
+  csvsqldb::Configuration::Ptr config(std::make_shared<csvsqldb::DefaultConfiguration>());
 
-    csvsqldb::StringVector properties;
-    CHECK(3u == config->getProperties("debug.level", properties));
+  CHECK_FALSE(config->hasProperty("application.daemonize"));
+  CHECK_FALSE(config->hasProperty("not_available_entry"));
+  CHECK_FALSE(config->hasProperty("logging.device"));
+  CHECK_FALSE(config->hasProperty("debug.global_level"));
+  csvsqldb::StringVector properties;
+  CHECK(0u == config->getProperties("debug.level", properties));
+  CHECK_THROWS_AS(config->get<int32_t>("debug.global_level"), csvsqldb::ConfigurationException);
+}
 
-    std::set<std::string> props(properties.begin(), properties.end());
-    CHECK(props.find("tcp_server") != props.end());
-    CHECK(props.find("connection") != props.end());
-    CHECK(props.find("filesystem") != props.end());
-  }
+SECTION("global config")
+{
+  csvsqldb::Configuration::Ptr config(
+    std::make_shared<csvsqldb::LuaConfiguration>(CSVSQLDB_TEST_PATH + std::string("/testdata/luaengine/test.lua")));
+  csvsqldb::GlobalConfiguration::create<MyGlobalConfiguration>();
+  csvsqldb::GlobalConfiguration::instance<MyGlobalConfiguration>()->configure(config);
 
-  SECTION("default config")
-  {
-    csvsqldb::Configuration::Ptr config(std::make_shared<csvsqldb::DefaultConfiguration>());
-
-    CHECK_FALSE(config->hasProperty("application.daemonize"));
-    CHECK_FALSE(config->hasProperty("not_available_entry"));
-    CHECK_FALSE(config->hasProperty("logging.device"));
-    CHECK_FALSE(config->hasProperty("debug.global_level"));
-    csvsqldb::StringVector properties;
-    CHECK(0u == config->getProperties("debug.level", properties));
-    CHECK_THROWS_AS(config->get<int32_t>("debug.global_level"), csvsqldb::ConfigurationException);
-  }
-
-  SECTION("global config")
-  {
-    csvsqldb::Configuration::Ptr config(
-      std::make_shared<csvsqldb::LuaConfiguration>(CSVSQLDB_TEST_PATH + std::string("/testdata/luaengine/test.lua")));
-    csvsqldb::GlobalConfiguration::create<MyGlobalConfiguration>();
-    csvsqldb::GlobalConfiguration::instance<MyGlobalConfiguration>()->configure(config);
-
-    CHECK(1 == csvsqldb::GlobalConfiguration::instance<MyGlobalConfiguration>()->debug.global_level);
-    CHECK(3 == csvsqldb::GlobalConfiguration::instance<MyGlobalConfiguration>()->debug.level["connection"]);
-    CHECK(815 == csvsqldb::config<MyGlobalConfiguration>()->test.wtf);
-  }
-};
+  CHECK(1 == csvsqldb::GlobalConfiguration::instance<MyGlobalConfiguration>()->debug.global_level);
+  CHECK(3 == csvsqldb::GlobalConfiguration::instance<MyGlobalConfiguration>()->debug.level["connection"]);
+  CHECK(815 == csvsqldb::config<MyGlobalConfiguration>()->test.wtf);
+}
+}
+;

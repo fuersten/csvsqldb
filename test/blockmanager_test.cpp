@@ -50,12 +50,12 @@ TEST_CASE("BlockManager Test", "[block]")
     }
 
     {
-      csvsqldb::BlockManager blockManager(1000, 1024 * 1024);
-      CHECK(1024u * 1024 == blockManager.getBlockCapacity());
+      csvsqldb::BlockManager blockManager(1000, 1024 * 1024 * 1024);
+      CHECK(1024u * 1024 * 1024 == blockManager.getBlockCapacity());
       CHECK(1000u == blockManager.getMaxActiveBlocks());
-      CHECK(0u ==blockManager.getActiveBlocks());
-      CHECK(0u ==blockManager.getMaxUsedBlocks());
-      CHECK(0u ==blockManager.getTotalBlocks());
+      CHECK(0u == blockManager.getActiveBlocks());
+      CHECK(0u == blockManager.getMaxUsedBlocks());
+      CHECK(0u == blockManager.getTotalBlocks());
     }
   }
 
@@ -69,20 +69,20 @@ TEST_CASE("BlockManager Test", "[block]")
     csvsqldb::BlockManager blockManager;
 
     csvsqldb::BlockPtr block = blockManager.createBlock();
-    CHECK(1u ==blockManager.getMaxUsedBlocks());
-    CHECK(1u ==blockManager.getTotalBlocks());
-    CHECK(1u ==blockManager.getActiveBlocks());
+    CHECK(1u == blockManager.getMaxUsedBlocks());
+    CHECK(1u == blockManager.getTotalBlocks());
+    CHECK(1u == blockManager.getActiveBlocks());
 
     csvsqldb::BlockPtr block2 = blockManager.createBlock();
-    CHECK(2u ==blockManager.getActiveBlocks());
+    CHECK(2u == blockManager.getActiveBlocks());
     blockManager.release(block);
-    CHECK(2u ==blockManager.getMaxUsedBlocks());
-    CHECK(2u ==blockManager.getTotalBlocks());
-    CHECK(1u ==blockManager.getActiveBlocks());
+    CHECK(2u == blockManager.getMaxUsedBlocks());
+    CHECK(2u == blockManager.getTotalBlocks());
+    CHECK(1u == blockManager.getActiveBlocks());
     blockManager.release(block2);
-    CHECK(2u ==blockManager.getMaxUsedBlocks());
-    CHECK(2u ==blockManager.getTotalBlocks());
-    CHECK(0u ==blockManager.getActiveBlocks());
+    CHECK(2u == blockManager.getMaxUsedBlocks());
+    CHECK(2u == blockManager.getTotalBlocks());
+    CHECK(0u == blockManager.getActiveBlocks());
   }
 
   SECTION("get block")
@@ -99,11 +99,11 @@ TEST_CASE("BlockManager Test", "[block]")
 
     csvsqldb::BlockPtr block3 = blockManager.getBlock(block->getBlockNumber());
     CHECK(block3);
-    CHECK(block->getBlockNumber() ==block3->getBlockNumber());
+    CHECK(block->getBlockNumber() == block3->getBlockNumber());
 
     block3 = blockManager.getBlock(block2->getBlockNumber());
     CHECK(block3);
-    CHECK(block2->getBlockNumber() ==block3->getBlockNumber());
+    CHECK(block2->getBlockNumber() == block3->getBlockNumber());
 
     size_t blockNumber = block2->getBlockNumber();
     blockManager.release(block2);
