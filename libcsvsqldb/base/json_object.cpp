@@ -58,22 +58,22 @@ namespace csvsqldb
 
     double JsonObject::getAsDouble() const
     {
-      return csvsqldb::any_cast<double>(_value);
+      return std::any_cast<double>(_value);
     }
 
     long JsonObject::getAsLong() const
     {
-      return static_cast<long>(csvsqldb::any_cast<double>(_value));
+      return static_cast<long>(std::any_cast<double>(_value));
     }
 
     std::string JsonObject::getAsString() const
     {
-      return csvsqldb::any_cast<std::string>(_value);
+      return std::any_cast<std::string>(_value);
     }
 
     bool JsonObject::getAsBool() const
     {
-      return csvsqldb::any_cast<bool>(_value);
+      return std::any_cast<bool>(_value);
     }
 
     const JsonObject& JsonObject::operator[](const std::string& name) const
@@ -204,7 +204,7 @@ namespace csvsqldb
         JsonObject obj;
         _objectStack.top()._array.push_back(obj);
       } else {
-        _objectStack.top()._value = Any();
+        _objectStack.top()._value = std::any();
       }
     }
   }

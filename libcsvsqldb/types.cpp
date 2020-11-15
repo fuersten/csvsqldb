@@ -98,7 +98,7 @@ namespace csvsqldb
     }
   }
 
-  std::string printType(eType type, const csvsqldb::Any& value)
+  std::string printType(eType type, const std::any& value)
   {
     std::stringstream ss;
     switch (type) {
@@ -106,25 +106,25 @@ namespace csvsqldb
         ss << "NULL";
         break;
       case BOOLEAN:
-        ss << (csvsqldb::any_cast<bool>(value) ? "TRUE" : "FALSE");
+        ss << (std::any_cast<bool>(value) ? "TRUE" : "FALSE");
         break;
       case REAL:
-        ss << std::fixed << std::showpoint << csvsqldb::any_cast<double>(value);
+        ss << std::fixed << std::showpoint << std::any_cast<double>(value);
         break;
       case INT:
-        ss << csvsqldb::any_cast<int64_t>(value);
+        ss << std::any_cast<int64_t>(value);
         break;
       case STRING:
-        ss << csvsqldb::any_cast<std::string>(value);
+        ss << std::any_cast<std::string>(value);
         break;
       case DATE:
-        ss << "DATE'" << csvsqldb::any_cast<csvsqldb::Date>(value).format("%Y-%m-%d") << "'";
+        ss << "DATE'" << std::any_cast<csvsqldb::Date>(value).format("%Y-%m-%d") << "'";
         break;
       case TIME:
-        ss << "TIME'" << csvsqldb::any_cast<csvsqldb::Time>(value).format("%H:%M:%S") << "'";
+        ss << "TIME'" << std::any_cast<csvsqldb::Time>(value).format("%H:%M:%S") << "'";
         break;
       case TIMESTAMP:
-        ss << "TIMESTAMP'" << csvsqldb::any_cast<csvsqldb::Timestamp>(value).format("%Y-%m-%dT%H:%M:%S") << "'";
+        ss << "TIMESTAMP'" << std::any_cast<csvsqldb::Timestamp>(value).format("%Y-%m-%dT%H:%M:%S") << "'";
         break;
     }
     return ss.str();
@@ -137,7 +137,7 @@ namespace csvsqldb
 
   TypedValue TypedValue::createValue(eType type, const std::string& value)
   {
-    csvsqldb::Any any;
+    std::any any;
 
     switch (type) {
       case NONE:

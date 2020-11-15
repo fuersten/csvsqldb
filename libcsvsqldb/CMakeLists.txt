@@ -83,7 +83,6 @@ SET(LIB_CSVSQLDB_BASE_SOURCES
 )
 
 SET(LIB_CSVSQLDB_BASE_HEADERS
-    base/any.h
     base/application.h
     base/configuration.h
     base/csv_parser.h

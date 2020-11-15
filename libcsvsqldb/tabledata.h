@@ -67,14 +67,14 @@ namespace csvsqldb
       bool _primaryKey;
       bool _unique;
       bool _notNull;
-      csvsqldb::Any _defaultValue;
+      std::any _defaultValue;
       ASTExprNodePtr _check;
       uint32_t _length;
     };
 
     TableData(const std::string& tableName);
 
-    void addColumn(const std::string name, eType type, bool primaryKey, bool unique, bool notNull, csvsqldb::Any defaultValue,
+    void addColumn(const std::string name, eType type, bool primaryKey, bool unique, bool notNull, std::any defaultValue,
                    const ASTExprNodePtr& check, uint32_t length);
     void addConstraint(const csvsqldb::StringVector& primaryKey, const csvsqldb::StringVector& unique,
                        const ASTExprNodePtr& check);

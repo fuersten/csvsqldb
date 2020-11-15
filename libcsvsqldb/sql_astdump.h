@@ -67,7 +67,7 @@ namespace csvsqldb
         std::cout << (definition._primaryKey ? "Primary Key " : "");
         std::cout << (definition._notNull ? "Not Null " : "");
         std::cout << (definition._unique ? "Unique " : "");
-        if (!definition._defaultValue.empty()) {
+        if (definition._defaultValue.has_value()) {
           std::cout << printType(definition._type, definition._defaultValue);
         }
         if (definition._check) {
@@ -134,7 +134,7 @@ namespace csvsqldb
       std::cout << (node._definition._primaryKey ? "Primary Key" : "");
       std::cout << (node._definition._notNull ? "Not Null" : "");
       std::cout << (node._definition._unique ? "Unique" : "");
-      if (!node._definition._defaultValue.empty()) {
+      if (node._definition._defaultValue.has_value()) {
         std::cout << printType(node._definition._type, node._definition._defaultValue);
       }
       std::cout << std::endl;

@@ -154,7 +154,7 @@ namespace csvsqldb
     bool _primaryKey;
     bool _unique;
     bool _notNull;
-    csvsqldb::Any _defaultValue;
+    std::any _defaultValue;
     ASTExprNodePtr _check;
     uint32_t _length;
   };

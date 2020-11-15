@@ -54,7 +54,7 @@ public:
   : _table(csvsqldb::toupper_copy(table))
   {
     for (const auto& element : elements) {
-      _table.addColumn(csvsqldb::toupper_copy(element._name), element._type, false, false, false, csvsqldb::Any(), nullptr, 0);
+      _table.addColumn(csvsqldb::toupper_copy(element._name), element._type, false, false, false, std::any(), nullptr, 0);
     }
   }
 

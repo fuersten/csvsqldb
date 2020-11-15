@@ -33,46 +33,33 @@
 
 #include "libcsvsqldb/block.h"
 
-#include "test.h"
+#include <catch2/catch.hpp>
 
 
-class BlockManagerTestCase
+TEST_CASE("BlockManager Test", "[block]")
 {
-public:
-  BlockManagerTestCase()
-  {
-  }
-
-  void setUp()
-  {
-  }
-
-  void tearDown()
-  {
-  }
-
-  void constructionTest()
+  SECTION("construction")
   {
     {
       csvsqldb::BlockManager blockManager;
-      MPF_TEST_ASSERTEQUAL(1u * 1024 * 1024, blockManager.getBlockCapacity());
-      MPF_TEST_ASSERTEQUAL(100u, blockManager.getMaxActiveBlocks());
-      MPF_TEST_ASSERTEQUAL(0u, blockManager.getActiveBlocks());
-      MPF_TEST_ASSERTEQUAL(0u, blockManager.getMaxUsedBlocks());
-      MPF_TEST_ASSERTEQUAL(0u, blockManager.getTotalBlocks());
+      CHECK(1u * 1024 * 1024 == blockManager.getBlockCapacity());
+      CHECK(100u == blockManager.getMaxActiveBlocks());
+      CHECK(0u == blockManager.getActiveBlocks());
+      CHECK(0u == blockManager.getMaxUsedBlocks());
+      CHECK(0u == blockManager.getTotalBlocks());
     }
 
     {
       csvsqldb::BlockManager blockManager(1000, 1024 * 1024);
-      MPF_TEST_ASSERTEQUAL(1024u * 1024, blockManager.getBlockCapacity());
-      MPF_TEST_ASSERTEQUAL(1000u, blockManager.getMaxActiveBlocks());
-      MPF_TEST_ASSERTEQUAL(0u, blockManager.getActiveBlocks());
-      MPF_TEST_ASSERTEQUAL(0u, blockManager.getMaxUsedBlocks());
-      MPF_TEST_ASSERTEQUAL(0u, blockManager.getTotalBlocks());
+      CHECK(1024u * 1024 == blockManager.getBlockCapacity());
+      CHECK(1000u == blockManager.getMaxActiveBlocks());
+      CHECK(0u ==blockManager.getActiveBlocks());
+      CHECK(0u ==blockManager.getMaxUsedBlocks());
+      CHECK(0u ==blockManager.getTotalBlocks());
     }
   }
 
-  void createBlocks()
+  SECTION("create blocks")
   {
     csvsqldb::Types types;
     types.push_back(csvsqldb::INT);
@@ -82,23 +69,23 @@ public:
     csvsqldb::BlockManager blockManager;
 
     csvsqldb::BlockPtr block = blockManager.createBlock();
-    MPF_TEST_ASSERTEQUAL(1u, blockManager.getMaxUsedBlocks());
-    MPF_TEST_ASSERTEQUAL(1u, blockManager.getTotalBlocks());
-    MPF_TEST_ASSERTEQUAL(1u, blockManager.getActiveBlocks());
+    CHECK(1u ==blockManager.getMaxUsedBlocks());
+    CHECK(1u ==blockManager.getTotalBlocks());
+    CHECK(1u ==blockManager.getActiveBlocks());
 
     csvsqldb::BlockPtr block2 = blockManager.createBlock();
-    MPF_TEST_ASSERTEQUAL(2u, blockManager.getActiveBlocks());
+    CHECK(2u ==blockManager.getActiveBlocks());
     blockManager.release(block);
-    MPF_TEST_ASSERTEQUAL(2u, blockManager.getMaxUsedBlocks());
-    MPF_TEST_ASSERTEQUAL(2u, blockManager.getTotalBlocks());
-    MPF_TEST_ASSERTEQUAL(1u, blockManager.getActiveBlocks());
+    CHECK(2u ==blockManager.getMaxUsedBlocks());
+    CHECK(2u ==blockManager.getTotalBlocks());
+    CHECK(1u ==blockManager.getActiveBlocks());
     blockManager.release(block2);
-    MPF_TEST_ASSERTEQUAL(2u, blockManager.getMaxUsedBlocks());
-    MPF_TEST_ASSERTEQUAL(2u, blockManager.getTotalBlocks());
-    MPF_TEST_ASSERTEQUAL(0u, blockManager.getActiveBlocks());
+    CHECK(2u ==blockManager.getMaxUsedBlocks());
+    CHECK(2u ==blockManager.getTotalBlocks());
+    CHECK(0u ==blockManager.getActiveBlocks());
   }
 
-  void getBlockTest()
+  SECTION("get block")
   {
     csvsqldb::Types types;
     types.push_back(csvsqldb::INT);
@@ -111,22 +98,17 @@ public:
     csvsqldb::BlockPtr block2 = blockManager.createBlock();
 
     csvsqldb::BlockPtr block3 = blockManager.getBlock(block->getBlockNumber());
-    MPF_TEST_ASSERT(block3);
-    MPF_TEST_ASSERTEQUAL(block->getBlockNumber(), block3->getBlockNumber());
+    CHECK(block3);
+    CHECK(block->getBlockNumber() ==block3->getBlockNumber());
 
     block3 = blockManager.getBlock(block2->getBlockNumber());
-    MPF_TEST_ASSERT(block3);
-    MPF_TEST_ASSERTEQUAL(block2->getBlockNumber(), block3->getBlockNumber());
+    CHECK(block3);
+    CHECK(block2->getBlockNumber() ==block3->getBlockNumber());
 
     size_t blockNumber = block2->getBlockNumber();
     blockManager.release(block2);
-    MPF_TEST_EXPECTS(block3 = blockManager.getBlock(blockNumber), csvsqldb::Exception);
+    CHECK_THROWS_AS(block3 = blockManager.getBlock(blockNumber), csvsqldb::Exception);
 
     blockManager.release(block);
   }
-};
-
-MPF_REGISTER_TEST_START("BlockTestSuite", BlockManagerTestCase);
-MPF_REGISTER_TEST(BlockManagerTestCase::constructionTest);
-MPF_REGISTER_TEST(BlockManagerTestCase::createBlocks);
-MPF_REGISTER_TEST_END();
+}

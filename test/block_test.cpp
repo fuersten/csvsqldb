@@ -39,7 +39,7 @@
 #include "libcsvsqldb/stack_machine.h"
 #include "libcsvsqldb/visitor.h"
 
-#include "test.h"
+#include <catch2/catch.hpp>
 
 
 class MyBlockProvider : public csvsqldb::BlockProvider
@@ -66,22 +66,8 @@ private:
   csvsqldb::BlockManager& _manager;
 };
 
-
-class BlockTestCase
+namespace
 {
-public:
-  BlockTestCase()
-  {
-  }
-
-  void setUp()
-  {
-  }
-
-  void tearDown()
-  {
-  }
-
   csvsqldb::BlockPtr setupBlock(csvsqldb::BlockManager& blockManager)
   {
     csvsqldb::BlockPtr block = blockManager.createBlock();
@@ -103,8 +89,11 @@ public:
 
     return block;
   }
+}
 
-  void rowTest()
+TEST_CASE("Block Test", "[block]")
+{
+  SECTION("row")
   {
     csvsqldb::BlockManager blockManager;
 
@@ -135,42 +124,40 @@ public:
         const csvsqldb::Values& rowValues = *(iterator->getNextRow());
 
         const csvsqldb::Value* val = rowValues[0];
-        MPF_TEST_ASSERTEQUAL("4711", val->toString());
+        CHECK("4711" == val->toString());
         val = rowValues[1];
-        MPF_TEST_ASSERTEQUAL("1970-09-23", val->toString());
+        CHECK("1970-09-23" == val->toString());
         val = rowValues[2];
-        MPF_TEST_ASSERTEQUAL("Lars", val->toString());
+        CHECK("Lars" == val->toString());
         val = rowValues[3];
-        MPF_TEST_ASSERTEQUAL("Fürstenberg", val->toString());
+        CHECK("Fürstenberg" == val->toString());
         val = rowValues[4];
-        MPF_TEST_ASSERTEQUAL("M", val->toString());
+        CHECK("M" == val->toString());
         val = rowValues[5];
-        MPF_TEST_ASSERTEQUAL("2012-02-01", val->toString());
+        CHECK("2012-02-01" == val->toString());
 
         store.addVariable(0, csvsqldb::Variant(dynamic_cast<const csvsqldb::ValDate*>(val)->asDate()));
-        bool matches = sm.evaluate(store, functions).asBool();
-        MPF_TEST_ASSERT(matches);
+        CHECK(sm.evaluate(store, functions).asBool());
       }
 
       {
         const csvsqldb::Values& rowValues = *(iterator->getNextRow());
 
         const csvsqldb::Value* val = rowValues[0];
-        MPF_TEST_ASSERTEQUAL("815", val->toString());
+        CHECK("815" == val->toString());
         val = rowValues[1];
-        MPF_TEST_ASSERTEQUAL("1969-05-17", val->toString());
+        CHECK("1969-05-17" == val->toString());
         val = rowValues[2];
-        MPF_TEST_ASSERTEQUAL("Mark", val->toString());
+        CHECK("Mark" == val->toString());
         val = rowValues[3];
-        MPF_TEST_ASSERTEQUAL("Fürstenberg", val->toString());
+        CHECK("Fürstenberg" == val->toString());
         val = rowValues[4];
-        MPF_TEST_ASSERTEQUAL("M", val->toString());
+        CHECK("M" == val->toString());
         val = rowValues[5];
-        MPF_TEST_ASSERTEQUAL("2003-04-15", val->toString());
+        CHECK("2003-04-15" == val->toString());
 
         store.addVariable(0, csvsqldb::Variant(dynamic_cast<const csvsqldb::ValDate*>(val)->asDate()));
-        bool matches = sm.evaluate(store, functions).asBool();
-        MPF_TEST_ASSERT(!matches);
+        CHECK_FALSE(sm.evaluate(store, functions).asBool());
       }
     }
 
@@ -193,34 +180,28 @@ public:
       int count = 0;
       while ((row = iterator->getNextRow())) {
         if (count == 0) {
-          MPF_TEST_ASSERTEQUAL("4711", (*row)[0]->toString());
-          MPF_TEST_ASSERTEQUAL("1970-09-23", (*row)[1]->toString());
-          MPF_TEST_ASSERTEQUAL("Lars", (*row)[2]->toString());
-          MPF_TEST_ASSERTEQUAL("Fürstenberg", (*row)[3]->toString());
-          MPF_TEST_ASSERTEQUAL("M", (*row)[4]->toString());
-          MPF_TEST_ASSERTEQUAL("2012-02-01", (*row)[5]->toString());
+          CHECK("4711" == (*row)[0]->toString());
+          CHECK("1970-09-23" == (*row)[1]->toString());
+          CHECK("Lars" == (*row)[2]->toString());
+          CHECK("Fürstenberg" == (*row)[3]->toString());
+          CHECK("M" == (*row)[4]->toString());
+          CHECK("2012-02-01" == (*row)[5]->toString());
 
           store.addVariable(0, csvsqldb::Variant(dynamic_cast<const csvsqldb::ValString*>((*row)[3])->asString()));
-          bool matches = sm.evaluate(store, functions).asBool();
-          MPF_TEST_ASSERT(matches);
+          CHECK(sm.evaluate(store, functions).asBool());
         } else if (count == 1) {
-          MPF_TEST_ASSERTEQUAL("815", (*row)[0]->toString());
-          MPF_TEST_ASSERTEQUAL("1969-05-17", (*row)[1]->toString());
-          MPF_TEST_ASSERTEQUAL("Mark", (*row)[2]->toString());
-          MPF_TEST_ASSERTEQUAL("Fürstenberg", (*row)[3]->toString());
-          MPF_TEST_ASSERTEQUAL("M", (*row)[4]->toString());
-          MPF_TEST_ASSERTEQUAL("2003-04-15", (*row)[5]->toString());
+          CHECK("815" == (*row)[0]->toString());
+          CHECK("1969-05-17" == (*row)[1]->toString());
+          CHECK("Mark" == (*row)[2]->toString());
+          CHECK("Fürstenberg" == (*row)[3]->toString());
+          CHECK("M" == (*row)[4]->toString());
+          CHECK("2003-04-15" == (*row)[5]->toString());
 
           store.addVariable(0, csvsqldb::Variant(dynamic_cast<const csvsqldb::ValString*>((*row)[3])->asString()));
-          bool matches = sm.evaluate(store, functions).asBool();
-          MPF_TEST_ASSERT(matches);
+          CHECK(sm.evaluate(store, functions).asBool());
         }
         ++count;
       }
     }
   }
-};
-
-MPF_REGISTER_TEST_START("BlockTestSuite", BlockTestCase);
-MPF_REGISTER_TEST(BlockTestCase::rowTest);
-MPF_REGISTER_TEST_END();
+}

@@ -669,7 +669,7 @@ namespace csvsqldb
   } __attribute__((__packed__));
 
 
-  CSVSQLDB_EXPORT Value* createValue(eType type, const csvsqldb::Any& value);
+  CSVSQLDB_EXPORT Value* createValue(eType type, const std::any& value);
 
   typedef std::vector<const Value*> Values;
 

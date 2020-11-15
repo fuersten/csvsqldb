@@ -36,52 +36,52 @@
 
 namespace csvsqldb
 {
-  Value* createValue(eType type, const csvsqldb::Any& value)
+  Value* createValue(eType type, const std::any& value)
   {
     switch (type) {
       case NONE:
         throw std::runtime_error("none not allowed as type here");
       case STRING:
-        if (value.empty()) {
-          return new ValString;
+        if (value.has_value()) {
+          return ValueCreator<std::string>::createValue(std::any_cast<std::string>(value));
         } else {
-          return ValueCreator<std::string>::createValue(csvsqldb::any_cast<std::string>(value));
+          return new ValString;
         }
       case BOOLEAN:
-        if (value.empty()) {
-          return new ValBool;
+        if (value.has_value()) {
+          return new ValBool(std::any_cast<bool>(value));
         } else {
-          return new ValBool(csvsqldb::any_cast<bool>(value));
+          return new ValBool;
         }
       case DATE:
-        if (value.empty()) {
-          return new ValDate;
+        if (value.has_value()) {
+          return new ValDate(std::any_cast<csvsqldb::Date>(value));
         } else {
-          return new ValDate(csvsqldb::any_cast<csvsqldb::Date>(value));
+          return new ValDate;
         }
       case TIME:
-        if (value.empty()) {
-          return new ValTime;
+        if (value.has_value()) {
+          return new ValTime(std::any_cast<csvsqldb::Time>(value));
         } else {
-          return new ValTime(csvsqldb::any_cast<csvsqldb::Time>(value));
+          return new ValTime;
         }
       case TIMESTAMP:
-        if (value.empty()) {
-          return new ValTimestamp;
+        if (value.has_value()) {
+          return new ValTimestamp(std::any_cast<csvsqldb::Timestamp>(value));
         } else {
-          return new ValTimestamp(csvsqldb::any_cast<csvsqldb::Timestamp>(value));
+          return new ValTimestamp;
         }
       case INT:
-        if (value.empty()) {
-          return new ValInt;
+        if (value.has_value()) {
+          return new ValInt(std::any_cast<int64_t>(value));
         } else {
-          return new ValInt(csvsqldb::any_cast<int64_t>(value));
+          return new ValInt;
         }
       case REAL:
-        if (value.empty()) {
-          return new ValDouble;
+        if (value.has_value()) {
+          return new ValDouble(std::any_cast<double>(value));
         } else {
-          return new ValDouble(csvsqldb::any_cast<double>(value));
+          return new ValDouble;
         }
     }
     throw std::runtime_error("just to make VC2013 happy");

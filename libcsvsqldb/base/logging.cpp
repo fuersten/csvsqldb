@@ -52,7 +52,7 @@ namespace csvsqldb
 
   void LogDevice::log(const LogEvent& event)
   {
-    std::string separator = config<GlobalConfiguration>()->logging.separator;
+    static std::string separator = config<GlobalConfiguration>()->logging.separator;
 
     std::ostringstream os;
     os << event._time << separator;

@@ -36,12 +36,13 @@
 
 #include "libcsvsqldb/inc.h"
 
-#include "base/any.h"
 #include "base/date.h"
 #include "base/exception.h"
 #include "base/time.h"
 #include "base/timestamp.h"
+#include "base/types.h"
 
+#include <any>
 #include <string>
 #include <vector>
 
@@ -64,7 +65,7 @@ namespace csvsqldb
 
   CSVSQLDB_EXPORT std::string typeToString(eType type);
   CSVSQLDB_EXPORT eType stringToType(const std::string& s);
-  CSVSQLDB_EXPORT std::string printType(eType type, const csvsqldb::Any& value);
+  CSVSQLDB_EXPORT std::string printType(eType type, const std::any& value);
 
   typedef std::vector<eType> Types;
 
@@ -96,7 +97,7 @@ namespace csvsqldb
     {
     }
 
-    TypedValue(eType type, const csvsqldb::Any& value)
+    TypedValue(eType type, const std::any& value)
     : _type(type)
     , _value(value)
     {
@@ -111,14 +112,14 @@ namespace csvsqldb
     static TypedValue createValue(eType type, const std::string& value);
 
     eType _type;
-    csvsqldb::Any _value;
+    std::any _value;
   };
 
   CSVSQLDB_EXPORT std::string printType(const TypedValue& value);
 
   typedef std::vector<TypedValue> TypedValues;
 
-  typedef csvsqldb::int2type<NONE> NoneType;
+  typedef int2type<NONE> NoneType;
 
   template<typename ctype>
   inline eType ctype2eType()

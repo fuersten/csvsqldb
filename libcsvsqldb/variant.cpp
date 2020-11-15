@@ -604,28 +604,28 @@ namespace csvsqldb
 
   Variant typedValueToVariant(const TypedValue& value)
   {
-    if (!value._value.empty()) {
+    if (value._value.has_value()) {
       switch (value._type) {
         case BOOLEAN:
-          return Variant(csvsqldb::any_cast<bool>(value._value));
+          return Variant(std::any_cast<bool>(value._value));
           break;
         case DATE:
-          return Variant(csvsqldb::any_cast<csvsqldb::Date>(value._value));
+          return Variant(std::any_cast<csvsqldb::Date>(value._value));
           break;
         case TIME:
-          return Variant(csvsqldb::any_cast<csvsqldb::Time>(value._value));
+          return Variant(std::any_cast<csvsqldb::Time>(value._value));
           break;
         case TIMESTAMP:
-          return Variant(csvsqldb::any_cast<csvsqldb::Timestamp>(value._value));
+          return Variant(std::any_cast<csvsqldb::Timestamp>(value._value));
           break;
         case INT:
-          return Variant(csvsqldb::any_cast<int64_t>(value._value));
+          return Variant(std::any_cast<int64_t>(value._value));
           break;
         case REAL:
-          return Variant(csvsqldb::any_cast<double>(value._value));
+          return Variant(std::any_cast<double>(value._value));
           break;
         case STRING:
-          return Variant(csvsqldb::any_cast<std::string>(value._value));
+          return Variant(std::any_cast<std::string>(value._value));
           break;
         case NONE:
           return Variant(NONE);

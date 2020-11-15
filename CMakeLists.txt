@@ -14,6 +14,8 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake)
+
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Debug)
 endif()
@@ -36,7 +38,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 
 find_package(Lua51 REQUIRED)
 find_package(Doxygen)
-find_package(Boost 1.55 COMPONENTS filesystem program_options system REQUIRED)
+find_package(Boost 1.55 COMPONENTS filesystem program_options system regex REQUIRED)
 
 if(NOT Boost_FOUND)
     message(FATAL_ERROR "Could not find boost")

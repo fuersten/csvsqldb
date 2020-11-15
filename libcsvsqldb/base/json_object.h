@@ -36,9 +36,9 @@
 
 #include "libcsvsqldb/inc.h"
 
-#include "any.h"
 #include "json_parser.h"
 
+#include <any>
 #include <map>
 #include <stack>
 #include <vector>
@@ -113,7 +113,7 @@ namespace csvsqldb
 
       ObjectMap _objects;
       ObjectArray _array;
-      csvsqldb::Any _value;
+      std::any _value;
       eType _type;
     };
 

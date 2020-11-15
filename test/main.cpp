@@ -30,12 +30,14 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
+
 #define CATCH_CONFIG_RUNNER
 #include "libcsvsqldb/base/default_configuration.h"
 #include "libcsvsqldb/base/global_configuration.h"
 #include "libcsvsqldb/base/logging.h"
+#include "libcsvsqldb/typeoperations.h"
 
-#include "catch.hpp"
+#include <catch2/catch.hpp>
 
 
 int main(int argc, char* argv[])
@@ -55,6 +57,8 @@ int main(int argc, char* argv[])
   csvsqldb::GlobalConfiguration::create<CSVDBGlobalConfiguration>();
   csvsqldb::config<CSVDBGlobalConfiguration>()->configure(std::make_shared<csvsqldb::DefaultConfiguration>());
   csvsqldb::Logging::init();
+
+  csvsqldb::initTypeSystem();
 
   Catch::Session session;
 

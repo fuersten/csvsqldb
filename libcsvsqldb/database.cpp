@@ -75,7 +75,7 @@ namespace csvsqldb
   void Database::addSystemTables()
   {
     TableData tabledata("SYSTEM_DUAL");
-    tabledata.addColumn("x", BOOLEAN, false, false, false, csvsqldb::Any(), ASTExprNodePtr(), 0);
+    tabledata.addColumn("x", BOOLEAN, false, false, false, std::any(), ASTExprNodePtr(), 0);
     addTable(tabledata);
   }
 

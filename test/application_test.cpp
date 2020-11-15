@@ -33,7 +33,7 @@
 
 #include "libcsvsqldb/base/application.h"
 
-#include "test.h"
+#include <catch2/catch.hpp>
 
 
 class MyApplication : public csvsqldb::Application
@@ -74,18 +74,9 @@ private:
 };
 
 
-class ApplicationTestCase
+TEST_CASE("Application Test", "[app]")
 {
-public:
-  void setUp()
-  {
-  }
-
-  void tearDown()
-  {
-  }
-
-  void run()
+  SECTION("run")
   {
     int argc = 2;
     const char* args[] = {"MyApp", "Arg1"};
@@ -93,13 +84,13 @@ public:
     MyApplication myapp(argc, const_cast<char**>(args), true);
     int ret = myapp.run();
 
-    MPF_TEST_ASSERTEQUAL(0, ret);
-    MPF_TEST_ASSERTEQUAL(true, myapp._didSetup);
-    MPF_TEST_ASSERTEQUAL(true, myapp._didRun);
-    MPF_TEST_ASSERTEQUAL(true, myapp._didTearDown);
+    CHECK(0 == ret);
+    CHECK(true == myapp._didSetup);
+    CHECK(true == myapp._didRun);
+    CHECK(true == myapp._didTearDown);
   }
 
-  void dontRun()
+  SECTION("dont run")
   {
     int argc = 2;
     const char* args[] = {"MyApp", "Arg1"};
@@ -107,14 +98,9 @@ public:
     MyApplication myapp(argc, const_cast<char**>(args), false);
     int ret = myapp.run();
 
-    MPF_TEST_ASSERTEQUAL(-1, ret);
-    MPF_TEST_ASSERTEQUAL(true, myapp._didSetup);
-    MPF_TEST_ASSERTEQUAL(false, myapp._didRun);
-    MPF_TEST_ASSERTEQUAL(false, myapp._didTearDown);
+    CHECK(-1 == ret);
+    CHECK(true == myapp._didSetup);
+    CHECK(false == myapp._didRun);
+    CHECK(false == myapp._didTearDown);
   }
 };
-
-MPF_REGISTER_TEST_START("ApplicationTestSuite", ApplicationTestCase);
-MPF_REGISTER_TEST(ApplicationTestCase::run);
-MPF_REGISTER_TEST(ApplicationTestCase::dontRun);
-MPF_REGISTER_TEST_END();

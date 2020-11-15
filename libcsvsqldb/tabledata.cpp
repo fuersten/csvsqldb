@@ -75,7 +75,7 @@ namespace csvsqldb
   }
 
   void TableData::addColumn(const std::string name, eType type, bool primaryKey, bool unique, bool notNull,
-                            csvsqldb::Any defaultValue, const ASTExprNodePtr& check, uint32_t length)
+                            std::any defaultValue, const ASTExprNodePtr& check, uint32_t length)
   {
     Column column;
     column._name = name;
@@ -133,7 +133,7 @@ namespace csvsqldb
         table << "false";
       }
       table << ", \"default\" : ";
-      if (!column._defaultValue.empty()) {
+      if (column._defaultValue.has_value()) {
         table << "\"" << printType(column._type, column._defaultValue) << "\"";
       } else {
         table << "\"\"";
@@ -213,7 +213,7 @@ namespace csvsqldb
       bool primaryKey = column["primary key"].getAsBool();
       bool notNull = column["not null"].getAsBool();
       bool unique = column["unique"].getAsBool();
-      csvsqldb::Any defaultValue;
+      std::any defaultValue;
       if (!column["default"].getAsString().empty()) {
         defaultValue = TypedValue::createValue(type, column["default"].getAsString())._value;
       }
