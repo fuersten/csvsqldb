@@ -1,0 +1,55 @@
+name: CMake Build Matrix
+
+on: [push, pull_request]
+
+env:
+  CMAKE_VERSION: 3.16.9
+
+jobs:
+  build-ubuntu:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+        with:
+          submodules: true
+      - name: download CMake
+        shell: cmake -P {0}
+        run: |
+          set(cmake_version $ENV{CMAKE_VERSION})
+
+          message(STATUS "Using host CMake version: ${CMAKE_VERSION}")
+          set(cmake_suffix "Linux-x86_64.tar.gz")
+          set(cmake_dir "cmake-${cmake_version}-Linux-x86_64/bin")
+          set(cmake_url "https://github.com/Kitware/CMake/releases/download/v${cmake_version}/cmake-${cmake_version}-${cmake_suffix}")
+          file(DOWNLOAD "${cmake_url}" ./cmake.zip SHOW_PROGRESS)
+          execute_process(COMMAND ${CMAKE_COMMAND} -E tar xvf ./cmake.zip)
+          file(TO_CMAKE_PATH "$ENV{GITHUB_WORKSPACE}/${cmake_dir}" cmake_dir)
+          set(path_separator ":")
+          file(APPEND "$ENV{GITHUB_PATH}" "$ENV{GITHUB_WORKSPACE}${path_separator}${cmake_dir}")
+          execute_process(
+            COMMAND chmod +x ${cmake_dir}/cmake
+          )
+      - name: install
+        run: sudo apt-get -y install liblua5.3-dev 
+      - name: configure
+        run: mkdir build && cd build && cmake -DCMAKE_BUILD_TYPE=Debug ..
+      - name: build
+        run: cmake --build build
+      - name: test
+        run: cd build && ctest
+
+  build-macos:
+    runs-on: macOS-latest
+    steps:
+      - uses: actions/checkout@v1
+        with:
+          submodules: true
+      - name: install
+        run: brew install lua
+      - name: configure
+        run: mkdir build && cd build && cmake -G"Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug ..
+      - name: build
+        run: cmake --build build
+      - name: test
+        run: cd build && ctest
+
