@@ -32,14 +32,13 @@
 #include "libcsvsqldb/version.h"
 
 #include "console.h"
-#include <boost/program_options.hpp>
+#include <CLI/App.hpp>
+#include <CLI/Config.hpp>
+#include <CLI/Formatter.hpp>
 
 #include <fstream>
 #include <sstream>
 #include <stdio.h>
-
-
-namespace po = boost::program_options;
 
 
 #define OUT(arg)                                                                                                                 \
@@ -163,7 +162,7 @@ public:
     csvsqldb::Logging::init();
   }
 
-  virtual int onSignal(int signum)
+  int onSignal(int signum) override
   {
     if (signum == SIGINT || signum == SIGTERM) {
       // TODO LCF: here we should stop the engine and terminate
@@ -172,75 +171,61 @@ public:
   }
 
 private:
-  void printVersion()
+  std::string version() const
   {
-    std::cout << "csvsqldb tool version " << CSVSQLDB_VERSION_STRING << std::endl;
-    std::cout << CSVSQLDB_COPYRIGHT_STRING << std::endl;
+    std::stringstream ss;
+    ss << "csvsqldb tool version " << CSVSQLDB_VERSION_STRING << std::endl;
+    ss << CSVSQLDB_COPYRIGHT_STRING;
+    return ss.str();
   }
 
-  virtual bool setUp(int argc, char** argv)
+  bool setUp(int argc, char** argv) override
   {
     std::string showHeader("on");
+    std::string mapping;
+    CLI::App app{version()};
 
-    // clang-format off
-        po::options_description desc("Options");
-        desc.add_options()
-        ("help", "shows this help")
-        ("version", "shows the version of the program")
-        ("interactive,i", "opens an interactive sql shell")
-        ("verbose,v", "output verbose statistics")
-        ("show-header-line", po::value<std::string>(&showHeader), "if set to 'on' outputs a header line")
-        ("datbase-path,p", po::value<std::string>(&_databasePath), "path to the database")
-        ("command-file,c", po::value<std::string>(&_commandFile), "command file with sql commands to process")
-        ("sql,s", po::value<std::string>(&_sql), "sql commands to call")
-        ("mapping,m", po::value<csvsqldb::StringVector>()->composing(), "mapping from csv file to table")
-        ("files,f", po::value<std::vector<std::string>>(&_files), "csv files to process, can use expansion patterns like ~ or *");
-    // clang-format on
+    app.set_version_flag("--version", version());
+    app.add_flag("-i,--interactive", _interactive, "Opens an interactive sql shell");
+    app.add_flag("-v,--verbose", _verbose, "Output verbose statistics");
+    app.add_option("--show-header-line", showHeader, "If set to 'on' outputs a header line")->option_text("arg");
+    app.add_option("-p,--datbase-path", _databasePath, "Path to the database")->option_text("arg");
+    auto command_file_option =
+      app.add_option("-c,--command-file", _commandFile, "Command file with sql commands to process")->option_text("arg");
+    app.add_option("-s,--sql", _sql, "Sql commands to call")->excludes(command_file_option)->option_text("arg");
+    app.add_option("-m,--mapping", mapping, "Mapping from csv file to table")->option_text("arg");
+    app.add_option("files,-f,--files", _files, "Csv files to process, can use expansion patterns like ~ or *")
+      ->option_text("arg");
 
-    po::positional_options_description p;
-    p.add("files", -1);
-
-    po::variables_map vm;
-    po::store(po::command_line_parser(argc, argv).options(desc).positional(p).run(), vm);
-    po::notify(vm);
-
-    if (vm.count("version")) {
-      printVersion();
-      return false;
-    }
-    if (vm.count("help") || (!vm.count("sql") && !vm.count("command-file") && !vm.count("interactive"))) {
-      printVersion();
-      std::cout << desc << std::endl;
+    try {
+      app.parse(argc, argv);
+    } catch (const CLI::ParseError& e) {
+      app.exit(e);
       return false;
     }
 
-    if (vm.count("sql") && vm.count("command-file")) {
-      CSVSQLDB_THROW(csvsqldb::BadoptionException, "not allowed to specify 'sql' and 'command-file' option");
+    if (app.count("--show-header-line")) {
+      _showHeaderLine = csvsqldb::toupper_copy(showHeader) == "ON";
     }
-    if (vm.count("interactive")) {
-      _interactive = true;
-    }
+
     fs::path path(_databasePath);
-    if (vm.count("datbase-path")) {
-      path = vm["datbase-path"].as<std::string>();
+    if (app.count("--datbase-path")) {
+      path = _databasePath;
       if (path.filename() != ".csvdb") {
         path /= ".csvdb";
       }
     }
-    _databasePath = fs::canonical(fs::absolute(path)).string();
-    if (vm.count("verbose")) {
-      _verbose = true;
+    std::error_code ec;
+    _databasePath = fs::canonical(fs::absolute(path, ec), ec).string();
+    if (ec) {
+      _databasePath = ".csvdb";
     }
-    if (vm.count("show-header-line")) {
-      _showHeaderLine = csvsqldb::toupper_copy(vm["show-header-line"].as<std::string>()) == "ON";
-    }
-    if (vm.count("mapping")) {
-      csvsqldb::StringVector mapping;
-      for (const auto& part : vm["mapping"].as<std::vector<std::string>>()) {
-        csvsqldb::split(part, ';', mapping);
-      }
+
+    if (app.count("--mapping")) {
+      csvsqldb::StringVector mappings;
+      csvsqldb::split(mapping, ';', mappings);
       csvsqldb::FileMapping::Mappings map;
-      for (const auto& s : mapping) {
+      for (const auto& s : mappings) {
         map.push_back({s, ',', false});
       }
       _mapping.initialize(map);
@@ -258,7 +243,7 @@ private:
     }
   }
 
-  virtual int doRun()
+  int doRun() override
   {
     OUT("Running csvsqldb tool version " << CSVSQLDB_VERSION_STRING);
 
@@ -315,7 +300,7 @@ private:
         return false;
       });
       console.addCommand("version", [this](const csvsqldb::StringVector&) -> bool {
-        printVersion();
+        std::cout << version();
         return false;
       });
       console.addCommand("verbose", [&csvDB](const csvsqldb::StringVector& params) -> bool {

@@ -64,7 +64,7 @@ namespace csvsqldb
         if (newState->_copy) {
           if (pos >= _currentBufferSize) {
             _currentBufferSize += _bufferSize;
-            _buffer.resize(_bufferSize);
+            _buffer.resize(_currentBufferSize);
           }
           _buffer[pos] = c;
           ++pos;

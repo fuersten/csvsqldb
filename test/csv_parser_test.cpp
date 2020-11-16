@@ -123,7 +123,7 @@ namespace
     void setString(const std::string& s)
     {
       _s = s;
-      _pos = s.begin();
+      _pos = _s.begin();
     }
 
     char readNextChar(bool ignoreDelimiter)
@@ -139,7 +139,7 @@ namespace
 
   private:
     std::string _s;
-    std::string::const_iterator _pos;
+    std::string::const_iterator _pos{_s.end()};
   };
 }
 

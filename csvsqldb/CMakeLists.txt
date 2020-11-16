@@ -1,11 +1,8 @@
 
-SET(CSVSQLDB_SOURCES
-    main.cpp
-    console.cpp
-    console.h
+set(CSVSQLDB_SOURCES
 )
 
-SET(LINENOISE_SOURCES
+set(LINENOISE_SOURCES
     ${CMAKE_SOURCE_DIR}/linenoise-ng/linenoise.h
     ${CMAKE_SOURCE_DIR}/linenoise-ng/linenoise.cpp
     ${CMAKE_SOURCE_DIR}/linenoise-ng/ConvertUTF.h
@@ -14,7 +11,7 @@ SET(LINENOISE_SOURCES
     ${CMAKE_SOURCE_DIR}/linenoise-ng/wcwidth.cpp
 )
 
-IF(NOT WIN32)
+if(NOT WIN32)
 # loosen strict warning handling for external dependencies
 set_property(
     SOURCE ${CMAKE_SOURCE_DIR}/linenoise-ng/ConvertUTF.cpp
@@ -24,15 +21,18 @@ set_property(
     PROPERTY COMPILE_FLAGS
     "-Wno-all -Wno-error -Wno-conversion -Wno-missing-prototypes -Wno-pedantic"
 )
-ENDIF()
+endif()
 
-ADD_EXECUTABLE(csvsqldb-bin ${CSVSQLDB_SOURCES} ${LINENOISE_SOURCES})
+add_executable(csvsqldb-bin 
+    main.cpp
 
-IF(NOT WIN32)
-    TARGET_LINK_LIBRARIES(csvsqldb-bin ${CSVSQLDB_PROJECT_LIBS} ${CSVSQLDB_PLATFORM_LIBS} ${Boost_PROGRAM_OPTIONS_LIBRARY} csvsqldb)
-ELSE()
-    TARGET_LINK_LIBRARIES(csvsqldb-bin ${CSVSQLDB_PROJECT_LIBS} ${CSVSQLDB_PLATFORM_LIBS} csvsqldb)
-ENDIF()
+    console.cpp
+    console.h
 
-SET_TARGET_PROPERTIES(csvsqldb-bin PROPERTIES OUTPUT_NAME csvsqldb)
+    ${LINENOISE_SOURCES}
+)
+
+target_link_libraries(csvsqldb-bin ${CSVSQLDB_PROJECT_LIBS} ${CSVSQLDB_PLATFORM_LIBS} csvsqldb CLI11::CLI11)
+
+set_target_properties(csvsqldb-bin PROPERTIES OUTPUT_NAME csvsqldb)
 

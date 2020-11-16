@@ -317,6 +317,10 @@ namespace csvsqldb
       if (!ignoreDelimiter && _buffer[_n] == _context._delimiter) {
         _state = FIELDSTART;
         ++_n;
+        if (!checkBuffer()) {
+          _state = END;
+          return '\0';
+        }
         while (_buffer[_n] == ' ') {
           ++_n;
           if (!checkBuffer()) {

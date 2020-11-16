@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.16)
 project(csvsqldb VERSION 0.2.0 LANGUAGES CXX)
 
+enable_testing()
+
 set(CSVSQLDB_VERSION_MAJOR 0)
 set(CSVSQLDB_VERSION_MINOR 2)
 set(CSVSQLDB_VERSION_PATCH 0)
@@ -13,6 +15,10 @@ set(CSVSQLDB_VERSION_HEX 0x00000200)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/archive)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake)
 
@@ -32,30 +38,24 @@ endif()
 
 include_directories(${CMAKE_BINARY_DIR})
 include_directories(${CMAKE_SOURCE_DIR})
-include_directories(${CMAKE_SOURCE_DIR}/thirdparty)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 
-find_package(Lua51 REQUIRED)
+find_package(Lua REQUIRED)
 find_package(Doxygen)
-find_package(Boost 1.55 COMPONENTS program_options system REQUIRED)
+find_package(Threads)
 
-if(NOT Boost_FOUND)
-    message(FATAL_ERROR "Could not find boost")
-endif()
-
-if(NOT LUA51_FOUND)
+if(NOT LUA_FOUND)
     message(FATAL_ERROR "Could not find LUA")
 endif()
 
 if(NOT WIN32)
     include_directories(${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/libcsvsqldb ${CMAKE_CURRENT_BINARY_DIR})
-    include_directories(SYSTEM ${LUA_INCLUDE_DIR} ${Boost_INCLUDE_DIR})
-    link_directories(/usr/local/lib ${Boost_LIBRARY_DIRS})
+    include_directories(SYSTEM ${LUA_INCLUDE_DIR})
 else()
     include_directories(${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
-    include_directories(SYSTEM ${LUA_INCLUDE_DIR} ${Boost_INCLUDE_DIR})
-    link_directories(${CMAKE_LIBRARY_OUTPUT_DIRECTORY} ${LUA_LIBRARY_DIRS} ${Boost_LIBRARY_DIRS})
+    include_directories(SYSTEM ${LUA_INCLUDE_DIR})
+    link_directories(${CMAKE_LIBRARY_OUTPUT_DIRECTORY} ${LUA_LIBRARY_DIRS})
 endif()
 
 if(CMAKE_BUILD_TYPE MATCHES "Debug")
@@ -63,7 +63,7 @@ if(CMAKE_BUILD_TYPE MATCHES "Debug")
 endif()
 
 if(NOT APPLE AND UNIX)
-    set(CSVSQLDB_PLATFORM_LIBS dl pthread)
+    set(CSVSQLDB_PLATFORM_LIBS dl Threads::Threads)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -Wall -Werror")
 
     option(USE_LIBCXX "link against libc++")
@@ -72,7 +72,6 @@ if(NOT APPLE AND UNIX)
       set(CMAKE_CXX_COMPILER "clang++")
       set(CSVSQLDB_PLATFORM_LIBS ${CSVSQLDB_PLATFORM_LIBS} c++abi)
       set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
-      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -isystem ${Boost_INCLUDE_DIR}")
       add_definitions(-DHAS_PUT_TIME -DHAS_GET_TIME)
     endif()
 
@@ -83,16 +82,13 @@ elseif(APPLE AND CMAKE_GENERATOR STREQUAL Xcode)
                          -Wmissing-declarations -Wmissing-prototypes -Woverlength-strings
                          -Wshadow -Wunreachable-code -Wextra
                          -Wno-unused-parameter -Wpedantic -Werror")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -isystem ${Boost_INCLUDE_DIR}")
 elseif(APPLE)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wheader-hygiene -Wcast-align -Wconversion -Wfloat-equal -Wformat=2
                          -Wmissing-declarations -Wmissing-prototypes -Woverlength-strings
                          -Wshadow -Wunreachable-code -Wextra
                          -Wno-unused-parameter -Wpedantic -Werror")
-                         SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -isystem ${Boost_INCLUDE_DIR}")
 elseif(WIN32)
     add_definitions(-DNOMINMAX)
-    set(Boost_USE_STATIC_LIBS ON)
     set(CMAKE_CXX_FLAGS "-D_SCL_SECURE_NO_WARNINGS")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /MP")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP /EHsc")
@@ -113,3 +109,4 @@ endif()
 add_subdirectory(csvsqldb)
 add_subdirectory(libcsvsqldb)
 add_subdirectory(test)
+add_subdirectory(thirdparty)

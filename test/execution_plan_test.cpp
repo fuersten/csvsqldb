@@ -108,12 +108,12 @@ TEST_CASE("Execution Plan Test", "[engine]")
 )");
     dataFile.close();
 
-    csvsqldb::ExecutionPlan execPlan;
     csvsqldb::BlockManager manager;
     std::stringstream output;
     csvsqldb::OperatorContext context(database, functions, manager, files);
     csvsqldb::ASTValidationVisitor validationVisitor(database);
     node->accept(validationVisitor);
+    csvsqldb::ExecutionPlan execPlan;
     csvsqldb::ExecutionPlanVisitor<csvsqldb::OperatorNodeFactory> execVisitor(context, execPlan, output);
     node->accept(execVisitor);
 

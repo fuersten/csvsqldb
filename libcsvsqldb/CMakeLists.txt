@@ -1,5 +1,5 @@
 
-SET(LIB_CSVSQLDB_SOURCES
+set(LIB_CSVSQLDB_SOURCES
     aggregation_functions.cpp
     block.cpp
     block_iterator.cpp
@@ -54,7 +54,7 @@ SET(LIB_CSVSQLDB_SOURCES
     inc.h
 )
 
-SET(LIB_CSVSQLDB_BASE_SOURCES
+set(LIB_CSVSQLDB_BASE_SOURCES
     base/application.cpp
     base/configuration.cpp
     base/csv_parser.cpp
@@ -82,7 +82,7 @@ SET(LIB_CSVSQLDB_BASE_SOURCES
     base/regexp.cpp
 )
 
-SET(LIB_CSVSQLDB_BASE_HEADERS
+set(LIB_CSVSQLDB_BASE_HEADERS
     base/application.h
     base/configuration.h
     base/csv_parser.h
@@ -116,33 +116,33 @@ SET(LIB_CSVSQLDB_BASE_HEADERS
     base/regexp.h
 )
 
-SET(LIB_CSVSQLDB_COMPAT_HEADERS
+set(LIB_CSVSQLDB_COMPAT_HEADERS
     compat/get_time.h
     compat/put_time.h
 )
 
-IF(NOT APPLE AND UNIX)
+if(NOT APPLE AND UNIX)
     SET(LIB_CSVSQLDB_BASE_SOURCES ${LIB_CSVSQLDB_BASE_SOURCES}
         base/detail/posix/glob.cpp
         base/detail/posix/signalhandler.cpp
     )
-ELSEIF(APPLE)
-    SET(LIB_CSVSQLDB_BASE_SOURCES ${LIB_CSVSQLDB_BASE_SOURCES}
+elseif(APPLE)
+    set(LIB_CSVSQLDB_BASE_SOURCES ${LIB_CSVSQLDB_BASE_SOURCES}
         base/detail/posix/glob.cpp
         base/detail/posix/signalhandler.cpp
     )
-ELSEIF(WIN32)
-    SET(LIB_CSVSQLDB_BASE_SOURCES ${LIB_CSVSQLDB_BASE_SOURCES}
+elseif(WIN32)
+    set(LIB_CSVSQLDB_BASE_SOURCES ${LIB_CSVSQLDB_BASE_SOURCES}
         base/detail/windows/glob.cpp
         base/detail/windows/signalhandler.cpp)
-ENDIF()
+endif()
 
-SOURCE_GROUP("Source Files\\base" FILES ${LIB_CSVSQLDB_BASE_SOURCES})
-SOURCE_GROUP("Header Files\\base" FILES ${LIB_CSVSQLDB_BASE_HEADERS})
-SOURCE_GROUP("Header Files\\compat" FILES ${LIB_CSVSQLDB_COMPAT_HEADERS})
+source_group("Source Files\\base" FILES ${LIB_CSVSQLDB_BASE_SOURCES})
+source_group("Header Files\\base" FILES ${LIB_CSVSQLDB_BASE_HEADERS})
+source_group("Header Files\\compat" FILES ${LIB_CSVSQLDB_COMPAT_HEADERS})
 
-CONFIGURE_FILE(version.h.in ${CMAKE_CURRENT_BINARY_DIR}/version.h)
-SET(LIB_CSVSQLDB_SOURCES 
+configure_file(version.h.in ${CMAKE_CURRENT_BINARY_DIR}/version.h)
+set(LIB_CSVSQLDB_SOURCES 
     ${LIB_CSVSQLDB_SOURCES}
     ${LIB_CSVSQLDB_BASE_SOURCES}
     ${LIB_CSVSQLDB_BASE_HEADERS}
@@ -150,11 +150,7 @@ SET(LIB_CSVSQLDB_SOURCES
     ${CMAKE_CURRENT_BINARY_DIR}/version.h
 )
 
-ADD_LIBRARY(csvsqldb SHARED ${LIB_CSVSQLDB_SOURCES})
-SET_TARGET_PROPERTIES(csvsqldb PROPERTIES DEFINE_SYMBOL LIBCSVSQLDB VERSION ${CSVSQLDB_VERSION} SOVERSION ${CSVSQLDB_VERSION_SHORT})
-IF(NOT WIN32)
-    TARGET_LINK_LIBRARIES(csvsqldb ${CSVSQLDB_PROJECT_LIBS} ${CSVSQLDB_PLATFORM_LIBS} ${LUA_LIBRARY} ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY} ${Boost_REGEX_LIBRARY})
-ELSE()
-    TARGET_LINK_LIBRARIES(csvsqldb ${CSVSQLDB_PROJECT_LIBS} ${CSVSQLDB_PLATFORM_LIBS} ${LUA_LIBRARY})
-ENDIF()
-INSTALL(TARGETS csvsqldb LIBRARY DESTINATION lib ARCHIVE DESTINATION lib)
+add_library(csvsqldb SHARED ${LIB_CSVSQLDB_SOURCES})
+set_target_properties(csvsqldb PROPERTIES DEFINE_SYMBOL LIBCSVSQLDB VERSION ${CSVSQLDB_VERSION} SOVERSION ${CSVSQLDB_VERSION_SHORT})
+target_link_libraries(csvsqldb ${CSVSQLDB_PROJECT_LIBS} ${CSVSQLDB_PLATFORM_LIBS} ${LUA_LIBRARY})
+install(TARGETS csvsqldb LIBRARY DESTINATION lib ARCHIVE DESTINATION lib)
