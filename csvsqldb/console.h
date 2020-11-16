@@ -24,12 +24,12 @@
 #include "libcsvsqldb/inc.h"
 
 #include "types.h"
-#include <boost/filesystem.hpp>
 
+#include <filesystem>
 #include <map>
 #include <memory>
 
-namespace fs = boost::filesystem;
+namespace fs = std::filesystem;
 
 
 namespace csvsqldb

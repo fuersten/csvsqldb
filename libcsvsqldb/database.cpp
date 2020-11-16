@@ -137,7 +137,7 @@ namespace csvsqldb
     if (iter == _tables.end()) {
       CSVSQLDB_THROW(csvsqldb::Exception, "table '" << tableName << "' not found. Dropping nothing");
     }
-    boost::system::error_code ec;
+    std::error_code ec;
     fs::remove(tablePath() / tableName, ec);
     if (ec) {
       CSVSQLDB_THROW(csvsqldb::Exception, "could not remove table file (" << ec.message() << ")");

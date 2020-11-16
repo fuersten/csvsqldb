@@ -38,9 +38,10 @@
 
 #include "file_mapping.h"
 #include "tabledata.h"
-#include <boost/filesystem.hpp>
 
-namespace fs = boost::filesystem;
+#include <filesystem>
+
+namespace fs = std::filesystem;
 
 
 namespace csvsqldb

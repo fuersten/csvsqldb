@@ -38,11 +38,11 @@
 
 #include "base/exception.h"
 #include "base/types.h"
-#include <boost/filesystem.hpp>
 
+#include <filesystem>
 #include <map>
 
-namespace fs = boost::filesystem;
+namespace fs = std::filesystem;
 
 
 namespace csvsqldb

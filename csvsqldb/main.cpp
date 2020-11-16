@@ -227,7 +227,7 @@ private:
         path /= ".csvdb";
       }
     }
-    _databasePath = fs::absolute(path).normalize().string();
+    _databasePath = fs::canonical(fs::absolute(path)).string();
     if (vm.count("verbose")) {
       _verbose = true;
     }

@@ -36,13 +36,12 @@
 #include "libcsvsqldb/sql_parser.h"
 #include "libcsvsqldb/validation_visitor.h"
 
-#include <boost/filesystem.hpp>
-
 #include <catch2/catch.hpp>
 
+#include <filesystem>
 #include <fstream>
 
-namespace fs = boost::filesystem;
+namespace fs = std::filesystem;
 
 
 TEST_CASE("Execution Plan Test", "[engine]")

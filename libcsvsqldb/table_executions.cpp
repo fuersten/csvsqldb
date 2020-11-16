@@ -34,12 +34,12 @@
 #include "table_executions.h"
 
 #include "file_mapping.h"
-#include <boost/filesystem.hpp>
 
+#include <filesystem>
 #include <fstream>
 #include <regex>
 
-namespace fs = boost::filesystem;
+namespace fs = std::filesystem;
 
 
 namespace csvsqldb
@@ -181,7 +181,7 @@ namespace csvsqldb
       CSVSQLDB_THROW(DropMappingException, "mapping file does not exist");
     }
 
-    boost::system::error_code ec;
+    std::error_code ec;
     fs::remove(mappingFile, ec);
     if (ec) {
       CSVSQLDB_THROW(DropMappingException, "could not remove mapping file (" << ec.message() << ")");

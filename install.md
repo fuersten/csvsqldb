@@ -21,7 +21,7 @@
 - If you use the clang compiler you cannot use the standard boost package of your distro, as boost has to be build with the clang compiler and the next steps are only necessary if you want to use the clang compiler
   - So download boost from [http://sourceforge.net/projects/boost/files/boost/](http://sourceforge.net/projects/boost/files/boost/)
   - Unpack the archive and change into the directory
-  - Call `./bootstrap.sh --with-toolset=clang --with-libraries=filesystem,program_options,system`
+  - Call `./bootstrap.sh --with-toolset=clang --with-libraries=program_options,system`
   - You can add more libraries if you like
   - Call `./b2 cxxflags="-stdlib=libc++" linkflags="-stdlib=libc++"`
   - I don't recommend to install the boost libraries, as you will probably have trouble to build other software packages with these libraries
