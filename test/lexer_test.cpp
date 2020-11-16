@@ -39,6 +39,8 @@
 
 #include <catch2/catch.hpp>
 
+#include <map>
+
 
 namespace
 {

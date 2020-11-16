@@ -37,7 +37,6 @@
 
 #include <filesystem>
 #include <fstream>
-#include <regex>
 
 namespace fs = std::filesystem;
 

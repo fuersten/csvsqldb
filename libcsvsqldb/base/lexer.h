@@ -37,9 +37,9 @@
 #include "libcsvsqldb/inc.h"
 
 #include "types.h"
-#include <boost/regex.hpp>
 
 #include <functional>
+#include <regex>
 #include <string>
 #include <vector>
 
@@ -143,12 +143,12 @@ namespace csvsqldb
     private:
       struct TokenDefinition {
         TokenDefinition()
-        : _rx(boost::regex(""))
+        : _rx(std::regex(""))
         , _token(UNDEFINED)
         {
         }
 
-        TokenDefinition(const std::string& name, const boost::regex& r, int32_t token)
+        TokenDefinition(const std::string& name, const std::regex& r, int32_t token)
         : _name(name)
         , _rx(r)
         , _token(token)
@@ -156,7 +156,7 @@ namespace csvsqldb
         }
 
         std::string _name;
-        boost::regex _rx;
+        std::regex _rx;
         int32_t _token;
       };
       typedef std::vector<TokenDefinition> TokenDefinitionVector;

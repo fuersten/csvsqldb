@@ -38,7 +38,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 
 find_package(Lua51 REQUIRED)
 find_package(Doxygen)
-find_package(Boost 1.55 COMPONENTS program_options system regex REQUIRED)
+find_package(Boost 1.55 COMPONENTS program_options system REQUIRED)
 
 if(NOT Boost_FOUND)
     message(FATAL_ERROR "Could not find boost")

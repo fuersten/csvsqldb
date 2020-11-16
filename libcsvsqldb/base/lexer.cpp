@@ -34,7 +34,6 @@
 #include "lexer.h"
 
 #include "exception.h"
-#include "regex.h"
 
 
 namespace csvsqldb
@@ -54,7 +53,7 @@ namespace csvsqldb
 
     void Lexer::addDefinition(const std::string& name, const std::string& r, int32_t token)
     {
-      _tokenDefinitions.push_back(TokenDefinition(name, boost::regex(r), token));
+      _tokenDefinitions.push_back(TokenDefinition(name, std::regex(r), token));
     }
 
     void Lexer::setInput(const std::string& input)
@@ -69,7 +68,7 @@ namespace csvsqldb
     Token Lexer::next()
     {
       if (_pos < _end) {
-        boost::smatch match;
+        std::smatch match;
 
         for (const auto& r : _tokenDefinitions) {
           if (regex_search(_pos, _end, match, r._rx)) {
@@ -94,10 +93,10 @@ namespace csvsqldb
                 _lineStart = _pos;
                 return next();
               } else {
-                boost::regex nl(R"(\r|\n)");
+                std::regex nl(R"(\r|\n)");
 
-                boost::sregex_iterator it(token._value.begin(), token._value.end(), nl);
-                boost::sregex_iterator it_end;
+                std::sregex_iterator it(token._value.begin(), token._value.end(), nl);
+                std::sregex_iterator it_end;
 
                 while (it != it_end) {
                   ++_lineCount;

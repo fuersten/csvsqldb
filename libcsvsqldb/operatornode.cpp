@@ -34,9 +34,9 @@
 #include "operatornode.h"
 
 #include "sql_astexpressionvisitor.h"
-#include <boost/regex.hpp>
 
 #include <fstream>
+#include <regex>
 
 
 namespace csvsqldb
@@ -1455,12 +1455,12 @@ namespace csvsqldb
     Mapping mapping = _context._database.getMappingForTable(_tableInfo._identifier);
     std::string filePattern = mapping._mapping;
     filePattern = R"(.*)" + filePattern;
-    boost::regex r(filePattern);
+    std::regex r(filePattern);
 
     fs::path pathToCsvFile("");
 
     for (const auto& file : _context._files) {
-      boost::smatch match;
+      std::smatch match;
       if (regex_match(file, match, r)) {
         pathToCsvFile = file;
         break;
