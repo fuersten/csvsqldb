@@ -33,102 +33,93 @@
 
 #include "libcsvsqldb/base/duration.h"
 
-#include "test.h"
+#include <catch2/catch.hpp>
 
 
-class DurationTestCase
+TEST_CASE("Duration Test", "[duration]")
 {
-public:
-  void setUp()
-  {
-  }
-
-  void tearDown()
-  {
-  }
-
-  void constructionTest()
+  SECTION("construction")
   {
     csvsqldb::Duration d1(1, 2, 5);
-    MPF_TEST_ASSERTEQUAL(1, d1.years());
-    MPF_TEST_ASSERTEQUAL(2, d1.months());
-    MPF_TEST_ASSERTEQUAL(5, d1.days());
-    MPF_TEST_ASSERTEQUAL(0, d1.hours());
-    MPF_TEST_ASSERTEQUAL(0, d1.minutes());
-    MPF_TEST_ASSERTEQUAL(0, d1.seconds());
-    MPF_TEST_ASSERTEQUAL(csvsqldb::Duration::Positive, d1.sign());
+    CHECK(1 == d1.years());
+    CHECK(2 == d1.months());
+    CHECK(5 == d1.days());
+    CHECK(0 == d1.hours());
+    CHECK(0 == d1.minutes());
+    CHECK(0 == d1.seconds());
+    CHECK(csvsqldb::Duration::Positive == d1.sign());
 
     csvsqldb::Duration d2(1, 2, 5, 17, 6, 45);
-    MPF_TEST_ASSERTEQUAL(1, d2.years());
-    MPF_TEST_ASSERTEQUAL(2, d2.months());
-    MPF_TEST_ASSERTEQUAL(5, d2.days());
-    MPF_TEST_ASSERTEQUAL(17, d2.hours());
-    MPF_TEST_ASSERTEQUAL(6, d2.minutes());
-    MPF_TEST_ASSERTEQUAL(45, d2.seconds());
-    MPF_TEST_ASSERTEQUAL(csvsqldb::Duration::Positive, d2.sign());
+    CHECK(1 == d2.years());
+    CHECK(2 == d2.months());
+    CHECK(5 == d2.days());
+    CHECK(17 == d2.hours());
+    CHECK(6 == d2.minutes());
+    CHECK(45 == d2.seconds());
+    CHECK(csvsqldb::Duration::Positive == d2.sign());
 
     csvsqldb::Duration d3;
-    MPF_TEST_ASSERTEQUAL(0, d3.years());
-    MPF_TEST_ASSERTEQUAL(0, d3.months());
-    MPF_TEST_ASSERTEQUAL(0, d3.days());
-    MPF_TEST_ASSERTEQUAL(0, d3.hours());
-    MPF_TEST_ASSERTEQUAL(0, d3.minutes());
-    MPF_TEST_ASSERTEQUAL(0, d3.seconds());
-    MPF_TEST_ASSERTEQUAL(csvsqldb::Duration::Positive, d3.sign());
+    CHECK(0 == d3.years());
+    CHECK(0 == d3.months());
+    CHECK(0 == d3.days());
+    CHECK(0 == d3.hours());
+    CHECK(0 == d3.minutes());
+    CHECK(0 == d3.seconds());
+    CHECK(csvsqldb::Duration::Positive == d3.sign());
 
     csvsqldb::Duration d4(1, 2, 3, csvsqldb::Duration::Negative);
-    MPF_TEST_ASSERTEQUAL(1, d4.years());
-    MPF_TEST_ASSERTEQUAL(2, d4.months());
-    MPF_TEST_ASSERTEQUAL(3, d4.days());
-    MPF_TEST_ASSERTEQUAL(0, d4.hours());
-    MPF_TEST_ASSERTEQUAL(0, d4.minutes());
-    MPF_TEST_ASSERTEQUAL(0, d4.seconds());
-    MPF_TEST_ASSERTEQUAL(csvsqldb::Duration::Negative, d4.sign());
+    CHECK(1 == d4.years());
+    CHECK(2 == d4.months());
+    CHECK(3 == d4.days());
+    CHECK(0 == d4.hours());
+    CHECK(0 == d4.minutes());
+    CHECK(0 == d4.seconds());
+    CHECK(csvsqldb::Duration::Negative == d4.sign());
 
-    MPF_TEST_ASSERTEQUAL(-1, d4.yearsWithSign());
-    MPF_TEST_ASSERTEQUAL(-2, d4.monthsWithSign());
-    MPF_TEST_ASSERTEQUAL(-3, d4.daysWithSign());
-    MPF_TEST_ASSERTEQUAL(0, d4.hoursWithSign());
-    MPF_TEST_ASSERTEQUAL(0, d4.minutesWithSign());
-    MPF_TEST_ASSERTEQUAL(0, d4.secondsWithSign());
+    CHECK(-1 == d4.yearsWithSign());
+    CHECK(-2 == d4.monthsWithSign());
+    CHECK(-3 == d4.daysWithSign());
+    CHECK(0 == d4.hoursWithSign());
+    CHECK(0 == d4.minutesWithSign());
+    CHECK(0 == d4.secondsWithSign());
   }
 
-  void copyTest()
+  SECTION("copy")
   {
     csvsqldb::Duration d1(3, 1, 90, 17, 6, 45, csvsqldb::Duration::Negative);
     csvsqldb::Duration d2(d1);
 
-    MPF_TEST_ASSERTEQUAL(3, d2.years());
-    MPF_TEST_ASSERTEQUAL(1, d2.months());
-    MPF_TEST_ASSERTEQUAL(90, d2.days());
-    MPF_TEST_ASSERTEQUAL(17, d2.hours());
-    MPF_TEST_ASSERTEQUAL(6, d2.minutes());
-    MPF_TEST_ASSERTEQUAL(45, d2.seconds());
-    MPF_TEST_ASSERTEQUAL(csvsqldb::Duration::Negative, d2.sign());
+    CHECK(3 == d2.years());
+    CHECK(1 == d2.months());
+    CHECK(90 == d2.days());
+    CHECK(17 == d2.hours());
+    CHECK(6 == d2.minutes());
+    CHECK(45 == d2.seconds());
+    CHECK(csvsqldb::Duration::Negative == d2.sign());
 
     csvsqldb::Duration d3 = d2;
 
-    MPF_TEST_ASSERTEQUAL(3, d3.years());
-    MPF_TEST_ASSERTEQUAL(1, d3.months());
-    MPF_TEST_ASSERTEQUAL(90, d3.days());
-    MPF_TEST_ASSERTEQUAL(17, d3.hours());
-    MPF_TEST_ASSERTEQUAL(6, d3.minutes());
-    MPF_TEST_ASSERTEQUAL(45, d3.seconds());
-    MPF_TEST_ASSERTEQUAL(csvsqldb::Duration::Negative, d3.sign());
+    CHECK(3 == d3.years());
+    CHECK(1 == d3.months());
+    CHECK(90 == d3.days());
+    CHECK(17 == d3.hours());
+    CHECK(6 == d3.minutes());
+    CHECK(45 == d3.seconds());
+    CHECK(csvsqldb::Duration::Negative == d3.sign());
   }
 
-  void setDurationPartTest()
+  SECTION("set duration part")
   {
     csvsqldb::Duration d1(3, 1, 90, 17, 6, 45);
 
     d1.ymdhmss(1, 2, 3, 4, 5, 6, csvsqldb::Duration::Negative);
-    MPF_TEST_ASSERTEQUAL(1, d1.years());
-    MPF_TEST_ASSERTEQUAL(2, d1.months());
-    MPF_TEST_ASSERTEQUAL(3, d1.days());
-    MPF_TEST_ASSERTEQUAL(4, d1.hours());
-    MPF_TEST_ASSERTEQUAL(5, d1.minutes());
-    MPF_TEST_ASSERTEQUAL(6, d1.seconds());
-    MPF_TEST_ASSERTEQUAL(csvsqldb::Duration::Negative, d1.sign());
+    CHECK(1 == d1.years());
+    CHECK(2 == d1.months());
+    CHECK(3 == d1.days());
+    CHECK(4 == d1.hours());
+    CHECK(5 == d1.minutes());
+    CHECK(6 == d1.seconds());
+    CHECK(csvsqldb::Duration::Negative == d1.sign());
 
     d1.years(6);
     d1.months(5);
@@ -137,80 +128,71 @@ public:
     d1.minutes(2);
     d1.seconds(1);
     d1.sign(csvsqldb::Duration::Positive);
-    MPF_TEST_ASSERTEQUAL(6, d1.years());
-    MPF_TEST_ASSERTEQUAL(5, d1.months());
-    MPF_TEST_ASSERTEQUAL(4, d1.days());
-    MPF_TEST_ASSERTEQUAL(3, d1.hours());
-    MPF_TEST_ASSERTEQUAL(2, d1.minutes());
-    MPF_TEST_ASSERTEQUAL(1, d1.seconds());
-    MPF_TEST_ASSERTEQUAL(csvsqldb::Duration::Positive, d1.sign());
+    CHECK(6 == d1.years());
+    CHECK(5 == d1.months());
+    CHECK(4 == d1.days());
+    CHECK(3 == d1.hours());
+    CHECK(2 == d1.minutes());
+    CHECK(1 == d1.seconds());
+    CHECK(csvsqldb::Duration::Positive == d1.sign());
   }
 
-  void addTest()
+  SECTION("add")
   {
     csvsqldb::Duration d1(3, 1, 90, 17, 6, 45);
     d1.add(csvsqldb::Duration(5, 2, 1, 3, 7, 5));
-    MPF_TEST_ASSERTEQUAL(8, d1.years());
-    MPF_TEST_ASSERTEQUAL(3, d1.months());
-    MPF_TEST_ASSERTEQUAL(91, d1.days());
-    MPF_TEST_ASSERTEQUAL(20, d1.hours());
-    MPF_TEST_ASSERTEQUAL(13, d1.minutes());
-    MPF_TEST_ASSERTEQUAL(50, d1.seconds());
+    CHECK(8 == d1.years());
+    CHECK(3 == d1.months());
+    CHECK(91 == d1.days());
+    CHECK(20 == d1.hours());
+    CHECK(13 == d1.minutes());
+    CHECK(50 == d1.seconds());
 
     csvsqldb::Duration d2(1, 2, 5);
     d2.add(d1);
-    MPF_TEST_ASSERTEQUAL(9, d2.years());
-    MPF_TEST_ASSERTEQUAL(5, d2.months());
-    MPF_TEST_ASSERTEQUAL(96, d2.days());
-    MPF_TEST_ASSERTEQUAL(20, d2.hours());
-    MPF_TEST_ASSERTEQUAL(13, d2.minutes());
-    MPF_TEST_ASSERTEQUAL(50, d2.seconds());
-    MPF_TEST_ASSERTEQUAL(csvsqldb::Duration::Positive, d2.sign());
+    CHECK(9 == d2.years());
+    CHECK(5 == d2.months());
+    CHECK(96 == d2.days());
+    CHECK(20 == d2.hours());
+    CHECK(13 == d2.minutes());
+    CHECK(50 == d2.seconds());
+    CHECK(csvsqldb::Duration::Positive == d2.sign());
 
     csvsqldb::Duration d3(1, 2, 3, csvsqldb::Duration::Negative);
-    MPF_TEST_EXPECTS(d3.add(d2), csvsqldb::DurationException);
+    CHECK_THROWS_AS(d3.add(d2), csvsqldb::DurationException);
 
     d3.add(csvsqldb::Duration(1, 2, 3, csvsqldb::Duration::Negative));
-    MPF_TEST_ASSERTEQUAL(2, d3.years());
-    MPF_TEST_ASSERTEQUAL(4, d3.months());
-    MPF_TEST_ASSERTEQUAL(6, d3.days());
-    MPF_TEST_ASSERTEQUAL(0, d3.hours());
-    MPF_TEST_ASSERTEQUAL(0, d3.minutes());
-    MPF_TEST_ASSERTEQUAL(0, d3.seconds());
-    MPF_TEST_ASSERTEQUAL(csvsqldb::Duration::Negative, d3.sign());
+    CHECK(2 == d3.years());
+    CHECK(4 == d3.months());
+    CHECK(6 == d3.days());
+    CHECK(0 == d3.hours());
+    CHECK(0 == d3.minutes());
+    CHECK(0 == d3.seconds());
+    CHECK(csvsqldb::Duration::Negative == d3.sign());
   }
 
-  void compareTest()
+  SECTION("compare")
   {
     csvsqldb::Duration d1(3, 1, 90, 17, 6, 45);
     csvsqldb::Duration d2(1, 2, 5);
     csvsqldb::Duration d3(1, 2, 5, 17, 6, 45);
 
-    MPF_TEST_ASSERT(d1 != d2);
-    MPF_TEST_ASSERT(!(d1 == d2));
-    MPF_TEST_ASSERT(d1 > d2);
-    MPF_TEST_ASSERT(d2 < d1);
-    MPF_TEST_ASSERT(d3 > d2);
-    MPF_TEST_ASSERT(d1 > d3);
-    MPF_TEST_ASSERT(d1 == d1);
+    CHECK(d1 != d2);
+    CHECK_FALSE(d1 == d2);
+    CHECK(d1 > d2);
+    CHECK(d2 < d1);
+    CHECK(d3 > d2);
+    CHECK(d1 > d3);
+    CHECK(d1 == d1);
   }
 
-  void formatTest()
+  SECTION("format")
   {
     csvsqldb::Duration d1(3, 1, 90, 17, 6, 45);
-    MPF_TEST_ASSERTEQUAL("P3Y1M90DT17H6M45S", d1.format());
+    CHECK("P3Y1M90DT17H6M45S" == d1.format());
     csvsqldb::Duration d2(1, 2, 5);
-    MPF_TEST_ASSERTEQUAL("P1Y2M5D", d2.format());
+    CHECK("P1Y2M5D" == d2.format());
     csvsqldb::Duration d3(1, 2, 5, 17, 6, 45);
-    MPF_TEST_ASSERTEQUAL("P1Y2M5DT17H6M45S", d3.format());
+    CHECK("P1Y2M5DT17H6M45S" == d3.format());
   }
-};
-
-MPF_REGISTER_TEST_START("BaseValuesTestSuite", DurationTestCase);
-MPF_REGISTER_TEST(DurationTestCase::constructionTest);
-MPF_REGISTER_TEST(DurationTestCase::copyTest);
-MPF_REGISTER_TEST(DurationTestCase::setDurationPartTest);
-MPF_REGISTER_TEST(DurationTestCase::addTest);
-MPF_REGISTER_TEST(DurationTestCase::compareTest);
-MPF_REGISTER_TEST(DurationTestCase::formatTest);
-MPF_REGISTER_TEST_END();
+}

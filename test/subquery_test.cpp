@@ -32,25 +32,13 @@
 
 
 #include "data_test_framework.h"
-#include "test.h"
+
+#include <catch2/catch.hpp>
 
 
-class SubQueryTestCase
+TEST_CASE("Subquery Test", "[engine]")
 {
-public:
-  SubQueryTestCase()
-  {
-  }
-
-  void setUp()
-  {
-  }
-
-  void tearDown()
-  {
-  }
-
-  void simpleSubqueryTest()
+  SECTION("simple subquery")
   {
     DatabaseTestWrapper dbWrapper;
     dbWrapper.addTable(TableInitializer("employees", {{"id", csvsqldb::INT},
@@ -74,8 +62,8 @@ public:
       csvsqldb::ExecutionStatistics statistics;
       std::stringstream ss;
       int64_t rowCount = engine.execute("SELECT count(*) FROM (SELECT id,first_name,last_name FROM employees)", statistics, ss);
-      MPF_TEST_ASSERTEQUAL(1, rowCount);
-      MPF_TEST_ASSERTEQUAL("#$alias_1\n3\n", ss.str());
+      CHECK(1 == rowCount);
+      CHECK("#$alias_1\n3\n" == ss.str());
     }
 
     {
@@ -84,15 +72,15 @@ public:
       int64_t rowCount = engine.execute(
         "select count(*) as \"COUNT\",last_name from (select * from employees) group by last_name order by last_name limit 1",
         statistics, ss);
-      MPF_TEST_ASSERTEQUAL(1, rowCount);
+      CHECK(1 == rowCount);
       std::string expected = R"(#COUNT,EMPLOYEES.LAST_NAME
 2,'Fürstenberg'
 )";
-      MPF_TEST_ASSERTEQUAL(expected, ss.str());
+      CHECK(expected == ss.str());
     }
   }
 
-  void subqueryWithAliasTest()
+  SECTION("simple subquery with alias")
   {
     DatabaseTestWrapper dbWrapper;
     dbWrapper.addTable(TableInitializer("employees", {{"id", csvsqldb::INT},
@@ -117,13 +105,13 @@ public:
       std::stringstream ss;
       int64_t rowCount = engine.execute(
         "select emp.first_name,emp.last_name from (select emp.first_name,emp.last_name from employees as emp)", statistics, ss);
-      MPF_TEST_ASSERTEQUAL(3, rowCount);
+      CHECK(3 == rowCount);
       std::string expected = R"(#EMP.FIRST_NAME,EMP.LAST_NAME
 'Mark','Fürstenberg'
 'Lars','Fürstenberg'
 'Angelica','Tello de Fürstenberg'
 )";
-      MPF_TEST_ASSERTEQUAL(expected, ss.str());
+      CHECK(expected == ss.str());
     }
 
     {
@@ -131,13 +119,13 @@ public:
       std::stringstream ss;
       int64_t rowCount =
         engine.execute("select first_name,last_name from (select first_name,last_name from employees as emp)", statistics, ss);
-      MPF_TEST_ASSERTEQUAL(3, rowCount);
+      CHECK(3 == rowCount);
       std::string expected = R"(#FIRST_NAME,LAST_NAME
 'Mark','Fürstenberg'
 'Lars','Fürstenberg'
 'Angelica','Tello de Fürstenberg'
 )";
-      MPF_TEST_ASSERTEQUAL(expected, ss.str());
+      CHECK(expected == ss.str());
     }
 
     {
@@ -145,17 +133,17 @@ public:
       std::stringstream ss;
       int64_t rowCount = engine.execute(
         "select emp.first_name,emp.last_name from (select * from employees) as emp order by emp.first_name", statistics, ss);
-      MPF_TEST_ASSERTEQUAL(3, rowCount);
+      CHECK(3 == rowCount);
       std::string expected = R"(#EMP.FIRST_NAME,EMP.LAST_NAME
 'Angelica','Tello de Fürstenberg'
 'Lars','Fürstenberg'
 'Mark','Fürstenberg'
 )";
-      MPF_TEST_ASSERTEQUAL(expected, ss.str());
+      CHECK(expected == ss.str());
     }
   }
 
-  void subQueryWithJoinTest()
+  SECTION("subquery with join")
   {
     DatabaseTestWrapper dbWrapper;
     dbWrapper.addTable(TableInitializer("employees", {{"id", csvsqldb::INT},
@@ -193,20 +181,14 @@ public:
         "select emp.id,emp.first_name,emp.last_name,sal.salary from (SELECT * FROM employees emp INNER JOIN salaries sal ON "
         "emp.id = sal.id) order by emp.id",
         statistics, ss);
-      MPF_TEST_ASSERTEQUAL(3, rowCount);
+      CHECK(3 == rowCount);
 
       std::string expected = R"(#EMP.ID,EMP.FIRST_NAME,EMP.LAST_NAME,SAL.SALARY
 815,'Mark','Fürstenberg',5000.000000
 4711,'Lars','Fürstenberg',12000.000000
 9227,'Angelica','Tello de Fürstenberg',450.000000
 )";
-      MPF_TEST_ASSERTEQUAL(expected, ss.str());
+      CHECK(expected == ss.str());
     }
   }
-};
-
-MPF_REGISTER_TEST_START("QueryTestSuite", SubQueryTestCase);
-MPF_REGISTER_TEST(SubQueryTestCase::simpleSubqueryTest);
-MPF_REGISTER_TEST(SubQueryTestCase::subqueryWithAliasTest);
-MPF_REGISTER_TEST(SubQueryTestCase::subQueryWithJoinTest);
-MPF_REGISTER_TEST_END();
+}

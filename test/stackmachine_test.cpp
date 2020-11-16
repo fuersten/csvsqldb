@@ -38,41 +38,31 @@
 #include "libcsvsqldb/stack_machine.h"
 #include "libcsvsqldb/visitor.h"
 
-#include "test.h"
+#include <catch2/catch.hpp>
 
 
-class MyCurrentDateFunction : public csvsqldb::Function
+namespace
 {
-public:
-  MyCurrentDateFunction()
-  : Function("CURRENT_DATE", csvsqldb::DATE, csvsqldb::Types({}))
+  class MyCurrentDateFunction : public csvsqldb::Function
   {
-  }
+  public:
+    MyCurrentDateFunction()
+    : Function("CURRENT_DATE", csvsqldb::DATE, csvsqldb::Types({}))
+    {
+    }
 
-private:
-  virtual const csvsqldb::Variant doCall(const csvsqldb::Variants& parameter) const
-  {
-    return csvsqldb::Variant(csvsqldb::Date::now());
-  }
-};
+  private:
+    virtual const csvsqldb::Variant doCall(const csvsqldb::Variants& parameter) const
+    {
+      return csvsqldb::Variant(csvsqldb::Date::now());
+    }
+  };
+}
 
 
-class StackmachineTestCase
+TEST_CASE("Stackmachine Test", "[stackmachine]")
 {
-public:
-  StackmachineTestCase()
-  {
-  }
-
-  void setUp()
-  {
-  }
-
-  void tearDown()
-  {
-  }
-
-  void evaluateExpTest()
+  SECTION("evaluate exp")
   {
     csvsqldb::VariableStore store;
     csvsqldb::FunctionRegistry functions;
@@ -86,10 +76,10 @@ public:
 
     sm.addInstruction(csvsqldb::StackMachine::Instruction(csvsqldb::StackMachine::ADD));
 
-    MPF_TEST_ASSERTEQUAL(857, sm.evaluate(store, functions).asInt());
+    CHECK(857 == sm.evaluate(store, functions).asInt());
   }
 
-  void expressionTest()
+  SECTION("expression")
   {
     csvsqldb::FunctionRegistry functions;
     csvsqldb::SQLParser parser(functions);
@@ -101,7 +91,7 @@ public:
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
-      MPF_TEST_ASSERTEQUAL(61, sm.evaluate(store, functions).asInt());
+      CHECK(61 == sm.evaluate(store, functions).asInt());
     }
 
     {
@@ -110,7 +100,7 @@ public:
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
-      MPF_TEST_ASSERTEQUAL(-18, sm.evaluate(store, functions).asInt());
+      CHECK(-18 == sm.evaluate(store, functions).asInt());
     }
 
     {
@@ -119,7 +109,7 @@ public:
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
-      MPF_TEST_ASSERTEQUAL(true, sm.evaluate(store, functions).asBool());
+      CHECK(sm.evaluate(store, functions).asBool());
     }
 
     {
@@ -128,7 +118,7 @@ public:
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
-      MPF_TEST_ASSERTEQUAL(false, sm.evaluate(store, functions).asBool());
+      CHECK_FALSE(sm.evaluate(store, functions).asBool());
     }
 
     {
@@ -137,7 +127,7 @@ public:
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
-      MPF_TEST_ASSERTEQUAL(true, sm.evaluate(store, functions).asBool());
+      CHECK(sm.evaluate(store, functions).asBool());
     }
 
     {
@@ -146,7 +136,7 @@ public:
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
-      MPF_TEST_ASSERTEQUAL(false, sm.evaluate(store, functions).asBool());
+      CHECK_FALSE(sm.evaluate(store, functions).asBool());
     }
 
     {
@@ -155,7 +145,7 @@ public:
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
-      MPF_TEST_ASSERTEQUAL(-30, sm.evaluate(store, functions).asInt());
+      CHECK(-30 == sm.evaluate(store, functions).asInt());
     }
 
     {
@@ -164,7 +154,7 @@ public:
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
-      MPF_TEST_ASSERTEQUAL(true, sm.evaluate(store, functions).asBool());
+      CHECK(sm.evaluate(store, functions).asBool());
     }
 
     {
@@ -173,7 +163,7 @@ public:
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
-      MPF_TEST_ASSERTEQUAL(false, sm.evaluate(store, functions).asBool());
+      CHECK_FALSE(sm.evaluate(store, functions).asBool());
     }
 
     {
@@ -182,7 +172,7 @@ public:
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
-      MPF_TEST_ASSERTEQUAL(1, sm.evaluate(store, functions).asInt());
+      CHECK(1 == sm.evaluate(store, functions).asInt());
     }
 
     {
@@ -191,7 +181,7 @@ public:
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
-      MPF_TEST_ASSERTEQUAL(true, sm.evaluate(store, functions).asBool());
+      CHECK(sm.evaluate(store, functions).asBool());
     }
 
     {
@@ -204,7 +194,7 @@ public:
       //            std::cout << std::endl;
       //            sm.dump(std::cout);
 
-      MPF_TEST_ASSERTEQUAL(true, sm.evaluate(store, functions).asBool());
+      CHECK(sm.evaluate(store, functions).asBool());
     }
 
     {
@@ -214,7 +204,7 @@ public:
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
 
-      MPF_TEST_ASSERTEQUAL(true, sm.evaluate(store, functions).asBool());
+      CHECK(sm.evaluate(store, functions).asBool());
     }
 
     {
@@ -223,7 +213,7 @@ public:
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
-      MPF_TEST_ASSERTEQUAL("Lars Fürstenberg", sm.evaluate(store, functions).toString());
+      CHECK("Lars Fürstenberg" == sm.evaluate(store, functions).toString());
     }
 
     {
@@ -232,7 +222,7 @@ public:
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
-      MPF_TEST_ASSERTEQUAL(true, sm.evaluate(store, functions).asBool());
+      CHECK(sm.evaluate(store, functions).asBool());
     }
 
     {
@@ -241,7 +231,7 @@ public:
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
-      MPF_TEST_ASSERTEQUAL(true, sm.evaluate(store, functions).asBool());
+      CHECK(sm.evaluate(store, functions).asBool());
     }
 
     {
@@ -250,7 +240,7 @@ public:
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
-      MPF_TEST_ASSERTEQUAL(true, sm.evaluate(store, functions).asBool());
+      CHECK(sm.evaluate(store, functions).asBool());
     }
 
     {
@@ -259,7 +249,7 @@ public:
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
-      MPF_TEST_ASSERTEQUAL(true, sm.evaluate(store, functions).asBool());
+      CHECK(sm.evaluate(store, functions).asBool());
     }
 
     {
@@ -268,7 +258,7 @@ public:
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
-      MPF_TEST_ASSERTEQUAL(true, sm.evaluate(store, functions).asBool());
+      CHECK(sm.evaluate(store, functions).asBool());
     }
 
     {
@@ -277,7 +267,7 @@ public:
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
-      MPF_TEST_ASSERTEQUAL(true, sm.evaluate(store, functions).asBool());
+      CHECK(sm.evaluate(store, functions).asBool());
     }
 
     {
@@ -286,7 +276,7 @@ public:
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
-      MPF_TEST_ASSERTEQUAL(true, sm.evaluate(store, functions).asBool());
+      CHECK(sm.evaluate(store, functions).asBool());
     }
 
     {
@@ -295,7 +285,7 @@ public:
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
-      MPF_TEST_ASSERTEQUAL(true, sm.evaluate(store, functions).asBool());
+      CHECK(sm.evaluate(store, functions).asBool());
     }
 
     {
@@ -304,7 +294,7 @@ public:
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
-      MPF_TEST_ASSERTEQUAL(true, sm.evaluate(store, functions).asBool());
+      CHECK(sm.evaluate(store, functions).asBool());
     }
 
     {
@@ -313,7 +303,7 @@ public:
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
-      MPF_TEST_ASSERTEQUAL(true, sm.evaluate(store, functions).asBool());
+      CHECK(sm.evaluate(store, functions).asBool());
     }
 
     {
@@ -322,7 +312,7 @@ public:
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
-      MPF_TEST_ASSERTEQUAL(false, sm.evaluate(store, functions).asBool());
+      CHECK_FALSE(sm.evaluate(store, functions).asBool());
     }
 
     {
@@ -331,7 +321,7 @@ public:
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
-      MPF_TEST_ASSERTEQUAL(false, sm.evaluate(store, functions).asBool());
+      CHECK_FALSE(sm.evaluate(store, functions).asBool());
     }
 
     {
@@ -340,7 +330,7 @@ public:
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
-      MPF_TEST_ASSERTEQUAL(true, sm.evaluate(store, functions).asBool());
+      CHECK(sm.evaluate(store, functions).asBool());
     }
 
     {
@@ -349,7 +339,7 @@ public:
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
-      MPF_TEST_ASSERTEQUAL(false, sm.evaluate(store, functions).asBool());
+      CHECK_FALSE(sm.evaluate(store, functions).asBool());
     }
 
     {
@@ -358,7 +348,7 @@ public:
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
-      MPF_TEST_ASSERTEQUAL(true, sm.evaluate(store, functions).asBool());
+      CHECK(sm.evaluate(store, functions).asBool());
     }
 
     {
@@ -367,7 +357,7 @@ public:
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
-      MPF_TEST_ASSERTEQUAL(false, sm.evaluate(store, functions).asBool());
+      CHECK_FALSE(sm.evaluate(store, functions).asBool());
     }
 
     {
@@ -376,7 +366,7 @@ public:
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
-      MPF_TEST_ASSERTEQUAL(true, sm.evaluate(store, functions).asBool());
+      CHECK(sm.evaluate(store, functions).asBool());
     }
 
     {
@@ -385,11 +375,11 @@ public:
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
-      MPF_TEST_ASSERTEQUAL(16171, sm.evaluate(store, functions).asInt());
+      CHECK(16171 == sm.evaluate(store, functions).asInt());
     }
   }
 
-  void inTest()
+  SECTION("in")
   {
     csvsqldb::FunctionRegistry functions;
     csvsqldb::SQLParser parser(functions);
@@ -401,7 +391,7 @@ public:
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
-      MPF_TEST_ASSERTEQUAL(true, sm.evaluate(store, functions).asBool());
+      CHECK(sm.evaluate(store, functions).asBool());
     }
 
     {
@@ -410,7 +400,7 @@ public:
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
-      MPF_TEST_ASSERTEQUAL(false, sm.evaluate(store, functions).asBool());
+      CHECK_FALSE(sm.evaluate(store, functions).asBool());
     }
 
     {
@@ -420,11 +410,11 @@ public:
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
-      MPF_TEST_ASSERTEQUAL(true, sm.evaluate(store, functions).asBool());
+      CHECK(sm.evaluate(store, functions).asBool());
     }
   }
 
-  void expressionWithVariableTest()
+  SECTION("expression with variable")
   {
     csvsqldb::FunctionRegistry functions;
     csvsqldb::SQLParser parser(functions);
@@ -442,7 +432,7 @@ public:
       // std::cout << std::endl;
       // sm.dump(std::cout);
 
-      MPF_TEST_ASSERTEQUAL(161, sm.evaluate(store, functions).asInt());
+      CHECK(161 == sm.evaluate(store, functions).asInt());
     }
 
     {
@@ -459,7 +449,7 @@ public:
         store.addVariable(0, aVar);
         store.addVariable(1, bVar);
 
-        MPF_TEST_ASSERTEQUAL(10100, sm.evaluate(store, functions).asInt());
+        CHECK(10100 == sm.evaluate(store, functions).asInt());
       }
       {
         csvsqldb::Variant aVar(5);
@@ -467,7 +457,7 @@ public:
         store.addVariable(0, aVar);
         store.addVariable(1, bVar);
 
-        MPF_TEST_ASSERTEQUAL(74, sm.evaluate(store, functions).asInt());
+        CHECK(74 == sm.evaluate(store, functions).asInt());
       }
       {
         csvsqldb::VariableStore mixedStore;
@@ -476,7 +466,7 @@ public:
         mixedStore.addVariable(0, aVar);
         mixedStore.addVariable(1, bVar);
 
-        MPF_TEST_ASSERT(csvsqldb::compare(74.0, sm.evaluate(mixedStore, functions).asDouble()));
+        CHECK(csvsqldb::compare(74.0, sm.evaluate(mixedStore, functions).asDouble()));
       }
     }
 
@@ -492,12 +482,12 @@ public:
         csvsqldb::Variant aVar(100);
         store.addVariable(0, aVar);
 
-        MPF_TEST_ASSERTEQUAL(100l, sm.evaluate(store, functions).asInt());
+        CHECK(100l == sm.evaluate(store, functions).asInt());
       }
     }
   }
 
-  void expressionWithFunctionTest()
+  SECTION("expression with function")
   {
     csvsqldb::FunctionRegistry functions;
     csvsqldb::SQLParser parser(functions);
@@ -515,7 +505,7 @@ public:
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
-      MPF_TEST_ASSERT(csvsqldb::compare(50, sm.evaluate(store, functions).asDouble()));
+      CHECK(csvsqldb::compare(50, sm.evaluate(store, functions).asDouble()));
     }
 
     {
@@ -524,11 +514,11 @@ public:
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
-      MPF_TEST_ASSERTEQUAL(csvsqldb::Date::now(), sm.evaluate(store, functions).asDate());
+      CHECK(csvsqldb::Date::now() == sm.evaluate(store, functions).asDate());
     }
   }
 
-  void testBuildInFunctions()
+  SECTION("build in functions")
   {
     csvsqldb::FunctionRegistry functions;
     initBuildInFunctions(functions);
@@ -541,7 +531,7 @@ public:
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
-      MPF_TEST_ASSERTEQUAL(csvsqldb::Date::now(), sm.evaluate(store, functions).asDate());
+      CHECK(csvsqldb::Date::now() == sm.evaluate(store, functions).asDate());
     }
 
     {
@@ -550,7 +540,7 @@ public:
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
-      MPF_TEST_ASSERTEQUAL(csvsqldb::Timestamp::now(), sm.evaluate(store, functions).asTimestamp());
+      CHECK(csvsqldb::Timestamp::now() == sm.evaluate(store, functions).asTimestamp());
     }
 
     {
@@ -559,7 +549,7 @@ public:
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
-      MPF_TEST_ASSERTEQUAL(csvsqldb::Timestamp::now().year(), sm.evaluate(store, functions).asInt());
+      CHECK(csvsqldb::Timestamp::now().year() == sm.evaluate(store, functions).asInt());
     }
 
     {
@@ -568,7 +558,7 @@ public:
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
-      MPF_TEST_ASSERTEQUAL(csvsqldb::Date::now().month(), sm.evaluate(store, functions).asInt());
+      CHECK(csvsqldb::Date::now().month() == sm.evaluate(store, functions).asInt());
     }
 
     {
@@ -577,7 +567,7 @@ public:
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
-      MPF_TEST_ASSERTEQUAL(csvsqldb::Date::now().day(), sm.evaluate(store, functions).asInt());
+      CHECK(csvsqldb::Date::now().day() == sm.evaluate(store, functions).asInt());
     }
 
     {
@@ -586,7 +576,7 @@ public:
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
-      MPF_TEST_ASSERTEQUAL(csvsqldb::Time::now().hour(), sm.evaluate(store, functions).asInt());
+      CHECK(csvsqldb::Time::now().hour() == sm.evaluate(store, functions).asInt());
     }
 
     {
@@ -597,7 +587,7 @@ public:
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
-      MPF_TEST_ASSERT(csvsqldb::compare(50, sm.evaluate(store, functions).asDouble()));
+      CHECK(csvsqldb::compare(50, sm.evaluate(store, functions).asDouble()));
     }
 
     {
@@ -608,7 +598,7 @@ public:
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
-      MPF_TEST_ASSERT(csvsqldb::compare(50, sm.evaluate(store, functions).asDouble()));
+      CHECK(csvsqldb::compare(50, sm.evaluate(store, functions).asDouble()));
     }
 
     {
@@ -619,7 +609,7 @@ public:
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
-      MPF_TEST_ASSERTEQUAL("HUTZLI", sm.evaluate(store, functions));
+      CHECK("HUTZLI" == sm.evaluate(store, functions).toString());
     }
 
     {
@@ -630,7 +620,7 @@ public:
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
-      MPF_TEST_ASSERTEQUAL("hutzli", sm.evaluate(store, functions));
+      CHECK("hutzli" == sm.evaluate(store, functions).toString());
     }
 
     {
@@ -639,11 +629,11 @@ public:
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
-      MPF_TEST_ASSERTEQUAL("23.09.1970", sm.evaluate(store, functions));
+      CHECK("23.09.1970" == sm.evaluate(store, functions).toString());
     }
   }
 
-  void excludedMiddleTest()
+  SECTION("exclude middle")
   {
     csvsqldb::FunctionRegistry functions;
     initBuildInFunctions(functions);
@@ -661,7 +651,7 @@ public:
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
-      MPF_TEST_ASSERTEQUAL(true, sm.evaluate(store, functions).asBool());
+      CHECK(sm.evaluate(store, functions).asBool());
     }
 
     {
@@ -671,7 +661,7 @@ public:
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
-      MPF_TEST_ASSERTEQUAL(true, sm.evaluate(store, functions).asBool());
+      CHECK(sm.evaluate(store, functions).asBool());
     }
 
     {
@@ -681,11 +671,11 @@ public:
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
-      MPF_TEST_ASSERT(sm.evaluate(store, functions).isNull());
+      CHECK(sm.evaluate(store, functions).isNull());
     }
   }
 
-  void nullFunctionsTest()
+  SECTION("null functions")
   {
     csvsqldb::FunctionRegistry functions;
     initBuildInFunctions(functions);
@@ -703,7 +693,7 @@ public:
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
-      MPF_TEST_ASSERTEQUAL(true, sm.evaluate(store, functions).asBool());
+      CHECK(sm.evaluate(store, functions).asBool());
     }
 
     {
@@ -713,7 +703,7 @@ public:
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
-      MPF_TEST_ASSERTEQUAL(false, sm.evaluate(store, functions).asBool());
+      CHECK_FALSE(sm.evaluate(store, functions).asBool());
     }
 
     {
@@ -726,7 +716,7 @@ public:
       //           std::cout << std::endl;
       //           sm.dump(std::cout);
 
-      MPF_TEST_ASSERTEQUAL(true, sm.evaluate(store, functions).asBool());
+      CHECK(sm.evaluate(store, functions).asBool());
     }
 
     {
@@ -738,11 +728,11 @@ public:
       exp->accept(visitor);
       //           std::cout << std::endl;
       //           sm.dump(std::cout);
-      MPF_TEST_ASSERTEQUAL(false, sm.evaluate(store, functions).asBool());
+      CHECK_FALSE(sm.evaluate(store, functions).asBool());
     }
   }
 
-  void nullOperationsTest()
+  SECTION("null operations")
   {
     csvsqldb::FunctionRegistry functions;
     initBuildInFunctions(functions);
@@ -755,7 +745,7 @@ public:
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
-      MPF_TEST_ASSERT(sm.evaluate(store, functions).isNull());
+      CHECK(sm.evaluate(store, functions).isNull());
     }
 
     {
@@ -764,7 +754,7 @@ public:
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
-      MPF_TEST_ASSERTEQUAL(false, sm.evaluate(store, functions).asBool());
+      CHECK_FALSE(sm.evaluate(store, functions).asBool());
     }
 
     {
@@ -773,7 +763,7 @@ public:
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
-      MPF_TEST_ASSERT(sm.evaluate(store, functions).isNull());
+      CHECK(sm.evaluate(store, functions).isNull());
     }
 
     {
@@ -782,7 +772,7 @@ public:
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
-      MPF_TEST_ASSERT(sm.evaluate(store, functions).isNull());
+      CHECK(sm.evaluate(store, functions).isNull());
     }
 
     {
@@ -791,7 +781,7 @@ public:
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
-      MPF_TEST_ASSERT(sm.evaluate(store, functions).isNull());
+      CHECK(sm.evaluate(store, functions).isNull());
     }
 
     {
@@ -800,7 +790,7 @@ public:
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
-      MPF_TEST_ASSERTEQUAL(true, sm.evaluate(store, functions).asBool());
+      CHECK(sm.evaluate(store, functions).asBool());
     }
 
     {
@@ -809,7 +799,7 @@ public:
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
-      MPF_TEST_ASSERT(sm.evaluate(store, functions).isNull());
+      CHECK(sm.evaluate(store, functions).isNull());
     }
 
     {
@@ -818,7 +808,7 @@ public:
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
-      MPF_TEST_ASSERT(sm.evaluate(store, functions).isNull());
+      CHECK(sm.evaluate(store, functions).isNull());
     }
 
     {
@@ -827,7 +817,7 @@ public:
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
-      MPF_TEST_ASSERT(sm.evaluate(store, functions).isNull());
+      CHECK(sm.evaluate(store, functions).isNull());
     }
 
     {
@@ -836,7 +826,7 @@ public:
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
-      MPF_TEST_ASSERT(sm.evaluate(store, functions).isNull());
+      CHECK(sm.evaluate(store, functions).isNull());
     }
 
     {
@@ -845,11 +835,11 @@ public:
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
-      MPF_TEST_ASSERT(sm.evaluate(store, functions).isNull());
+      CHECK(sm.evaluate(store, functions).isNull());
     }
   }
 
-  void nopTest()
+  SECTION("nop")
   {
     csvsqldb::FunctionRegistry functions;
     initBuildInFunctions(functions);
@@ -859,10 +849,10 @@ public:
     csvsqldb::StackMachine sm;
     sm.addInstruction(csvsqldb::StackMachine::Instruction(csvsqldb::StackMachine::NOP));
     sm.addInstruction(csvsqldb::StackMachine::Instruction(csvsqldb::StackMachine::PUSH, csvsqldb::Variant(csvsqldb::BOOLEAN)));
-    MPF_TEST_ASSERT(sm.evaluate(store, functions).isNull());
+    CHECK(sm.evaluate(store, functions).isNull());
   }
 
-  void likeTest()
+  SECTION("like")
   {
     csvsqldb::FunctionRegistry functions;
     initBuildInFunctions(functions);
@@ -875,7 +865,7 @@ public:
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
-      MPF_TEST_ASSERTEQUAL(true, sm.evaluate(store, functions).asBool());
+      CHECK(sm.evaluate(store, functions).asBool());
     }
 
     {
@@ -884,7 +874,7 @@ public:
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
-      MPF_TEST_ASSERTEQUAL(false, sm.evaluate(store, functions).asBool());
+      CHECK_FALSE(sm.evaluate(store, functions).asBool());
     }
 
     {
@@ -893,21 +883,7 @@ public:
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
-      MPF_TEST_ASSERTEQUAL(true, sm.evaluate(store, functions).asBool());
+      CHECK(sm.evaluate(store, functions).asBool());
     }
   }
-};
-
-MPF_REGISTER_TEST_START("StackmachineTestSuite", StackmachineTestCase);
-MPF_REGISTER_TEST(StackmachineTestCase::evaluateExpTest);
-MPF_REGISTER_TEST(StackmachineTestCase::expressionTest);
-MPF_REGISTER_TEST(StackmachineTestCase::inTest);
-MPF_REGISTER_TEST(StackmachineTestCase::expressionWithVariableTest);
-MPF_REGISTER_TEST(StackmachineTestCase::expressionWithFunctionTest);
-MPF_REGISTER_TEST(StackmachineTestCase::testBuildInFunctions);
-MPF_REGISTER_TEST(StackmachineTestCase::excludedMiddleTest);
-MPF_REGISTER_TEST(StackmachineTestCase::nullFunctionsTest);
-MPF_REGISTER_TEST(StackmachineTestCase::nullOperationsTest);
-MPF_REGISTER_TEST(StackmachineTestCase::nopTest);
-MPF_REGISTER_TEST(StackmachineTestCase::likeTest);
-MPF_REGISTER_TEST_END();
+}

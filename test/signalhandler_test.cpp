@@ -33,8 +33,9 @@
 
 #include "libcsvsqldb/base/signalhandler.h"
 
-#include "test.h"
 #include <condition_variable>
+
+#include <catch2/catch.hpp>
 
 #include <mutex>
 #include <signal.h>
@@ -42,41 +43,36 @@
 #include <unistd.h>
 
 
-static std::mutex _test_mutex;
-static std::condition_variable _test_condition;
-
-class HandlerTester : public csvsqldb::SignalEventHandler
+namespace
 {
-public:
-  HandlerTester()
-  : _signalSet(false)
-  {
-  }
+  static std::mutex _test_mutex;
+  static std::condition_variable _test_condition;
 
-  virtual int onSignal(int signum)
+  class HandlerTester : public csvsqldb::SignalEventHandler
   {
-    if (signum == SIGINT) {
-      _signalSet = true;
+  public:
+    HandlerTester()
+    : _signalSet(false)
+    {
     }
-    _test_condition.notify_one();
-    return 0;
-  }
 
-  bool _signalSet;
-};
+    virtual int onSignal(int signum)
+    {
+      if (signum == SIGINT) {
+        _signalSet = true;
+      }
+      _test_condition.notify_one();
+      return 0;
+    }
 
-class SignalHandlerTestCase
+    bool _signalSet;
+  };
+}
+
+
+TEST_CASE("Signalhandler Test", "[utils]")
 {
-public:
-  void setUp()
-  {
-  }
-
-  void tearDown()
-  {
-  }
-
-  void testSignalHandler()
+  SECTION("signal handler")
   {
     csvsqldb::SignalHandler sighandler;
     HandlerTester tester;
@@ -87,10 +83,6 @@ public:
     std::unique_lock<std::mutex> condition_guard(_test_mutex);
     _test_condition.wait_for(condition_guard, std::chrono::milliseconds(150), [&] { return tester._signalSet == true; });
 
-    MPF_TEST_ASSERTEQUAL(true, tester._signalSet);
+    CHECK(tester._signalSet);
   }
-};
-
-MPF_REGISTER_TEST_START("ApplicationTestSuite", SignalHandlerTestCase);
-MPF_REGISTER_TEST(SignalHandlerTestCase::testSignalHandler);
-MPF_REGISTER_TEST_END();
+}

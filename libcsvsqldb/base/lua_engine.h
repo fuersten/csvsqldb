@@ -211,6 +211,242 @@ namespace csvsqldb
       return static_cast<double>(lua_tonumber(L, index));
     }
 
+
+    /**
+     * Base class for C++ function objects that can be registered and called from lua.
+     */
+    class FunctionObject
+    {
+    public:
+      virtual ~FunctionObject()
+      {
+      }
+
+    protected:
+      FunctionObject()
+      {
+      }
+    };
+
+    /**
+     * Function object for C++ function without parameters.
+     */
+    template<typename F, typename R>
+    class FunctionObjectImpl0 : public FunctionObject
+    {
+    public:
+      FunctionObjectImpl0(F f)
+      : _f(f)
+      {
+      }
+
+      /**
+       * Method called for functions returning void. Calls the actual C++ function.
+       * @param L The lua state object
+       */
+      template<typename RET>
+      typename std::enable_if<std::is_void<RET>::value, RET>::type call(lua_State* L) const
+      {
+        _f();
+      }
+
+      /**
+       * Method called for functions returning non-void values. Calls the actual C++ function.
+       * @param L The lua state object
+       */
+      template<typename RET>
+      typename std::enable_if<!std::is_void<RET>::value, RET>::type call(lua_State* L) const
+      {
+        RET r = _f();
+        bindType<RET>(L, r);
+        return r;
+      }
+
+      /**
+       * Static function entry point that gets actually registered with lua.
+       * @param L The lua state object
+       */
+      static int entry(lua_State* L)
+      {
+        typedef FunctionObjectImpl0<F, R> F0;
+        F0 const* impl = (F0 const*)lua_touserdata(L, lua_upvalueindex(1));
+        impl->call<R>(L);
+
+        return type2return<R>();
+      }
+
+      F _f;
+    };
+
+    /**
+     * Function object for C++ function with one parameter.
+     */
+    template<typename F, typename R, typename T0>
+    class FunctionObjectImpl1 : public FunctionObject
+    {
+    public:
+      FunctionObjectImpl1(F f)
+      : _f(f)
+      {
+      }
+
+      /**
+       * Method called for functions returning void. Calls the actual C++ function.
+       * @param L The lua state object
+       * @param t0 First function parameter
+       */
+      template<typename RET>
+      typename std::enable_if<std::is_void<RET>::value, RET>::type call(lua_State* L, T0 t0) const
+      {
+        _f(t0);
+      }
+
+      /**
+       * Method called for functions returning non-void values. Calls the actual C++ function.
+       * @param L The lua state object
+       * @param t0 First function parameter
+       */
+      template<typename RET>
+      typename std::enable_if<!std::is_void<RET>::value, RET>::type call(lua_State* L, T0 t0) const
+      {
+        RET r = _f(t0);
+        bindType<RET>(L, r);
+        return r;
+      }
+
+      /**
+       * Static function entry point that gets actually registered with lua.
+       * @param L The lua state object
+       */
+      static int entry(lua_State* L)
+      {
+        typedef FunctionObjectImpl1<F, R, T0> F1;
+        F1 const* impl = (F1 const*)lua_touserdata(L, lua_upvalueindex(1));
+        T0 t0 = unwrapType<T0>(L, -1);
+        impl->call<R>(L, t0);
+
+        return type2return<R>();
+      }
+
+      F _f;
+    };
+
+    /**
+     * Function object for C++ function with two parameters.
+     */
+    template<typename F, typename R, typename T0, typename T1>
+    class FunctionObjectImpl2 : public FunctionObject
+    {
+    public:
+      FunctionObjectImpl2(F f)
+      : _f(f)
+      {
+      }
+
+      /**
+       * Method called for functions returning void. Calls the actual C++ function.
+       * @param L The lua state object
+       * @param t0 First function parameter
+       * @param t1 Second function parameter
+       */
+      template<typename RET>
+      typename std::enable_if<std::is_void<RET>::value, RET>::type call(lua_State* L, T0 t0, T1 t1) const
+      {
+        _f(t0, t1);
+      }
+
+      /**
+       * Method called for functions returning non-void values. Calls the actual C++ function.
+       * @param L The lua state object
+       * @param t0 First function parameter
+       * @param t1 Second function parameter
+       */
+      template<typename RET>
+      typename std::enable_if<!std::is_void<RET>::value, RET>::type call(lua_State* L, T0 t0, T1 t1) const
+      {
+        RET r = _f(t0, t1);
+        bindType<RET>(L, r);
+        return r;
+      }
+
+      /**
+       * Static function entry point that gets actually registered with lua.
+       * @param L The lua state object
+       */
+      static int entry(lua_State* L)
+      {
+        typedef FunctionObjectImpl2<F, R, T0, T1> F2;
+        F2 const* impl = (F2 const*)lua_touserdata(L, lua_upvalueindex(1));
+        T0 t0 = unwrapType<T0>(L, -1);
+        T1 t1 = unwrapType<T1>(L, -2);
+        impl->call<R>(L, t0, t1);
+
+        return type2return<R>();
+      }
+
+      F _f;
+    };
+
+    /**
+     * Function object for C++ function with three parameters.
+     */
+    template<typename F, typename R, typename T0, typename T1, typename T2>
+    class FunctionObjectImpl3 : public FunctionObject
+    {
+    public:
+      FunctionObjectImpl3(F f)
+      : _f(f)
+      {
+      }
+
+      /**
+       * Method called for functions returning void. Calls the actual C++ function.
+       * @param L The lua state object
+       * @param t0 First function parameter
+       * @param t1 Second function parameter
+       * @param t2 Third function parameter
+       */
+      template<typename RET>
+      typename std::enable_if<std::is_void<RET>::value, RET>::type call(lua_State* L, T0 t0, T1 t1, T2 t2) const
+      {
+        _f(t0, t1, t2);
+      }
+
+      /**
+       * Method called for functions returning non-void values. Calls the actual C++ function.
+       * @param L The lua state object
+       * @param t0 First function parameter
+       * @param t1 Second function parameter
+       * @param t2 Third function parameter
+       */
+      template<typename RET>
+      typename std::enable_if<!std::is_void<RET>::value, RET>::type call(lua_State* L, T0 t0, T1 t1, T2 t2) const
+      {
+        RET r = _f(t0, t1, t2);
+        bindType<RET>(L, r);
+        return r;
+      }
+
+      /**
+       * Static function entry point that gets actually registered with lua.
+       * @param L The lua state object
+       */
+      static int entry(lua_State* L)
+      {
+        typedef FunctionObjectImpl3<F, R, T0, T1, T2> F3;
+        F3 const* impl = (F3 const*)lua_touserdata(L, lua_upvalueindex(1));
+        T0 t0 = unwrapType<T0>(L, -1);
+        T1 t1 = unwrapType<T1>(L, -2);
+        T2 t2 = unwrapType<T2>(L, -3);
+        impl->call<R>(L, t0, t1, t2);
+
+        return type2return<R>();
+      }
+
+      F _f;
+    };
+
+
     /**
      * Class to execute lua scripts. It is also possible to call functions from lua scripts and to register C++ functions to
      * be called
@@ -545,6 +781,109 @@ namespace csvsqldb
         return unwrapType<R>(_L);
       }
 
+
+      /**
+       * Helper function to register functions without parameters.
+       * @param L The lua state object
+       * @param name The name of the function in the lua context
+       * @param f The actual C++ function
+       */
+      template<typename F>
+      void registerFunctionN(lua_State* L, const std::string& name, F f, int2type<0>)
+      {
+        typedef decltype(f) function_type;
+
+        using R = typename function_traits<function_type>::return_type;
+        typedef FunctionObjectImpl0<F, R> F0;
+
+        FunctionObject* func = new F0(f);
+        _functions[name] = func;
+        lua_pushlightuserdata(L, func);
+        lua_pushcclosure(L, F0::entry, 1);
+        lua_setglobal(L, name.c_str());
+      }
+
+      /**
+       * Helper function to register functions with one parameter.
+       * @param L The lua state object
+       * @param name The name of the function in the lua context
+       * @param f The actual C++ function
+       */
+      template<typename F>
+      void registerFunctionN(lua_State* L, const std::string& name, F f, int2type<1>)
+      {
+        typedef decltype(f) function_type;
+
+        using R = typename function_traits<function_type>::return_type;
+        using T1 = typename function_traits<function_type>::template argument<0>::type;
+        typedef FunctionObjectImpl1<F, R, T1> F1;
+
+        FunctionObject* func = new F1(f);
+        _functions[name] = func;
+        lua_pushlightuserdata(L, func);
+        lua_pushcclosure(L, F1::entry, 1);
+        lua_setglobal(L, name.c_str());
+      }
+
+      /**
+       * Helper function to register functions with two parameters.
+       * @param L The lua state object
+       * @param name The name of the function in the lua context
+       * @param f The actual C++ function
+       */
+      template<typename F>
+      void registerFunctionN(lua_State* L, const std::string& name, F f, int2type<2>)
+      {
+        typedef decltype(f) function_type;
+
+        using R = typename function_traits<function_type>::return_type;
+        using T1 = typename function_traits<function_type>::template argument<0>::type;
+        using T2 = typename function_traits<function_type>::template argument<1>::type;
+        typedef FunctionObjectImpl2<F, R, T1, T2> F2;
+
+        FunctionObject* func = new F2(f);
+        _functions[name] = func;
+        lua_pushlightuserdata(L, func);
+        lua_pushcclosure(L, F2::entry, 1);
+        lua_setglobal(L, name.c_str());
+      }
+
+      /**
+       * Helper function to register functions with three parameters.
+       * @param L The lua state object
+       * @param name The name of the function in the lua context
+       * @param f The actual C++ function
+       */
+      template<typename F>
+      void registerFunctionN(lua_State* L, const std::string& name, F f, int2type<3>)
+      {
+        typedef decltype(f) function_type;
+
+        using R = typename function_traits<function_type>::return_type;
+        using T1 = typename function_traits<function_type>::template argument<0>::type;
+        using T2 = typename function_traits<function_type>::template argument<1>::type;
+        using T3 = typename function_traits<function_type>::template argument<2>::type;
+        typedef FunctionObjectImpl3<F, R, T1, T2, T3> F3;
+
+        FunctionObject* func = new F3(f);
+        _functions[name] = func;
+        lua_pushlightuserdata(L, func);
+        lua_pushcclosure(L, F3::entry, 1);
+        lua_setglobal(L, name.c_str());
+      }
+
+      /**
+       * Function to register C++ functions that shall be called from lua scripts.
+       * @param L The lua state object
+       * @param name The name of the function in the lua context
+       * @param f The actual C++ function
+       */
+      template<typename F>
+      void registerFunction(lua_State* L, const std::string& name, F f)
+      {
+        registerFunctionN(L, name, f, int2type<function_traits<decltype(f)>::arity>());
+      }
+
       /**
        * Dumps the stack auf a lua handle.
        * @param _L The handle to dump the stack for
@@ -602,346 +941,10 @@ namespace csvsqldb
 
     private:
       mutable lua_state _L;
+
+      typedef std::map<std::string, FunctionObject*> FunctionMap;
+      FunctionMap _functions;
     };
-
-    /**
-     * Base class for C++ function objects that can be registered and called from lua.
-     */
-    class FunctionObject
-    {
-    public:
-      virtual ~FunctionObject()
-      {
-      }
-
-    protected:
-      FunctionObject()
-      {
-      }
-    };
-
-    /**
-     * Function object for C++ function without parameters.
-     */
-    template<typename F, typename R>
-    class FunctionObjectImpl0 : public FunctionObject
-    {
-    public:
-      FunctionObjectImpl0(F f)
-      : _f(f)
-      {
-      }
-
-      /**
-       * Method called for functions returning void. Calls the actual C++ function.
-       * @param L The lua state object
-       */
-      template<typename RET>
-      typename std::enable_if<std::is_void<RET>::value, RET>::type call(lua_State* L) const
-      {
-        _f();
-      }
-
-      /**
-       * Method called for functions returning non-void values. Calls the actual C++ function.
-       * @param L The lua state object
-       */
-      template<typename RET>
-      typename std::enable_if<!std::is_void<RET>::value, RET>::type call(lua_State* L) const
-      {
-        RET r = _f();
-        bindType<RET>(L, r);
-        return r;
-      }
-
-      /**
-       * Static function entry point that gets actually registered with lua.
-       * @param L The lua state object
-       */
-      static int entry(lua_State* L)
-      {
-        typedef FunctionObjectImpl0<F, R> F0;
-        F0 const* impl = (F0 const*)lua_touserdata(L, lua_upvalueindex(1));
-        impl->call<R>(L);
-
-        return type2return<R>();
-      }
-
-      F _f;
-    };
-
-    /**
-     * Function object for C++ function with one parameter.
-     */
-    template<typename F, typename R, typename T0>
-    class FunctionObjectImpl1 : public FunctionObject
-    {
-    public:
-      FunctionObjectImpl1(F f)
-      : _f(f)
-      {
-      }
-
-      /**
-       * Method called for functions returning void. Calls the actual C++ function.
-       * @param L The lua state object
-       * @param t0 First function parameter
-       */
-      template<typename RET>
-      typename std::enable_if<std::is_void<RET>::value, RET>::type call(lua_State* L, T0 t0) const
-      {
-        _f(t0);
-      }
-
-      /**
-       * Method called for functions returning non-void values. Calls the actual C++ function.
-       * @param L The lua state object
-       * @param t0 First function parameter
-       */
-      template<typename RET>
-      typename std::enable_if<!std::is_void<RET>::value, RET>::type call(lua_State* L, T0 t0) const
-      {
-        RET r = _f(t0);
-        bindType<RET>(L, r);
-        return r;
-      }
-
-      /**
-       * Static function entry point that gets actually registered with lua.
-       * @param L The lua state object
-       */
-      static int entry(lua_State* L)
-      {
-        typedef FunctionObjectImpl1<F, R, T0> F1;
-        F1 const* impl = (F1 const*)lua_touserdata(L, lua_upvalueindex(1));
-        T0 t0 = unwrapType<T0>(L, -1);
-        impl->call<R>(L, t0);
-
-        return type2return<R>();
-      }
-
-      F _f;
-    };
-
-    /**
-     * Function object for C++ function with two parameters.
-     */
-    template<typename F, typename R, typename T0, typename T1>
-    class FunctionObjectImpl2 : public FunctionObject
-    {
-    public:
-      FunctionObjectImpl2(F f)
-      : _f(f)
-      {
-      }
-
-      /**
-       * Method called for functions returning void. Calls the actual C++ function.
-       * @param L The lua state object
-       * @param t0 First function parameter
-       * @param t1 Second function parameter
-       */
-      template<typename RET>
-      typename std::enable_if<std::is_void<RET>::value, RET>::type call(lua_State* L, T0 t0, T1 t1) const
-      {
-        _f(t0, t1);
-      }
-
-      /**
-       * Method called for functions returning non-void values. Calls the actual C++ function.
-       * @param L The lua state object
-       * @param t0 First function parameter
-       * @param t1 Second function parameter
-       */
-      template<typename RET>
-      typename std::enable_if<!std::is_void<RET>::value, RET>::type call(lua_State* L, T0 t0, T1 t1) const
-      {
-        RET r = _f(t0, t1);
-        bindType<RET>(L, r);
-        return r;
-      }
-
-      /**
-       * Static function entry point that gets actually registered with lua.
-       * @param L The lua state object
-       */
-      static int entry(lua_State* L)
-      {
-        typedef FunctionObjectImpl2<F, R, T0, T1> F2;
-        F2 const* impl = (F2 const*)lua_touserdata(L, lua_upvalueindex(1));
-        T0 t0 = unwrapType<T0>(L, -1);
-        T1 t1 = unwrapType<T1>(L, -2);
-        impl->call<R>(L, t0, t1);
-
-        return type2return<R>();
-      }
-
-      F _f;
-    };
-
-    /**
-     * Function object for C++ function with three parameters.
-     */
-    template<typename F, typename R, typename T0, typename T1, typename T2>
-    class FunctionObjectImpl3 : public FunctionObject
-    {
-    public:
-      FunctionObjectImpl3(F f)
-      : _f(f)
-      {
-      }
-
-      /**
-       * Method called for functions returning void. Calls the actual C++ function.
-       * @param L The lua state object
-       * @param t0 First function parameter
-       * @param t1 Second function parameter
-       * @param t2 Third function parameter
-       */
-      template<typename RET>
-      typename std::enable_if<std::is_void<RET>::value, RET>::type call(lua_State* L, T0 t0, T1 t1, T2 t2) const
-      {
-        _f(t0, t1, t2);
-      }
-
-      /**
-       * Method called for functions returning non-void values. Calls the actual C++ function.
-       * @param L The lua state object
-       * @param t0 First function parameter
-       * @param t1 Second function parameter
-       * @param t2 Third function parameter
-       */
-      template<typename RET>
-      typename std::enable_if<!std::is_void<RET>::value, RET>::type call(lua_State* L, T0 t0, T1 t1, T2 t2) const
-      {
-        RET r = _f(t0, t1, t2);
-        bindType<RET>(L, r);
-        return r;
-      }
-
-      /**
-       * Static function entry point that gets actually registered with lua.
-       * @param L The lua state object
-       */
-      static int entry(lua_State* L)
-      {
-        typedef FunctionObjectImpl3<F, R, T0, T1, T2> F3;
-        F3 const* impl = (F3 const*)lua_touserdata(L, lua_upvalueindex(1));
-        T0 t0 = unwrapType<T0>(L, -1);
-        T1 t1 = unwrapType<T1>(L, -2);
-        T2 t2 = unwrapType<T2>(L, -3);
-        impl->call<R>(L, t0, t1, t2);
-
-        return type2return<R>();
-      }
-
-      F _f;
-    };
-
-    typedef std::map<std::string, FunctionObject*> FunctionMap;
-    static FunctionMap sFunctions;
-
-    /**
-     * Helper function to register functions without parameters.
-     * @param L The lua state object
-     * @param name The name of the function in the lua context
-     * @param f The actual C++ function
-     */
-    template<typename F>
-    void registerFunctionN(lua_State* L, const std::string& name, F f, int2type<0>)
-    {
-      typedef decltype(f) function_type;
-
-      using R = typename function_traits<function_type>::return_type;
-      typedef FunctionObjectImpl0<F, R> F0;
-
-      FunctionObject* func = new F0(f);
-      sFunctions[name] = func;
-      lua_pushlightuserdata(L, func);
-      lua_pushcclosure(L, F0::entry, 1);
-      lua_setglobal(L, name.c_str());
-    }
-
-    /**
-     * Helper function to register functions with one parameter.
-     * @param L The lua state object
-     * @param name The name of the function in the lua context
-     * @param f The actual C++ function
-     */
-    template<typename F>
-    void registerFunctionN(lua_State* L, const std::string& name, F f, int2type<1>)
-    {
-      typedef decltype(f) function_type;
-
-      using R = typename function_traits<function_type>::return_type;
-      using T1 = typename function_traits<function_type>::template argument<0>::type;
-      typedef FunctionObjectImpl1<F, R, T1> F1;
-
-      FunctionObject* func = new F1(f);
-      sFunctions[name] = func;
-      lua_pushlightuserdata(L, func);
-      lua_pushcclosure(L, F1::entry, 1);
-      lua_setglobal(L, name.c_str());
-    }
-
-    /**
-     * Helper function to register functions with two parameters.
-     * @param L The lua state object
-     * @param name The name of the function in the lua context
-     * @param f The actual C++ function
-     */
-    template<typename F>
-    void registerFunctionN(lua_State* L, const std::string& name, F f, int2type<2>)
-    {
-      typedef decltype(f) function_type;
-
-      using R = typename function_traits<function_type>::return_type;
-      using T1 = typename function_traits<function_type>::template argument<0>::type;
-      using T2 = typename function_traits<function_type>::template argument<1>::type;
-      typedef FunctionObjectImpl2<F, R, T1, T2> F2;
-
-      FunctionObject* func = new F2(f);
-      sFunctions[name] = func;
-      lua_pushlightuserdata(L, func);
-      lua_pushcclosure(L, F2::entry, 1);
-      lua_setglobal(L, name.c_str());
-    }
-
-    /**
-     * Helper function to register functions with three parameters.
-     * @param L The lua state object
-     * @param name The name of the function in the lua context
-     * @param f The actual C++ function
-     */
-    template<typename F>
-    void registerFunctionN(lua_State* L, const std::string& name, F f, int2type<3>)
-    {
-      typedef decltype(f) function_type;
-
-      using R = typename function_traits<function_type>::return_type;
-      using T1 = typename function_traits<function_type>::template argument<0>::type;
-      using T2 = typename function_traits<function_type>::template argument<1>::type;
-      using T3 = typename function_traits<function_type>::template argument<2>::type;
-      typedef FunctionObjectImpl3<F, R, T1, T2, T3> F3;
-
-      FunctionObject* func = new F3(f);
-      sFunctions[name] = func;
-      lua_pushlightuserdata(L, func);
-      lua_pushcclosure(L, F3::entry, 1);
-      lua_setglobal(L, name.c_str());
-    }
-
-    /**
-     * Function to register C++ functions that shall be called from lua scripts.
-     * @param L The lua state object
-     * @param name The name of the function in the lua context
-     * @param f The actual C++ function
-     */
-    template<typename F>
-    void registerFunction(lua_State* L, const std::string& name, F f)
-    {
-      registerFunctionN(L, name, f, int2type<function_traits<decltype(f)>::arity>());
-    }
   }
 }
 

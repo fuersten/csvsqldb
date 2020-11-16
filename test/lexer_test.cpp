@@ -34,105 +34,100 @@
 #include "libcsvsqldb/base/lexer.h"
 #include "libcsvsqldb/base/string_helper.h"
 
-#include "test.h"
 #include "test/test_util.h"
 #include "test_helper.h"
 
+#include <catch2/catch.hpp>
 
-class TestSQLLexer
+
+namespace
 {
-public:
-  enum eToken {
-    IDENTIFIER,
-    FLOAT,
-    INTEGER,
-    EQUAL,
-    COMMA,
-    LEFT_PAREN,
-    RIGHT_PAREN,
-    STAR,
-    STRING,
-    COMMENT,
-    SELECT,
-    FROM,
-    WHERE,
-    BY,
-    GROUP,
-    LIMIT,
-    SUM,
-    COUNT,
-    LIKE,
-    AND
-  };
-
-  TestSQLLexer(const std::string& text)
-  : _lexer(std::bind(&TestSQLLexer::inspectToken, this, std::placeholders::_1))
+  class TestSQLLexer
   {
-    _lexer.addDefinition("identifier", R"([_a-zA-Z][_a-zA-Z0-9]*)", IDENTIFIER);
-    _lexer.addDefinition("float", R"([+-]?(?:0|[1-9]\d*)\.\d+)", FLOAT);
-    _lexer.addDefinition("integer", R"(0|[+-]?[1-9]\d*)", INTEGER);
-    _lexer.addDefinition("equal", R"(=)", EQUAL);
-    _lexer.addDefinition("comma", R"(,)", COMMA);
-    _lexer.addDefinition("left_paren", R"(\()", LEFT_PAREN);
-    _lexer.addDefinition("right_paren", R"(\))", RIGHT_PAREN);
-    _lexer.addDefinition("star", R"(\*)", STAR);
-    _lexer.addDefinition("string", R"('([^']*)')", STRING);
-    _lexer.addDefinition("comment", R"(//([^\r\n]*))", COMMENT);
-    _lexer.addDefinition("comment", R"(/\*((.|[\r\n])*?)\*/)", COMMENT);
+  public:
+    enum eToken {
+      IDENTIFIER,
+      FLOAT,
+      INTEGER,
+      EQUAL,
+      COMMA,
+      LEFT_PAREN,
+      RIGHT_PAREN,
+      STAR,
+      STRING,
+      COMMENT,
+      SELECT,
+      FROM,
+      WHERE,
+      BY,
+      GROUP,
+      LIMIT,
+      SUM,
+      COUNT,
+      LIKE,
+      AND
+    };
 
-    _keywords["SELECT"] = eToken(SELECT);
-    _keywords["FROM"] = eToken(FROM);
-    _keywords["WHERE"] = eToken(WHERE);
-    _keywords["SUM"] = eToken(SUM);
-    _keywords["COUNT"] = eToken(COUNT);
-    _keywords["LIKE"] = eToken(LIKE);
-    _keywords["AND"] = eToken(AND);
-    _keywords["GROUP"] = eToken(GROUP);
-    _keywords["BY"] = eToken(BY);
+    TestSQLLexer(const std::string& text)
+    : _lexer(std::bind(&TestSQLLexer::inspectToken, this, std::placeholders::_1))
+    {
+      _lexer.addDefinition("identifier", R"([_a-zA-Z][_a-zA-Z0-9]*)", IDENTIFIER);
+      _lexer.addDefinition("float", R"([+-]?(?:0|[1-9]\d*)\.\d+)", FLOAT);
+      _lexer.addDefinition("integer", R"(0|[+-]?[1-9]\d*)", INTEGER);
+      _lexer.addDefinition("equal", R"(=)", EQUAL);
+      _lexer.addDefinition("comma", R"(,)", COMMA);
+      _lexer.addDefinition("left_paren", R"(\()", LEFT_PAREN);
+      _lexer.addDefinition("right_paren", R"(\))", RIGHT_PAREN);
+      _lexer.addDefinition("star", R"(\*)", STAR);
+      _lexer.addDefinition("string", R"('([^']*)')", STRING);
+      _lexer.addDefinition("comment", R"(//([^\r\n]*))", COMMENT);
+      _lexer.addDefinition("comment", R"(/\*((.|[\r\n])*?)\*/)", COMMENT);
 
-    _lexer.setInput(text);
-  }
+      _keywords["SELECT"] = eToken(SELECT);
+      _keywords["FROM"] = eToken(FROM);
+      _keywords["WHERE"] = eToken(WHERE);
+      _keywords["SUM"] = eToken(SUM);
+      _keywords["COUNT"] = eToken(COUNT);
+      _keywords["LIKE"] = eToken(LIKE);
+      _keywords["AND"] = eToken(AND);
+      _keywords["GROUP"] = eToken(GROUP);
+      _keywords["BY"] = eToken(BY);
 
-  csvsqldb::lexer::Token next()
-  {
-    return _lexer.next();
-  }
+      _lexer.setInput(text);
+    }
 
-  uint32_t lineCount() const
-  {
-    return _lexer.lineCount();
-  }
+    csvsqldb::lexer::Token next()
+    {
+      return _lexer.next();
+    }
 
-private:
-  typedef std::map<std::string, eToken> Keywords;
+    uint32_t lineCount() const
+    {
+      return _lexer.lineCount();
+    }
 
-  void inspectToken(csvsqldb::lexer::Token& token)
-  {
-    if (token._token == IDENTIFIER) {
-      Keywords::const_iterator iter = _keywords.find(csvsqldb::toupper_copy(token._value));
-      if (iter != _keywords.end()) {
-        token._token = iter->second;
+  private:
+    typedef std::map<std::string, eToken> Keywords;
+
+    void inspectToken(csvsqldb::lexer::Token& token)
+    {
+      if (token._token == IDENTIFIER) {
+        Keywords::const_iterator iter = _keywords.find(csvsqldb::toupper_copy(token._value));
+        if (iter != _keywords.end()) {
+          token._token = iter->second;
+        }
       }
     }
-  }
 
-  csvsqldb::lexer::Lexer _lexer;
-  Keywords _keywords;
-};
+    csvsqldb::lexer::Lexer _lexer;
+    Keywords _keywords;
+  };
+}
 
 
-class LexerTestCase
+TEST_CASE("Lexer Test", "[lexer]")
 {
-public:
-  void setUp()
-  {
-  }
-
-  void tearDown()
-  {
-  }
-
-  void sqlLexerTest()
+  SECTION("sql lexer")
   {
     std::string text = R"(/** and now a c style comment
 with nested new lines
@@ -150,33 +145,28 @@ group by a,c_d)";
       ++n;
       token = lexer.next();
     }
-    MPF_TEST_ASSERTEQUAL(6u, lexer.lineCount());
-    MPF_TEST_ASSERTEQUAL(TestSQLLexer::COMMENT, tokens[0]._token);
-    MPF_TEST_ASSERTEQUAL(TestSQLLexer::SELECT, tokens[2]._token);
-    MPF_TEST_ASSERTEQUAL(tokens[2]._value, "SELECT");
-    MPF_TEST_ASSERTEQUAL(TestSQLLexer::SUM, tokens[5]._token);
-    MPF_TEST_ASSERTEQUAL(tokens[5]._value, "sum");
-    MPF_TEST_ASSERTEQUAL(TestSQLLexer::LEFT_PAREN, tokens[6]._token);
-    MPF_TEST_ASSERTEQUAL(TestSQLLexer::STAR, tokens[12]._token);
-    MPF_TEST_ASSERTEQUAL(TestSQLLexer::FROM, tokens[16]._token);
-    MPF_TEST_ASSERTEQUAL(tokens[16]._value, "from");
-    MPF_TEST_ASSERTEQUAL(TestSQLLexer::STRING, tokens[21]._token);
-    MPF_TEST_ASSERTEQUAL(tokens[21]._value, "test");
-    MPF_TEST_ASSERTEQUAL(TestSQLLexer::FLOAT, tokens[25]._token);
-    MPF_TEST_ASSERTEQUAL(tokens[25]._value, "-70.6");
+    CHECK(6u == lexer.lineCount());
+    CHECK(TestSQLLexer::COMMENT == tokens[0]._token);
+    CHECK(TestSQLLexer::SELECT == tokens[2]._token);
+    CHECK(tokens[2]._value == "SELECT");
+    CHECK(TestSQLLexer::SUM == tokens[5]._token);
+    CHECK(tokens[5]._value == "sum");
+    CHECK(TestSQLLexer::LEFT_PAREN == tokens[6]._token);
+    CHECK(TestSQLLexer::STAR == tokens[12]._token);
+    CHECK(TestSQLLexer::FROM == tokens[16]._token);
+    CHECK(tokens[16]._value == "from");
+    CHECK(TestSQLLexer::STRING == tokens[21]._token);
+    CHECK(tokens[21]._value == "test");
+    CHECK(TestSQLLexer::FLOAT == tokens[25]._token);
+    CHECK(tokens[25]._value == "-70.6");
   }
 
-  void exceptionTest()
+  SECTION("exception")
   {
     std::string text("select 1.1.1 from test");
     TestSQLLexer lexer(text);
     csvsqldb::lexer::Token token = lexer.next();
     token = lexer.next();
-    MPF_TEST_EXPECTS(lexer.next(), csvsqldb::LexicalAnalysisException);
+    CHECK_THROWS_AS(lexer.next(), csvsqldb::LexicalAnalysisException);
   }
-};
-
-MPF_REGISTER_TEST_START("LexerTestSuite", LexerTestCase);
-MPF_REGISTER_TEST(LexerTestCase::sqlLexerTest);
-MPF_REGISTER_TEST(LexerTestCase::exceptionTest);
-MPF_REGISTER_TEST_END();
+}

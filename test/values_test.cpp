@@ -34,83 +34,70 @@
 #include "libcsvsqldb/base/float_helper.h"
 #include "libcsvsqldb/values.h"
 
-#include "test.h"
+#include <catch2/catch.hpp>
 
 #include <array>
 
 
-class ValuesTestCase
+TEST_CASE("Values Test", "[values]")
 {
-public:
-  ValuesTestCase()
-  {
-  }
-
-  void setUp()
-  {
-  }
-
-  void tearDown()
-  {
-  }
-
-  void valueCreatorTest()
+  SECTION("value creator")
   {
     csvsqldb::Value* v1 = csvsqldb::ValueCreator<std::string>::createValue(std::string("Lars"));
     csvsqldb::Value* v2 = csvsqldb::ValueCreator<std::string>::createValue(std::string("Fürstenberg"));
 
-    MPF_TEST_ASSERTEQUAL("Lars", v1->toString());
-    MPF_TEST_ASSERTEQUAL("Fürstenberg", v2->toString());
-    MPF_TEST_ASSERTEQUAL(csvsqldb::STRING, v1->getType());
+    CHECK("Lars" == v1->toString());
+    CHECK("Fürstenberg" == v2->toString());
+    CHECK(csvsqldb::STRING == v1->getType());
 
     delete v1;
     delete v2;
 
     v1 = csvsqldb::ValueCreator<int64_t>::createValue(4711);
-    MPF_TEST_ASSERTEQUAL("4711", v1->toString());
-    MPF_TEST_ASSERTEQUAL(csvsqldb::INT, v1->getType());
+    CHECK("4711" == v1->toString());
+    CHECK(csvsqldb::INT == v1->getType());
     csvsqldb::ValInt* pi = static_cast<csvsqldb::ValInt*>(v1);
-    MPF_TEST_ASSERTEQUAL(4711, pi->asInt());
+    CHECK(4711 == pi->asInt());
     delete v1;
 
     v1 = csvsqldb::ValueCreator<double>::createValue(47.11);
-    MPF_TEST_ASSERTEQUAL(csvsqldb::REAL, v1->getType());
-    MPF_TEST_ASSERTEQUAL("47.110000", v1->toString());
+    CHECK(csvsqldb::REAL == v1->getType());
+    CHECK("47.110000" == v1->toString());
     csvsqldb::ValDouble* pd = static_cast<csvsqldb::ValDouble*>(v1);
-    MPF_TEST_ASSERT(csvsqldb::compare(47.11, pd->asDouble()));
+    CHECK(csvsqldb::compare(47.11, pd->asDouble()));
     delete v1;
 
     v1 = csvsqldb::ValueCreator<bool>::createValue(true);
-    MPF_TEST_ASSERTEQUAL(csvsqldb::BOOLEAN, v1->getType());
-    MPF_TEST_ASSERTEQUAL("1", v1->toString());
+    CHECK(csvsqldb::BOOLEAN == v1->getType());
+    CHECK("1" == v1->toString());
     csvsqldb::ValBool* pb = static_cast<csvsqldb::ValBool*>(v1);
-    MPF_TEST_ASSERTEQUAL(true, pb->asBool());
+    CHECK(pb->asBool());
     delete v1;
 
     v1 = csvsqldb::ValueCreator<csvsqldb::Date>::createValue(csvsqldb::Date(1970, csvsqldb::Date::September, 23));
-    MPF_TEST_ASSERTEQUAL(csvsqldb::DATE, v1->getType());
-    MPF_TEST_ASSERTEQUAL("1970-09-23", v1->toString());
+    CHECK(csvsqldb::DATE == v1->getType());
+    CHECK("1970-09-23" == v1->toString());
     csvsqldb::ValDate* pdt = static_cast<csvsqldb::ValDate*>(v1);
-    MPF_TEST_ASSERTEQUAL(csvsqldb::Date(1970, csvsqldb::Date::September, 23), pdt->asDate());
+    CHECK(csvsqldb::Date(1970, csvsqldb::Date::September, 23) == pdt->asDate());
     delete v1;
 
     v1 = csvsqldb::ValueCreator<csvsqldb::Time>::createValue(csvsqldb::Time(8, 9, 11));
-    MPF_TEST_ASSERTEQUAL(csvsqldb::TIME, v1->getType());
-    MPF_TEST_ASSERTEQUAL("08:09:11", v1->toString());
+    CHECK(csvsqldb::TIME == v1->getType());
+    CHECK("08:09:11" == v1->toString());
     csvsqldb::ValTime* pt = static_cast<csvsqldb::ValTime*>(v1);
-    MPF_TEST_ASSERTEQUAL(csvsqldb::Time(8, 9, 11), pt->asTime());
+    CHECK(csvsqldb::Time(8, 9, 11) == pt->asTime());
     delete v1;
 
     v1 = csvsqldb::ValueCreator<csvsqldb::Timestamp>::createValue(
       csvsqldb::Timestamp(1970, csvsqldb::Date::September, 23, 8, 9, 11));
-    MPF_TEST_ASSERTEQUAL(csvsqldb::TIMESTAMP, v1->getType());
-    MPF_TEST_ASSERTEQUAL("1970-09-23T08:09:11", v1->toString());
+    CHECK(csvsqldb::TIMESTAMP == v1->getType());
+    CHECK("1970-09-23T08:09:11" == v1->toString());
     csvsqldb::ValTimestamp* pts = static_cast<csvsqldb::ValTimestamp*>(v1);
-    MPF_TEST_ASSERTEQUAL(csvsqldb::Timestamp(1970, csvsqldb::Date::September, 23, 8, 9, 11), pts->asTimestamp());
+    CHECK(csvsqldb::Timestamp(1970, csvsqldb::Date::September, 23, 8, 9, 11) == pts->asTimestamp());
     delete v1;
   }
 
-  void storeTest()
+  SECTION("store")
   {
     typedef std::array<char, 4096> StoreType;
 
@@ -135,26 +122,21 @@ public:
       ::strcpy(psd, "Lars Fürstenberg");
       csvsqldb::ValString* ps = new (&store[0] + offset) csvsqldb::ValString(psd);
 
-      MPF_TEST_ASSERTEQUAL("4711", pi->toString());
-      MPF_TEST_ASSERTEQUAL("47.110000", pd->toString());
-      MPF_TEST_ASSERTEQUAL("1", pb->toString());
-      MPF_TEST_ASSERTEQUAL("1970-09-23", pdt->toString());
-      MPF_TEST_ASSERTEQUAL("1970-09-23T08:09:11", pts->toString());
-      MPF_TEST_ASSERTEQUAL("Lars Fürstenberg", ps->toString());
-      MPF_TEST_ASSERTEQUAL("08:09:11", pt->toString());
+      CHECK("4711" == pi->toString());
+      CHECK("47.110000" == pd->toString());
+      CHECK("1" == pb->toString());
+      CHECK("1970-09-23" == pdt->toString());
+      CHECK("1970-09-23T08:09:11" == pts->toString());
+      CHECK("Lars Fürstenberg" == ps->toString());
+      CHECK("08:09:11" == pt->toString());
     }
 
     {
       csvsqldb::ValInt* pi = reinterpret_cast<csvsqldb::ValInt*>(&store[0]);
-      MPF_TEST_ASSERTEQUAL("4711", pi->toString());
+      CHECK("4711" == pi->toString());
 
       csvsqldb::ValString* ps = reinterpret_cast<csvsqldb::ValString*>(&store[0] + offset);
-      MPF_TEST_ASSERTEQUAL("Lars Fürstenberg", ps->toString());
+      CHECK("Lars Fürstenberg" == ps->toString());
     }
   }
-};
-
-MPF_REGISTER_TEST_START("ValuesTestSuite", ValuesTestCase);
-MPF_REGISTER_TEST(ValuesTestCase::valueCreatorTest);
-MPF_REGISTER_TEST(ValuesTestCase::storeTest);
-MPF_REGISTER_TEST_END();
+}

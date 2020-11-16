@@ -33,7 +33,7 @@
 
 #include "libcsvsqldb/base/string_helper.h"
 
-#include "test.h"
+#include <catch2/catch.hpp>
 
 #include <vector>
 
@@ -56,68 +56,59 @@ namespace csvsqldb
 }
 
 
-class StringHelperTestCase
+TEST_CASE("String Util Test", "[utils]")
 {
-public:
-  void setUp()
-  {
-  }
-
-  void tearDown()
-  {
-  }
-
-  void tokenizer()
+  SECTION("tokenizer")
   {
     std::string s("This is my glorious test   string");
     std::vector<std::string> tokens;
     csvsqldb::split(s, ' ', tokens);
 
-    MPF_TEST_ASSERTEQUAL(8u, tokens.size());
+    CHECK(8u == tokens.size());
 
-    MPF_TEST_ASSERTEQUAL("This", tokens[0]);
-    MPF_TEST_ASSERTEQUAL("is", tokens[1]);
-    MPF_TEST_ASSERTEQUAL("my", tokens[2]);
-    MPF_TEST_ASSERTEQUAL("glorious", tokens[3]);
-    MPF_TEST_ASSERTEQUAL("test", tokens[4]);
-    MPF_TEST_ASSERTEQUAL("", tokens[5]);
-    MPF_TEST_ASSERTEQUAL("", tokens[6]);
-    MPF_TEST_ASSERTEQUAL("string", tokens[7]);
+    CHECK("This" == tokens[0]);
+    CHECK("is" == tokens[1]);
+    CHECK("my" == tokens[2]);
+    CHECK("glorious" == tokens[3]);
+    CHECK("test" == tokens[4]);
+    CHECK("" == tokens[5]);
+    CHECK("" == tokens[6]);
+    CHECK("string" == tokens[7]);
 
     s = "This,is,my,glorious,test,,,string";
     csvsqldb::split(s, ' ', tokens);
 
-    MPF_TEST_ASSERTEQUAL(1u, tokens.size());
+    CHECK(1u == tokens.size());
 
-    MPF_TEST_ASSERTEQUAL("This,is,my,glorious,test,,,string", tokens[0]);
+    CHECK("This,is,my,glorious,test,,,string" == tokens[0]);
 
     s = "This,is,my,glorious,test,,,string";
     csvsqldb::split(s, ',', tokens);
 
-    MPF_TEST_ASSERTEQUAL(8u, tokens.size());
+    CHECK(8u == tokens.size());
 
-    MPF_TEST_ASSERTEQUAL("This", tokens[0]);
-    MPF_TEST_ASSERTEQUAL("is", tokens[1]);
-    MPF_TEST_ASSERTEQUAL("my", tokens[2]);
-    MPF_TEST_ASSERTEQUAL("glorious", tokens[3]);
-    MPF_TEST_ASSERTEQUAL("test", tokens[4]);
-    MPF_TEST_ASSERTEQUAL("", tokens[5]);
-    MPF_TEST_ASSERTEQUAL("", tokens[6]);
-    MPF_TEST_ASSERTEQUAL("string", tokens[7]);
+    CHECK("This" == tokens[0]);
+    CHECK("is" == tokens[1]);
+    CHECK("my" == tokens[2]);
+    CHECK("glorious" == tokens[3]);
+    CHECK("test" == tokens[4]);
+    CHECK("" == tokens[5]);
+    CHECK("" == tokens[6]);
+    CHECK("string" == tokens[7]);
 
     s = "This,is,my,glorious,test,,,string";
     csvsqldb::split(s, ',', tokens, false);
-    MPF_TEST_ASSERTEQUAL(6u, tokens.size());
+    CHECK(6u == tokens.size());
 
-    MPF_TEST_ASSERTEQUAL("This", tokens[0]);
-    MPF_TEST_ASSERTEQUAL("is", tokens[1]);
-    MPF_TEST_ASSERTEQUAL("my", tokens[2]);
-    MPF_TEST_ASSERTEQUAL("glorious", tokens[3]);
-    MPF_TEST_ASSERTEQUAL("test", tokens[4]);
-    MPF_TEST_ASSERTEQUAL("string", tokens[5]);
+    CHECK("This" == tokens[0]);
+    CHECK("is" == tokens[1]);
+    CHECK("my" == tokens[2]);
+    CHECK("glorious" == tokens[3]);
+    CHECK("test" == tokens[4]);
+    CHECK("string" == tokens[5]);
   }
 
-  void joinTest()
+  SECTION("join")
   {
     std::vector<std::string> tokens;
     tokens.push_back("This");
@@ -127,47 +118,47 @@ public:
     tokens.push_back("test");
     tokens.push_back("string");
 
-    MPF_TEST_ASSERTEQUAL("This,is,my,glorious,test,string", csvsqldb::join(tokens, ","));
+    CHECK("This,is,my,glorious,test,string" == csvsqldb::join(tokens, ","));
   }
 
-  void upperTest()
+  SECTION("upper")
   {
     std::string s("Not All upper");
     csvsqldb::toupper(s);
-    MPF_TEST_ASSERTEQUAL("NOT ALL UPPER", s);
+    CHECK("NOT ALL UPPER" == s);
 
     std::string s1("Not All upper");
     std::string s2 = csvsqldb::toupper_copy(s1);
-    MPF_TEST_ASSERTEQUAL("NOT ALL UPPER", s2);
-    MPF_TEST_ASSERTEQUAL("Not All upper", s1);
+    CHECK("NOT ALL UPPER" == s2);
+    CHECK("Not All upper" == s1);
   }
 
-  void lowerTest()
+  SECTION("lower")
   {
     std::string s("Not All upper");
     csvsqldb::tolower(s);
-    MPF_TEST_ASSERTEQUAL("not all upper", s);
+    CHECK("not all upper" == s);
 
     std::string s1("Not All upper");
     std::string s2 = csvsqldb::tolower_copy(s1);
-    MPF_TEST_ASSERTEQUAL("not all upper", s2);
-    MPF_TEST_ASSERTEQUAL("Not All upper", s1);
+    CHECK("not all upper" == s2);
+    CHECK("Not All upper" == s1);
   }
 
-  void stripTypeNameTest()
+  SECTION("strip type name")
   {
-    MPF_TEST_ASSERTEQUAL("csvsqldb::testspace::Test", csvsqldb::stripTypeName(typeid(csvsqldb::testspace::Test).name()));
+    CHECK("csvsqldb::testspace::Test" == csvsqldb::stripTypeName(typeid(csvsqldb::testspace::Test).name()));
   }
 
-  void stringCompareTest()
+  SECTION("string compare")
   {
-    MPF_TEST_ASSERTEQUAL(0, csvsqldb::stricmp("Test it", "TEST IT"));
-    MPF_TEST_ASSERTEQUAL(1, csvsqldb::stricmp("Txst it", "TEST IT"));
-    MPF_TEST_ASSERTEQUAL(0, csvsqldb::strnicmp("Test it", "TEST IT", 5));
-    MPF_TEST_ASSERTEQUAL(1, csvsqldb::strnicmp("Txst it", "TEST IT", 5));
+    CHECK(csvsqldb::stricmp("Test it", "TEST IT") == 0);
+    CHECK(csvsqldb::stricmp("Txst it", "TEST IT") > 0);
+    CHECK(csvsqldb::strnicmp("Test it", "TEST IT", 5) == 0);
+    CHECK(csvsqldb::strnicmp("Txst it", "TEST IT", 5) > 0);
   }
 
-  void timeFormatTest()
+  SECTION("time format")
   {
     std::chrono::duration<int, std::mega> megaSecs(22);
     std::chrono::duration<int, std::kilo> kiloSecs(921);
@@ -193,45 +184,33 @@ public:
     struct tm* lt = ::localtime(&tt);
     ::strftime(buffer, 20, "%FT%T", lt);
 
-    MPF_TEST_ASSERTEQUAL(buffer, csvsqldb::callTimeStream(tp));
-    MPF_TEST_ASSERTEQUAL("Wed, 23 Sep 1970 07:00:00 GMT", csvsqldb::formatDateRfc1123(tp));
+    CHECK(buffer == csvsqldb::callTimeStream(tp));
+    CHECK("Wed, 23 Sep 1970 07:00:00 GMT" == csvsqldb::formatDateRfc1123(tp));
   }
 
-  void trimTest()
+  SECTION("trim")
   {
     std::string s("     left whitespace");
-    MPF_TEST_ASSERTEQUAL("left whitespace", csvsqldb::trim_left(s));
+    CHECK("left whitespace" == csvsqldb::trim_left(s));
     s = "no left whitespace";
-    MPF_TEST_ASSERTEQUAL("no left whitespace", csvsqldb::trim_left(s));
+    CHECK("no left whitespace" == csvsqldb::trim_left(s));
     s = "right whitespace    ";
-    MPF_TEST_ASSERTEQUAL("right whitespace", csvsqldb::trim_right(s));
+    CHECK("right whitespace" == csvsqldb::trim_right(s));
     s = "no right whitespace";
-    MPF_TEST_ASSERTEQUAL("no right whitespace", csvsqldb::trim_right(s));
+    CHECK("no right whitespace" == csvsqldb::trim_right(s));
   }
 
-  void decodeTest()
+  SECTION("decode")
   {
     std::string encoded(
       "wikiPageName=Testpage&wikiPageMarkdown=Markdown%0D%0A%3D%3D%3D%3D%3D%3D%3D%3D%0D%0A%0D%0A-+some+tests%0D%0A-+and+more%"
       "0D%0A%0D%0A");
     std::string decoded;
-    MPF_TEST_ASSERT(csvsqldb::decode(encoded, decoded));
-    MPF_TEST_ASSERTEQUAL("wikiPageName=Testpage&wikiPageMarkdown=Markdown\r\n========\r\n\r\n- some tests\r\n- and more\r\n\r\n",
-                         decoded);
+    CHECK(csvsqldb::decode(encoded, decoded));
+    CHECK("wikiPageName=Testpage&wikiPageMarkdown=Markdown\r\n========\r\n\r\n- some tests\r\n- and more\r\n\r\n" == decoded);
 
     encoded = "wikiPageName=Testpage&wikiPageMarkdown=Markdown% "
               "%0A%3D%3D%3D%3D%3D%3D%3D%3D%0D%0A%0D%0A-+some+tests%0D%0A-+and+more%0D%0A%0D%0A";
-    MPF_TEST_ASSERT(!csvsqldb::decode(encoded, decoded));
+    CHECK_FALSE(csvsqldb::decode(encoded, decoded));
   }
-};
-
-MPF_REGISTER_TEST_START("ApplicationTestSuite", StringHelperTestCase);
-MPF_REGISTER_TEST(StringHelperTestCase::tokenizer);
-MPF_REGISTER_TEST(StringHelperTestCase::joinTest);
-MPF_REGISTER_TEST(StringHelperTestCase::upperTest);
-MPF_REGISTER_TEST(StringHelperTestCase::lowerTest);
-MPF_REGISTER_TEST(StringHelperTestCase::stripTypeNameTest);
-MPF_REGISTER_TEST(StringHelperTestCase::timeFormatTest);
-MPF_REGISTER_TEST(StringHelperTestCase::trimTest);
-MPF_REGISTER_TEST(StringHelperTestCase::decodeTest);
-MPF_REGISTER_TEST_END();
+}

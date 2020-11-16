@@ -62,7 +62,7 @@ namespace csvsqldb
      * (e.g. both
      * true or both false).
      */
-    bool operator==(const Tribool& rhs)
+    bool operator==(const Tribool& rhs) const
     {
       if (_isIndeterminate != rhs._isIndeterminate || _isIndeterminate) {
         return false;

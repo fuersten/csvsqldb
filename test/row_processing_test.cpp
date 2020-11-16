@@ -35,121 +35,111 @@
 #include "libcsvsqldb/sql_astdump.h"
 #include "libcsvsqldb/sql_parser.h"
 
-#include "test.h"
+#include <catch2/catch.hpp>
 
 #include <sstream>
 
 
-class DummyScanOperatorNode
-: public csvsqldb::ScanOperatorNode
-, public csvsqldb::BlockProvider
+namespace
 {
-public:
-  DummyScanOperatorNode(const csvsqldb::OperatorContext& context, const csvsqldb::SymbolTablePtr& symbolTable,
-                        const csvsqldb::SymbolInfo& tableInfo)
-  : csvsqldb::ScanOperatorNode(context, symbolTable, tableInfo)
-  , _block(nullptr)
+  class DummyScanOperatorNode
+  : public csvsqldb::ScanOperatorNode
+  , public csvsqldb::BlockProvider
   {
-  }
-
-  const csvsqldb::Values* getNextRow()
-  {
-    if (!_block) {
-      prepareBuffer();
+  public:
+    DummyScanOperatorNode(const csvsqldb::OperatorContext& context, const csvsqldb::SymbolTablePtr& symbolTable,
+                          const csvsqldb::SymbolInfo& tableInfo)
+    : csvsqldb::ScanOperatorNode(context, symbolTable, tableInfo)
+    , _block(nullptr)
+    {
     }
 
-    return _iterator->getNextRow();
-  }
+    const csvsqldb::Values* getNextRow()
+    {
+      if (!_block) {
+        prepareBuffer();
+      }
 
-  virtual csvsqldb::BlockPtr getNextBlock()
-  {
-    return _block;
-  }
-
-  virtual void dump(std::ostream& stream) const
-  {
-    stream << "DummyScanOperator\n";
-  }
-
-private:
-  void prepareBuffer()
-  {
-    _block = getBlockManager().createBlock();
-
-    if (_tableInfo._identifier == "EMPLOYEES") {
-      _block->addValue(csvsqldb::Variant(4711));
-      _block->addValue(csvsqldb::Variant(csvsqldb::Date(1970, csvsqldb::Date::September, 23)));
-      _block->addValue(csvsqldb::Variant("Lars"));
-      _block->addValue(csvsqldb::Variant("Fürstenberg"));
-      _block->addValue(csvsqldb::Variant("M"));
-      _block->addValue(csvsqldb::Variant(csvsqldb::Date(2012, csvsqldb::Date::February, 1)));
-      _block->nextRow();
-      _block->addValue(csvsqldb::Variant(815));
-      _block->addValue(csvsqldb::Variant(csvsqldb::Date(1969, csvsqldb::Date::May, 17)));
-      _block->addValue(csvsqldb::Variant("Mark"));
-      _block->addValue(csvsqldb::Variant("Fürstenberg"));
-      _block->addValue(csvsqldb::Variant("M"));
-      _block->addValue(csvsqldb::Variant(csvsqldb::Date(2003, csvsqldb::Date::April, 15)));
-      _block->nextRow();
-      _block->addValue(csvsqldb::Variant(9227));
-      _block->addValue(csvsqldb::Variant(csvsqldb::Date(1963, csvsqldb::Date::March, 6)));
-      _block->addValue(csvsqldb::Variant("Angelica"));
-      _block->addValue(csvsqldb::Variant("Tello de Fürstenberg"));
-      _block->addValue(csvsqldb::Variant("F"));
-      _block->addValue(csvsqldb::Variant(csvsqldb::Date(2003, csvsqldb::Date::June, 15)));
-      _block->nextRow();
-    } else if (_tableInfo._identifier == "SALARIES") {
-      _block->addValue(csvsqldb::Variant(4711));
-      _block->addValue(csvsqldb::Variant(12000.0));
-      _block->addValue(csvsqldb::Variant(csvsqldb::Date(2012, csvsqldb::Date::February, 1)));
-      _block->addValue(csvsqldb::Variant(csvsqldb::Date(2015, csvsqldb::Date::February, 1)));
-      _block->nextRow();
-      _block->addValue(csvsqldb::Variant(9227));
-      _block->addValue(csvsqldb::Variant(450.0));
-      _block->addValue(csvsqldb::Variant(csvsqldb::Date(2003, csvsqldb::Date::June, 15)));
-      _block->addValue(csvsqldb::Variant(csvsqldb::Date(2015, csvsqldb::Date::February, 1)));
-      _block->nextRow();
-      _block->addValue(csvsqldb::Variant(815));
-      _block->addValue(csvsqldb::Variant(6000.0));
-      _block->addValue(csvsqldb::Variant(csvsqldb::Date(2003, csvsqldb::Date::April, 15)));
-      _block->addValue(csvsqldb::Variant(csvsqldb::Date(2015, csvsqldb::Date::February, 1)));
-      _block->nextRow();
+      return _iterator->getNextRow();
     }
-    _block->endBlocks();
 
-    _iterator = std::make_shared<csvsqldb::BlockIterator>(_types, *this, getBlockManager());
-  }
+    virtual csvsqldb::BlockPtr getNextBlock()
+    {
+      return _block;
+    }
 
-  csvsqldb::BlockPtr _block;
-  csvsqldb::BlockIteratorPtr _iterator;
-};
+    virtual void dump(std::ostream& stream) const
+    {
+      stream << "DummyScanOperator\n";
+    }
+
+  private:
+    void prepareBuffer()
+    {
+      _block = getBlockManager().createBlock();
+
+      if (_tableInfo._identifier == "EMPLOYEES") {
+        _block->addValue(csvsqldb::Variant(4711));
+        _block->addValue(csvsqldb::Variant(csvsqldb::Date(1970, csvsqldb::Date::September, 23)));
+        _block->addValue(csvsqldb::Variant("Lars"));
+        _block->addValue(csvsqldb::Variant("Fürstenberg"));
+        _block->addValue(csvsqldb::Variant("M"));
+        _block->addValue(csvsqldb::Variant(csvsqldb::Date(2012, csvsqldb::Date::February, 1)));
+        _block->nextRow();
+        _block->addValue(csvsqldb::Variant(815));
+        _block->addValue(csvsqldb::Variant(csvsqldb::Date(1969, csvsqldb::Date::May, 17)));
+        _block->addValue(csvsqldb::Variant("Mark"));
+        _block->addValue(csvsqldb::Variant("Fürstenberg"));
+        _block->addValue(csvsqldb::Variant("M"));
+        _block->addValue(csvsqldb::Variant(csvsqldb::Date(2003, csvsqldb::Date::April, 15)));
+        _block->nextRow();
+        _block->addValue(csvsqldb::Variant(9227));
+        _block->addValue(csvsqldb::Variant(csvsqldb::Date(1963, csvsqldb::Date::March, 6)));
+        _block->addValue(csvsqldb::Variant("Angelica"));
+        _block->addValue(csvsqldb::Variant("Tello de Fürstenberg"));
+        _block->addValue(csvsqldb::Variant("F"));
+        _block->addValue(csvsqldb::Variant(csvsqldb::Date(2003, csvsqldb::Date::June, 15)));
+        _block->nextRow();
+      } else if (_tableInfo._identifier == "SALARIES") {
+        _block->addValue(csvsqldb::Variant(4711));
+        _block->addValue(csvsqldb::Variant(12000.0));
+        _block->addValue(csvsqldb::Variant(csvsqldb::Date(2012, csvsqldb::Date::February, 1)));
+        _block->addValue(csvsqldb::Variant(csvsqldb::Date(2015, csvsqldb::Date::February, 1)));
+        _block->nextRow();
+        _block->addValue(csvsqldb::Variant(9227));
+        _block->addValue(csvsqldb::Variant(450.0));
+        _block->addValue(csvsqldb::Variant(csvsqldb::Date(2003, csvsqldb::Date::June, 15)));
+        _block->addValue(csvsqldb::Variant(csvsqldb::Date(2015, csvsqldb::Date::February, 1)));
+        _block->nextRow();
+        _block->addValue(csvsqldb::Variant(815));
+        _block->addValue(csvsqldb::Variant(6000.0));
+        _block->addValue(csvsqldb::Variant(csvsqldb::Date(2003, csvsqldb::Date::April, 15)));
+        _block->addValue(csvsqldb::Variant(csvsqldb::Date(2015, csvsqldb::Date::February, 1)));
+        _block->nextRow();
+      }
+      _block->endBlocks();
+
+      _iterator = std::make_shared<csvsqldb::BlockIterator>(_types, *this, getBlockManager());
+    }
+
+    csvsqldb::BlockPtr _block;
+    csvsqldb::BlockIteratorPtr _iterator;
+  };
+}
 
 
-class RowProcessingTestCase
+TEST_CASE("Row Processing Test", "[engine]")
 {
-public:
-  RowProcessingTestCase()
-  {
-  }
+  csvsqldb::FunctionRegistry functions;
+  csvsqldb::SQLParser parser(functions);
 
-  void setUp()
+  SECTION("processing")
   {
-  }
-
-  void tearDown()
-  {
-  }
-
-  void processingTest()
-  {
-    csvsqldb::FunctionRegistry functions;
-    csvsqldb::SQLParser parser(functions);
-
     csvsqldb::ASTNodePtr node = parser.parse(
       "CREATE TABLE employees(emp_no INTEGER,birth_date DATE NOT NULL,first_name VARCHAR(25) NOT NULL,last_name VARCHAR(50) "
       "NOT NULL,gender CHAR,hire_date DATE,PRIMARY KEY(emp_no))");
-    MPF_TEST_ASSERT(node);
-    MPF_TEST_ASSERT(std::dynamic_pointer_cast<csvsqldb::ASTCreateTableNode>(node));
+    REQUIRE(node);
+    REQUIRE(std::dynamic_pointer_cast<csvsqldb::ASTCreateTableNode>(node));
     csvsqldb::ASTCreateTableNodePtr createNode = std::dynamic_pointer_cast<csvsqldb::ASTCreateTableNode>(node);
 
     csvsqldb::TableData tabledata = csvsqldb::TableData::fromCreateAST(createNode);
@@ -199,23 +189,19 @@ public:
     projection->connect(select);
     output->connect(projection);
 
-    MPF_TEST_ASSERTEQUAL(3, output->process());
-    MPF_TEST_ASSERTEQUAL(
+    CHECK(3 == output->process());
+    CHECK(
       "#ID,NAME,BIRTHDAY,CALC\n4711,'Lars Fürstenberg',1970-09-23,8\n815,'Mark Fürstenberg',1969-05-17,8\n9227,'Angelica Tello "
-      "de Fürstenberg',1963-03-06,8\n",
-      ss.str());
+      "de Fürstenberg',1963-03-06,8\n" == ss.str());
   }
 
-  void processingAsteriskTest()
+  SECTION("processing asterisk")
   {
-    csvsqldb::FunctionRegistry functions;
-    csvsqldb::SQLParser parser(functions);
-
     csvsqldb::ASTNodePtr node = parser.parse(
       "CREATE TABLE employees(emp_no INTEGER,birth_date DATE NOT NULL,first_name VARCHAR(25) NOT NULL,last_name VARCHAR(50) "
       "NOT NULL,gender CHAR,hire_date DATE,PRIMARY KEY(emp_no))");
-    MPF_TEST_ASSERT(node);
-    MPF_TEST_ASSERT(std::dynamic_pointer_cast<csvsqldb::ASTCreateTableNode>(node));
+    REQUIRE(node);
+    REQUIRE(std::dynamic_pointer_cast<csvsqldb::ASTCreateTableNode>(node));
     csvsqldb::ASTCreateTableNodePtr createNode = std::dynamic_pointer_cast<csvsqldb::ASTCreateTableNode>(node);
 
     csvsqldb::TableData tabledata = csvsqldb::TableData::fromCreateAST(createNode);
@@ -259,26 +245,23 @@ public:
     projection->connect(select);
     output->connect(projection);
 
-    MPF_TEST_ASSERTEQUAL(3, output->process());
+    CHECK(3 == output->process());
 
     std::string expected = R"(#EMP_NO,EMP.BIRTH_DATE,EMP.FIRST_NAME,EMP.LAST_NAME,EMP.GENDER,EMP.HIRE_DATE
 4711,1970-09-23,'Lars','Fürstenberg','M',2012-02-01
 815,1969-05-17,'Mark','Fürstenberg','M',2003-04-15
 9227,1963-03-06,'Angelica','Tello de Fürstenberg','F',2003-06-15
 )";
-    MPF_TEST_ASSERTEQUAL(expected, ss.str());
+    CHECK(expected == ss.str());
   }
 
-  void processingAggregationTest()
+  SECTION("processing aggregation")
   {
-    csvsqldb::FunctionRegistry functions;
-    csvsqldb::SQLParser parser(functions);
-
     csvsqldb::ASTNodePtr node = parser.parse(
       "CREATE TABLE employees(emp_no INTEGER,birth_date DATE NOT NULL,first_name VARCHAR(25) NOT NULL,last_name VARCHAR(50) "
       "NOT NULL,gender CHAR,hire_date DATE,PRIMARY KEY(emp_no))");
-    MPF_TEST_ASSERT(node);
-    MPF_TEST_ASSERT(std::dynamic_pointer_cast<csvsqldb::ASTCreateTableNode>(node));
+    REQUIRE(node);
+    REQUIRE(std::dynamic_pointer_cast<csvsqldb::ASTCreateTableNode>(node));
     csvsqldb::ASTCreateTableNodePtr createNode = std::dynamic_pointer_cast<csvsqldb::ASTCreateTableNode>(node);
 
     csvsqldb::TableData tabledata = csvsqldb::TableData::fromCreateAST(createNode);
@@ -319,13 +302,7 @@ public:
     projection->connect(scan);
     output->connect(projection);
 
-    MPF_TEST_ASSERTEQUAL(1, output->process());
-    MPF_TEST_ASSERTEQUAL("#$alias_1\n3\n", ss.str());
+    CHECK(1 == output->process());
+    CHECK("#$alias_1\n3\n" == ss.str());
   }
-};
-
-MPF_REGISTER_TEST_START("RowProcessingTestSuite", RowProcessingTestCase);
-MPF_REGISTER_TEST(RowProcessingTestCase::processingTest);
-MPF_REGISTER_TEST(RowProcessingTestCase::processingAsteriskTest);
-MPF_REGISTER_TEST(RowProcessingTestCase::processingAggregationTest);
-MPF_REGISTER_TEST_END();
+}

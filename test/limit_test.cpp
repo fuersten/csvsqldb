@@ -34,25 +34,13 @@
 #include "libcsvsqldb/block.h"
 
 #include "data_test_framework.h"
-#include "test.h"
+
+#include <catch2/catch.hpp>
 
 
-class LimitTestCase
+TEST_CASE("Limit Test", "[engine]")
 {
-public:
-  LimitTestCase()
-  {
-  }
-
-  void setUp()
-  {
-  }
-
-  void tearDown()
-  {
-  }
-
-  void simpleLimitTest()
+  SECTION("simple limit")
   {
     DatabaseTestWrapper dbWrapper;
     dbWrapper.addTable(TableInitializer("employees", {{"id", csvsqldb::INT},
@@ -82,17 +70,17 @@ public:
     std::stringstream ss;
     int64_t rowCount =
       engine.execute("SELECT id,first_name,last_name,birth_date,hire_date FROM employees order by id limit 3", statistics, ss);
-    MPF_TEST_ASSERTEQUAL(3, rowCount);
+    CHECK(3 == rowCount);
 
     std::string expected = R"(#ID,FIRST_NAME,LAST_NAME,BIRTH_DATE,HIRE_DATE
 192,'Anette','Zipiriski',1956-08-05,1978-02-25
 815,'Mark','Fürstenberg',1969-05-17,2003-04-15
 1423,'Tilo','Bürstenbinder',1973-01-08,2001-10-01
 )";
-    MPF_TEST_ASSERTEQUAL(expected, ss.str());
+    CHECK(expected == ss.str());
   }
 
-  void simpleLimitOffsetTest()
+  SECTION("simple limit offset")
   {
     DatabaseTestWrapper dbWrapper;
     dbWrapper.addTable(TableInitializer("employees", {{"id", csvsqldb::INT},
@@ -122,18 +110,13 @@ public:
     std::stringstream ss;
     int64_t rowCount = engine.execute(
       "SELECT id,first_name,last_name,birth_date,hire_date FROM employees order by id limit 3 offset 3", statistics, ss);
-    MPF_TEST_ASSERTEQUAL(3, rowCount);
+    CHECK(3 == rowCount);
 
     std::string expected = R"(#ID,FIRST_NAME,LAST_NAME,BIRTH_DATE,HIRE_DATE
 3467,'Ingo','Fürstenberg',1946-05-04,1969-06-01
 4711,'Lars','Fürstenberg',1970-09-23,2010-02-01
 9227,'Angelica','Tello de Fürstenberg',1963-03-06,2003-06-15
 )";
-    MPF_TEST_ASSERTEQUAL(expected, ss.str());
+    CHECK(expected == ss.str());
   }
-};
-
-MPF_REGISTER_TEST_START("LimitTestSuite", LimitTestCase);
-MPF_REGISTER_TEST(LimitTestCase::simpleLimitTest);
-MPF_REGISTER_TEST(LimitTestCase::simpleLimitOffsetTest);
-MPF_REGISTER_TEST_END();
+}

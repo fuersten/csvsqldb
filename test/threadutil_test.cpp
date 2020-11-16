@@ -33,38 +33,32 @@
 
 #include "libcsvsqldb/base/thread_helper.h"
 
-#include "test.h"
+#include <catch2/catch.hpp>
 
 
-static bool stop = false;
-
-static void runTest()
+namespace
 {
-  while (!stop) {
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+  static bool stop = false;
+
+  static void runTest()
+  {
+    while (!stop) {
+      std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
   }
 }
 
-class ThreadHelperTestCase
+
+TEST_CASE("Threadhelper Test", "[utils]")
 {
-public:
-  void setUp()
-  {
-  }
-
-  void tearDown()
-  {
-  }
-
-  void threadJoinGuardTest()
+  SECTION("thread join guard")
   {
     std::thread t(runTest);
-    csvsqldb::ThreadJoinGuard guard(t);
+    {
+      csvsqldb::ThreadJoinGuard guard(t);
+      stop = true;
+    }
 
-    stop = true;
+    CHECK_FALSE(t.joinable());
   }
-};
-
-MPF_REGISTER_TEST_START("ApplicationTestSuite", ThreadHelperTestCase);
-MPF_REGISTER_TEST(ThreadHelperTestCase::threadJoinGuardTest);
-MPF_REGISTER_TEST_END();
+}

@@ -32,25 +32,13 @@
 
 
 #include "data_test_framework.h"
-#include "test.h"
+
+#include <catch2/catch.hpp>
 
 
-class DataFrameworkTestCase
+TEST_CASE("Data Framework Test", "[block]")
 {
-public:
-  DataFrameworkTestCase()
-  {
-  }
-
-  void setUp()
-  {
-  }
-
-  void tearDown()
-  {
-  }
-
-  void frameworkTest()
+  SECTION("framework")
   {
     DatabaseTestWrapper dbWrapper;
 
@@ -63,13 +51,13 @@ public:
       "salaries",
       {{"id", csvsqldb::INT}, {"salary", csvsqldb::REAL}, {"from_date", csvsqldb::DATE}, {"to_date", csvsqldb::DATE}}));
 
-    MPF_TEST_ASSERTEQUAL("EMPLOYEES", dbWrapper.getDatabase().getTable("EMPLOYEES").name());
-    MPF_TEST_ASSERTEQUAL(5u, dbWrapper.getDatabase().getTable("EMPLOYEES").columnCount());
-    MPF_TEST_ASSERTEQUAL("SALARIES", dbWrapper.getDatabase().getTable("SALARIES").name());
-    MPF_TEST_ASSERTEQUAL(4u, dbWrapper.getDatabase().getTable("SALARIES").columnCount());
+    CHECK("EMPLOYEES" == dbWrapper.getDatabase().getTable("EMPLOYEES").name());
+    CHECK(5u == dbWrapper.getDatabase().getTable("EMPLOYEES").columnCount());
+    CHECK("SALARIES" == dbWrapper.getDatabase().getTable("SALARIES").name());
+    CHECK(4u == dbWrapper.getDatabase().getTable("SALARIES").columnCount());
   }
 
-  void operationTest()
+  SECTION("operation")
   {
     DatabaseTestWrapper dbWrapper;
     dbWrapper.addTable(TableInitializer("employees", {{"id", csvsqldb::INT},
@@ -95,24 +83,16 @@ public:
       "SELECT id,(first_name || ' ' || last_name) as name,birth_date birthday, 7 * 5 / 4 as calc FROM employees emp WHERE "
       "\"id\" BETWEEN 100 AND 9999 AND emp.birth_date > DATE'1960-01-01'",
       statistics, ss);
-    MPF_TEST_ASSERTEQUAL(3, rowCount);
-    MPF_TEST_ASSERTEQUAL(
+    CHECK(3 == rowCount);
+    CHECK(
       "#ID,NAME,BIRTHDAY,CALC\n4711,'Lars Fürstenberg',1970-09-23,8\n815,'Mark Fürstenberg',1969-05-17,8\n9227,'Angelica Tello "
-      "de Fürstenberg',1963-03-06,8\n",
-      ss.str());
+      "de Fürstenberg',1963-03-06,8\n" == ss.str());
 
     ss.str("");
     ss.clear();
     rowCount = engine.execute("select * from employees where birth_date > date'1965-01-01'", statistics, ss);
-    MPF_TEST_ASSERTEQUAL(2, rowCount);
-    MPF_TEST_ASSERTEQUAL(
-      "#EMPLOYEES.ID,EMPLOYEES.FIRST_NAME,EMPLOYEES.LAST_NAME,BIRTH_DATE,EMPLOYEES.HIRE_DATE\n4711,'Lars','Fürstenberg',1970-"
-      "09-23,2010-02-01\n815,'Mark','Fürstenberg',1969-05-17,2003-04-15\n",
-      ss.str());
+    CHECK(2 == rowCount);
+    CHECK("#EMPLOYEES.ID,EMPLOYEES.FIRST_NAME,EMPLOYEES.LAST_NAME,BIRTH_DATE,EMPLOYEES.HIRE_DATE\n4711,'Lars','Fürstenberg',1970-"
+          "09-23,2010-02-01\n815,'Mark','Fürstenberg',1969-05-17,2003-04-15\n" == ss.str());
   }
-};
-
-MPF_REGISTER_TEST_START("TestFrameworkTestSuite", DataFrameworkTestCase);
-MPF_REGISTER_TEST(DataFrameworkTestCase::frameworkTest);
-MPF_REGISTER_TEST(DataFrameworkTestCase::operationTest);
-MPF_REGISTER_TEST_END();
+}

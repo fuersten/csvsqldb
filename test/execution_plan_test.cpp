@@ -36,30 +36,18 @@
 #include "libcsvsqldb/sql_parser.h"
 #include "libcsvsqldb/validation_visitor.h"
 
-#include "test.h"
 #include <boost/filesystem.hpp>
+
+#include <catch2/catch.hpp>
 
 #include <fstream>
 
 namespace fs = boost::filesystem;
 
 
-class ExecutionPlanTestCase
+TEST_CASE("Execution Plan Test", "[engine]")
 {
-public:
-  ExecutionPlanTestCase()
-  {
-  }
-
-  void setUp()
-  {
-  }
-
-  void tearDown()
-  {
-  }
-
-  void planTest()
+  SECTION("plan")
   {
     csvsqldb::FunctionRegistry functions;
     csvsqldb::SQLParser parser(functions);
@@ -72,8 +60,8 @@ public:
     csvsqldb::ASTNodePtr node = parser.parse(
       "CREATE TABLE employees(emp_no INTEGER,birth_date DATE NOT NULL,first_name VARCHAR(25) NOT NULL,last_name VARCHAR(50) "
       "NOT NULL,gender CHAR,hire_date DATE,PRIMARY KEY(emp_no))");
-    MPF_TEST_ASSERT(node);
-    MPF_TEST_ASSERT(std::dynamic_pointer_cast<csvsqldb::ASTCreateTableNode>(node));
+    REQUIRE(node);
+    REQUIRE(std::dynamic_pointer_cast<csvsqldb::ASTCreateTableNode>(node));
     csvsqldb::ASTCreateTableNodePtr createNode = std::dynamic_pointer_cast<csvsqldb::ASTCreateTableNode>(node);
 
     csvsqldb::TableData tabledata = csvsqldb::TableData::fromCreateAST(createNode);
@@ -90,7 +78,7 @@ public:
     node = parser.parse(
       "SELECT emp_no,CAST((emp_no * 2) as real) as double_emp,emp.first_name as firstname,emp.last_name,birth_date,hire_date "
       "FROM employees AS emp WHERE birth_date between DATE'1960-01-01' and  DATE'1970-12-31' and gender IS NOT NULL;");
-    MPF_TEST_ASSERT(node);
+    REQUIRE(node);
 
     csvsqldb::SymbolTablePtr symbolTable = node->symbolTable();
     //        symbolTable->dump();
@@ -102,7 +90,7 @@ public:
     //        std::cout << std::endl;
 
     std::fstream dataFile((tempDir / "employees.csv").string(), std::ios_base::trunc | std::ios_base::out);
-    MPF_TEST_ASSERT(dataFile);
+    CHECK(dataFile);
 
     dataFile << (R"(emp_no,birth_date,first_name,last_name,gender,hire_date
 47291,1960-09-09,Ulf,Flexer,M,2000-01-12
@@ -130,7 +118,7 @@ public:
     csvsqldb::ExecutionPlanVisitor<csvsqldb::OperatorNodeFactory> execVisitor(context, execPlan, output);
     node->accept(execVisitor);
 
-    MPF_TEST_ASSERTEQUAL(3, execPlan.execute());
+    CHECK(3 == execPlan.execute());
 
     std::string expected = R"(#EMP_NO,DOUBLE_EMP,FIRSTNAME,EMP.LAST_NAME,BIRTH_DATE,HIRE_DATE
 47291,94582.000000,'Ulf','Flexer',1960-09-09,2000-01-12
@@ -138,10 +126,6 @@ public:
 205048,410096.000000,'Ennio','Alblas',1960-09-12,2000-01-06
 )";
 
-    MPF_TEST_ASSERTEQUAL(expected, output.str());
+    CHECK(expected == output.str());
   }
-};
-
-MPF_REGISTER_TEST_START("ExecutionPlanSuite", ExecutionPlanTestCase);
-MPF_REGISTER_TEST(ExecutionPlanTestCase::planTest);
-MPF_REGISTER_TEST_END();
+}

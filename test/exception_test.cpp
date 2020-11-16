@@ -33,55 +33,39 @@
 
 #include "libcsvsqldb/base/exception.h"
 
-#include "test.h"
+#include <catch2/catch.hpp>
 
 #include <iostream>
 
 
-class ExceptionTestCase
+TEST_CASE("Exception Test", "[exception]")
 {
-public:
-  void setUp()
-  {
-  }
-
-  void tearDown()
-  {
-  }
-
-  void exceptionTest()
+  SECTION("exception")
   {
     try {
       throw csvsqldb::FilesystemException(ENOENT, "Filesystem");
     } catch (csvsqldb::Exception& ex) {
-      MPF_TEST_ASSERTEQUAL(ENOENT, ex.code().value());
-      // csvsqldb::evaluateException();
+      CHECK(ENOENT == ex.code().value());
     }
   }
 
-  void errnoTest()
+  SECTION("errno")
   {
     errno = EWOULDBLOCK;
     std::string txt = csvsqldb::errnoText();
-    MPF_TEST_ASSERTEQUAL(strerror(EWOULDBLOCK), txt);
+    CHECK(strerror(EWOULDBLOCK) == txt);
   }
 
-  void sysException()
+  SECTION("sys exception")
   {
     errno = EWOULDBLOCK;
     try {
       csvsqldb::throwSysError("mydomain");
     } catch (csvsqldb::Exception& ex) {
-      MPF_TEST_ASSERTEQUAL(EWOULDBLOCK, ex.code().value());
+      CHECK(EWOULDBLOCK == ex.code().value());
       errno = EWOULDBLOCK;
       std::string expected = csvsqldb::errnoText();
-      MPF_TEST_ASSERTEQUAL("mydomain" + std::string(": ") + expected, ex.what());
+      CHECK("mydomain" + std::string(": ") + expected == ex.what());
     }
   }
-};
-
-MPF_REGISTER_TEST_START("ApplicationTestSuite", ExceptionTestCase);
-MPF_REGISTER_TEST(ExceptionTestCase::exceptionTest);
-MPF_REGISTER_TEST(ExceptionTestCase::errnoTest);
-MPF_REGISTER_TEST(ExceptionTestCase::sysException);
-MPF_REGISTER_TEST_END();
+}

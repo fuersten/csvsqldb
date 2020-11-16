@@ -37,25 +37,12 @@
 #include "libcsvsqldb/tabledata.h"
 #include "libcsvsqldb/validation_visitor.h"
 
-#include "test.h"
+#include <catch2/catch.hpp>
 
 
-class SymboltableTestCase
+TEST_CASE("Symbol Table Test", "[engine]")
 {
-public:
-  SymboltableTestCase()
-  {
-  }
-
-  void setUp()
-  {
-  }
-
-  void tearDown()
-  {
-  }
-
-  void addSymbolTest()
+  SECTION("add symbol")
   {
     csvsqldb::SymbolTablePtr st = csvsqldb::SymbolTable::createSymbolTable();
 
@@ -70,20 +57,20 @@ public:
       st->addSymbol("emp", info);
     }
 
-    MPF_TEST_ASSERT(!st->hasSymbol("emp_no"));
-    MPF_TEST_ASSERT(st->hasSymbol("emp"));
+    CHECK(!st->hasSymbol("emp_no"));
+    CHECK(st->hasSymbol("emp"));
 
     {
       const csvsqldb::SymbolInfoPtr& info = st->findSymbol("emp");
-      MPF_TEST_ASSERTEQUAL("emp", info->_alias);
-      MPF_TEST_ASSERTEQUAL(csvsqldb::PLAIN, info->_symbolType);
-      MPF_TEST_ASSERTEQUAL(csvsqldb::INT, info->_type);
-      MPF_TEST_ASSERTEQUAL("employees", info->_prefix);
-      MPF_TEST_ASSERTEQUAL("emp_no", info->_identifier);
+      CHECK("emp" == info->_alias);
+      CHECK(csvsqldb::PLAIN == info->_symbolType);
+      CHECK(csvsqldb::INT == info->_type);
+      CHECK("employees" == info->_prefix);
+      CHECK("emp_no" == info->_identifier);
     }
   }
 
-  void updateSymbolTest()
+  SECTION("update symbol")
   {
     csvsqldb::SymbolTablePtr st = csvsqldb::SymbolTable::createSymbolTable();
 
@@ -108,30 +95,30 @@ public:
     }
 
     {
-      MPF_TEST_ASSERT(!st->hasSymbol("emp"));
+      CHECK(!st->hasSymbol("emp"));
       const csvsqldb::SymbolInfoPtr& info = st->findSymbol("function");
-      MPF_TEST_ASSERTEQUAL("emp", info->_alias);
-      MPF_TEST_ASSERTEQUAL(csvsqldb::FUNCTION, info->_symbolType);
-      MPF_TEST_ASSERTEQUAL(csvsqldb::REAL, info->_type);
-      MPF_TEST_ASSERTEQUAL("", info->_prefix);
-      MPF_TEST_ASSERTEQUAL("function", info->_name);
+      CHECK("emp" == info->_alias);
+      CHECK(csvsqldb::FUNCTION == info->_symbolType);
+      CHECK(csvsqldb::REAL == info->_type);
+      CHECK("" == info->_prefix);
+      CHECK("function" == info->_name);
     }
   }
 
-  void nextSymbolTest()
+  SECTION("next symbol")
   {
     csvsqldb::SymbolTablePtr st = csvsqldb::SymbolTable::createSymbolTable();
 
-    MPF_TEST_ASSERTEQUAL("$alias_1", st->getNextAlias());
+    CHECK("$alias_1" == st->getNextAlias());
   }
 
-  void testNestedSymbolTable()
+  SECTION("nested symbol table")
   {
     csvsqldb::TableData tabledata("EMPLOYEES");
-    tabledata.addColumn("id", csvsqldb::INT, true, true, true, csvsqldb::Any(), csvsqldb::ASTExprNodePtr(), 0);
-    tabledata.addColumn("first_name", csvsqldb::STRING, false, false, true, csvsqldb::Any(), csvsqldb::ASTExprNodePtr(), 64);
-    tabledata.addColumn("last_name", csvsqldb::STRING, false, false, true, csvsqldb::Any(), csvsqldb::ASTExprNodePtr(), 64);
-    tabledata.addColumn("birth_date", csvsqldb::DATE, false, false, true, csvsqldb::Any(), csvsqldb::ASTExprNodePtr(), 0);
+    tabledata.addColumn("id", csvsqldb::INT, true, true, true, std::any(), csvsqldb::ASTExprNodePtr(), 0);
+    tabledata.addColumn("first_name", csvsqldb::STRING, false, false, true, std::any(), csvsqldb::ASTExprNodePtr(), 64);
+    tabledata.addColumn("last_name", csvsqldb::STRING, false, false, true, std::any(), csvsqldb::ASTExprNodePtr(), 64);
+    tabledata.addColumn("birth_date", csvsqldb::DATE, false, false, true, std::any(), csvsqldb::ASTExprNodePtr(), 0);
 
     csvsqldb::FileMapping mapping;
     csvsqldb::Database database("/tmp", mapping);
@@ -206,32 +193,32 @@ public:
     st->typeSymbolTable(database);
 
     {
-      MPF_TEST_ASSERT(st->hasSymbol("first_name"));
+      CHECK(st->hasSymbol("first_name"));
       const csvsqldb::SymbolInfoPtr& info = st->findSymbol("first_name");
-      MPF_TEST_ASSERTEQUAL("", info->_alias);
-      MPF_TEST_ASSERTEQUAL(csvsqldb::PLAIN, info->_symbolType);
-      MPF_TEST_ASSERTEQUAL(csvsqldb::STRING, info->_type);
-      MPF_TEST_ASSERTEQUAL("", info->_prefix);
-      MPF_TEST_ASSERTEQUAL("first_name", info->_identifier);
+      CHECK("" == info->_alias);
+      CHECK(csvsqldb::PLAIN == info->_symbolType);
+      CHECK(csvsqldb::STRING == info->_type);
+      CHECK("" == info->_prefix);
+      CHECK("first_name" == info->_identifier);
     }
     {
-      MPF_TEST_ASSERT(st->hasSymbol("name"));
+      CHECK(st->hasSymbol("name"));
       const csvsqldb::SymbolInfoPtr& info = st->findSymbol("name");
-      MPF_TEST_ASSERTEQUAL("name", info->_alias);
-      MPF_TEST_ASSERTEQUAL(csvsqldb::PLAIN, info->_symbolType);
-      MPF_TEST_ASSERTEQUAL(csvsqldb::STRING, info->_type);
-      MPF_TEST_ASSERTEQUAL("", info->_prefix);
-      MPF_TEST_ASSERTEQUAL("last_name", info->_identifier);
+      CHECK("name" == info->_alias);
+      CHECK(csvsqldb::PLAIN == info->_symbolType);
+      CHECK(csvsqldb::STRING == info->_type);
+      CHECK("" == info->_prefix);
+      CHECK("last_name" == info->_identifier);
     }
   }
 
-  void testNestedSymbolTableWithAlias()
+  SECTION("nested symbol table with alias")
   {
     csvsqldb::TableData tabledata("EMPLOYEES");
-    tabledata.addColumn("id", csvsqldb::INT, true, true, true, csvsqldb::Any(), csvsqldb::ASTExprNodePtr(), 0);
-    tabledata.addColumn("first_name", csvsqldb::STRING, false, false, true, csvsqldb::Any(), csvsqldb::ASTExprNodePtr(), 64);
-    tabledata.addColumn("last_name", csvsqldb::STRING, false, false, true, csvsqldb::Any(), csvsqldb::ASTExprNodePtr(), 64);
-    tabledata.addColumn("birth_date", csvsqldb::DATE, false, false, true, csvsqldb::Any(), csvsqldb::ASTExprNodePtr(), 0);
+    tabledata.addColumn("id", csvsqldb::INT, true, true, true, std::any(), csvsqldb::ASTExprNodePtr(), 0);
+    tabledata.addColumn("first_name", csvsqldb::STRING, false, false, true, std::any(), csvsqldb::ASTExprNodePtr(), 64);
+    tabledata.addColumn("last_name", csvsqldb::STRING, false, false, true, std::any(), csvsqldb::ASTExprNodePtr(), 64);
+    tabledata.addColumn("birth_date", csvsqldb::DATE, false, false, true, std::any(), csvsqldb::ASTExprNodePtr(), 0);
 
     csvsqldb::FileMapping mapping;
     csvsqldb::Database database("/tmp", mapping);
@@ -306,26 +293,26 @@ public:
     st->typeSymbolTable(database);
 
     {
-      MPF_TEST_ASSERT(st->hasSymbol("emp.first_name"));
+      CHECK(st->hasSymbol("emp.first_name"));
       const csvsqldb::SymbolInfoPtr& info = st->findSymbol("emp.first_name");
-      MPF_TEST_ASSERTEQUAL("", info->_alias);
-      MPF_TEST_ASSERTEQUAL(csvsqldb::PLAIN, info->_symbolType);
-      MPF_TEST_ASSERTEQUAL(csvsqldb::STRING, info->_type);
-      MPF_TEST_ASSERTEQUAL("emp", info->_prefix);
-      MPF_TEST_ASSERTEQUAL("first_name", info->_identifier);
+      CHECK("" == info->_alias);
+      CHECK(csvsqldb::PLAIN == info->_symbolType);
+      CHECK(csvsqldb::STRING == info->_type);
+      CHECK("emp" == info->_prefix);
+      CHECK("first_name" == info->_identifier);
     }
     {
-      MPF_TEST_ASSERT(st->hasSymbol("name"));
+      CHECK(st->hasSymbol("name"));
       const csvsqldb::SymbolInfoPtr& info = st->findSymbol("name");
-      MPF_TEST_ASSERTEQUAL("name", info->_alias);
-      MPF_TEST_ASSERTEQUAL(csvsqldb::PLAIN, info->_symbolType);
-      MPF_TEST_ASSERTEQUAL(csvsqldb::STRING, info->_type);
-      MPF_TEST_ASSERTEQUAL("emp", info->_prefix);
-      MPF_TEST_ASSERTEQUAL("last_name", info->_identifier);
+      CHECK("name" == info->_alias);
+      CHECK(csvsqldb::PLAIN == info->_symbolType);
+      CHECK(csvsqldb::STRING == info->_type);
+      CHECK("emp" == info->_prefix);
+      CHECK("last_name" == info->_identifier);
     }
   }
 
-  void parsedSymbolTable()
+  SECTION("parsed symbol table")
   {
     csvsqldb::FunctionRegistry functions;
     csvsqldb::SQLParser parser(functions);
@@ -333,8 +320,8 @@ public:
     csvsqldb::ASTNodePtr node = parser.parse(
       "CREATE TABLE employees(emp_no INTEGER,birth_date DATE NOT NULL,first_name VARCHAR(25) NOT NULL,last_name VARCHAR(50) "
       "NOT NULL,gender CHAR,hire_date DATE,PRIMARY KEY(emp_no))");
-    MPF_TEST_ASSERT(node);
-    MPF_TEST_ASSERT(std::dynamic_pointer_cast<csvsqldb::ASTCreateTableNode>(node));
+    REQUIRE(node);
+    REQUIRE(std::dynamic_pointer_cast<csvsqldb::ASTCreateTableNode>(node));
     csvsqldb::ASTCreateTableNodePtr createNode = std::dynamic_pointer_cast<csvsqldb::ASTCreateTableNode>(node);
 
     csvsqldb::TableData tabledata = csvsqldb::TableData::fromCreateAST(createNode);
@@ -346,20 +333,20 @@ public:
     node =
       parser.parse("SELECT \"emp\".\"first_name\",emp.last_name,birth_date,hire_date FROM \"employees\" AS emp WHERE hire_date < "
                    "DATE'2014-01-01'");
-    MPF_TEST_ASSERT(node);
+    REQUIRE(node);
 
     csvsqldb::SymbolTablePtr symbolTable = node->symbolTable();
     symbolTable->typeSymbolTable(database);
 
     node = parser.parse("select emp_no no,emp_no as id from employees where last_name = 'Schmiedel' and emp_no > 490000");
-    MPF_TEST_ASSERT(node);
+    REQUIRE(node);
 
     symbolTable = node->symbolTable();
 
     symbolTable->typeSymbolTable(database);
   }
 
-  void complexSymbolTable()
+  SECTION("complex symbol table")
   {
     csvsqldb::FunctionRegistry functions;
     csvsqldb::SQLParser parser(functions);
@@ -369,8 +356,8 @@ public:
     csvsqldb::ASTNodePtr node = parser.parse(
       "CREATE TABLE employees(emp_no INTEGER,birth_date DATE NOT NULL,first_name VARCHAR(25) NOT NULL,last_name VARCHAR(50) "
       "NOT NULL,gender CHAR,hire_date DATE,PRIMARY KEY(emp_no))");
-    MPF_TEST_ASSERT(node);
-    MPF_TEST_ASSERT(std::dynamic_pointer_cast<csvsqldb::ASTCreateTableNode>(node));
+    REQUIRE(node);
+    REQUIRE(std::dynamic_pointer_cast<csvsqldb::ASTCreateTableNode>(node));
     csvsqldb::ASTCreateTableNodePtr createNode = std::dynamic_pointer_cast<csvsqldb::ASTCreateTableNode>(node);
     csvsqldb::TableData tabledata = csvsqldb::TableData::fromCreateAST(createNode);
 
@@ -378,8 +365,8 @@ public:
 
     node = parser.parse(
       "CREATE TABLE salaries(emp_no INTEGER PRIMARY KEY,salary FLOAT CHECK(salary > 0.0),from_date DATE,to_date DATE)");
-    MPF_TEST_ASSERT(node);
-    MPF_TEST_ASSERT(std::dynamic_pointer_cast<csvsqldb::ASTCreateTableNode>(node));
+    REQUIRE(node);
+    REQUIRE(std::dynamic_pointer_cast<csvsqldb::ASTCreateTableNode>(node));
     createNode = std::dynamic_pointer_cast<csvsqldb::ASTCreateTableNode>(node);
     tabledata = csvsqldb::TableData::fromCreateAST(createNode);
 
@@ -388,19 +375,10 @@ public:
     csvsqldb::ASTValidationVisitor validationVisitor(database);
 
     node = parser.parse("SELECT * FROM employees e, salaries s WHERE e.emp_no = s.emp_no and s.salary > 20000");
-    MPF_TEST_ASSERT(node);
+    REQUIRE(node);
 
     csvsqldb::SymbolTablePtr symbolTable = node->symbolTable();
 
-    MPF_TEST_EXPECTS(node->accept(validationVisitor), csvsqldb::SqlParserException);
+    CHECK_THROWS_AS(node->accept(validationVisitor), csvsqldb::SqlParserException);
   }
-};
-
-MPF_REGISTER_TEST_START("SymboltableTestSuite", SymboltableTestCase);
-MPF_REGISTER_TEST(SymboltableTestCase::addSymbolTest);
-MPF_REGISTER_TEST(SymboltableTestCase::updateSymbolTest);
-MPF_REGISTER_TEST(SymboltableTestCase::nextSymbolTest);
-MPF_REGISTER_TEST(SymboltableTestCase::testNestedSymbolTable);
-MPF_REGISTER_TEST(SymboltableTestCase::parsedSymbolTable);
-MPF_REGISTER_TEST(SymboltableTestCase::complexSymbolTable);
-MPF_REGISTER_TEST_END();
+}

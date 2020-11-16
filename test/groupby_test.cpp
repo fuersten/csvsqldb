@@ -34,26 +34,14 @@
 #include "libcsvsqldb/block.h"
 
 #include "data_test_framework.h"
-#include "test.h"
 #include <unordered_set>
 
+#include <catch2/catch.hpp>
 
-class GroupByTestCase
+
+TEST_CASE("Group By Test", "[engine]")
 {
-public:
-  GroupByTestCase()
-  {
-  }
-
-  void setUp()
-  {
-  }
-
-  void tearDown()
-  {
-  }
-
-  void groupingElementTest()
+  SECTION("grouping element")
   {
     csvsqldb::Variants first;
     first.push_back(csvsqldb::Variant(4711));
@@ -66,9 +54,9 @@ public:
     csvsqldb::GroupingElement elementLeft(first);
     csvsqldb::GroupingElement elementRight(second);
 
-    MPF_TEST_ASSERT(elementLeft.getHash() != elementRight.getHash());
-    MPF_TEST_ASSERT(!(elementLeft == elementRight));
-    MPF_TEST_ASSERT(elementLeft == elementLeft);
+    CHECK(elementLeft.getHash() != elementRight.getHash());
+    CHECK_FALSE(elementLeft == elementRight);
+    CHECK(elementLeft == elementLeft);
 
 
     typedef std::unordered_set<csvsqldb::GroupingElement> HashSet;
@@ -76,10 +64,10 @@ public:
     hashSet.insert(elementLeft);
     hashSet.insert(elementRight);
 
-    MPF_TEST_ASSERTEQUAL(2UL, hashSet.size());
+    CHECK(2UL == hashSet.size());
 
     HashSet::const_iterator found = hashSet.find(elementRight);
-    MPF_TEST_ASSERT(found != hashSet.end());
+    CHECK(found != hashSet.end());
 
     csvsqldb::Variants third;
     third.push_back(csvsqldb::Variant(815));
@@ -87,10 +75,10 @@ public:
     csvsqldb::GroupingElement compareElement(third);
 
     found = hashSet.find(compareElement);
-    MPF_TEST_ASSERT(found != hashSet.end());
+    CHECK(found != hashSet.end());
   }
 
-  void simpleGroupByTest()
+  SECTION("simple group by")
   {
     DatabaseTestWrapper dbWrapper;
     dbWrapper.addTable(TableInitializer("employees", {{"id", csvsqldb::INT},
@@ -116,16 +104,16 @@ public:
       engine.execute("SELECT count(*) as \"count\",last_name,max(birth_date) as \"max birthdate\",min(hire_date) as \"min hire\" \
                                           FROM employees group by employees.last_name",
                      statistics, ss);
-    MPF_TEST_ASSERTEQUAL(2, rowCount);
+    CHECK(2 == rowCount);
 
     std::string expected = R"(#COUNT,LAST_NAME,MAX BIRTHDATE,MIN HIRE
 1,'Tello de Fürstenberg',1963-03-06,2003-06-15
 2,'Fürstenberg',1970-09-23,2003-04-15
 )";
-    MPF_TEST_ASSERTEQUAL(expected, ss.str());
+    CHECK(expected == ss.str());
   }
 
-  void simpleGroupByCountWithNullTest()
+  SECTION("simple group by count with null")
   {
     DatabaseTestWrapper dbWrapper;
     dbWrapper.addTable(TableInitializer("employees", {{"id", csvsqldb::INT},
@@ -151,16 +139,16 @@ public:
       "SELECT count(id) as \"count\",last_name,max(birth_date) as \"max birthdate\",min(hire_date) as \"min hire\" \
                                           FROM employees group by last_name",
       statistics, ss);
-    MPF_TEST_ASSERTEQUAL(2, rowCount);
+    CHECK(2 == rowCount);
 
     std::string expected = R"(#COUNT,LAST_NAME,MAX BIRTHDATE,MIN HIRE
 1,'Tello de Fürstenberg',1963-03-06,2003-06-15
 1,'Fürstenberg',1970-09-23,2003-04-15
 )";
-    MPF_TEST_ASSERTEQUAL(expected, ss.str());
+    CHECK(expected == ss.str());
   }
 
-  void groupByWithSupressedGroupBy()
+  SECTION("group by with suppressed group by")
   {
     DatabaseTestWrapper dbWrapper;
     dbWrapper.addTable(TableInitializer("employees", {{"id", csvsqldb::INT},
@@ -186,19 +174,12 @@ public:
       engine.execute("SELECT count(*) as \"count\",max(birth_date) as \"max birthdate\",min(hire_date) as \"min hire\" \
                                           FROM employees group by last_name",
                      statistics, ss);
-    MPF_TEST_ASSERTEQUAL(2, rowCount);
+    CHECK(2 == rowCount);
 
     std::string expected = R"(#COUNT,MAX BIRTHDATE,MIN HIRE
 1,1963-03-06,2003-06-15
 2,1970-09-23,2003-04-15
 )";
-    MPF_TEST_ASSERTEQUAL(expected, ss.str());
+    CHECK(expected == ss.str());
   }
-};
-
-MPF_REGISTER_TEST_START("GroupByTestSuite", GroupByTestCase);
-MPF_REGISTER_TEST(GroupByTestCase::groupingElementTest);
-MPF_REGISTER_TEST(GroupByTestCase::simpleGroupByTest);
-MPF_REGISTER_TEST(GroupByTestCase::simpleGroupByCountWithNullTest);
-MPF_REGISTER_TEST(GroupByTestCase::groupByWithSupressedGroupBy);
-MPF_REGISTER_TEST_END();
+}

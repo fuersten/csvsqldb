@@ -35,32 +35,12 @@
 #include "libcsvsqldb/base/string_helper.h"
 #include "libcsvsqldb/base/time_helper.h"
 
-#include "test.h"
+#include <catch2/catch.hpp>
 
 
-namespace csvsqldb
+TEST_CASE("Timehelper Test", "[utils]")
 {
-  static std::string callTimeStream(const std::chrono::system_clock::time_point& tp)
-  {
-    std::ostringstream os;
-    os << tp;
-    return os.str();
-  }
-}
-
-
-class TimeHelperTestCase
-{
-public:
-  void setUp()
-  {
-  }
-
-  void tearDown()
-  {
-  }
-
-  void timeConversionTest()
+  SECTION("time conversion")
   {
     std::chrono::duration<int, std::mega> megaSecs(22);
     std::chrono::duration<int, std::kilo> kiloSecs(921);
@@ -86,24 +66,18 @@ public:
     struct tm* lt = ::localtime(&tt);
     ::strftime(buffer, 20, "%FT%T", lt);
 
-    MPF_TEST_ASSERTEQUAL(buffer, csvsqldb::callTimeStream(tp));
-    MPF_TEST_ASSERTEQUAL("1970-09-23T07:00:00", csvsqldb::timestampToGMTString(tp));
-    MPF_TEST_ASSERTEQUAL(buffer, csvsqldb::timestampToLocalString(tp));
+    CHECK("1970-09-23T07:00:00" == csvsqldb::timestampToGMTString(tp));
+    CHECK(buffer == csvsqldb::timestampToLocalString(tp));
 
     csvsqldb::Timepoint ltp = csvsqldb::stringToTimestamp("1970-09-23T07:00:00");
-    MPF_TEST_ASSERTEQUAL(tp, ltp);
+    CHECK(tp == ltp);
   }
 
-  void dateConversion()
+  SECTION("date conversion")
   {
     csvsqldb::Date d1 = csvsqldb::dateFromString("2014-12-30");
-    MPF_TEST_ASSERTEQUAL(30, d1.day());
-    MPF_TEST_ASSERTEQUAL(12, d1.month());
-    MPF_TEST_ASSERTEQUAL(2014, d1.year());
+    CHECK(30 == d1.day());
+    CHECK(12 == d1.month());
+    CHECK(2014 == d1.year());
   }
-};
-
-MPF_REGISTER_TEST_START("ApplicationTestSuite", TimeHelperTestCase);
-MPF_REGISTER_TEST(TimeHelperTestCase::timeConversionTest);
-MPF_REGISTER_TEST(TimeHelperTestCase::dateConversion);
-MPF_REGISTER_TEST_END();
+}

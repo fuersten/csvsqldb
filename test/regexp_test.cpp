@@ -33,270 +33,250 @@
 
 #include "libcsvsqldb/base/regexp.h"
 
-#include "test.h"
+#include <catch2/catch.hpp>
 
 
-class RegExpTestCase
+TEST_CASE("Regexp Test", "[utils]")
 {
-public:
-  void setUp()
-  {
-  }
-
-  void tearDown()
-  {
-  }
-
-  void empty()
+  SECTION("empty")
   {
     csvsqldb::RegExp r("");
-    MPF_TEST_ASSERT(r.match(""));
+    CHECK(r.match(""));
   }
 
-  void simple()
+  SECTION("simple")
   {
     csvsqldb::RegExp r("ab");
-    MPF_TEST_ASSERT(r.match("ab"));
-    MPF_TEST_ASSERT(!r.match("ba"));
+    CHECK(r.match("ab"));
+    CHECK_FALSE(r.match("ba"));
 
     r = "(a|b)(a|b)";
-    MPF_TEST_ASSERT(r.match("ba"));
-    MPF_TEST_ASSERT(r.match("ab"));
-    MPF_TEST_ASSERT(r.match("aa"));
-    MPF_TEST_ASSERT(r.match("bb"));
-    MPF_TEST_ASSERT(!r.match("bbb"));
+    CHECK(r.match("ba"));
+    CHECK(r.match("ab"));
+    CHECK(r.match("aa"));
+    CHECK(r.match("bb"));
+    CHECK_FALSE(r.match("bbb"));
 
     r = "((ab)cd)";
-    MPF_TEST_ASSERT(r.match("abcd"));
-    MPF_TEST_ASSERT(!r.match("ab"));
+    CHECK(r.match("abcd"));
+    CHECK_FALSE(r.match("ab"));
 
-    MPF_TEST_EXPECTS(r = "(ab", std::runtime_error);
-    MPF_TEST_EXPECTS(r = "((ab)cd", std::runtime_error);
+    CHECK_THROWS_AS(r = "(ab", std::runtime_error);
+    CHECK_THROWS_AS(r = "((ab)cd", std::runtime_error);
   }
 
-  void copyRegexp()
+  SECTION("copy")
   {
     csvsqldb::RegExp r("abcd");
-    MPF_TEST_ASSERT(r.match("abcd"));
+    CHECK(r.match("abcd"));
 
     csvsqldb::RegExp e(r);
-    MPF_TEST_ASSERT(e.match("abcd"));
+    CHECK(e.match("abcd"));
 
     e = "abcd";
-    MPF_TEST_ASSERT(e.match("abcd"));
+    CHECK(e.match("abcd"));
   }
 
-  void starPlusOr()
+  SECTION("star plus or")
   {
     csvsqldb::RegExp r("a+");
-    MPF_TEST_ASSERT(!r.match(""));
-    MPF_TEST_ASSERT(r.match("a"));
-    MPF_TEST_ASSERT(!r.match("b"));
-    MPF_TEST_ASSERT(r.match("aa"));
-    MPF_TEST_ASSERT(!r.match("ba"));
-    MPF_TEST_ASSERT(!r.match("aab"));
-    MPF_TEST_ASSERT(!r.match("abb"));
-    MPF_TEST_ASSERT(r.match("aaaaaaaa"));
-    MPF_TEST_ASSERT(!r.match("aaaaaaaabb"));
-    MPF_TEST_ASSERT(!r.match("aba"));
-    MPF_TEST_ASSERT(!r.match("abba"));
-    MPF_TEST_ASSERT(!r.match("abbba"));
-    MPF_TEST_ASSERT(!r.match("abbbba"));
+    CHECK_FALSE(r.match(""));
+    CHECK(r.match("a"));
+    CHECK_FALSE(r.match("b"));
+    CHECK(r.match("aa"));
+    CHECK_FALSE(r.match("ba"));
+    CHECK_FALSE(r.match("aab"));
+    CHECK_FALSE(r.match("abb"));
+    CHECK(r.match("aaaaaaaa"));
+    CHECK_FALSE(r.match("aaaaaaaabb"));
+    CHECK_FALSE(r.match("aba"));
+    CHECK_FALSE(r.match("abba"));
+    CHECK_FALSE(r.match("abbba"));
+    CHECK_FALSE(r.match("abbbba"));
 
     r = "(a|b)*";
-    MPF_TEST_ASSERT(r.match(""));
-    MPF_TEST_ASSERT(r.match("a"));
-    MPF_TEST_ASSERT(r.match("b"));
-    MPF_TEST_ASSERT(r.match("aa"));
-    MPF_TEST_ASSERT(r.match("ba"));
-    MPF_TEST_ASSERT(r.match("aab"));
-    MPF_TEST_ASSERT(r.match("abb"));
-    MPF_TEST_ASSERT(r.match("aaaaaaaa"));
-    MPF_TEST_ASSERT(r.match("aaaaaaaabb"));
-    MPF_TEST_ASSERT(r.match("aba"));
-    MPF_TEST_ASSERT(r.match("abba"));
-    MPF_TEST_ASSERT(r.match("abbba"));
-    MPF_TEST_ASSERT(r.match("abbbba"));
+    CHECK(r.match(""));
+    CHECK(r.match("a"));
+    CHECK(r.match("b"));
+    CHECK(r.match("aa"));
+    CHECK(r.match("ba"));
+    CHECK(r.match("aab"));
+    CHECK(r.match("abb"));
+    CHECK(r.match("aaaaaaaa"));
+    CHECK(r.match("aaaaaaaabb"));
+    CHECK(r.match("aba"));
+    CHECK(r.match("abba"));
+    CHECK(r.match("abbba"));
+    CHECK(r.match("abbbba"));
 
     r = "a*";
-    MPF_TEST_ASSERT(r.match(""));
-    MPF_TEST_ASSERT(r.match("a"));
-    MPF_TEST_ASSERT(!r.match("b"));
-    MPF_TEST_ASSERT(r.match("aa"));
-    MPF_TEST_ASSERT(!r.match("ba"));
-    MPF_TEST_ASSERT(!r.match("aab"));
-    MPF_TEST_ASSERT(!r.match("abb"));
-    MPF_TEST_ASSERT(r.match("aaaaaaaa"));
-    MPF_TEST_ASSERT(!r.match("aaaaaaaabb"));
-    MPF_TEST_ASSERT(!r.match("aba"));
-    MPF_TEST_ASSERT(!r.match("abba"));
-    MPF_TEST_ASSERT(!r.match("abbba"));
-    MPF_TEST_ASSERT(!r.match("abbbba"));
+    CHECK(r.match(""));
+    CHECK(r.match("a"));
+    CHECK_FALSE(r.match("b"));
+    CHECK(r.match("aa"));
+    CHECK_FALSE(r.match("ba"));
+    CHECK_FALSE(r.match("aab"));
+    CHECK_FALSE(r.match("abb"));
+    CHECK(r.match("aaaaaaaa"));
+    CHECK_FALSE(r.match("aaaaaaaabb"));
+    CHECK_FALSE(r.match("aba"));
+    CHECK_FALSE(r.match("abba"));
+    CHECK_FALSE(r.match("abbba"));
+    CHECK_FALSE(r.match("abbbba"));
 
     r = "a(a|b)b";
-    MPF_TEST_ASSERT(!r.match(""));
-    MPF_TEST_ASSERT(!r.match("a"));
-    MPF_TEST_ASSERT(!r.match("b"));
-    MPF_TEST_ASSERT(!r.match("aa"));
-    MPF_TEST_ASSERT(!r.match("ba"));
-    MPF_TEST_ASSERT(r.match("aab"));
-    MPF_TEST_ASSERT(r.match("abb"));
-    MPF_TEST_ASSERT(!r.match("aaaaaaaa"));
-    MPF_TEST_ASSERT(!r.match("aaaaaaaabb"));
-    MPF_TEST_ASSERT(!r.match("aba"));
-    MPF_TEST_ASSERT(!r.match("abba"));
-    MPF_TEST_ASSERT(!r.match("abbba"));
-    MPF_TEST_ASSERT(!r.match("abbbba"));
+    CHECK_FALSE(r.match(""));
+    CHECK_FALSE(r.match("a"));
+    CHECK_FALSE(r.match("b"));
+    CHECK_FALSE(r.match("aa"));
+    CHECK_FALSE(r.match("ba"));
+    CHECK(r.match("aab"));
+    CHECK(r.match("abb"));
+    CHECK_FALSE(r.match("aaaaaaaa"));
+    CHECK_FALSE(r.match("aaaaaaaabb"));
+    CHECK_FALSE(r.match("aba"));
+    CHECK_FALSE(r.match("abba"));
+    CHECK_FALSE(r.match("abbba"));
+    CHECK_FALSE(r.match("abbbba"));
 
     r = "(a|b)*abb";
-    MPF_TEST_ASSERT(!r.match(""));
-    MPF_TEST_ASSERT(!r.match("a"));
-    MPF_TEST_ASSERT(!r.match("b"));
-    MPF_TEST_ASSERT(!r.match("aa"));
-    MPF_TEST_ASSERT(!r.match("ba"));
-    MPF_TEST_ASSERT(!r.match("aab"));
-    MPF_TEST_ASSERT(r.match("abb"));
-    MPF_TEST_ASSERT(!r.match("aaaaaaaa"));
-    MPF_TEST_ASSERT(r.match("aaaaaaaabb"));
-    MPF_TEST_ASSERT(!r.match("aba"));
-    MPF_TEST_ASSERT(!r.match("abba"));
-    MPF_TEST_ASSERT(!r.match("abbba"));
-    MPF_TEST_ASSERT(!r.match("abbbba"));
+    CHECK_FALSE(r.match(""));
+    CHECK_FALSE(r.match("a"));
+    CHECK_FALSE(r.match("b"));
+    CHECK_FALSE(r.match("aa"));
+    CHECK_FALSE(r.match("ba"));
+    CHECK_FALSE(r.match("aab"));
+    CHECK(r.match("abb"));
+    CHECK_FALSE(r.match("aaaaaaaa"));
+    CHECK(r.match("aaaaaaaabb"));
+    CHECK_FALSE(r.match("aba"));
+    CHECK_FALSE(r.match("abba"));
+    CHECK_FALSE(r.match("abbba"));
+    CHECK_FALSE(r.match("abbbba"));
 
     r = "(a|b)*a";
-    MPF_TEST_ASSERT(!r.match(""));
-    MPF_TEST_ASSERT(r.match("a"));
-    MPF_TEST_ASSERT(!r.match("b"));
-    MPF_TEST_ASSERT(r.match("aa"));
-    MPF_TEST_ASSERT(r.match("ba"));
-    MPF_TEST_ASSERT(!r.match("aab"));
-    MPF_TEST_ASSERT(!r.match("abb"));
-    MPF_TEST_ASSERT(r.match("aaaaaaaa"));
-    MPF_TEST_ASSERT(!r.match("aaaaaaaabb"));
-    MPF_TEST_ASSERT(r.match("aba"));
-    MPF_TEST_ASSERT(r.match("abba"));
-    MPF_TEST_ASSERT(r.match("abbba"));
-    MPF_TEST_ASSERT(r.match("abbbba"));
+    CHECK_FALSE(r.match(""));
+    CHECK(r.match("a"));
+    CHECK_FALSE(r.match("b"));
+    CHECK(r.match("aa"));
+    CHECK(r.match("ba"));
+    CHECK_FALSE(r.match("aab"));
+    CHECK_FALSE(r.match("abb"));
+    CHECK(r.match("aaaaaaaa"));
+    CHECK_FALSE(r.match("aaaaaaaabb"));
+    CHECK(r.match("aba"));
+    CHECK(r.match("abba"));
+    CHECK(r.match("abbba"));
+    CHECK(r.match("abbbba"));
 
     r = "a(bb)+a";
-    MPF_TEST_ASSERT(!r.match(""));
-    MPF_TEST_ASSERT(!r.match("a"));
-    MPF_TEST_ASSERT(!r.match("b"));
-    MPF_TEST_ASSERT(!r.match("aa"));
-    MPF_TEST_ASSERT(!r.match("ba"));
-    MPF_TEST_ASSERT(!r.match("aab"));
-    MPF_TEST_ASSERT(!r.match("abb"));
-    MPF_TEST_ASSERT(!r.match("aaaaaaaa"));
-    MPF_TEST_ASSERT(!r.match("aaaaaaaabb"));
-    MPF_TEST_ASSERT(!r.match("aba"));
-    MPF_TEST_ASSERT(r.match("abba"));
-    MPF_TEST_ASSERT(!r.match("abbba"));
-    MPF_TEST_ASSERT(r.match("abbbba"));
+    CHECK_FALSE(r.match(""));
+    CHECK_FALSE(r.match("a"));
+    CHECK_FALSE(r.match("b"));
+    CHECK_FALSE(r.match("aa"));
+    CHECK_FALSE(r.match("ba"));
+    CHECK_FALSE(r.match("aab"));
+    CHECK_FALSE(r.match("abb"));
+    CHECK_FALSE(r.match("aaaaaaaa"));
+    CHECK_FALSE(r.match("aaaaaaaabb"));
+    CHECK_FALSE(r.match("aba"));
+    CHECK(r.match("abba"));
+    CHECK_FALSE(r.match("abbba"));
+    CHECK(r.match("abbbba"));
 
     r = "(a|b)c*e+f";
-    MPF_TEST_ASSERT(r.match("beef"));
-    MPF_TEST_ASSERT(r.match("acef"));
-    MPF_TEST_ASSERT(r.match("bceeeeeeef"));
-    MPF_TEST_ASSERT(!r.match("bceeeeeeeff"));
+    CHECK(r.match("beef"));
+    CHECK(r.match("acef"));
+    CHECK(r.match("bceeeeeeef"));
+    CHECK_FALSE(r.match("bceeeeeeeff"));
   }
 
-  void quest()
+  SECTION("quest")
   {
     csvsqldb::RegExp r("abc?d");
-    MPF_TEST_ASSERT(r.match("abcd"));
-    MPF_TEST_ASSERT(r.match("abd"));
+    CHECK(r.match("abcd"));
+    CHECK(r.match("abd"));
 
     r = "a(a|b)?b";
-    MPF_TEST_ASSERT(r.match("abb"));
-    MPF_TEST_ASSERT(r.match("ab"));
-    MPF_TEST_ASSERT(r.match("aab"));
-    MPF_TEST_ASSERT(!r.match("aaab"));
+    CHECK(r.match("abb"));
+    CHECK(r.match("ab"));
+    CHECK(r.match("aab"));
+    CHECK_FALSE(r.match("aaab"));
 
     r = "abcd?";
-    MPF_TEST_ASSERT(r.match("abcd"));
-    MPF_TEST_ASSERT(r.match("abc"));
+    CHECK(r.match("abcd"));
+    CHECK(r.match("abc"));
   }
 
-  void complex()
+  SECTION("complex")
   {
     csvsqldb::RegExp r("(0|(1|2|3|4|5|6|7|8|9)(0|1|2|3|4|5|6|7|8|9)*)\\.(0|1|2|3|4|5|6|7|8|9)+");
-    MPF_TEST_ASSERT(r.match("1.1"));
-    MPF_TEST_ASSERT(r.match("0.52635"));
-    MPF_TEST_ASSERT(r.match("6253700.52635"));
+    CHECK(r.match("1.1"));
+    CHECK(r.match("0.52635"));
+    CHECK(r.match("6253700.52635"));
 
-    MPF_TEST_ASSERT(!r.match("00.52635"));
-    MPF_TEST_ASSERT(!r.match("0."));
+    CHECK_FALSE(r.match("00.52635"));
+    CHECK_FALSE(r.match("0."));
   }
 
-  void characterClasses()
+  SECTION("character classes")
   {
     csvsqldb::RegExp r(".*");
-    MPF_TEST_ASSERT(r.match(""));
-    MPF_TEST_ASSERT(r.match("ashfd8w9hnf0"));
+    CHECK(r.match(""));
+    CHECK(r.match("ashfd8w9hnf0"));
 
     r = "abc.*";
-    MPF_TEST_ASSERT(r.match("abcsdkuwdg"));
-    MPF_TEST_ASSERT(!r.match("absdkuwdg"));
+    CHECK(r.match("abcsdkuwdg"));
+    CHECK_FALSE(r.match("absdkuwdg"));
 
     r = "abc.*a";
-    MPF_TEST_ASSERT(!r.match("abcsdkuwdg"));
-    MPF_TEST_ASSERT(r.match("abcsdkuwdga"));
+    CHECK_FALSE(r.match("abcsdkuwdg"));
+    CHECK(r.match("abcsdkuwdga"));
 
     r = "\\w(\\w|\\.)+@\\w+\\.\\w\\w\\w?";
-    MPF_TEST_ASSERT(r.match("lcf@miztli.de"));
-    MPF_TEST_ASSERT(r.match("lars.fuerstenberg@parstream.com"));
+    CHECK(r.match("lcf@miztli.de"));
+    CHECK(r.match("lars.fuerstenberg@parstream.com"));
 
     r = "(0|(1|2|3|4|5|6|7|8|9)\\d*)\\.\\d+";
-    MPF_TEST_ASSERT(r.match("1.1"));
-    MPF_TEST_ASSERT(r.match("0.52635"));
-    MPF_TEST_ASSERT(r.match("6253700.52635"));
+    CHECK(r.match("1.1"));
+    CHECK(r.match("0.52635"));
+    CHECK(r.match("6253700.52635"));
 
-    MPF_TEST_ASSERT(!r.match("00.52635"));
-    MPF_TEST_ASSERT(!r.match("0."));
+    CHECK_FALSE(r.match("00.52635"));
+    CHECK_FALSE(r.match("0."));
 
     r = ".*(test).*";
-    MPF_TEST_ASSERT(r.match("test"));
-    MPF_TEST_ASSERT(r.match("This is a test of a regular expression"));
+    CHECK(r.match("test"));
+    CHECK(r.match("This is a test of a regular expression"));
   }
 
-  void characterSets()
+  SECTION("character sets")
   {
     csvsqldb::RegExp r("[A-Za-z_]+");
-    MPF_TEST_ASSERT(r.match("aszgdwzZFTFfsf_T"));
+    CHECK(r.match("aszgdwzZFTFfsf_T"));
 
     r = "[^B]+";
-    MPF_TEST_ASSERT(r.match("aszgdwzZFTFfsf_T"));
-    MPF_TEST_ASSERT(!r.match("aszgdwzZFTFfsfBT"));
+    CHECK(r.match("aszgdwzZFTFfsf_T"));
+    CHECK_FALSE(r.match("aszgdwzZFTFfsfBT"));
 
     r = "(0|[1-9]\\d*)\\.\\d+";
-    MPF_TEST_ASSERT(r.match("1.1"));
-    MPF_TEST_ASSERT(r.match("0.52635"));
-    MPF_TEST_ASSERT(r.match("6253700.52635"));
+    CHECK(r.match("1.1"));
+    CHECK(r.match("0.52635"));
+    CHECK(r.match("6253700.52635"));
 
-    MPF_TEST_ASSERT(!r.match("00.52635"));
-    MPF_TEST_ASSERT(!r.match("0."));
+    CHECK_FALSE(r.match("00.52635"));
+    CHECK_FALSE(r.match("0."));
 
     r = "[-0-9]+";
-    MPF_TEST_ASSERT(r.match("23874-31-31938-138310-313872"));
+    CHECK(r.match("23874-31-31938-138310-313872"));
 
     r = "[0-9-]+";
-    MPF_TEST_ASSERT(r.match("23874-31-31938-138310-313872"));
+    CHECK(r.match("23874-31-31938-138310-313872"));
 
     r = "[0-9\\]]+";
-    MPF_TEST_ASSERT(r.match("23874]31]31938]138310]313872"));
+    CHECK(r.match("23874]31]31938]138310]313872"));
 
-    MPF_TEST_EXPECTS(r = "[0-9-+", std::runtime_error);
-    MPF_TEST_EXPECTS(r = "[0-9\\", std::runtime_error);
+    CHECK_THROWS_AS(r = "[0-9-+", std::runtime_error);
+    CHECK_THROWS_AS(r = "[0-9\\", std::runtime_error);
   }
-};
-
-MPF_REGISTER_TEST_START("RegExpTestSuite", RegExpTestCase);
-MPF_REGISTER_TEST(RegExpTestCase::empty);
-MPF_REGISTER_TEST(RegExpTestCase::simple);
-MPF_REGISTER_TEST(RegExpTestCase::copyRegexp);
-MPF_REGISTER_TEST(RegExpTestCase::starPlusOr);
-MPF_REGISTER_TEST(RegExpTestCase::quest);
-MPF_REGISTER_TEST(RegExpTestCase::complex);
-MPF_REGISTER_TEST(RegExpTestCase::characterClasses);
-MPF_REGISTER_TEST(RegExpTestCase::characterSets);
-MPF_REGISTER_TEST_END();
+}

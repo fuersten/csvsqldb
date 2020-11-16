@@ -32,25 +32,13 @@
 
 
 #include "data_test_framework.h"
-#include "test.h"
+
+#include <catch2/catch.hpp>
 
 
-class SortOperationTestCase
+TEST_CASE("Sort Operation Test", "[engine]")
 {
-public:
-  SortOperationTestCase()
-  {
-  }
-
-  void setUp()
-  {
-  }
-
-  void tearDown()
-  {
-  }
-
-  void simpleSortTest()
+  SECTION("simple sort")
   {
     DatabaseTestWrapper dbWrapper;
     dbWrapper.addTable(TableInitializer("employees", {{"id", csvsqldb::INT},
@@ -74,20 +62,20 @@ public:
     std::stringstream ss;
     int64_t rowCount =
       engine.execute("SELECT id,first_name,last_name,hire_date,birth_date FROM employees order by birth_date", statistics, ss);
-    MPF_TEST_ASSERTEQUAL(3, rowCount);
+    CHECK(3 == rowCount);
 
     std::string expected = R"(#ID,FIRST_NAME,LAST_NAME,HIRE_DATE,BIRTH_DATE
 9227,'Angelica','Tello de Fürstenberg',2003-06-15,1963-03-06
 815,'Mark','Fürstenberg',2003-04-15,1969-05-17
 NULL,'Lars','Fürstenberg',2010-02-01,1970-09-23
 )";
-    MPF_TEST_ASSERTEQUAL(expected, ss.str());
+    CHECK(expected == ss.str());
 
     ss.clear();
     ss.str("");
     rowCount = engine.execute("SELECT id,first_name,last_name,hire_date,birth_date FROM employees order by birth_date desc",
                               statistics, ss);
-    MPF_TEST_ASSERTEQUAL(3, rowCount);
+    CHECK(3 == rowCount);
 
     expected = R"(#ID,FIRST_NAME,LAST_NAME,HIRE_DATE,BIRTH_DATE
 NULL,'Lars','Fürstenberg',2010-02-01,1970-09-23
@@ -95,10 +83,6 @@ NULL,'Lars','Fürstenberg',2010-02-01,1970-09-23
 9227,'Angelica','Tello de Fürstenberg',2003-06-15,1963-03-06
 )";
 
-    MPF_TEST_ASSERTEQUAL(expected, ss.str());
+    CHECK(expected == ss.str());
   }
-};
-
-MPF_REGISTER_TEST_START("OperationTestSuite", SortOperationTestCase);
-MPF_REGISTER_TEST(SortOperationTestCase::simpleSortTest);
-MPF_REGISTER_TEST_END();
+}

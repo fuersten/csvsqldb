@@ -34,36 +34,23 @@
 #include "libcsvsqldb/sql_parser.h"
 #include "libcsvsqldb/tabledata.h"
 
-#include "test.h"
+#include <catch2/catch.hpp>
 
 
-class TabledataTestCase
+TEST_CASE("Table Data Test", "[tables]")
 {
-public:
-  TabledataTestCase()
-  {
-  }
-
-  void setUp()
-  {
-  }
-
-  void tearDown()
-  {
-  }
-
-  void encodeDecodeTest()
+  SECTION("encode decode")
   {
     csvsqldb::TableData tabledata("TestTable");
 
     csvsqldb::FunctionRegistry functions;
     csvsqldb::SQLParser parser(functions);
     csvsqldb::ASTExprNodePtr check;
-    tabledata.addColumn("id", csvsqldb::INT, true, false, false, csvsqldb::Any(), check, 0);
-    csvsqldb::Any defaultValue = std::string("Lars");
+    tabledata.addColumn("id", csvsqldb::INT, true, false, false, std::any(), check, 0);
+    std::any defaultValue = std::string("Lars");
     tabledata.addColumn("name", csvsqldb::STRING, false, false, false, defaultValue, check, 25);
     check = parser.parseExpression("age >= 18");
-    tabledata.addColumn("age", csvsqldb::INT, false, false, false, csvsqldb::Any(), check, 0);
+    tabledata.addColumn("age", csvsqldb::INT, false, false, false, std::any(), check, 0);
 
     check = csvsqldb::ASTExprNodePtr();
     csvsqldb::StringVector primaryKeys = {"id", "name"};
@@ -76,10 +63,6 @@ public:
     std::string json = tabledata.asJson();
     std::stringstream ss(json);
     csvsqldb::TableData decoded = csvsqldb::TableData::fromJson(ss);
-    MPF_TEST_ASSERTEQUAL(json, decoded.asJson());
+    CHECK(json == decoded.asJson());
   }
-};
-
-MPF_REGISTER_TEST_START("TabledataTestSuite", TabledataTestCase);
-MPF_REGISTER_TEST(TabledataTestCase::encodeDecodeTest);
-MPF_REGISTER_TEST_END();
+}

@@ -47,7 +47,7 @@ namespace csvsqldb
    * The global configuration is an abstraction that separates the configuration mechanism from the actual configuration.
    * All relevant configuration values are accessible through the global instance. By calling the GlobalConfiguration::configure
    * method
-   * again, the configuraiton can be changed for the running system. Currently you have to beware of race condition!
+   * again, the configuraiton can be changed for the running system. Currently, you have to beware of race conditions!
    */
   class CSVSQLDB_EXPORT GlobalConfiguration
   {
@@ -55,9 +55,7 @@ namespace csvsqldb
     typedef std::shared_ptr<GlobalConfiguration> Ptr;
     typedef std::map<std::string, int> DebugLevel;
 
-    virtual ~GlobalConfiguration()
-    {
-    }
+    virtual ~GlobalConfiguration() = default;
 
     /**
      * Appilcation relevant configurations.
@@ -117,7 +115,7 @@ namespace csvsqldb
     /**
      * Template method that can be overloaded in order to configure own configuration values.
      * Configures the global configuration instance using the given configuration.
-     * @param configuration The configuration to configure the global configuraiton with
+     * @param configuration The configuration to configure the global configuration with
      */
     virtual void doConfigure(const Configuration::Ptr& configuration);
 

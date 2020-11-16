@@ -32,25 +32,13 @@
 
 
 #include "data_test_framework.h"
-#include "test.h"
+
+#include <catch2/catch.hpp>
 
 
-class NullOperationTestCase
+TEST_CASE("Null Operation Test", "[engine]")
 {
-public:
-  NullOperationTestCase()
-  {
-  }
-
-  void setUp()
-  {
-  }
-
-  void tearDown()
-  {
-  }
-
-  void countTest()
+  SECTION("count")
   {
     DatabaseTestWrapper dbWrapper;
     dbWrapper.addTable(TableInitializer("employees", {{"id", csvsqldb::INT},
@@ -73,11 +61,7 @@ public:
     csvsqldb::ExecutionStatistics statistics;
     std::stringstream ss;
     int64_t rowCount = engine.execute("SELECT count(*) FROM employees WHERE id IS NOT NULL", statistics, ss);
-    MPF_TEST_ASSERTEQUAL(1, rowCount);
-    MPF_TEST_ASSERTEQUAL("#$alias_1\n2\n", ss.str());
+    CHECK(1 == rowCount);
+    CHECK("#$alias_1\n2\n" == ss.str());
   }
-};
-
-MPF_REGISTER_TEST_START("OperationTestSuite", NullOperationTestCase);
-MPF_REGISTER_TEST(NullOperationTestCase::countTest);
-MPF_REGISTER_TEST_END();
+}

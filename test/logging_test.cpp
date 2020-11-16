@@ -34,75 +34,79 @@
 #include "libcsvsqldb/base/configuration.h"
 #include "libcsvsqldb/base/logging.h"
 
-#include "test.h"
 #include "test_helper.h"
+
+#include <catch2/catch.hpp>
 
 #include <fstream>
 
 
-class StaticConfiguration : public csvsqldb::Configuration
+namespace
 {
-public:
-  StaticConfiguration()
+  class StaticConfiguration : public csvsqldb::Configuration
   {
-  }
-
-private:
-  virtual size_t doGetProperties(const std::string& path, csvsqldb::StringVector& properties) const
-  {
-    properties.push_back("TestClass1");
-    properties.push_back("TestClass2");
-    return 2;
-  }
-
-  virtual bool doHasProperty(const std::string& path) const
-  {
-    if (path == "debug.level") {
-      return true;
+  public:
+    StaticConfiguration()
+    {
     }
-    throw csvsqldb::ConfigurationException("not implemented");
-  }
 
-  virtual bool get(const std::string& path, csvsqldb::Typer<bool> typer) const
-  {
-    throw csvsqldb::ConfigurationException("not implemented");
-  }
-
-  virtual int32_t get(const std::string& path, csvsqldb::Typer<int32_t> typer) const
-  {
-    if (path == "debug.level.TestClass1") {
-      return 1;
-    } else if (path == "debug.level.TestClass2") {
+  private:
+    virtual size_t doGetProperties(const std::string& path, csvsqldb::StringVector& properties) const
+    {
+      properties.push_back("TestClass1");
+      properties.push_back("TestClass2");
       return 2;
     }
 
-    throw csvsqldb::ConfigurationException("not implemented");
-  }
-
-  virtual int64_t get(const std::string& path, csvsqldb::Typer<int64_t> typer) const
-  {
-    throw csvsqldb::ConfigurationException("not implemented");
-  }
-
-  virtual float get(const std::string& path, csvsqldb::Typer<float> typer) const
-  {
-    throw csvsqldb::ConfigurationException("not implemented");
-  }
-
-  virtual double get(const std::string& path, csvsqldb::Typer<double> typer) const
-  {
-    throw csvsqldb::ConfigurationException("not implemented");
-  }
-
-  virtual std::string get(const std::string& path, csvsqldb::Typer<std::string> typer) const
-  {
-    if (path == "logging.device") {
-      return "Console";
+    virtual bool doHasProperty(const std::string& path) const
+    {
+      if (path == "debug.level") {
+        return true;
+      }
+      throw csvsqldb::ConfigurationException("not implemented");
     }
 
-    throw csvsqldb::ConfigurationException("not implemented");
-  }
-};
+    virtual bool get(const std::string& path, csvsqldb::Typer<bool> typer) const
+    {
+      throw csvsqldb::ConfigurationException("not implemented");
+    }
+
+    virtual int32_t get(const std::string& path, csvsqldb::Typer<int32_t> typer) const
+    {
+      if (path == "debug.level.TestClass1") {
+        return 1;
+      } else if (path == "debug.level.TestClass2") {
+        return 2;
+      }
+
+      throw csvsqldb::ConfigurationException("not implemented");
+    }
+
+    virtual int64_t get(const std::string& path, csvsqldb::Typer<int64_t> typer) const
+    {
+      throw csvsqldb::ConfigurationException("not implemented");
+    }
+
+    virtual float get(const std::string& path, csvsqldb::Typer<float> typer) const
+    {
+      throw csvsqldb::ConfigurationException("not implemented");
+    }
+
+    virtual double get(const std::string& path, csvsqldb::Typer<double> typer) const
+    {
+      throw csvsqldb::ConfigurationException("not implemented");
+    }
+
+    virtual std::string get(const std::string& path, csvsqldb::Typer<std::string> typer) const
+    {
+      if (path == "logging.device") {
+        return "Console";
+      }
+
+      throw csvsqldb::ConfigurationException("not implemented");
+    }
+  };
+}
 
 class TestClass1
 {
@@ -111,18 +115,10 @@ class TestClass2
 {
 };
 
-class LoggingTestCase
+
+TEST_CASE("Logging Test", "[logging]")
 {
-public:
-  void setUp()
-  {
-  }
-
-  void tearDown()
-  {
-  }
-
-  void logIni()
+  SECTION("class logging")
   {
     csvsqldb::GlobalConfiguration::create<csvsqldb::GlobalConfiguration>();
     csvsqldb::config<csvsqldb::GlobalConfiguration>()->configure(std::make_shared<StaticConfiguration>());
@@ -137,31 +133,31 @@ public:
     CSVSQLDB_ERRORLOG("Errors are always printed");
 
     std::ifstream log((CSVSQLDB_TEST_PATH + std::string("/stderr.txt")));
-    MPF_TEST_ASSERTEQUAL(true, log.good());
+    CHECK(log.good());
     std::string line;
     int line_count(0);
     while (std::getline(log, line).good()) {
       switch (line_count) {
         case 0: {
-          MPF_TEST_ASSERT(line.find("TestClass1") != std::string::npos);
-          MPF_TEST_ASSERT(line.find("This shows up") != std::string::npos);
-          MPF_TEST_ASSERT(line.find("DEBUG") != std::string::npos);
+          CHECK(line.find("TestClass1") != std::string::npos);
+          CHECK(line.find("This shows up") != std::string::npos);
+          CHECK(line.find("DEBUG") != std::string::npos);
           break;
         }
         case 1: {
-          MPF_TEST_ASSERT(line.find("TestClass2") != std::string::npos);
-          MPF_TEST_ASSERT(line.find("This shows up also") != std::string::npos);
-          MPF_TEST_ASSERT(line.find("DEBUG") != std::string::npos);
+          CHECK(line.find("TestClass2") != std::string::npos);
+          CHECK(line.find("This shows up also") != std::string::npos);
+          CHECK(line.find("DEBUG") != std::string::npos);
           break;
         }
         case 2: {
-          MPF_TEST_ASSERT(line.find("Cannot be hidden") != std::string::npos);
-          MPF_TEST_ASSERT(line.find("INFO") != std::string::npos);
+          CHECK(line.find("Cannot be hidden") != std::string::npos);
+          CHECK(line.find("INFO") != std::string::npos);
           break;
         }
         case 3: {
-          MPF_TEST_ASSERT(line.find("Errors are always printed") != std::string::npos);
-          MPF_TEST_ASSERT(line.find("ERROR") != std::string::npos);
+          CHECK(line.find("Errors are always printed") != std::string::npos);
+          CHECK(line.find("ERROR") != std::string::npos);
           break;
         }
       }
@@ -169,8 +165,4 @@ public:
     }
     log.close();
   }
-};
-
-MPF_REGISTER_TEST_START("ApplicationTestSuite", LoggingTestCase);
-MPF_REGISTER_TEST(LoggingTestCase::logIni);
-MPF_REGISTER_TEST_END();
+}

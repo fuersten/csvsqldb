@@ -33,25 +33,12 @@
 
 #include "libcsvsqldb/sql_ast.h"
 
-#include "test.h"
+#include <catch2/catch.hpp>
 
 
-class TypesTestCase
+TEST_CASE("Types Test", "[types]")
 {
-public:
-  TypesTestCase()
-  {
-  }
-
-  void setUp()
-  {
-  }
-
-  void tearDown()
-  {
-  }
-
-  void identifiersTest()
+  SECTION("identifiers")
   {
     csvsqldb::IdentifierSet identifiers;
 
@@ -62,31 +49,26 @@ public:
     csvsqldb::ASTIdentifier bd(symbolTable, info, "", "BIRTHDATE", false);
 
     identifiers.insert(bd);
-    MPF_TEST_ASSERT(identifiers.size() == 1);
+    CHECK(identifiers.size() == 1);
 
     csvsqldb::ASTIdentifier id(symbolTable, info, "", "ID", false);
     identifiers.insert(id);
-    MPF_TEST_ASSERT(identifiers.size() == 2);
+    CHECK(identifiers.size() == 2);
     identifiers.insert(id);
-    MPF_TEST_ASSERT(identifiers.size() == 2);
+    CHECK(identifiers.size() == 2);
 
     csvsqldb::ASTIdentifier prefix_bd(symbolTable, info, "EMPLOYEES", "BIRTHDATE", false);
     identifiers.insert(prefix_bd);
-    MPF_TEST_ASSERT(identifiers.size() == 3);
+    CHECK(identifiers.size() == 3);
   }
 
-  void stringToBoolTest()
+  SECTION("string to bool")
   {
-    MPF_TEST_ASSERTEQUAL(true, csvsqldb::stringToBool("true"));
-    MPF_TEST_ASSERTEQUAL(false, csvsqldb::stringToBool("false"));
-    MPF_TEST_ASSERTEQUAL(true, csvsqldb::stringToBool("TRUE"));
-    MPF_TEST_ASSERTEQUAL(false, csvsqldb::stringToBool("FaLsE"));
-    MPF_TEST_ASSERTEQUAL(true, csvsqldb::stringToBool("1"));
-    MPF_TEST_ASSERTEQUAL(false, csvsqldb::stringToBool("0"));
+    CHECK(csvsqldb::stringToBool("true"));
+    CHECK_FALSE(csvsqldb::stringToBool("false"));
+    CHECK(csvsqldb::stringToBool("TRUE"));
+    CHECK_FALSE(csvsqldb::stringToBool("FaLsE"));
+    CHECK(csvsqldb::stringToBool("1"));
+    CHECK_FALSE(csvsqldb::stringToBool("0"));
   }
-};
-
-MPF_REGISTER_TEST_START("TypesSuite", TypesTestCase);
-MPF_REGISTER_TEST(TypesTestCase::identifiersTest);
-MPF_REGISTER_TEST(TypesTestCase::stringToBoolTest);
-MPF_REGISTER_TEST_END();
+}

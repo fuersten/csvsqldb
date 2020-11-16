@@ -32,25 +32,13 @@
 
 
 #include "data_test_framework.h"
-#include "test.h"
+
+#include <catch2/catch.hpp>
 
 
-class JoinTestCase
+TEST_CASE("Join Test", "[engine]")
 {
-public:
-  JoinTestCase()
-  {
-  }
-
-  void setUp()
-  {
-  }
-
-  void tearDown()
-  {
-  }
-
-  void simpleCrossJoinTest()
+  SECTION("simple cross join")
   {
     DatabaseTestWrapper dbWrapper;
     dbWrapper.addTable(TableInitializer("employees", {{"id", csvsqldb::INT},
@@ -82,7 +70,7 @@ public:
     csvsqldb::ExecutionStatistics statistics;
     std::stringstream ss;
     int64_t rowCount = engine.execute("SELECT * FROM employees CROSS JOIN salaries", statistics, ss);
-    MPF_TEST_ASSERTEQUAL(9, rowCount);
+    CHECK(9 == rowCount);
     std::string expected =
       R"(#EMPLOYEES.ID,EMPLOYEES.FIRST_NAME,EMPLOYEES.LAST_NAME,EMPLOYEES.BIRTH_DATE,EMPLOYEES.HIRE_DATE,SALARIES.ID,SALARIES.SALARY,SALARIES.FROM_DATE,SALARIES.TO_DATE
 815,'Mark','Fürstenberg',1969-05-17,2003-04-15,815,5000.000000,2003-04-15,2015-12-31
@@ -95,10 +83,10 @@ public:
 9227,'Angelica','Tello de Fürstenberg',1963-03-06,2003-06-15,4711,12000.000000,2010-02-01,2015-12-31
 9227,'Angelica','Tello de Fürstenberg',1963-03-06,2003-06-15,9227,450.000000,2003-06-15,2015-12-31
 )";
-    MPF_TEST_ASSERTEQUAL(expected, ss.str());
+    CHECK(expected == ss.str());
   }
 
-  void simpleInnerJoinTest()
+  SECTION("simple inner join")
   {
     DatabaseTestWrapper dbWrapper;
     dbWrapper.addTable(TableInitializer("employees", {{"id", csvsqldb::INT},
@@ -132,17 +120,17 @@ public:
     csvsqldb::ExecutionStatistics statistics;
     std::stringstream ss;
     int64_t rowCount = engine.execute("SELECT * FROM employees emp INNER JOIN salaries sal ON emp.id = sal.id", statistics, ss);
-    MPF_TEST_ASSERTEQUAL(3, rowCount);
+    CHECK(3 == rowCount);
     std::string expected =
       R"(#EMP.ID,EMP.FIRST_NAME,EMP.LAST_NAME,EMP.BIRTH_DATE,EMP.HIRE_DATE,SAL.ID,SAL.SALARY,SAL.FROM_DATE,SAL.TO_DATE
 815,'Mark','Fürstenberg',1969-05-17,2003-04-15,815,5000.000000,2003-04-15,2015-12-31
 4711,'Lars','Fürstenberg',1970-09-23,2010-02-01,4711,12000.000000,2010-02-01,2015-12-31
 9227,'Angelica','Tello de Fürstenberg',1963-03-06,2003-06-15,9227,450.000000,2003-06-15,2015-12-31
 )";
-    MPF_TEST_ASSERTEQUAL(expected, ss.str());
+    CHECK(expected == ss.str());
   }
 
-  void complexInnerJoinTest()
+  SECTION("complex inner join")
   {
     DatabaseTestWrapper dbWrapper;
     dbWrapper.addTable(TableInitializer("employees", {{"id", csvsqldb::INT},
@@ -196,16 +184,16 @@ public:
       "SELECT emp.first_name,emp.last_name,dept_emp.dept_no,departments.dept_name FROM employees as emp JOIN dept_emp ON "
       "emp.id = dept_emp.id JOIN departments ON dept_emp.dept_no = departments.dept_no",
       statistics, ss);
-    MPF_TEST_ASSERTEQUAL(3, rowCount);
+    CHECK(3 == rowCount);
     std::string expected = R"(#EMP.FIRST_NAME,EMP.LAST_NAME,DEPT_EMP.DEPT_NO,DEPARTMENTS.DEPT_NAME
 'Mark','Fürstenberg','d007','Sales'
 'Lars','Fürstenberg','d005','Development'
 'Angelica','Tello de Fürstenberg','d003','Human Resources'
 )";
-    MPF_TEST_ASSERTEQUAL(expected, ss.str());
+    CHECK(expected == ss.str());
   }
 
-  void selfJoinTest()
+  SECTION("self join")
   {
     DatabaseTestWrapper dbWrapper;
     dbWrapper.addTable(TableInitializer("creditcards", {{"nr", csvsqldb::INT},
@@ -232,7 +220,7 @@ public:
         "SELECT cc1.customer_nr,cc1.company,cc2.customer_nr,cc2.company FROM creditcards cc1 INNER JOIN creditcards cc2 ON "
         "cc1.customer_nr = cc2.customer_nr order by cc1.company,cc2.company,cc1.customer_nr",
         statistics, ss);
-      MPF_TEST_ASSERTEQUAL(9, rowCount);
+      CHECK(9 == rowCount);
       std::string expected = R"(#CC1.CUSTOMER_NR,CC1.COMPANY,CC2.CUSTOMER_NR,CC2.COMPANY
 123459,'American Express',123459,'American Express'
 123459,'American Express',123459,'Master Card'
@@ -244,7 +232,7 @@ public:
 123457,'Visa',123457,'Visa'
 123458,'Visa',123458,'Visa'
 )";
-      MPF_TEST_ASSERTEQUAL(expected, ss.str());
+      CHECK(expected == ss.str());
     }
 
     {
@@ -254,21 +242,14 @@ public:
         "SELECT cc1.customer_nr,cc1.company,cc2.customer_nr,cc2.company FROM creditcards cc1 INNER JOIN creditcards cc2 ON "
         "cc1.customer_nr = cc2.customer_nr WHERE cc1.company <> cc2.company order by cc1.company",
         statistics, ss);
-      MPF_TEST_ASSERTEQUAL(4, rowCount);
+      CHECK(4 == rowCount);
       std::string expected = R"(#CC1.CUSTOMER_NR,CC1.COMPANY,CC2.CUSTOMER_NR,CC2.COMPANY
 123459,'American Express',123459,'Master Card'
 123458,'Diners Club',123458,'Visa'
 123459,'Master Card',123459,'American Express'
 123458,'Visa',123458,'Diners Club'
 )";
-      MPF_TEST_ASSERTEQUAL(expected, ss.str());
+      CHECK(expected == ss.str());
     }
   }
-};
-
-MPF_REGISTER_TEST_START("JoinTestSuite", JoinTestCase);
-MPF_REGISTER_TEST(JoinTestCase::simpleCrossJoinTest);
-MPF_REGISTER_TEST(JoinTestCase::simpleInnerJoinTest);
-MPF_REGISTER_TEST(JoinTestCase::complexInnerJoinTest);
-MPF_REGISTER_TEST(JoinTestCase::selfJoinTest);
-MPF_REGISTER_TEST_END();
+}

@@ -34,8 +34,9 @@
 #include "libcsvsqldb/base/exception.h"
 #include "libcsvsqldb/base/thread_pool.h"
 
-#include "test.h"
 #include <condition_variable>
+
+#include <catch2/catch.hpp>
 
 #include <atomic>
 #include <mutex>
@@ -46,39 +47,30 @@ namespace
 {
   std::condition_variable g_condition;
   static std::mutex g_mutex;
+
+  class CallObject
+  {
+  public:
+    void testit(std::atomic_int& count)
+    {
+      std::default_random_engine generator;
+      std::uniform_int_distribution<int> distribution(1, 10);
+      auto sleep_time = std::bind(distribution, generator);
+
+      std::this_thread::sleep_for(std::chrono::microseconds(sleep_time()));
+
+      ++count;
+      if (count.load() == 5) {
+        g_condition.notify_one();
+      }
+    }
+  };
 }
 
-class CallObject
+
+TEST_CASE("Threadpool Test", "[utils]")
 {
-public:
-  void testit(std::atomic_int& count)
-  {
-    std::default_random_engine generator;
-    std::uniform_int_distribution<int> distribution(1, 10);
-    auto sleep_time = std::bind(distribution, generator);
-
-    std::this_thread::sleep_for(std::chrono::microseconds(sleep_time()));
-
-    ++count;
-    if (count.load() == 5) {
-      g_condition.notify_one();
-    }
-  }
-};
-
-
-class ThreadPoolTestCase
-{
-public:
-  void setUp()
-  {
-  }
-
-  void tearDown()
-  {
-  }
-
-  void threadpoolTest()
+  SECTION("threadpool")
   {
     std::atomic<int> count(0);
 
@@ -96,19 +88,19 @@ public:
     std::unique_lock<std::mutex> condition_guard(g_mutex);
     g_condition.wait_for(condition_guard, std::chrono::milliseconds(150), [&] { return count.load() == 5; });
 
-    MPF_TEST_ASSERTEQUAL(5, count.load());
+    CHECK(5 == count.load());
 
     tp.stop();
   }
 
-  void alreadyStartedTest()
+  SECTION("already started")
   {
     csvsqldb::ThreadPool tp(3);
     tp.start();
-    MPF_TEST_EXPECTS(tp.start(), csvsqldb::InvalidOperationException);
+    CHECK_THROWS_AS(tp.start(), csvsqldb::InvalidOperationException);
   }
 
-  void enqueueWithStopTest()
+  SECTION("enqueue with stop")
   {
     csvsqldb::ThreadPool tp(3);
     tp.start();
@@ -116,12 +108,6 @@ public:
     CallObject o;
     std::atomic<int> count(0);
 
-    MPF_TEST_EXPECTS(tp.enqueueTask(std::bind(&CallObject::testit, o, std::ref(count))), csvsqldb::InvalidOperationException);
+    CHECK_THROWS_AS(tp.enqueueTask(std::bind(&CallObject::testit, o, std::ref(count))), csvsqldb::InvalidOperationException);
   }
-};
-
-MPF_REGISTER_TEST_START("ThreadPoolTestSuite", ThreadPoolTestCase);
-MPF_REGISTER_TEST(ThreadPoolTestCase::threadpoolTest);
-MPF_REGISTER_TEST(ThreadPoolTestCase::alreadyStartedTest);
-MPF_REGISTER_TEST(ThreadPoolTestCase::enqueueWithStopTest);
-MPF_REGISTER_TEST_END();
+}
