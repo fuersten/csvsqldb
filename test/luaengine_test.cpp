@@ -88,9 +88,11 @@ TEST_CASE("Lua Engine Test", "[lua]")
 
     CHECK("This is a test: This is cool!" == lua.callFunction<std::string>("testparams", text, i, n));
 
-    RedirectStdOut red;
-    lua.callFunction<void>("dosomething");
-    red.flush();
+    {
+      RedirectStdOut red;
+      lua.callFunction<void>("dosomething");
+      red.flush();
+    }
 
     std::ifstream log((CSVSQLDB_TEST_PATH + std::string("/stdout.txt")));
     CHECK(log.good());

@@ -47,6 +47,7 @@ class RedirectStdOut
 public:
   RedirectStdOut()
   {
+    ::fflush(stdout);
     _oldstdout = ::dup(::fileno(stdout));
     if (_oldstdout == -1) {
       csvsqldb::throwSysError("RedirectStdOut");
@@ -84,6 +85,7 @@ class RedirectStdErr
 public:
   RedirectStdErr()
   {
+    ::fflush(stderr);
     _oldstderr = ::dup(::fileno(stderr));
     if (_oldstderr == -1) {
       csvsqldb::throwSysError("RedirectStdErr");
