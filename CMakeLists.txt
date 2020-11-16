@@ -78,15 +78,9 @@ if(NOT APPLE AND UNIX)
 elseif(APPLE AND CMAKE_GENERATOR STREQUAL Xcode)
     message("Setting up Xcode for C++11 with libc++.")
     set(CSVSQLDB_PLATFORM_LIBS )
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wheader-hygiene -Wcast-align -Wconversion -Wfloat-equal -Wformat=2
-                         -Wmissing-declarations -Wmissing-prototypes -Woverlength-strings
-                         -Wshadow -Wunreachable-code -Wextra
-                         -Wno-unused-parameter -Wpedantic -Werror")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wheader-hygiene -Wcast-align -Wconversion -Wfloat-equal -Wformat=2 -Wmissing-declarations -Wmissing-prototypes -Woverlength-strings -Wshadow -Wunreachable-code -Wextra -Wno-unused-parameter -Wpedantic -Werror")
 elseif(APPLE)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wheader-hygiene -Wcast-align -Wconversion -Wfloat-equal -Wformat=2
-                         -Wmissing-declarations -Wmissing-prototypes -Woverlength-strings
-                         -Wshadow -Wunreachable-code -Wextra
-                         -Wno-unused-parameter -Wpedantic -Werror")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wheader-hygiene -Wcast-align -Wconversion -Wfloat-equal -Wformat=2 -Wmissing-declarations -Wmissing-prototypes -Woverlength-strings -Wshadow -Wunreachable-code -Wextra -Wno-unused-parameter -Wpedantic -Werror")
 elseif(WIN32)
     add_definitions(-DNOMINMAX)
     set(CMAKE_CXX_FLAGS "-D_SCL_SECURE_NO_WARNINGS")
