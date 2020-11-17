@@ -198,22 +198,26 @@ private:
     std::string mapping;
     CLI::App app{version()};
 
-    app.set_version_flag("--version", version());
+    app.add_flag("-v,--version", "Display program version information and exit");
     app.add_flag("-i,--interactive", _interactive, "Opens an interactive sql shell");
-    app.add_flag("-v,--verbose", _verbose, "Output verbose statistics");
-    app.add_option("--show-header-line", showHeader, "If set to 'on' outputs a header line")->option_text("arg");
-    app.add_option("-p,--datbase-path", _databasePath, "Path to the database")->option_text("arg");
+    app.add_flag("-V,--verbose", _verbose, "Output verbose statistics");
+    app.add_option("--show-header-line", showHeader, "If set to 'on' outputs a header line");
+    app.add_option("-p,--datbase-path", _databasePath, "Path to the database");
     auto command_file_option =
-      app.add_option("-c,--command-file", _commandFile, "Command file with sql commands to process")->option_text("arg");
-    app.add_option("-s,--sql", _sql, "Sql commands to call")->excludes(command_file_option)->option_text("arg");
-    app.add_option("-m,--mapping", mapping, "Mapping from csv file to table")->option_text("arg");
-    app.add_option("files,-f,--files", _files, "Csv files to process, can use expansion patterns like ~ or *")
-      ->option_text("arg");
+      app.add_option("-c,--command-file", _commandFile, "Command file with sql commands to process");
+    app.add_option("-s,--sql", _sql, "Sql commands to call")->excludes(command_file_option);
+    app.add_option("-m,--mapping", mapping, "Mapping from csv file to table");
+    app.add_option("files,-f,--files", _files, "Csv files to process, can use expansion patterns like ~ or *");
 
     try {
       app.parse(argc, argv);
     } catch (const CLI::ParseError& e) {
       app.exit(e);
+      return false;
+    }
+
+    if (app.count("--version")) {
+      std::cout << version() << std::endl;
       return false;
     }
 

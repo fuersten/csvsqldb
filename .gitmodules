@@ -7,3 +7,6 @@
 [submodule "thirdparty/linenoise-ng"]
 	path = thirdparty/linenoise-ng
 	url = https://github.com/arangodb/linenoise-ng.git
+[submodule "thirdparty/json"]
+	path = thirdparty/json
+	url = https://github.com/nlohmann/json.git
