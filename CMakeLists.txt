@@ -36,9 +36,6 @@ else()
     message(FATAL_ERROR "Unknown build type ${CMAKE_BUILD_TYPE} specified")
 endif()
 
-include_directories(${CMAKE_BINARY_DIR})
-include_directories(${CMAKE_SOURCE_DIR})
-
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 
 find_package(Lua REQUIRED)
@@ -46,15 +43,6 @@ find_package(Threads)
 
 if(NOT LUA_FOUND)
     message(FATAL_ERROR "Could not find LUA")
-endif()
-
-if(NOT WIN32)
-    include_directories(${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/libcsvsqldb ${CMAKE_CURRENT_BINARY_DIR})
-    include_directories(SYSTEM ${LUA_INCLUDE_DIR})
-else()
-    include_directories(${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
-    include_directories(SYSTEM ${LUA_INCLUDE_DIR})
-    link_directories(${CMAKE_LIBRARY_OUTPUT_DIRECTORY} ${LUA_LIBRARY_DIRS})
 endif()
 
 if(CMAKE_BUILD_TYPE MATCHES "Debug")
@@ -115,4 +103,3 @@ endif()
 add_subdirectory(csvsqldb)
 add_subdirectory(libcsvsqldb)
 add_subdirectory(test)
-add_subdirectory(thirdparty)

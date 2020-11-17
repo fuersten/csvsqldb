@@ -36,7 +36,7 @@
 
 #include "libcsvsqldb/inc.h"
 
-#include "compat/put_time.h"
+#include "libcsvsqldb/compat/put_time.h"
 #include "exception.h"
 #include "types.h"
 

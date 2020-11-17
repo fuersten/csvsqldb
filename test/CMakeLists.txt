@@ -61,6 +61,9 @@ else()
 endif()
 
 target_include_directories(csvsqldbtest PRIVATE ${PROJECT_SOURCE_DIR}/thirdparty/Catch2/single_include)
+target_include_directories(csvsqldbtest PRIVATE ${CMAKE_SOURCE_DIR})
+target_include_directories(csvsqldbtest PRIVATE ${CMAKE_BINARY_DIR})
+target_include_directories(csvsqldbtest PRIVATE SYSTEM ${LUA_INCLUDE_DIR})
 target_link_libraries(csvsqldbtest ${CSVSQLDB_PROJECT_LIBS} ${CSVSQLDB_PLATFORM_LIBS} csvsqldb)
 
 include(ParseAndAddCatchTests)

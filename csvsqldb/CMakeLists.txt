@@ -31,8 +31,11 @@ add_executable(csvsqldb-bin
     ${LINENOISE_SOURCES}
 )
 
+target_include_directories(csvsqldb-bin PRIVATE ${CMAKE_SOURCE_DIR})
+target_include_directories(csvsqldb-bin PRIVATE ${CMAKE_BINARY_DIR})
 target_include_directories(csvsqldb-bin PRIVATE ${CMAKE_SOURCE_DIR}/thirdparty/linenoise-ng/include/)
-target_link_libraries(csvsqldb-bin ${CSVSQLDB_PROJECT_LIBS} ${CSVSQLDB_PLATFORM_LIBS} csvsqldb CLI11::CLI11)
+target_include_directories(csvsqldb-bin PRIVATE ${CMAKE_SOURCE_DIR}/thirdparty/CLI11/include/)
+target_link_libraries(csvsqldb-bin ${CSVSQLDB_PROJECT_LIBS} ${CSVSQLDB_PLATFORM_LIBS} csvsqldb)
 
 set_target_properties(csvsqldb-bin PROPERTIES OUTPUT_NAME csvsqldb)
 

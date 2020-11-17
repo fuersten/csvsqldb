@@ -36,7 +36,7 @@
 
 #include "libcsvsqldb/inc.h"
 
-#include "types.h"
+#include "libcsvsqldb/types.h"
 
 #include <filesystem>
 #include <map>

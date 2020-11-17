@@ -151,6 +151,12 @@ set(LIB_CSVSQLDB_SOURCES
 )
 
 add_library(csvsqldb SHARED ${LIB_CSVSQLDB_SOURCES})
+
+target_include_directories(csvsqldb PRIVATE ${CMAKE_SOURCE_DIR})
+target_include_directories(csvsqldb PRIVATE ${CMAKE_BINARY_DIR})
+target_include_directories(csvsqldb PRIVATE ${CMAKE_SOURCE_DIR}/libcsvsqldb)
+target_include_directories(csvsqldb PRIVATE SYSTEM ${LUA_INCLUDE_DIR})
+
 set_target_properties(csvsqldb PROPERTIES DEFINE_SYMBOL LIBCSVSQLDB VERSION ${CSVSQLDB_VERSION} SOVERSION ${CSVSQLDB_VERSION_SHORT})
 target_link_libraries(csvsqldb ${CSVSQLDB_PROJECT_LIBS} ${CSVSQLDB_PLATFORM_LIBS} ${LUA_LIBRARY})
 install(TARGETS csvsqldb LIBRARY DESTINATION lib ARCHIVE DESTINATION lib)
