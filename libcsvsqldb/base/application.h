@@ -48,13 +48,10 @@ namespace csvsqldb
   class CSVSQLDB_EXPORT Application
   {
   public:
-    /**
-     * Constructs the application object.
-     * Normally the parameters are the same as to the main function.
-     * @param argc Number of arguments supplied by argv
-     * @param argv Arguments to the application
-     */
-    Application(int argc, char** argv);
+    Application(const Application&) = delete;
+    Application(Application&&) = delete;
+    Application& operator=(const Application&) = delete;
+    Application& operator=(Application&&) = delete;
 
     /**
      * Starts the execution of the application code.
@@ -67,6 +64,14 @@ namespace csvsqldb
     int run();
 
   protected:
+    /**
+     * Constructs the application object.
+     * Normally the parameters are the same as to the main function.
+     * @param argc Number of arguments supplied by argv
+     * @param argv Arguments to the application
+     */
+    Application(int argc, char** argv);
+
     /**
      * Used to configure the application.
      * @return Should return true, if the application should go on calling doRun or false in order to terminate the

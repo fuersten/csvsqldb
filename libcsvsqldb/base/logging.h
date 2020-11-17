@@ -66,7 +66,13 @@ namespace csvsqldb
   class CSVSQLDB_EXPORT LogDevice
   {
   public:
-    virtual ~LogDevice();
+    LogDevice() = default;
+    virtual ~LogDevice() = default;
+
+    LogDevice(const LogDevice&) = delete;
+    LogDevice& operator=(const LogDevice&) = delete;
+    LogDevice(LogDevice&&) = delete;
+    LogDevice& operator=(LogDevice&&) = delete;
 
     /**
      * Returns the name of this device.
@@ -103,6 +109,7 @@ namespace csvsqldb
      */
     virtual void doFlush() = 0;
   };
+
 
   /**
    * This class provides the csvsqldb logging mechanism. Only the static init method should be called from user code.

@@ -76,6 +76,11 @@ namespace csvsqldb
        */
       CSVStringParser(BufferType& buffer, const size_t bufferSize, ReadFunction readFunction);
 
+      CSVStringParser(const CSVStringParser&) = delete;
+      CSVStringParser(CSVStringParser&&) = delete;
+      CSVStringParser& operator=(const CSVStringParser&) = delete;
+      CSVStringParser& operator=(CSVStringParser&&) = delete;
+
       /**
        * Parses the next characters returned by the readFunction as a CSV string.
        * @return Returns the number of characters read into the buffer

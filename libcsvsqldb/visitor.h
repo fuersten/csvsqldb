@@ -54,7 +54,7 @@ namespace csvsqldb
     {
     }
 
-    virtual void visit(ASTBinaryNode& node)
+    void visit(ASTBinaryNode& node) override
     {
       if (node._op == OP_CONCAT) {
         node._rhs->accept(*this);
@@ -127,7 +127,7 @@ namespace csvsqldb
       }
     }
 
-    virtual void visit(ASTUnaryNode& node)
+    void visit(ASTUnaryNode& node) override
     {
       node._rhs->accept(*this);
 
@@ -142,18 +142,18 @@ namespace csvsqldb
       }
     }
 
-    virtual void visit(ASTValueNode& node)
+    void visit(ASTValueNode& node) override
     {
       _sm.addInstruction(StackMachine::Instruction(StackMachine::PUSH, typedValueToVariant(node._value)));
     }
 
-    virtual void visit(ASTLikeNode& node)
+    void visit(ASTLikeNode& node) override
     {
       node._lhs->accept(*this);
       _sm.addInstruction(StackMachine::Instruction(StackMachine::LIKE, new csvsqldb::RegExp(node._like.c_str())));
     }
 
-    virtual void visit(ASTBetweenNode& node)
+    void visit(ASTBetweenNode& node) override
     {
       node._to->accept(*this);
       node._from->accept(*this);
@@ -161,7 +161,7 @@ namespace csvsqldb
       _sm.addInstruction(StackMachine::Instruction(StackMachine::BETWEEN));
     }
 
-    virtual void visit(ASTInNode& node)
+    void visit(ASTInNode& node) override
     {
       for (auto i = node._expressions.rbegin(); i != node._expressions.rend(); ++i) {
         (*i)->accept(*this);
@@ -170,7 +170,7 @@ namespace csvsqldb
       _sm.addInstruction(StackMachine::Instruction(StackMachine::IN, Variant(node._expressions.size())));
     }
 
-    virtual void visit(ASTFunctionNode& node)
+    void visit(ASTFunctionNode& node) override
     {
       for (Parameters::reverse_iterator iter = node._parameters.rbegin(); iter != node._parameters.rend(); ++iter) {
         (*iter)._exp->accept(*this);
@@ -178,13 +178,13 @@ namespace csvsqldb
       _sm.addInstruction(StackMachine::Instruction(StackMachine::FUNC, Variant(node._function->getName())));
     }
 
-    virtual void visit(ASTAggregateFunctionNode& node)
+    void visit(ASTAggregateFunctionNode& node) override
     {
       // TODO LCF: add these expressions to a new collection and create a store variable for them
       CSVSQLDB_THROW(StackMachineException, "aggregation functions in expressions not allowed");
     }
 
-    virtual void visit(ASTIdentifier& node)
+    void visit(ASTIdentifier& node) override
     {
       size_t index = getMapping(node.getQualifiedIdentifier());
       _sm.addInstruction(StackMachine::Instruction(StackMachine::PUSHVAR, Variant(index)));
@@ -217,49 +217,49 @@ namespace csvsqldb
     {
     }
 
-    virtual void visit(ASTBinaryNode& node)
+    void visit(ASTBinaryNode& node) override
     {
       node._rhs->accept(*this);
       node._lhs->accept(*this);
     }
 
-    virtual void visit(ASTUnaryNode& node)
+    void visit(ASTUnaryNode& node) override
     {
       node._rhs->accept(*this);
     }
 
-    virtual void visit(ASTValueNode& node)
+    void visit(ASTValueNode& node) override
     {
     }
 
-    virtual void visit(ASTLikeNode& node)
+    void visit(ASTLikeNode& node) override
     {
       node._lhs->accept(*this);
     }
 
-    virtual void visit(ASTBetweenNode& node)
+    void visit(ASTBetweenNode& node) override
     {
       node._to->accept(*this);
       node._from->accept(*this);
       node._lhs->accept(*this);
     }
 
-    virtual void visit(ASTInNode& node)
+    void visit(ASTInNode& node) override
     {
     }
 
-    virtual void visit(ASTFunctionNode& node)
+    void visit(ASTFunctionNode& node) override
     {
       for (Parameters::reverse_iterator iter = node._parameters.rbegin(); iter != node._parameters.rend(); ++iter) {
         (*iter)._exp->accept(*this);
       }
     }
 
-    virtual void visit(ASTAggregateFunctionNode& node)
+    void visit(ASTAggregateFunctionNode& node) override
     {
     }
 
-    virtual void visit(ASTIdentifier& node)
+    void visit(ASTIdentifier& node) override
     {
       _variables.insert(node);
     }

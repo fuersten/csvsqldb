@@ -69,13 +69,17 @@ namespace csvsqldb
      * Constructs a regular expression from the given string.
      * @param s The regular expression to construct. Will throw a RegExpException upon errors.
      */
-    explicit RegExp(const std::string& s);
+    explicit RegExp(std::string s);
 
-    RegExp(const RegExp& s);
+    RegExp(RegExp&& r);
+    RegExp& operator=(RegExp&& r);
+    RegExp(const RegExp&) = delete;
+    RegExp& operator=(const RegExp&) = delete;
 
     ~RegExp();
 
     RegExp& operator=(const std::string& s);
+    RegExp& operator=(std::string&& s);
 
     /**
      * Matches the given string against the regular expression.

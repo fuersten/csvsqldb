@@ -170,8 +170,8 @@ namespace csvsqldb
   class Lexer
   {
   public:
-    Lexer(const std::string& s)
-    : _s(s)
+    Lexer(std::string&& s)
+    : _s(std::move(s))
     {
       _iter = _s.begin();
     }
@@ -377,8 +377,8 @@ namespace csvsqldb
     typedef std::list<State> States;
     typedef std::vector<State*> WorkStates;
 
-    Parser(const std::string& s)
-    : _lexer(s)
+    Parser(std::string&& s)
+    : _lexer(std::move(s))
     {
     }
 
@@ -606,8 +606,8 @@ namespace csvsqldb
 
 
   struct RegExp::Private {
-    Private(const std::string& s)
-    : _parser(s)
+    Private(std::string s)
+    : _parser(std::move(s))
     , _regex(s)
     {
     }
@@ -626,14 +626,19 @@ namespace csvsqldb
   {
   }
 
-  RegExp::RegExp(const std::string& s)
-  : _m(new Private(s))
+  RegExp::RegExp(RegExp&& r)
+  : _m(std::move(r._m))
   {
-    _m->_parser.parse();
   }
 
-  RegExp::RegExp(const RegExp& e)
-  : _m(new Private(e._m->_regex))
+  RegExp& RegExp::operator=(RegExp&& r)
+  {
+    _m = std::move(r._m);
+    return *this;
+  }
+
+  RegExp::RegExp(std::string s)
+  : _m(new Private(std::move(s)))
   {
     _m->_parser.parse();
   }
@@ -641,6 +646,13 @@ namespace csvsqldb
   RegExp& RegExp::operator=(const std::string& s)
   {
     _m.reset(new Private(s));
+    _m->_parser.parse();
+    return *this;
+  }
+
+  RegExp& RegExp::operator=(std::string&& s)
+  {
+    _m.reset(new Private(std::move(s)));
     _m->_parser.parse();
     return *this;
   }

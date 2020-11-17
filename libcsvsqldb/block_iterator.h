@@ -44,7 +44,8 @@
 namespace csvsqldb
 {
   struct CSVSQLDB_EXPORT GroupingElement {
-    GroupingElement();
+    GroupingElement() = default;
+
     GroupingElement(const Variants& groupingValues);
 
     void disconnect();
@@ -103,7 +104,10 @@ namespace csvsqldb
 
     ~BlockIterator();
 
-    BlockIterator& operator=(const BlockIterator& iterator);
+    BlockIterator(const BlockIterator&) = delete;
+    BlockIterator(BlockIterator&&) = delete;
+    BlockIterator& operator=(const BlockIterator& iterator) = delete;
+    BlockIterator& operator=(BlockIterator&&) = delete;
 
     const Values* getNextRow();
 
@@ -127,9 +131,14 @@ namespace csvsqldb
   public:
     CachingBlockIterator(const Types& types, RowProvider& rowProvider, BlockManager& blockManager);
 
-    virtual ~CachingBlockIterator();
+    ~CachingBlockIterator();
 
-    virtual const Values* getNextRow();
+    CachingBlockIterator(const CachingBlockIterator&) = delete;
+    CachingBlockIterator(CachingBlockIterator&&) = delete;
+    CachingBlockIterator& operator=(const CachingBlockIterator& iterator) = delete;
+    CachingBlockIterator& operator=(CachingBlockIterator&&) = delete;
+
+    const Values* getNextRow();
 
     void rewind();
 
@@ -162,9 +171,14 @@ namespace csvsqldb
 
     SortingBlockIterator(const Types& types, const SortOrders& sortOrders, RowProvider& rowProvider, BlockManager& blockManager);
 
-    virtual ~SortingBlockIterator();
+    ~SortingBlockIterator();
 
-    virtual const Values* getNextRow();
+    SortingBlockIterator(const SortingBlockIterator&) = delete;
+    SortingBlockIterator(SortingBlockIterator&&) = delete;
+    SortingBlockIterator& operator=(const SortingBlockIterator& iterator) = delete;
+    SortingBlockIterator& operator=(SortingBlockIterator&&) = delete;
+
+    const Values* getNextRow();
 
   private:
     typedef std::vector<BlockPosition> Rows;
@@ -195,9 +209,14 @@ namespace csvsqldb
                           const csvsqldb::IndexVector outputIndices, AggregationFunctions& aggregateFunctions,
                           RowProvider& rowProvider, BlockManager& blockManager);
 
-    virtual ~GroupingBlockIterator();
+    ~GroupingBlockIterator();
 
-    virtual const Values* getNextRow();
+    GroupingBlockIterator(const GroupingBlockIterator&) = delete;
+    GroupingBlockIterator(GroupingBlockIterator&&) = delete;
+    GroupingBlockIterator& operator=(const GroupingBlockIterator& iterator) = delete;
+    GroupingBlockIterator& operator=(GroupingBlockIterator&&) = delete;
+
+    const Values* getNextRow();
 
   private:
     typedef std::vector<AggregationFunction*> AggregationFunctionPtrs;
@@ -229,9 +248,14 @@ namespace csvsqldb
   public:
     HashingBlockIterator(const Types& types, RowProvider& rowProvider, BlockManager& blockManager, size_t hashTableKeyPosition);
 
-    virtual ~HashingBlockIterator();
+    ~HashingBlockIterator();
 
-    virtual const Values* getNextRow();
+    HashingBlockIterator(const HashingBlockIterator&) = delete;
+    HashingBlockIterator(HashingBlockIterator&&) = delete;
+    HashingBlockIterator& operator=(const HashingBlockIterator& iterator) = delete;
+    HashingBlockIterator& operator=(HashingBlockIterator&&) = delete;
+
+    const Values* getNextRow();
 
     void setContextForKeyValue(const Value& keyValue);
     const Values* getNextKeyValueRow();

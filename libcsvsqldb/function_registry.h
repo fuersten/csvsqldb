@@ -91,9 +91,7 @@ namespace csvsqldb
   public:
     typedef std::vector<Function::Ptr> FunctionVector;
 
-    FunctionRegistry()
-    {
-    }
+    FunctionRegistry() = default;
 
     void registerFunction(const Function::Ptr& function);
 

@@ -98,15 +98,18 @@ namespace csvsqldb
   };
 
 
-  class CSVSQLDB_EXPORT SymbolTable
-  : public std::enable_shared_from_this<SymbolTable>
-  , private csvsqldb::noncopyable
+  class CSVSQLDB_EXPORT SymbolTable : public std::enable_shared_from_this<SymbolTable>
   {
   public:
     SymbolTablePtr getParent()
     {
       return _parent;
     }
+
+    SymbolTable(const SymbolTable&) = delete;
+    SymbolTable& operator=(const SymbolTable&) = delete;
+    SymbolTable(SymbolTable&&) = delete;
+    SymbolTable& operator=(SymbolTable&&) = delete;
 
     void addSymbolsFrom(const SymbolTablePtr& symbolTable, const std::string& prefix);
     const SymbolInfoPtr& findSymbolNameForTable(const std::string& tableName, const std::string& columnName) const;

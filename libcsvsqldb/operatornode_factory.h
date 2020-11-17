@@ -41,8 +41,10 @@
 
 namespace csvsqldb
 {
-  struct OperatorNodeFactory : public csvsqldb::noncopyable {
+  struct OperatorNodeFactory {
   public:
+    OperatorNodeFactory() = delete;
+
     static CSVSQLDB_EXPORT RootOperatorNodePtr createOutputRowOperatorNode(OperatorContext& context,
                                                                            const SymbolTablePtr& symbolTable,
                                                                            std::ostream& stream);

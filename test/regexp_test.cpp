@@ -65,16 +65,19 @@ TEST_CASE("Regexp Test", "[utils]")
     CHECK_THROWS_AS(r = "((ab)cd", std::runtime_error);
   }
 
-  SECTION("copy")
+  SECTION("move & copy")
   {
     csvsqldb::RegExp r("abcd");
     CHECK(r.match("abcd"));
 
-    csvsqldb::RegExp e(r);
+    csvsqldb::RegExp e(std::move(r));
     CHECK(e.match("abcd"));
 
     e = "abcd";
     CHECK(e.match("abcd"));
+
+    csvsqldb::RegExp e1 = std::move(e);
+    CHECK(e1.match("abcd"));
   }
 
   SECTION("star plus or")

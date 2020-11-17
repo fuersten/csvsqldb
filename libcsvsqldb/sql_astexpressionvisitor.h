@@ -75,7 +75,7 @@ namespace csvsqldb
       }
     }
 
-    virtual void visit(ASTBinaryNode& node)
+    void visit(ASTBinaryNode& node) override
     {
       _ss << "(";
       node._lhs->accept(*this);
@@ -84,7 +84,7 @@ namespace csvsqldb
       _ss << ")";
     }
 
-    virtual void visit(ASTUnaryNode& node)
+    void visit(ASTUnaryNode& node) override
     {
       if (node._op == OP_CAST) {
         _ss << "CAST(";
@@ -96,7 +96,7 @@ namespace csvsqldb
       }
     }
 
-    virtual void visit(ASTValueNode& node)
+    void visit(ASTValueNode& node) override
     {
       if (node._value._type == STRING) {
         _ss << "'";
@@ -107,13 +107,13 @@ namespace csvsqldb
       }
     }
 
-    virtual void visit(ASTLikeNode& node)
+    void visit(ASTLikeNode& node) override
     {
       node._lhs->accept(*this);
       _ss << "'" << node._like << "'";
     }
 
-    virtual void visit(ASTBetweenNode& node)
+    void visit(ASTBetweenNode& node) override
     {
       node._lhs->accept(*this);
       _ss << " between ";
@@ -122,7 +122,7 @@ namespace csvsqldb
       node._to->accept(*this);
     }
 
-    virtual void visit(ASTInNode& node)
+    void visit(ASTInNode& node) override
     {
       node._lhs->accept(*this);
       _ss << " in (";
@@ -138,7 +138,7 @@ namespace csvsqldb
       _ss << ")";
     }
 
-    virtual void visit(ASTFunctionNode& node)
+    void visit(ASTFunctionNode& node) override
     {
       _ss << node._function->getName() << "(";
       bool first = true;
@@ -153,7 +153,7 @@ namespace csvsqldb
       _ss << ")";
     }
 
-    virtual void visit(ASTAggregateFunctionNode& node)
+    void visit(ASTAggregateFunctionNode& node) override
     {
       _ss << aggregateFunctionToString(node._aggregateFunction) << "(";
       bool first = true;
@@ -174,7 +174,7 @@ namespace csvsqldb
       _ss << ")";
     }
 
-    virtual void visit(ASTIdentifier& node)
+    void visit(ASTIdentifier& node) override
     {
       _ss << node.getQualifiedIdentifier();
     }

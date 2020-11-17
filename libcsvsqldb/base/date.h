@@ -30,7 +30,7 @@
 //  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 //  POSSIBILITY OF SUCH DAMAGE.
 //
-/* Infos converning date calculations:
+/* Infos concerning date calculations:
  www.tondering.dk/claus/cal
  */
 
@@ -95,7 +95,7 @@ namespace csvsqldb
      *  All parts (year, month and day) are set to 0. The resulting date is infinite.
      *  @see Date::isInfinite
      */
-    Date();
+    Date() = default;
 
     /** Constructs a date with the given parameters.
      *  If the parameters give an invalid date, a DateException will be thrown.
@@ -117,12 +117,10 @@ namespace csvsqldb
      */
     Date(uint32_t julianDay);
 
-    /** Constructs a date with the given date.
-     *  @param date The date to initialize this date to.
-     */
-    Date(const Date& date);
-
-    Date& operator=(const Date& date);
+    Date(const Date&) = default;
+    Date& operator=(const Date&) = default;
+    Date(Date&&) = default;
+    Date& operator=(Date&&) = default;
 
     bool operator==(const Date& date) const;
     bool operator!=(const Date& date) const;
@@ -260,7 +258,7 @@ namespace csvsqldb
     static uint32_t calcJulDay(uint16_t year, uint16_t month, uint16_t day);
 
   private:
-    uint32_t _julianDay;
+    uint32_t _julianDay{0};
   } __attribute__((__packed__));
 }
 

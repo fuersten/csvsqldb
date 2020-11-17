@@ -77,6 +77,7 @@ namespace csvsqldb
     uint16_t _refCount;
   };
 
+
   class CSVSQLDB_EXPORT Variant
   {
   public:
@@ -92,7 +93,7 @@ namespace csvsqldb
 
     ~Variant();
 
-    Variant();
+    Variant() = default;
 
     Variant(const Variant& rhs);
 
@@ -164,10 +165,11 @@ namespace csvsqldb
 
   private:
     Storage _storage;
-    RefCount* _refCount;
-    eType _type;
-    bool _isNull;
+    RefCount* _refCount{nullptr};
+    eType _type{NONE};
+    bool _isNull{false};
   } __attribute__((__packed__));
+
 
   typedef std::vector<Variant> Variants;
 

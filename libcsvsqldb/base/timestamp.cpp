@@ -66,11 +66,6 @@ namespace csvsqldb
     *this = Timestamp::now();
   }
 
-  Timestamp::Timestamp()
-  : _time(0)
-  {
-  }
-
   Timestamp::Timestamp(uint16_t year, Date::eMonth month, uint16_t day, uint16_t hour, uint16_t minute, uint16_t second,
                        uint16_t millisecond)
   {
@@ -124,17 +119,6 @@ namespace csvsqldb
           CSVSQLDB_THROW(TimestampException, "Invalid time_t specified: " << timeT);
       }
   }*/
-
-  Timestamp::Timestamp(const Timestamp& timestamp)
-  {
-    _time = timestamp._time;
-  }
-
-  Timestamp& Timestamp::operator=(const Timestamp& timestamp)
-  {
-    _time = timestamp._time;
-    return *this;
-  }
 
   bool Timestamp::operator==(const Timestamp& timestamp) const
   {

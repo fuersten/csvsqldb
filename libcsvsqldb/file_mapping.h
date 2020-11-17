@@ -62,7 +62,7 @@ namespace csvsqldb
   public:
     typedef std::vector<Mapping> Mappings;
 
-    FileMapping();
+    FileMapping() = default;
 
     void initialize(const Mappings& mapping);
 

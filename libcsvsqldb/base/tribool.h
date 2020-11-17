@@ -54,6 +54,11 @@ namespace csvsqldb
     {
     }
 
+    Tribool(const Tribool&) = default;
+    Tribool& operator=(const Tribool&) = default;
+    Tribool(Tribool&&) = default;
+    Tribool& operator=(Tribool&&) = default;
+
     /**
      * Compares two tribool objects.
      * @return false, if only one is indeterminate or if both are indeterminate. false, if both are not indeterminate and the

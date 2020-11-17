@@ -53,6 +53,11 @@ namespace csvsqldb
 
     Database(const fs::path& path, FileMapping mappings);
 
+    Database(const Database&) = delete;
+    Database& operator=(const Database&) = delete;
+    Database(Database&&) = delete;
+    Database& operator=(Database&&) = delete;
+
     void setUp();
 
     fs::path databasePath() const

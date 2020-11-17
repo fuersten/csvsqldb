@@ -76,15 +76,6 @@ namespace csvsqldb
   bool stringToBool(const std::string& buffer);
 
   /**
-   * Marks an inheriting class as not copyable
-   */
-  struct CSVSQLDB_EXPORT noncopyable {
-    noncopyable() = default;
-    noncopyable(noncopyable const&) = delete;
-    noncopyable& operator=(noncopyable const&) = delete;
-  };
-
-  /**
    * Templating helper for the removal of elements in a vector.
    */
   template<typename T>

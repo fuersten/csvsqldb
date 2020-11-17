@@ -43,38 +43,36 @@ namespace csvsqldb
 {
   /**
    * Configuratiion class for lua based configurations. A lua script file with the configuration is specified upon construction
-   * and
-   * processed. Afterwards the configuration values can be retrieved from the configuration.
+   * and processed. Afterwards the configuration values can be retrieved from the configuration.
    */
   class CSVSQLDB_EXPORT LuaConfiguration : public Configuration
   {
   public:
     /**
      * Construct a lua configuration with the given lua script file. Will throw a ConfigurationException if an error occurs,
-     * i.e the
-     * a lua error occurs while compiling the script. Throws a FilesystemException if the file does not exist.
+     * i.e the a lua error occurs while compiling the script. Throws a FilesystemException if the file does not exist.
      * @param configFile The lua script file to use as configuration
      */
     LuaConfiguration(const std::string& configFile);
 
-    virtual ~LuaConfiguration();
+    ~LuaConfiguration() override;
 
   private:
-    virtual size_t doGetProperties(const std::string& path, StringVector& properties) const;
+    size_t doGetProperties(const std::string& path, StringVector& properties) const override;
 
-    virtual bool doHasProperty(const std::string& path) const;
+    bool doHasProperty(const std::string& path) const override;
 
-    virtual bool get(const std::string& path, Typer<bool> typer) const;
+    bool get(const std::string& path, Typer<bool> typer) const override;
 
-    virtual int32_t get(const std::string& path, Typer<int32_t> typer) const;
+    int32_t get(const std::string& path, Typer<int32_t> typer) const override;
 
-    virtual int64_t get(const std::string& path, Typer<int64_t> typer) const;
+    int64_t get(const std::string& path, Typer<int64_t> typer) const override;
 
-    virtual float get(const std::string& path, Typer<float> typer) const;
+    float get(const std::string& path, Typer<float> typer) const override;
 
-    virtual double get(const std::string& path, Typer<double> typer) const;
+    double get(const std::string& path, Typer<double> typer) const override;
 
-    virtual std::string get(const std::string& path, Typer<std::string> typer) const;
+    std::string get(const std::string& path, Typer<std::string> typer) const override;
 
     struct Private;
     std::unique_ptr<Private> _p;

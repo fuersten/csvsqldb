@@ -94,7 +94,7 @@ namespace csvsqldb
      *  All parts (year, month and day) are set to 0. The resulting date is infinite.
      *  @see Timestamp::isInfinite
      */
-    Timestamp();
+    Timestamp() = default;
 
     /** Constructs a timestamp with the given parameters.
      *  If the parameters give an invalid date, a DateException will be thrown.
@@ -138,12 +138,10 @@ namespace csvsqldb
     // TODO LCF: we need another way to specify this or maybe we dont need it at all
     // explicit Timestamp(time_t timeT);
 
-    /** Constructs a timestamp with the given timestamp.
-     *  @param timestamp The timestamp to initialize this timestamp to.
-     */
-    Timestamp(const Timestamp& timestamp);
-
-    Timestamp& operator=(const Timestamp& timestamp);
+    Timestamp(const Timestamp&) = default;
+    Timestamp& operator=(const Timestamp&) = default;
+    Timestamp(Timestamp&&) = default;
+    Timestamp& operator=(Timestamp&&) = default;
 
     bool operator==(const Timestamp& timestamp) const;
     bool operator!=(const Timestamp& timestamp) const;
@@ -326,7 +324,7 @@ namespace csvsqldb
                               uint16_t millisecond);
     static void calcFromJulDay(int64_t time, uint16_t& year, uint16_t& month, uint16_t& day, uint16_t& hour, uint16_t& minute,
                                uint16_t& second, uint16_t& millisecond);
-    int64_t _time;
+    int64_t _time{0};
   } __attribute__((__packed__));
 }
 

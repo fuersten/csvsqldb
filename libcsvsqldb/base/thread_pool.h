@@ -67,6 +67,11 @@ namespace csvsqldb
      */
     explicit ThreadPool(uint16_t numberOfThreads);
 
+    ThreadPool(const ThreadPool&) = delete;
+    ThreadPool& operator=(const ThreadPool&) = delete;
+    ThreadPool(ThreadPool&&) = delete;
+    ThreadPool& operator=(ThreadPool&&) = delete;
+
     /**
      * Destructs a thread pool. Will call stop, which will wait for thread termination. All things in currently execution will
      * be

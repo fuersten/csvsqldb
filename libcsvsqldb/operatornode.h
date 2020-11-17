@@ -91,9 +91,7 @@ namespace csvsqldb
     typedef std::map<size_t, size_t> OutputInputMapping;
 
     struct StackMachineType {
-      StackMachineType()
-      {
-      }
+      StackMachineType() = default;
 
       StackMachineType(StackMachine sm, VariableMapping variableMappings)
       : _sm(sm)
@@ -108,9 +106,7 @@ namespace csvsqldb
 
     typedef std::vector<StackMachineType> StackMachines;
 
-    virtual ~OperatorBaseNode()
-    {
-    }
+    virtual ~OperatorBaseNode() = default;
 
     virtual bool connect(const RowOperatorNodePtr& input) = 0;
 
@@ -162,6 +158,7 @@ namespace csvsqldb
     SymbolTablePtr _symbolTable;
   };
 
+
   class CSVSQLDB_EXPORT RowOperatorNode
   : public OperatorBaseNode
   , public RowProvider
@@ -191,6 +188,7 @@ namespace csvsqldb
     std::string _outputAlias;
   };
 
+
   class CSVSQLDB_EXPORT RootOperatorNode : public OperatorBaseNode
   {
   public:
@@ -209,13 +207,13 @@ namespace csvsqldb
   public:
     OutputRowOperatorNode(const OperatorContext& context, const SymbolTablePtr& symbolTable, std::ostream& stream);
 
-    virtual int64_t process();
+    int64_t process() override;
 
-    virtual bool connect(const RowOperatorNodePtr& input);
+    bool connect(const RowOperatorNodePtr& input) override;
 
-    virtual void getColumnInfos(SymbolInfos& outputSymbols);
+    void getColumnInfos(SymbolInfos& outputSymbols) override;
 
-    virtual void dump(std::ostream& stream) const;
+    void dump(std::ostream& stream) const override;
 
   private:
     std::ostream& _stream;
@@ -231,13 +229,13 @@ namespace csvsqldb
     LimitOperatorNode(const OperatorContext& context, const SymbolTablePtr& symbolTable, const ASTExprNodePtr& limit,
                       const ASTExprNodePtr& offset);
 
-    virtual const Values* getNextRow();
+    const Values* getNextRow() override;
 
-    virtual bool connect(const RowOperatorNodePtr& input);
+    bool connect(const RowOperatorNodePtr& input) override;
 
-    virtual void getColumnInfos(SymbolInfos& outputSymbols);
+    void getColumnInfos(SymbolInfos& outputSymbols) override;
 
-    virtual void dump(std::ostream& stream) const;
+    void dump(std::ostream& stream) const override;
 
   private:
     RowOperatorNodePtr _input;
@@ -252,13 +250,13 @@ namespace csvsqldb
   public:
     SortOperatorNode(const OperatorContext& context, const SymbolTablePtr& symbolTable, OrderExpressions orderExpressions);
 
-    virtual const Values* getNextRow();
+    const Values* getNextRow() override;
 
-    virtual bool connect(const RowOperatorNodePtr& input);
+    bool connect(const RowOperatorNodePtr& input) override;
 
-    virtual void getColumnInfos(SymbolInfos& outputSymbols);
+    void getColumnInfos(SymbolInfos& outputSymbols) override;
 
-    virtual void dump(std::ostream& stream) const;
+    void dump(std::ostream& stream) const override;
 
   private:
     Types _types;
@@ -276,13 +274,13 @@ namespace csvsqldb
     GroupingOperatorNode(const OperatorContext& context, const SymbolTablePtr& symbolTable, const Expressions& nodes,
                          const Identifiers& groupByIdentifiers);
 
-    virtual const Values* getNextRow();
+    const Values* getNextRow() override;
 
-    virtual bool connect(const RowOperatorNodePtr& input);
+    bool connect(const RowOperatorNodePtr& input) override;
 
-    virtual void getColumnInfos(SymbolInfos& outputSymbols);
+    void getColumnInfos(SymbolInfos& outputSymbols) override;
 
-    virtual void dump(std::ostream& stream) const;
+    void dump(std::ostream& stream) const override;
 
   private:
     void addPathThrough(const ASTIdentifierPtr& ident, csvsqldb::IndexVector& groupingIndices,
@@ -307,18 +305,16 @@ namespace csvsqldb
   public:
     AggregationOperatorNode(const OperatorContext& context, const SymbolTablePtr& symbolTable, const Expressions& nodes);
 
-    virtual ~AggregationOperatorNode();
+    const Values* getNextRow() override;
 
-    virtual const Values* getNextRow();
+    bool connect(const RowOperatorNodePtr& input) override;
 
-    virtual bool connect(const RowOperatorNodePtr& input);
-
-    virtual void getColumnInfos(SymbolInfos& outputSymbols);
+    void getColumnInfos(SymbolInfos& outputSymbols) override;
 
     /// BlockProvider interface
-    virtual BlockPtr getNextBlock();
+    BlockPtr getNextBlock() override;
 
-    virtual void dump(std::ostream& stream) const;
+    void dump(std::ostream& stream) const override;
 
   private:
     SymbolInfos _outputSymbols;
@@ -339,18 +335,16 @@ namespace csvsqldb
   public:
     ExtendedProjectionOperatorNode(const OperatorContext& context, const SymbolTablePtr& symbolTable, const Expressions& nodes);
 
-    virtual ~ExtendedProjectionOperatorNode();
+    const Values* getNextRow() override;
 
-    virtual const Values* getNextRow();
+    bool connect(const RowOperatorNodePtr& input) override;
 
-    virtual bool connect(const RowOperatorNodePtr& input);
-
-    virtual void getColumnInfos(SymbolInfos& outputSymbols);
+    void getColumnInfos(SymbolInfos& outputSymbols) override;
 
     /// BlockProvider interface
-    virtual BlockPtr getNextBlock();
+    BlockPtr getNextBlock() override;
 
-    virtual void dump(std::ostream& stream) const;
+    void dump(std::ostream& stream) const override;
 
   private:
     BlockPtr prepareNextBuffer();
@@ -372,13 +366,13 @@ namespace csvsqldb
   public:
     CrossJoinOperatorNode(const OperatorContext& context, const SymbolTablePtr& symbolTable);
 
-    virtual const Values* getNextRow();
+    const Values* getNextRow() override;
 
-    virtual bool connect(const RowOperatorNodePtr& input);
+    bool connect(const RowOperatorNodePtr& input) override;
 
-    virtual void getColumnInfos(SymbolInfos& outputSymbols);
+    void getColumnInfos(SymbolInfos& outputSymbols) override;
 
-    virtual void dump(std::ostream& stream) const;
+    void dump(std::ostream& stream) const override;
 
   protected:
     SymbolInfos _inputLhsSymbols;
@@ -399,13 +393,13 @@ namespace csvsqldb
   public:
     InnerJoinOperatorNode(const OperatorContext& context, const SymbolTablePtr& symbolTable, const ASTExprNodePtr& exp);
 
-    virtual const Values* getNextRow();
+    const Values* getNextRow() override;
 
-    virtual bool connect(const RowOperatorNodePtr& input);
+    bool connect(const RowOperatorNodePtr& input) override;
 
-    virtual void getColumnInfos(SymbolInfos& outputSymbols);
+    void getColumnInfos(SymbolInfos& outputSymbols) override;
 
-    virtual void dump(std::ostream& stream) const;
+    void dump(std::ostream& stream) const override;
 
   private:
     StackMachineType _sm;
@@ -418,13 +412,13 @@ namespace csvsqldb
   public:
     InnerHashJoinOperatorNode(const OperatorContext& context, const SymbolTablePtr& symbolTable, const ASTExprNodePtr& exp);
 
-    virtual const Values* getNextRow();
+    const Values* getNextRow() override;
 
-    virtual bool connect(const RowOperatorNodePtr& input);
+    bool connect(const RowOperatorNodePtr& input) override;
 
-    virtual void getColumnInfos(SymbolInfos& outputSymbols);
+    void getColumnInfos(SymbolInfos& outputSymbols) override;
 
-    virtual void dump(std::ostream& stream) const;
+    void dump(std::ostream& stream) const override;
 
   private:
     SymbolInfos _inputLhsSymbols;
@@ -446,13 +440,13 @@ namespace csvsqldb
   public:
     UnionOperatorNode(const OperatorContext& context, const SymbolTablePtr& symbolTable);
 
-    virtual const Values* getNextRow();
+    const Values* getNextRow() override;
 
-    virtual bool connect(const RowOperatorNodePtr& input);
+    bool connect(const RowOperatorNodePtr& input) override;
 
-    virtual void getColumnInfos(SymbolInfos& outputSymbols);
+    void getColumnInfos(SymbolInfos& outputSymbols) override;
 
-    virtual void dump(std::ostream& stream) const;
+    void dump(std::ostream& stream) const override;
 
   private:
     SymbolInfos _inputSymbols;
@@ -467,13 +461,13 @@ namespace csvsqldb
   public:
     SelectOperatorNode(const OperatorContext& context, const SymbolTablePtr& symbolTable, const ASTExprNodePtr& exp);
 
-    virtual const Values* getNextRow();
+    const Values* getNextRow() override;
 
-    virtual bool connect(const RowOperatorNodePtr& input);
+    bool connect(const RowOperatorNodePtr& input) override;
 
-    virtual void getColumnInfos(SymbolInfos& outputSymbols);
+    void getColumnInfos(SymbolInfos& outputSymbols) override;
 
-    virtual void dump(std::ostream& stream) const;
+    void dump(std::ostream& stream) const override;
 
   private:
     SymbolInfos _inputSymbols;
@@ -489,9 +483,9 @@ namespace csvsqldb
   class CSVSQLDB_EXPORT ScanOperatorNode : public RowOperatorNode
   {
   public:
-    virtual void getColumnInfos(SymbolInfos& outputSymbols);
+    void getColumnInfos(SymbolInfos& outputSymbols) override;
 
-    virtual bool connect(const RowOperatorNodePtr& input)
+    bool connect(const RowOperatorNodePtr& input) override
     {
       CSVSQLDB_THROW(csvsqldb::Exception, "connect not allowed");
     }
@@ -512,17 +506,18 @@ namespace csvsqldb
   public:
     SystemTableScanOperatorNode(const OperatorContext& context, const SymbolTablePtr& symbolTable, const SymbolInfo& tableInfo);
 
-    virtual void dump(std::ostream& stream) const;
+    void dump(std::ostream& stream) const override;
 
-    virtual const Values* getNextRow();
+    const Values* getNextRow() override;
 
     /// BlockProvider interface
-    virtual BlockPtr getNextBlock();
+    BlockPtr getNextBlock() override;
 
   private:
     BlockPtr _currentBlock;
     BlockIteratorPtr _iterator;
   };
+
 
   class CSVSQLDB_EXPORT BlockReader : public csvsqldb::csv::CSVParserCallback
   {
@@ -543,19 +538,19 @@ namespace csvsqldb
     BlockPtr getNextBlock();
 
     /// CSVParserCallback interface
-    virtual void onLong(int64_t num, bool isNull);
+    void onLong(int64_t num, bool isNull) override;
 
-    virtual void onDouble(double num, bool isNull);
+    void onDouble(double num, bool isNull) override;
 
-    virtual void onString(const char* s, size_t len, bool isNull);
+    void onString(const char* s, size_t len, bool isNull) override;
 
-    virtual void onDate(const csvsqldb::Date& date, bool isNull);
+    void onDate(const csvsqldb::Date& date, bool isNull) override;
 
-    virtual void onTime(const csvsqldb::Time& time, bool isNull);
+    void onTime(const csvsqldb::Time& time, bool isNull) override;
 
-    virtual void onTimestamp(const csvsqldb::Timestamp& timestamp, bool isNull);
+    void onTimestamp(const csvsqldb::Timestamp& timestamp, bool isNull) override;
 
-    virtual void onBoolean(bool boolean, bool isNull);
+    void onBoolean(bool boolean, bool isNull) override;
 
   private:
     typedef std::queue<BlockPtr> Blocks;
@@ -580,12 +575,12 @@ namespace csvsqldb
   public:
     TableScanOperatorNode(const OperatorContext& context, const SymbolTablePtr& symbolTable, const SymbolInfo& tableInfo);
 
-    virtual void dump(std::ostream& stream) const;
+    void dump(std::ostream& stream) const override;
 
-    virtual const Values* getNextRow();
+    const Values* getNextRow() override;
 
     /// BlockProvider interface
-    virtual BlockPtr getNextBlock();
+    BlockPtr getNextBlock() override;
 
   private:
     typedef std::shared_ptr<std::istream> IStreamPtr;

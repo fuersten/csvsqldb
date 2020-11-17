@@ -50,7 +50,7 @@ namespace csvsqldb
     CurrentDateFunction();
 
   private:
-    virtual const Variant doCall(const Variants& parameter) const;
+    const Variant doCall(const Variants& parameter) const override;
   };
 
 
@@ -60,7 +60,7 @@ namespace csvsqldb
     CurrentTimeFunction();
 
   private:
-    virtual const Variant doCall(const Variants& parameter) const;
+    const Variant doCall(const Variants& parameter) const override;
   };
 
 
@@ -70,7 +70,7 @@ namespace csvsqldb
     CurrentTimestampFunction();
 
   private:
-    virtual const Variant doCall(const Variants& parameter) const;
+    const Variant doCall(const Variants& parameter) const override;
   };
 
 
@@ -80,7 +80,7 @@ namespace csvsqldb
     ExtractFunction();
 
   private:
-    virtual const Variant doCall(const Variants& parameter) const;
+    const Variant doCall(const Variants& parameter) const override;
   };
 
 
@@ -90,7 +90,7 @@ namespace csvsqldb
     DateFormatFunction();
 
   private:
-    virtual const Variant doCall(const Variants& parameter) const;
+    const Variant doCall(const Variants& parameter) const override;
   };
 
 
@@ -100,7 +100,7 @@ namespace csvsqldb
     TimeFormatFunction();
 
   private:
-    virtual const Variant doCall(const Variants& parameter) const;
+    const Variant doCall(const Variants& parameter) const override;
   };
 
 
@@ -110,7 +110,7 @@ namespace csvsqldb
     TimestampFormatFunction();
 
   private:
-    virtual const Variant doCall(const Variants& parameter) const;
+    const Variant doCall(const Variants& parameter) const override;
   };
 
 
@@ -120,7 +120,7 @@ namespace csvsqldb
     PowerFunction();
 
   private:
-    virtual const Variant doCall(const Variants& parameter) const;
+    const Variant doCall(const Variants& parameter) const override;
   };
 
 
@@ -130,7 +130,7 @@ namespace csvsqldb
     UpperFunction();
 
   private:
-    virtual const Variant doCall(const Variants& parameter) const;
+    const Variant doCall(const Variants& parameter) const override;
   };
 
 
@@ -140,7 +140,7 @@ namespace csvsqldb
     LowerFunction();
 
   private:
-    virtual const Variant doCall(const Variants& parameter) const;
+    const Variant doCall(const Variants& parameter) const override;
   };
 
   class CSVSQLDB_EXPORT CharLengthFunction : public Function
@@ -149,7 +149,7 @@ namespace csvsqldb
     CharLengthFunction(const std::string& name);
 
   private:
-    virtual const Variant doCall(const Variants& parameter) const;
+    const Variant doCall(const Variants& parameter) const override;
   };
 
   class CSVSQLDB_EXPORT VersionFunction : public Function
@@ -158,7 +158,7 @@ namespace csvsqldb
     VersionFunction();
 
   private:
-    virtual const Variant doCall(const Variants& parameter) const;
+    const Variant doCall(const Variants& parameter) const override;
   };
 }
 

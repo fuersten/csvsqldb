@@ -52,9 +52,11 @@ namespace csvsqldb
     Duration(uint16_t years, uint16_t months, uint16_t days, Duration::enSign sign = Positive);
     Duration(uint16_t years, uint16_t months, uint16_t days, uint16_t hours, uint16_t minutes, uint16_t seconds,
              Duration::enSign sign = Positive);
-    Duration(const Duration& duration);
 
-    Duration& operator=(const Duration& duration);
+    Duration(const Duration&) = default;
+    Duration& operator=(const Duration&) = default;
+    Duration(Duration&&) = default;
+    Duration& operator=(Duration&&) = default;
 
     bool operator==(const Duration& duration) const;
     bool operator!=(const Duration& duration) const;

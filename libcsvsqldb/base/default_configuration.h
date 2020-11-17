@@ -53,24 +53,24 @@ namespace csvsqldb
      */
     DefaultConfiguration();
 
-    virtual ~DefaultConfiguration();
+    ~DefaultConfiguration() override;
 
   private:
-    virtual size_t doGetProperties(const std::string& path, StringVector& properties) const;
+    size_t doGetProperties(const std::string& path, StringVector& properties) const override;
 
-    virtual bool doHasProperty(const std::string& path) const;
+    bool doHasProperty(const std::string& path) const override;
 
-    virtual bool get(const std::string& path, Typer<bool> typer) const;
+    bool get(const std::string& path, Typer<bool> typer) const override;
 
-    virtual int32_t get(const std::string& path, Typer<int32_t> typer) const;
+    int32_t get(const std::string& path, Typer<int32_t> typer) const override;
 
-    virtual int64_t get(const std::string& path, Typer<int64_t> typer) const;
+    int64_t get(const std::string& path, Typer<int64_t> typer) const override;
 
-    virtual float get(const std::string& path, Typer<float> typer) const;
+    float get(const std::string& path, Typer<float> typer) const override;
 
-    virtual double get(const std::string& path, Typer<double> typer) const;
+    double get(const std::string& path, Typer<double> typer) const override;
 
-    virtual std::string get(const std::string& path, Typer<std::string> typer) const;
+    std::string get(const std::string& path, Typer<std::string> typer) const override;
 
     struct Private;
     std::unique_ptr<Private> _p;

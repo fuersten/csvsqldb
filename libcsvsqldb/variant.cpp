@@ -43,20 +43,11 @@ namespace csvsqldb
 
   Variant::~Variant()
   {
-    if (_refCount) {
-      if (_refCount->dec() == 0) {
-        delete[] _storage._string;
-        _storage._string = nullptr;
-        delete _refCount;
-      }
+    if (_refCount && _refCount->dec() == 0) {
+      delete[] _storage._string;
+      _storage._string = nullptr;
+      delete _refCount;
     }
-  }
-
-  Variant::Variant()
-  : _refCount(nullptr)
-  , _type(NONE)
-  , _isNull(false)
-  {
   }
 
   Variant::Variant(const Variant& rhs)

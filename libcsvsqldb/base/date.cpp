@@ -94,11 +94,6 @@ namespace csvsqldb
   }
 
 
-  Date::Date()
-  : _julianDay(0)
-  {
-  }
-
   Date::Date(uint16_t year, eMonth month, uint16_t day)
   {
     if (!Date::isValid(year, month, day)) {
@@ -122,18 +117,6 @@ namespace csvsqldb
   Date::Date(uint32_t julianDay)
   : _julianDay(julianDay)
   {
-  }
-
-  Date::Date(const Date& date)
-  {
-    _julianDay = date._julianDay;
-  }
-
-  Date& Date::operator=(const Date& date)
-  {
-    _julianDay = date._julianDay;
-
-    return *this;
   }
 
   bool Date::operator==(const Date& date) const

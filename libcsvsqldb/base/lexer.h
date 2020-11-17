@@ -84,10 +84,8 @@ namespace csvsqldb
 
     /**
      * A generic lexer. By adding lexical definitions a string can be separated generically into its tokens. The added
-     * definitions will be tested
-     * against the current processing position exactly in the order as they where specified. If no definition matches, a
-     * LexicalAnalysisException
-     * is thrown. Two definitions will be added as internal definitions:
+     * definitions will be tested against the current processing position exactly in the order as they where specified. If no
+     * definition matches, a LexicalAnalysisException is thrown. Two definitions will be added as internal definitions:
      *
      *    - addDefinition("newline", R"(\r|\n)", NEWLINE);
      *    - addDefinition("whitespace", R"([ \t\f]+)", WHITESPACE);
@@ -102,6 +100,11 @@ namespace csvsqldb
        * Constructs a Lexer
        */
       Lexer(InspectTokenCallback callback = InspectTokenCallback());
+
+      Lexer(const Lexer&) = delete;
+      Lexer& operator=(const Lexer&) = delete;
+      Lexer(Lexer&&) = delete;
+      Lexer& operator=(Lexer&&) = delete;
 
       /**
        * Adds a lexical definition to the lexer. Example:

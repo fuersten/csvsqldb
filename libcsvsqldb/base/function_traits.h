@@ -43,16 +43,14 @@ namespace csvsqldb
 {
   /**
    * With the function_traits template, a C++ function can be decomposed into its components. The components consist of the
-   * return type,
-   * the number of arguments and the type of the arguments.
+   * return type, the number of arguments and the type of the arguments.
    */
   template<class F>
   struct function_traits;
 
   /**
    * With the function_traits template, a C++ function can be decomposed into its components. The components consist of the
-   * return type,
-   * the number of arguments and the type of the arguments.
+   * return type, the number of arguments and the type of the arguments.
    */
   template<class R, class... Args>
   struct function_traits<R (*)(Args...)> : public function_traits<R(Args...)> {
@@ -60,8 +58,7 @@ namespace csvsqldb
 
   /**
    * With the function_traits template, a C++ function can be decomposed into its components. The components consist of the
-   * return type,
-   * the number of arguments and the type of the arguments.
+   * return type, the number of arguments and the type of the arguments.
    */
   template<class R, class... Args>
   struct function_traits<R(Args...)> {

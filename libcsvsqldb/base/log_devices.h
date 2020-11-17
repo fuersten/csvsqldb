@@ -49,14 +49,14 @@ namespace csvsqldb
   public:
     ConsoleLogDevice();
 
-    virtual const std::string& name() const;
+    const std::string& name() const override;
 
   private:
-    virtual void doLog(std::ostringstream& stream);
+    void doLog(std::ostringstream& stream) override;
 
-    virtual bool doOpen();
-    virtual void doClose();
-    virtual void doFlush();
+    bool doOpen() override;
+    void doClose() override;
+    void doFlush() override;
   };
 }
 

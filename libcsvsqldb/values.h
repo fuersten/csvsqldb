@@ -49,9 +49,7 @@ namespace csvsqldb
   class CSVSQLDB_EXPORT Value
   {
   public:
-    virtual ~Value()
-    {
-    }
+    virtual ~Value() = default;
 
     virtual void toStream(std::ostream& stream) const = 0;
 
@@ -92,7 +90,7 @@ namespace csvsqldb
     {
     }
 
-    virtual bool isNull() const
+    bool isNull() const override
     {
       return _isNull;
     }
@@ -102,7 +100,7 @@ namespace csvsqldb
       return _val;
     }
 
-    virtual void toStream(std::ostream& stream) const
+    void toStream(std::ostream& stream) const override
     {
       if (!_isNull) {
         stream << _val;
@@ -111,7 +109,7 @@ namespace csvsqldb
       }
     }
 
-    virtual std::string toString() const
+    std::string toString() const override
     {
       return std::to_string(_val);
     }
@@ -121,17 +119,17 @@ namespace csvsqldb
       return sizeof(ValInt);
     }
 
-    virtual size_t size() const
+    size_t size() const override
     {
       return sizeof(ValInt);
     }
 
-    virtual eType getType() const
+    eType getType() const override
     {
       return INT;
     }
 
-    virtual bool operator<(const Value& rhs) const
+    bool operator<(const Value& rhs) const override
     {
       if (isNull() || rhs.isNull()) {
         return false;
@@ -139,7 +137,7 @@ namespace csvsqldb
       return _val < dynamic_cast<const ValInt&>(rhs)._val;
     }
 
-    virtual bool operator==(const Value& rhs) const
+    bool operator==(const Value& rhs) const override
     {
       if (isNull() || rhs.isNull()) {
         return false;
@@ -147,7 +145,7 @@ namespace csvsqldb
       return _val == dynamic_cast<const ValInt&>(rhs)._val;
     }
 
-    virtual size_t getHash() const
+    size_t getHash() const override
     {
       return std::hash<int64_t>()(_val);
     }
@@ -179,7 +177,7 @@ namespace csvsqldb
     {
     }
 
-    virtual bool isNull() const
+    bool isNull() const override
     {
       return _isNull;
     }
@@ -189,7 +187,7 @@ namespace csvsqldb
       return _val;
     }
 
-    virtual void toStream(std::ostream& stream) const
+    void toStream(std::ostream& stream) const override
     {
       if (!_isNull) {
         stream << std::fixed << std::showpoint << std::setprecision(6) << _val;
@@ -198,7 +196,7 @@ namespace csvsqldb
       }
     }
 
-    virtual std::string toString() const
+    std::string toString() const override
     {
       return std::to_string(_val);
     }
@@ -208,17 +206,17 @@ namespace csvsqldb
       return sizeof(ValDouble);
     }
 
-    virtual size_t size() const
+    size_t size() const override
     {
       return sizeof(ValDouble);
     }
 
-    virtual eType getType() const
+    eType getType() const override
     {
       return REAL;
     }
 
-    virtual bool operator<(const Value& rhs) const
+    bool operator<(const Value& rhs) const override
     {
       if (isNull() || rhs.isNull()) {
         return false;
@@ -226,7 +224,7 @@ namespace csvsqldb
       return _val < dynamic_cast<const ValDouble&>(rhs)._val;
     }
 
-    virtual bool operator==(const Value& rhs) const
+    bool operator==(const Value& rhs) const override
     {
       if (isNull() || rhs.isNull()) {
         return false;
@@ -234,7 +232,7 @@ namespace csvsqldb
       return csvsqldb::compare(_val, dynamic_cast<const ValDouble&>(rhs)._val);
     }
 
-    virtual size_t getHash() const
+    size_t getHash() const override
     {
       return std::hash<double>()(_val);
     }
@@ -266,7 +264,7 @@ namespace csvsqldb
     {
     }
 
-    virtual bool isNull() const
+    bool isNull() const override
     {
       return _isNull;
     }
@@ -276,7 +274,7 @@ namespace csvsqldb
       return _val;
     }
 
-    virtual void toStream(std::ostream& stream) const
+    void toStream(std::ostream& stream) const override
     {
       if (!_isNull) {
         stream << _val;
@@ -285,7 +283,7 @@ namespace csvsqldb
       }
     }
 
-    virtual std::string toString() const
+    std::string toString() const override
     {
       return std::to_string(_val);
     }
@@ -295,17 +293,17 @@ namespace csvsqldb
       return sizeof(ValBool);
     }
 
-    virtual size_t size() const
+    size_t size() const override
     {
       return sizeof(ValBool);
     }
 
-    virtual eType getType() const
+    eType getType() const override
     {
       return BOOLEAN;
     }
 
-    virtual bool operator<(const Value& rhs) const
+    bool operator<(const Value& rhs) const override
     {
       if (isNull() || rhs.isNull()) {
         return false;
@@ -313,7 +311,7 @@ namespace csvsqldb
       return _val < dynamic_cast<const ValBool&>(rhs)._val;
     }
 
-    virtual bool operator==(const Value& rhs) const
+    bool operator==(const Value& rhs) const override
     {
       if (isNull() || rhs.isNull()) {
         return false;
@@ -321,7 +319,7 @@ namespace csvsqldb
       return _val == dynamic_cast<const ValBool&>(rhs)._val;
     }
 
-    virtual size_t getHash() const
+    size_t getHash() const override
     {
       return std::hash<bool>()(_val);
     }
@@ -346,7 +344,7 @@ namespace csvsqldb
     {
     }
 
-    virtual bool isNull() const
+    bool isNull() const override
     {
       return _isNull;
     }
@@ -356,7 +354,7 @@ namespace csvsqldb
       return _val;
     }
 
-    virtual void toStream(std::ostream& stream) const
+    void toStream(std::ostream& stream) const override
     {
       if (!_isNull) {
         stream << _val.format("%F");
@@ -365,7 +363,7 @@ namespace csvsqldb
       }
     }
 
-    virtual std::string toString() const
+    std::string toString() const override
     {
       return _val.format("%F");
     }
@@ -375,17 +373,17 @@ namespace csvsqldb
       return sizeof(ValDate);
     }
 
-    virtual size_t size() const
+    size_t size() const override
     {
       return sizeof(ValDate);
     }
 
-    virtual eType getType() const
+    eType getType() const override
     {
       return DATE;
     }
 
-    virtual bool operator<(const Value& rhs) const
+    bool operator<(const Value& rhs) const override
     {
       if (isNull() || rhs.isNull()) {
         return false;
@@ -393,7 +391,7 @@ namespace csvsqldb
       return _val < dynamic_cast<const ValDate&>(rhs)._val;
     }
 
-    virtual bool operator==(const Value& rhs) const
+    bool operator==(const Value& rhs) const override
     {
       if (isNull() || rhs.isNull()) {
         return false;
@@ -401,7 +399,7 @@ namespace csvsqldb
       return _val == dynamic_cast<const ValDate&>(rhs)._val;
     }
 
-    virtual size_t getHash() const
+    size_t getHash() const override
     {
       return std::hash<int64_t>()(_val.asJulianDay());
     }
@@ -426,7 +424,7 @@ namespace csvsqldb
     {
     }
 
-    virtual bool isNull() const
+    bool isNull() const override
     {
       return _isNull;
     }
@@ -436,7 +434,7 @@ namespace csvsqldb
       return _val;
     }
 
-    virtual void toStream(std::ostream& stream) const
+    void toStream(std::ostream& stream) const override
     {
       if (!_isNull) {
         stream << _val.format("%H:%M:%S");
@@ -445,7 +443,7 @@ namespace csvsqldb
       }
     }
 
-    virtual std::string toString() const
+    std::string toString() const override
     {
       return _val.format("%H:%M:%S");
     }
@@ -455,17 +453,17 @@ namespace csvsqldb
       return sizeof(ValTime);
     }
 
-    virtual size_t size() const
+    size_t size() const override
     {
       return sizeof(ValTime);
     }
 
-    virtual eType getType() const
+    eType getType() const override
     {
       return TIME;
     }
 
-    virtual bool operator<(const Value& rhs) const
+    bool operator<(const Value& rhs) const override
     {
       if (isNull() || rhs.isNull()) {
         return false;
@@ -473,7 +471,7 @@ namespace csvsqldb
       return _val < dynamic_cast<const ValTime&>(rhs)._val;
     }
 
-    virtual bool operator==(const Value& rhs) const
+    bool operator==(const Value& rhs) const override
     {
       if (isNull() || rhs.isNull()) {
         return false;
@@ -481,7 +479,7 @@ namespace csvsqldb
       return _val == dynamic_cast<const ValTime&>(rhs)._val;
     }
 
-    virtual size_t getHash() const
+    size_t getHash() const override
     {
       return std::hash<int32_t>()(_val.asInteger());
     }
@@ -506,7 +504,7 @@ namespace csvsqldb
     {
     }
 
-    virtual bool isNull() const
+    bool isNull() const override
     {
       return _isNull;
     }
@@ -516,7 +514,7 @@ namespace csvsqldb
       return _val;
     }
 
-    virtual void toStream(std::ostream& stream) const
+    void toStream(std::ostream& stream) const override
     {
       if (!_isNull) {
         stream << _val.format("%Y-%m-%dT%H:%M:%S");
@@ -525,7 +523,7 @@ namespace csvsqldb
       }
     }
 
-    virtual std::string toString() const
+    std::string toString() const override
     {
       return _val.format("%Y-%m-%dT%H:%M:%S");
     }
@@ -535,17 +533,17 @@ namespace csvsqldb
       return sizeof(ValTimestamp);
     }
 
-    virtual size_t size() const
+    size_t size() const override
     {
       return sizeof(ValTimestamp);
     }
 
-    virtual eType getType() const
+    eType getType() const override
     {
       return TIMESTAMP;
     }
 
-    virtual bool operator<(const Value& rhs) const
+    bool operator<(const Value& rhs) const override
     {
       if (isNull() || rhs.isNull()) {
         return false;
@@ -553,7 +551,7 @@ namespace csvsqldb
       return _val < dynamic_cast<const ValTimestamp&>(rhs)._val;
     }
 
-    virtual bool operator==(const Value& rhs) const
+    bool operator==(const Value& rhs) const override
     {
       if (isNull() || rhs.isNull()) {
         return false;
@@ -561,7 +559,7 @@ namespace csvsqldb
       return _val == dynamic_cast<const ValTimestamp&>(rhs)._val;
     }
 
-    virtual size_t getHash() const
+    size_t getHash() const override
     {
       return std::hash<int64_t>()(_val.asInteger());
     }
@@ -593,12 +591,12 @@ namespace csvsqldb
     {
     }
 
-    virtual bool isNull() const
+    bool isNull() const override
     {
       return _val == nullptr;
     }
 
-    virtual ~ValString()
+    ~ValString() override
     {
       delete[] _val;
     }
@@ -608,7 +606,7 @@ namespace csvsqldb
       return _val;
     }
 
-    virtual void toStream(std::ostream& stream) const
+    void toStream(std::ostream& stream) const override
     {
       if (_val) {
         stream << _val;
@@ -617,7 +615,7 @@ namespace csvsqldb
       }
     }
 
-    virtual std::string toString() const
+    std::string toString() const override
     {
       return _val;
     }
@@ -627,12 +625,12 @@ namespace csvsqldb
       return sizeof(ValString);
     }
 
-    virtual size_t size() const
+    size_t size() const override
     {
       return sizeof(ValString) + _length + 1;
     }
 
-    virtual eType getType() const
+    eType getType() const override
     {
       return STRING;
     }
@@ -642,7 +640,7 @@ namespace csvsqldb
       return _length;
     }
 
-    virtual bool operator<(const Value& rhs) const
+    bool operator<(const Value& rhs) const override
     {
       if (isNull() || rhs.isNull()) {
         return false;
@@ -650,7 +648,7 @@ namespace csvsqldb
       return ::strcoll(_val, dynamic_cast<const ValString&>(rhs)._val) < 0;
     }
 
-    virtual bool operator==(const Value& rhs) const
+    bool operator==(const Value& rhs) const override
     {
       if (isNull() || rhs.isNull()) {
         return false;
@@ -658,7 +656,7 @@ namespace csvsqldb
       return ::strcoll(_val, dynamic_cast<const ValString&>(rhs)._val) == 0;
     }
 
-    virtual size_t getHash() const
+    size_t getHash() const override
     {
       return std::hash<const char*>()(_val);
     }

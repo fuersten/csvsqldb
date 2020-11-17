@@ -53,6 +53,11 @@ namespace csvsqldb
 
     virtual ~Configuration();
 
+    Configuration(const Configuration&) = delete;
+    Configuration(Configuration&&) = delete;
+    Configuration& operator=(const Configuration&) = delete;
+    Configuration& operator=(Configuration&&) = delete;
+
     /**
      * Return all sub-properties of the given path.
      * @param path Dot separated path to the properties
@@ -159,8 +164,7 @@ namespace csvsqldb
     /**
      * Template method for the generic fetching of a configuration property.
      * Has to be implemented by the inheriting class. Has to throw a CofigurationException upon any error. The path can be a
-     * dot
-     * separated string, that stand for subentries of the property.
+     * dot separated string, that stand for subentries of the property.
      * @param path Dot separated path to the value
      * @param typer The correct type object for the returning type
      * @return Returns the corresponding value.
@@ -170,8 +174,7 @@ namespace csvsqldb
     /**
      * Template method for the generic fetching of a configuration property.
      * Has to be implemented by the inheriting class. Has to throw a CofigurationException upon any error. The path can be a
-     * dot
-     * separated string, that stand for subentries of the property.
+     * dot separated string, that stand for subentries of the property.
      * @param path Dot separated path to the value
      * @param typer The correct type object for the returning type
      * @return Returns the corresponding value.
@@ -181,8 +184,7 @@ namespace csvsqldb
     /**
      * Template method for the generic fetching of a configuration property.
      * Has to be implemented by the inheriting class. Has to throw a CofigurationException upon any error. The path can be a
-     * dot
-     * separated string, that stand for subentries of the property.
+     * dot separated string, that stand for subentries of the property.
      * @param path Dot separated path to the value
      * @param typer The correct type object for the returning type
      * @return Returns the corresponding value.
@@ -192,8 +194,7 @@ namespace csvsqldb
     /**
      * Template method for the generic fetching of a configuration property.
      * Has to be implemented by the inheriting class. Has to throw a CofigurationException upon any error. The path can be a
-     * dot
-     * separated string, that stand for subentries of the property.
+     * dot separated string, that stand for subentries of the property.
      * @param path Dot separated path to the value
      * @param typer The correct type object for the returning type
      * @return Returns the corresponding value.
@@ -203,8 +204,7 @@ namespace csvsqldb
     /**
      * Template method for the generic fetching of a configuration property.
      * Has to be implemented by the inheriting class. Has to throw a CofigurationException upon any error. The path can be a
-     * dot
-     * separated string, that stand for subentries of the property.
+     * dot separated string, that stand for subentries of the property.
      * @param path Dot separated path to the value
      * @param typer The correct type object for the returning type
      * @return Returns the corresponding value.
@@ -214,8 +214,7 @@ namespace csvsqldb
     /**
      * Template method for the generic fetching of a configuration property.
      * Has to be implemented by the inheriting class. Has to throw a CofigurationException upon any error. The path can be a
-     * dot
-     * separated string, that stand for subentries of the property.
+     * dot separated string, that stand for subentries of the property.
      * @param path Dot separated path to the value
      * @param typer The correct type object for the returning type
      * @return Returns the corresponding value.

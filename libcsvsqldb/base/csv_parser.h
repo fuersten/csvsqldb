@@ -86,10 +86,11 @@ namespace csvsqldb
     enum CsvTypes { LONG, DOUBLE, STRING, DATE, TIME, TIMESTAMP, BOOLEAN };
     typedef std::vector<CsvTypes> Types;
 
+
     /**
      * A class used to parse CSV streams.
      */
-    class CSVSQLDB_EXPORT CSVParser : noncopyable
+    class CSVSQLDB_EXPORT CSVParser
     {
     public:
       /**
@@ -101,10 +102,14 @@ namespace csvsqldb
        */
       CSVParser(CSVParserContext context, std::istream& stream, Types types, CSVParserCallback& callback);
 
+      CSVParser(const CSVParser&) = delete;
+      CSVParser(CSVParser&&) = delete;
+      CSVParser& operator=(const CSVParser&) = delete;
+      CSVParser& operator=(CSVParser&&) = delete;
+
       /**
        * Parses one line of input and calls the corresponding type method callbacks. Skips the first line of input, if
-       * specified
-       * by the context.
+       * specified by the context.
        * @return true if there are more lines to parse, false otherwise
        */
       bool parseLine();

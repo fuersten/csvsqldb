@@ -192,9 +192,7 @@ namespace csvsqldb
   class CSVSQLDB_EXPORT ASTNodeVisitor
   {
   public:
-    virtual ~ASTNodeVisitor()
-    {
-    }
+    virtual ~ASTNodeVisitor() = default;
 
     virtual void visit(ASTCreateTableNode& node) = 0;
     virtual void visit(ASTMappingNode& node) = 0;
@@ -233,143 +231,156 @@ namespace csvsqldb
     virtual void visit(ASTLimitNode& node) = 0;
 
   protected:
-    ASTNodeVisitor()
-    {
-    }
+    ASTNodeVisitor() = default;
   };
+
 
   class CSVSQLDB_EXPORT ASTExpressionNodeVisitor : public ASTNodeVisitor
   {
   public:
-    virtual void visit(ASTBinaryNode& node) = 0;
-    virtual void visit(ASTUnaryNode& node) = 0;
-    virtual void visit(ASTValueNode& node) = 0;
-    virtual void visit(ASTLikeNode& node) = 0;
-    virtual void visit(ASTBetweenNode& node) = 0;
-    virtual void visit(ASTInNode& node) = 0;
-    virtual void visit(ASTFunctionNode& node) = 0;
-    virtual void visit(ASTAggregateFunctionNode& node) = 0;
-    virtual void visit(ASTIdentifier& node) = 0;
+    void visit(ASTBinaryNode& node) override
+    {
+    }
+    void visit(ASTUnaryNode& node) override
+    {
+    }
+    void visit(ASTValueNode& node) override
+    {
+    }
+    void visit(ASTLikeNode& node) override
+    {
+    }
+    void visit(ASTBetweenNode& node) override
+    {
+    }
+    void visit(ASTInNode& node) override
+    {
+    }
+    void visit(ASTFunctionNode& node) override
+    {
+    }
+    void visit(ASTAggregateFunctionNode& node) override
+    {
+    }
+    void visit(ASTIdentifier& node) override
+    {
+    }
 
   private:
-    virtual void visit(ASTExplainNode& node)
+    void visit(ASTExplainNode& node) override
     {
       CSVSQLDB_THROW(SqlParserException, "Visting non expression node");
     }
-    virtual void visit(ASTQualifiedAsterisk& node)
+    void visit(ASTQualifiedAsterisk& node) override
     {
       CSVSQLDB_THROW(SqlParserException, "Visting non expression node");
     }
-    virtual void visit(ASTCreateTableNode& node)
+    void visit(ASTCreateTableNode& node) override
     {
       CSVSQLDB_THROW(SqlParserException, "Visting non expression node");
     }
-    virtual void visit(ASTMappingNode& node)
+    void visit(ASTMappingNode& node) override
     {
       CSVSQLDB_THROW(SqlParserException, "Visting non expression node");
     }
-    virtual void visit(ASTDropMappingNode& node)
+    void visit(ASTDropMappingNode& node) override
     {
       CSVSQLDB_THROW(SqlParserException, "Visting non expression node");
     }
-    virtual void visit(ASTAlterTableAddNode& node)
+    void visit(ASTAlterTableAddNode& node) override
     {
       CSVSQLDB_THROW(SqlParserException, "Visting non expression node");
     }
-    virtual void visit(ASTAlterTableDropNode& node)
+    void visit(ASTAlterTableDropNode& node) override
     {
       CSVSQLDB_THROW(SqlParserException, "Visting non expression node");
     }
-    virtual void visit(ASTDropTableNode& node)
+    void visit(ASTDropTableNode& node) override
     {
       CSVSQLDB_THROW(SqlParserException, "Visting non expression node");
     }
-    virtual void visit(ASTUnionNode& node)
+    void visit(ASTUnionNode& node) override
     {
       CSVSQLDB_THROW(SqlParserException, "Visting non expression node");
     }
-    virtual void visit(ASTQueryNode& node)
+    void visit(ASTQueryNode& node) override
     {
       CSVSQLDB_THROW(SqlParserException, "Visting non expression node");
     }
-    virtual void visit(ASTQuerySpecificationNode& node)
+    void visit(ASTQuerySpecificationNode& node) override
     {
       CSVSQLDB_THROW(SqlParserException, "Visting non expression node");
     }
-    virtual void visit(ASTTableExpressionNode& node)
+    void visit(ASTTableExpressionNode& node) override
     {
       CSVSQLDB_THROW(SqlParserException, "Visting non expression node");
     }
-    virtual void visit(ASTFromNode& node)
+    void visit(ASTFromNode& node) override
     {
       CSVSQLDB_THROW(SqlParserException, "Visting non expression node");
     }
-    virtual void visit(ASTTableIdentifierNode& node)
+    void visit(ASTTableIdentifierNode& node) override
     {
       CSVSQLDB_THROW(SqlParserException, "Visting non expression node");
     }
-    virtual void visit(ASTTableSubqueryNode& node)
+    void visit(ASTTableSubqueryNode& node) override
     {
       CSVSQLDB_THROW(SqlParserException, "Visting non expression node");
     }
-    virtual void visit(ASTCrossJoinNode& node)
+    void visit(ASTCrossJoinNode& node) override
     {
       CSVSQLDB_THROW(SqlParserException, "Visting non expression node");
     }
-    virtual void visit(ASTNaturalJoinNode& node)
+    void visit(ASTNaturalJoinNode& node) override
     {
       CSVSQLDB_THROW(SqlParserException, "Visting non expression node");
     }
-    virtual void visit(ASTInnerJoinNode& node)
+    void visit(ASTInnerJoinNode& node) override
     {
       CSVSQLDB_THROW(SqlParserException, "Visting non expression node");
     }
-    virtual void visit(ASTLeftJoinNode& node)
+    void visit(ASTLeftJoinNode& node) override
     {
       CSVSQLDB_THROW(SqlParserException, "Visting non expression node");
     }
-    virtual void visit(ASTRightJoinNode& node)
+    void visit(ASTRightJoinNode& node) override
     {
       CSVSQLDB_THROW(SqlParserException, "Visting non expression node");
     }
-    virtual void visit(ASTFullJoinNode& node)
+    void visit(ASTFullJoinNode& node) override
     {
       CSVSQLDB_THROW(SqlParserException, "Visting non expression node");
     }
-    virtual void visit(ASTWhereNode& node)
+    void visit(ASTWhereNode& node) override
     {
       CSVSQLDB_THROW(SqlParserException, "Visting non expression node");
     }
-    virtual void visit(ASTGroupByNode& node)
+    void visit(ASTGroupByNode& node) override
     {
       CSVSQLDB_THROW(SqlParserException, "Visting non expression node");
     }
-    virtual void visit(ASTHavingNode& node)
+    void visit(ASTHavingNode& node) override
     {
       CSVSQLDB_THROW(SqlParserException, "Visting non expression node");
     }
-    virtual void visit(ASTOrderByNode& node)
+    void visit(ASTOrderByNode& node) override
     {
       CSVSQLDB_THROW(SqlParserException, "Visting non expression node");
     }
-    virtual void visit(ASTLimitNode& node)
+    void visit(ASTLimitNode& node) override
     {
       CSVSQLDB_THROW(SqlParserException, "Visting non expression node");
     }
 
   protected:
-    ASTExpressionNodeVisitor()
-    {
-    }
+    ASTExpressionNodeVisitor() = default;
   };
 
 
   class CSVSQLDB_EXPORT ASTNode
   {
   public:
-    virtual ~ASTNode()
-    {
-    }
+    virtual ~ASTNode() = default;
 
     SymbolTablePtr symbolTable() const
     {
@@ -391,6 +402,7 @@ namespace csvsqldb
     SymbolTablePtr _symbolTable;
   };
 
+
   class CSVSQLDB_EXPORT ASTExprNode : public ASTNode
   {
   public:
@@ -404,6 +416,7 @@ namespace csvsqldb
     std::string _symbolName;
   };
 
+
   class CSVSQLDB_EXPORT ASTQualifiedAsterisk : public ASTExprNode
   {
   public:
@@ -414,7 +427,7 @@ namespace csvsqldb
     {
     }
 
-    virtual void accept(ASTNodeVisitor& visitor)
+    void accept(ASTNodeVisitor& visitor) override
     {
       visitor.visit(*this);
     }
@@ -432,7 +445,7 @@ namespace csvsqldb
       return getQualifiedIdentifier();
     }
 
-    virtual eType type() const
+    eType type() const override
     {
       return NONE;
     }
@@ -440,6 +453,7 @@ namespace csvsqldb
     std::string _prefix;
     bool _quoted;
   };
+
 
   class CSVSQLDB_EXPORT ASTExplainNode : public ASTNode
   {
@@ -451,7 +465,7 @@ namespace csvsqldb
     {
     }
 
-    virtual void accept(ASTNodeVisitor& visitor)
+    void accept(ASTNodeVisitor& visitor) override
     {
       visitor.visit(*this);
     }
@@ -459,6 +473,7 @@ namespace csvsqldb
     eDescriptionType _descType;
     ASTQueryNodePtr _query;
   };
+
 
   class CSVSQLDB_EXPORT ASTMappingNode : public ASTNode
   {
@@ -470,7 +485,7 @@ namespace csvsqldb
     {
     }
 
-    virtual void accept(ASTNodeVisitor& visitor)
+    void accept(ASTNodeVisitor& visitor) override
     {
       visitor.visit(*this);
     }
@@ -478,6 +493,7 @@ namespace csvsqldb
     std::string _tableName;
     FileMapping::Mappings _mappings;
   };
+
 
   class CSVSQLDB_EXPORT ASTDropMappingNode : public ASTNode
   {
@@ -488,13 +504,14 @@ namespace csvsqldb
     {
     }
 
-    virtual void accept(ASTNodeVisitor& visitor)
+    void accept(ASTNodeVisitor& visitor) override
     {
       visitor.visit(*this);
     }
 
     std::string _tableName;
   };
+
 
   class CSVSQLDB_EXPORT ASTQueryNode : public ASTNode
   {
@@ -505,13 +522,14 @@ namespace csvsqldb
     {
     }
 
-    virtual void accept(ASTNodeVisitor& visitor)
+    void accept(ASTNodeVisitor& visitor) override
     {
       visitor.visit(*this);
     }
 
     ASTQueryExpressionNodePtr _query;
   };
+
 
   class CSVSQLDB_EXPORT ASTQueryExpressionNode : public ASTNode
   {
@@ -523,6 +541,7 @@ namespace csvsqldb
 
     virtual RelationOutputParameter outputParameter() const = 0;
   };
+
 
   class CSVSQLDB_EXPORT ASTUnionNode : public ASTQueryExpressionNode
   {
@@ -536,12 +555,12 @@ namespace csvsqldb
     {
     }
 
-    virtual void accept(ASTNodeVisitor& visitor)
+    void accept(ASTNodeVisitor& visitor) override
     {
       visitor.visit(*this);
     }
 
-    virtual RelationOutputParameter outputParameter() const
+    RelationOutputParameter outputParameter() const override
     {
       return _lhs->outputParameter();
     }
@@ -550,6 +569,7 @@ namespace csvsqldb
     ASTQueryExpressionNodePtr _lhs;
     ASTQueryExpressionNodePtr _rhs;
   };
+
 
   class CSVSQLDB_EXPORT ASTQuerySpecificationNode : public ASTQueryExpressionNode
   {
@@ -563,17 +583,17 @@ namespace csvsqldb
     {
     }
 
-    virtual void accept(ASTNodeVisitor& visitor)
+    void accept(ASTNodeVisitor& visitor) override
     {
       visitor.visit(*this);
     }
 
-    virtual void typeSymbolTable(const Database& database)
+    void typeSymbolTable(const Database& database) override
     {
       _symbolTable->typeSymbolTable(database);
     }
 
-    virtual RelationOutputParameter outputParameter() const
+    RelationOutputParameter outputParameter() const override
     {
       RelationOutputParameter outputParameter;
 
@@ -609,6 +629,7 @@ namespace csvsqldb
     ASTTableExpressionNodePtr _tableExpression;
   };
 
+
   class CSVSQLDB_EXPORT ASTTableExpressionNode : public ASTNode
   {
   public:
@@ -625,7 +646,7 @@ namespace csvsqldb
     {
     }
 
-    virtual void accept(ASTNodeVisitor& visitor)
+    void accept(ASTNodeVisitor& visitor) override
     {
       visitor.visit(*this);
     }
@@ -638,6 +659,7 @@ namespace csvsqldb
     ASTLimitNodePtr _limit;
   };
 
+
   class CSVSQLDB_EXPORT ASTTableReferenceNode : public ASTNode
   {
   public:
@@ -646,6 +668,7 @@ namespace csvsqldb
     {
     }
   };
+
 
   class CSVSQLDB_EXPORT ASTTableFactorNode : public ASTTableReferenceNode
   {
@@ -656,6 +679,7 @@ namespace csvsqldb
     }
   };
 
+
   class CSVSQLDB_EXPORT ASTTableIdentifierNode : public ASTTableFactorNode
   {
   public:
@@ -665,13 +689,14 @@ namespace csvsqldb
     {
     }
 
-    virtual void accept(ASTNodeVisitor& visitor)
+    void accept(ASTNodeVisitor& visitor) override
     {
       visitor.visit(*this);
     }
 
     ASTIdentifierPtr _factor;
   };
+
 
   class CSVSQLDB_EXPORT ASTTableSubqueryNode : public ASTTableFactorNode
   {
@@ -683,7 +708,7 @@ namespace csvsqldb
     {
     }
 
-    virtual void accept(ASTNodeVisitor& visitor)
+    void accept(ASTNodeVisitor& visitor) override
     {
       visitor.visit(*this);
     }
@@ -691,6 +716,7 @@ namespace csvsqldb
     ASTQueryExpressionNodePtr _query;
     std::string _queryAlias;
   };
+
 
   class CSVSQLDB_EXPORT ASTJoinNode : public ASTTableReferenceNode
   {
@@ -704,6 +730,7 @@ namespace csvsqldb
     ASTTableReferenceNodePtr _tableReference;
   };
 
+
   class CSVSQLDB_EXPORT ASTCrossJoinNode : public ASTJoinNode
   {
   public:
@@ -714,13 +741,14 @@ namespace csvsqldb
     {
     }
 
-    virtual void accept(ASTNodeVisitor& visitor)
+    void accept(ASTNodeVisitor& visitor) override
     {
       visitor.visit(*this);
     }
 
     ASTTableFactorNodePtr _factor;
   };
+
 
   class CSVSQLDB_EXPORT ASTNaturalJoinNode : public ASTJoinNode
   {
@@ -733,7 +761,7 @@ namespace csvsqldb
     {
     }
 
-    virtual void accept(ASTNodeVisitor& visitor)
+    void accept(ASTNodeVisitor& visitor) override
     {
       visitor.visit(*this);
     }
@@ -741,6 +769,7 @@ namespace csvsqldb
     eNaturalJoinType _joinType;
     ASTTableFactorNodePtr _factor;
   };
+
 
   class CSVSQLDB_EXPORT ASTJoinWithCondition : public ASTJoinNode
   {
@@ -757,6 +786,7 @@ namespace csvsqldb
     ASTExprNodePtr _expression;
   };
 
+
   class CSVSQLDB_EXPORT ASTInnerJoinNode : public ASTJoinWithCondition
   {
   public:
@@ -766,11 +796,12 @@ namespace csvsqldb
     {
     }
 
-    virtual void accept(ASTNodeVisitor& visitor)
+    void accept(ASTNodeVisitor& visitor) override
     {
       visitor.visit(*this);
     }
   };
+
 
   class CSVSQLDB_EXPORT ASTLeftJoinNode : public ASTJoinWithCondition
   {
@@ -781,11 +812,12 @@ namespace csvsqldb
     {
     }
 
-    virtual void accept(ASTNodeVisitor& visitor)
+    void accept(ASTNodeVisitor& visitor) override
     {
       visitor.visit(*this);
     }
   };
+
 
   class CSVSQLDB_EXPORT ASTRightJoinNode : public ASTJoinWithCondition
   {
@@ -796,11 +828,12 @@ namespace csvsqldb
     {
     }
 
-    virtual void accept(ASTNodeVisitor& visitor)
+    void accept(ASTNodeVisitor& visitor) override
     {
       visitor.visit(*this);
     }
   };
+
 
   class CSVSQLDB_EXPORT ASTFullJoinNode : public ASTJoinWithCondition
   {
@@ -811,7 +844,7 @@ namespace csvsqldb
     {
     }
 
-    virtual void accept(ASTNodeVisitor& visitor)
+    void accept(ASTNodeVisitor& visitor) override
     {
       visitor.visit(*this);
     }
@@ -829,12 +862,12 @@ namespace csvsqldb
     {
     }
 
-    virtual void accept(ASTNodeVisitor& visitor)
+    void accept(ASTNodeVisitor& visitor) override
     {
       visitor.visit(*this);
     }
 
-    virtual eType type() const
+    eType type() const override
     {
       return inferTypeOfBinaryOperation(_op, _lhs->type(), _rhs->type());
     }
@@ -843,6 +876,7 @@ namespace csvsqldb
     ASTExprNodePtr _lhs;
     ASTExprNodePtr _rhs;
   };
+
 
   class CSVSQLDB_EXPORT ASTUnaryNode : public ASTExprNode
   {
@@ -855,12 +889,12 @@ namespace csvsqldb
     {
     }
 
-    virtual void accept(ASTNodeVisitor& visitor)
+    void accept(ASTNodeVisitor& visitor) override
     {
       visitor.visit(*this);
     }
 
-    virtual eType type() const
+    eType type() const override
     {
       eType retType = NONE;
       switch (_op) {
@@ -885,6 +919,7 @@ namespace csvsqldb
     ASTExprNodePtr _rhs;
   };
 
+
   class CSVSQLDB_EXPORT ASTValueNode : public ASTExprNode
   {
   public:
@@ -894,18 +929,19 @@ namespace csvsqldb
     {
     }
 
-    virtual void accept(ASTNodeVisitor& visitor)
+    void accept(ASTNodeVisitor& visitor) override
     {
       visitor.visit(*this);
     }
 
-    virtual eType type() const
+    eType type() const override
     {
       return _value._type;
     }
 
     TypedValue _value;
   };
+
 
   class CSVSQLDB_EXPORT ASTLikeNode : public ASTExprNode
   {
@@ -917,12 +953,12 @@ namespace csvsqldb
     {
     }
 
-    virtual void accept(ASTNodeVisitor& visitor)
+    void accept(ASTNodeVisitor& visitor) override
     {
       visitor.visit(*this);
     }
 
-    virtual eType type() const
+    eType type() const override
     {
       return BOOLEAN;
     }
@@ -930,6 +966,7 @@ namespace csvsqldb
     ASTExprNodePtr _lhs;
     std::string _like;
   };
+
 
   class CSVSQLDB_EXPORT ASTBetweenNode : public ASTExprNode
   {
@@ -943,12 +980,12 @@ namespace csvsqldb
     {
     }
 
-    virtual void accept(ASTNodeVisitor& visitor)
+    void accept(ASTNodeVisitor& visitor) override
     {
       visitor.visit(*this);
     }
 
-    virtual eType type() const
+    eType type() const override
     {
       return BOOLEAN;
     }
@@ -957,6 +994,7 @@ namespace csvsqldb
     ASTExprNodePtr _from;
     ASTExprNodePtr _to;
   };
+
 
   class CSVSQLDB_EXPORT ASTInNode : public ASTExprNode
   {
@@ -968,12 +1006,12 @@ namespace csvsqldb
     {
     }
 
-    virtual void accept(ASTNodeVisitor& visitor)
+    void accept(ASTNodeVisitor& visitor) override
     {
       visitor.visit(*this);
     }
 
-    virtual eType type() const
+    eType type() const override
     {
       return BOOLEAN;
     }
@@ -981,6 +1019,7 @@ namespace csvsqldb
     ASTExprNodePtr _lhs;
     Expressions _expressions;
   };
+
 
   class CSVSQLDB_EXPORT ASTFunctionNode : public ASTExprNode
   {
@@ -996,12 +1035,12 @@ namespace csvsqldb
       }
     }
 
-    virtual void accept(ASTNodeVisitor& visitor)
+    void accept(ASTNodeVisitor& visitor) override
     {
       visitor.visit(*this);
     }
 
-    virtual eType type() const
+    eType type() const override
     {
       return _function->getReturnType();
     }
@@ -1009,6 +1048,7 @@ namespace csvsqldb
     Function::Ptr _function;
     Parameters _parameters;
   };
+
 
   class CSVSQLDB_EXPORT ASTAggregateFunctionNode : public ASTExprNode
   {
@@ -1022,12 +1062,12 @@ namespace csvsqldb
     {
     }
 
-    virtual void accept(ASTNodeVisitor& visitor)
+    void accept(ASTNodeVisitor& visitor) override
     {
       visitor.visit(*this);
     }
 
-    virtual eType type() const
+    eType type() const override
     {
       switch (_aggregateFunction) {
         case COUNT_STAR:
@@ -1050,6 +1090,7 @@ namespace csvsqldb
     Parameters _parameters;
   };
 
+
   class CSVSQLDB_EXPORT ASTIdentifier : public ASTExprNode
   {
   public:
@@ -1064,7 +1105,7 @@ namespace csvsqldb
     {
     }
 
-    virtual void accept(ASTNodeVisitor& visitor)
+    void accept(ASTNodeVisitor& visitor) override
     {
       visitor.visit(*this);
     }
@@ -1082,7 +1123,7 @@ namespace csvsqldb
       return getQualifiedIdentifier();
     }
 
-    virtual eType type() const
+    eType type() const override
     {
       return _info->_type;
     }
@@ -1099,6 +1140,7 @@ namespace csvsqldb
     std::string _qualifiedIdentifier;
   };
 
+
   class CSVSQLDB_EXPORT ASTFromNode : public ASTNode
   {
   public:
@@ -1108,13 +1150,14 @@ namespace csvsqldb
     {
     }
 
-    virtual void accept(ASTNodeVisitor& visitor)
+    void accept(ASTNodeVisitor& visitor) override
     {
       visitor.visit(*this);
     }
 
     TableReferences _tableReferences;
   };
+
 
   class CSVSQLDB_EXPORT ASTWhereNode : public ASTNode
   {
@@ -1125,13 +1168,14 @@ namespace csvsqldb
     {
     }
 
-    virtual void accept(ASTNodeVisitor& visitor)
+    void accept(ASTNodeVisitor& visitor) override
     {
       visitor.visit(*this);
     }
 
     ASTExprNodePtr _exp;
   };
+
 
   class CSVSQLDB_EXPORT ASTGroupByNode : public ASTNode
   {
@@ -1143,7 +1187,7 @@ namespace csvsqldb
     {
     }
 
-    virtual void accept(ASTNodeVisitor& visitor)
+    void accept(ASTNodeVisitor& visitor) override
     {
       visitor.visit(*this);
     }
@@ -1151,6 +1195,7 @@ namespace csvsqldb
     eQuantifier _quantifier;
     Identifiers _identifiers;
   };
+
 
   class CSVSQLDB_EXPORT ASTHavingNode : public ASTNode
   {
@@ -1161,13 +1206,14 @@ namespace csvsqldb
     {
     }
 
-    virtual void accept(ASTNodeVisitor& visitor)
+    void accept(ASTNodeVisitor& visitor) override
     {
       visitor.visit(*this);
     }
 
     ASTExprNodePtr _exp;
   };
+
 
   class CSVSQLDB_EXPORT ASTOrderByNode : public ASTNode
   {
@@ -1178,13 +1224,14 @@ namespace csvsqldb
     {
     }
 
-    virtual void accept(ASTNodeVisitor& visitor)
+    void accept(ASTNodeVisitor& visitor) override
     {
       visitor.visit(*this);
     }
 
     OrderExpressions _orderExpressions;
   };
+
 
   class CSVSQLDB_EXPORT ASTLimitNode : public ASTNode
   {
@@ -1196,7 +1243,7 @@ namespace csvsqldb
     {
     }
 
-    virtual void accept(ASTNodeVisitor& visitor)
+    void accept(ASTNodeVisitor& visitor) override
     {
       visitor.visit(*this);
     }
@@ -1204,6 +1251,7 @@ namespace csvsqldb
     ASTExprNodePtr _limit;
     ASTExprNodePtr _offset;
   };
+
 
   class CSVSQLDB_EXPORT ASTCreateTableNode : public ASTNode
   {
@@ -1219,7 +1267,7 @@ namespace csvsqldb
     {
     }
 
-    virtual void accept(ASTNodeVisitor& visitor)
+    void accept(ASTNodeVisitor& visitor) override
     {
       visitor.visit(*this);
     }
@@ -1230,6 +1278,7 @@ namespace csvsqldb
     bool _createIfNotExists;
   };
 
+
   class CSVSQLDB_EXPORT ASTAlterTableNode : public ASTNode
   {
   protected:
@@ -1238,6 +1287,7 @@ namespace csvsqldb
     {
     }
   };
+
 
   class CSVSQLDB_EXPORT ASTAlterTableAddNode : public ASTAlterTableNode
   {
@@ -1248,13 +1298,14 @@ namespace csvsqldb
     {
     }
 
-    virtual void accept(ASTNodeVisitor& visitor)
+    void accept(ASTNodeVisitor& visitor) override
     {
       visitor.visit(*this);
     }
 
     ColumnDefinition _definition;
   };
+
 
   class CSVSQLDB_EXPORT ASTAlterTableDropNode : public ASTAlterTableNode
   {
@@ -1265,13 +1316,14 @@ namespace csvsqldb
     {
     }
 
-    virtual void accept(ASTNodeVisitor& visitor)
+    void accept(ASTNodeVisitor& visitor) override
     {
       visitor.visit(*this);
     }
 
     std::string _columnName;
   };
+
 
   class CSVSQLDB_EXPORT ASTDropTableNode : public ASTNode
   {
@@ -1282,7 +1334,7 @@ namespace csvsqldb
     {
     }
 
-    virtual void accept(ASTNodeVisitor& visitor)
+    void accept(ASTNodeVisitor& visitor) override
     {
       visitor.visit(*this);
     }

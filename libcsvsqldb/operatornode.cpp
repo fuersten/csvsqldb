@@ -429,10 +429,6 @@ namespace csvsqldb
   {
   }
 
-  AggregationOperatorNode::~AggregationOperatorNode()
-  {
-  }
-
   const Values* AggregationOperatorNode::getNextRow()
   {
     if (!_block) {
@@ -573,10 +569,6 @@ namespace csvsqldb
   : RowOperatorNode(context, symbolTable)
   , _nodes(nodes)
   , _block(nullptr)
-  {
-  }
-
-  ExtendedProjectionOperatorNode::~ExtendedProjectionOperatorNode()
   {
   }
 

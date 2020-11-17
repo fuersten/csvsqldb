@@ -162,6 +162,11 @@ namespace csvsqldb
   public:
     SQLLexer(const std::string& input);
 
+    SQLLexer(const SQLLexer&) = delete;
+    SQLLexer& operator=(const SQLLexer&) = delete;
+    SQLLexer(SQLLexer&&) = delete;
+    SQLLexer& operator=(SQLLexer&&) = delete;
+
     csvsqldb::lexer::Token next();
 
     void setInput(const std::string& input);

@@ -70,11 +70,6 @@ namespace csvsqldb
     return (hour <= 23 && minute <= 59 && second <= 59 && milliseconds <= 999);
   }
 
-  Time::Time()
-  : _time(0)
-  {
-  }
-
   Time::Time(int32_t time)
   : _time(time)
   {
@@ -105,21 +100,6 @@ namespace csvsqldb
 
     _time = calcNumberFromTime(static_cast<uint16_t>(ptime.tm_hour), static_cast<uint16_t>(ptime.tm_min),
                                static_cast<uint16_t>(ptime.tm_sec), 0);
-  }
-
-  Time::Time(const Time& time)
-  {
-    _time = time._time;
-  }
-
-  Time::~Time()
-  {
-  }
-
-  Time& Time::operator=(const Time& time)
-  {
-    _time = time._time;
-    return *this;
   }
 
   bool Time::operator==(const Time& time) const

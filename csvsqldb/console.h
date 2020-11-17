@@ -50,7 +50,7 @@ namespace csvsqldb
   /**
    * A console class to support interactive shells. The implementation is based on the linenoise library.
    */
-  class CSVSQLDB_EXPORT Console final
+  class CSVSQLDB_EXPORT Console
   {
   public:
     typedef std::function<bool(const csvsqldb::StringVector&)> CommandFunction;

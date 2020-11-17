@@ -47,75 +47,75 @@ namespace csvsqldb
   public:
     ASTValidationVisitor(const Database& database);
 
-    virtual void visit(ASTCreateTableNode& node);
+    void visit(ASTCreateTableNode& node) override;
 
-    virtual void visit(ASTMappingNode& node);
+    void visit(ASTMappingNode& node) override;
 
-    virtual void visit(ASTDropMappingNode& node);
+    void visit(ASTDropMappingNode& node) override;
 
-    virtual void visit(ASTAlterTableAddNode& node);
+    void visit(ASTAlterTableAddNode& node) override;
 
-    virtual void visit(ASTAlterTableDropNode& node);
+    void visit(ASTAlterTableDropNode& node) override;
 
-    virtual void visit(ASTDropTableNode& node);
+    void visit(ASTDropTableNode& node) override;
 
-    virtual void visit(ASTExplainNode& node);
+    void visit(ASTExplainNode& node) override;
 
-    virtual void visit(ASTUnionNode& node);
+    void visit(ASTUnionNode& node) override;
 
-    virtual void visit(ASTQueryNode& node);
+    void visit(ASTQueryNode& node) override;
 
-    virtual void visit(ASTQuerySpecificationNode& node);
+    void visit(ASTQuerySpecificationNode& node) override;
 
-    virtual void visit(ASTTableExpressionNode& node);
+    void visit(ASTTableExpressionNode& node) override;
 
-    virtual void visit(ASTBinaryNode& node);
+    void visit(ASTBinaryNode& node) override;
 
-    virtual void visit(ASTUnaryNode& node);
+    void visit(ASTUnaryNode& node) override;
 
-    virtual void visit(ASTValueNode& node);
+    void visit(ASTValueNode& node) override;
 
-    virtual void visit(ASTLikeNode& node);
+    void visit(ASTLikeNode& node) override;
 
-    virtual void visit(ASTBetweenNode& node);
+    void visit(ASTBetweenNode& node) override;
 
-    virtual void visit(ASTInNode& node);
+    void visit(ASTInNode& node) override;
 
-    virtual void visit(ASTFunctionNode& node);
+    void visit(ASTFunctionNode& node) override;
 
-    virtual void visit(ASTAggregateFunctionNode& node);
+    void visit(ASTAggregateFunctionNode& node) override;
 
-    virtual void visit(ASTIdentifier& node);
+    void visit(ASTIdentifier& node) override;
 
-    virtual void visit(ASTQualifiedAsterisk& node);
+    void visit(ASTQualifiedAsterisk& node) override;
 
-    virtual void visit(ASTFromNode& node);
+    void visit(ASTFromNode& node) override;
 
-    virtual void visit(ASTTableIdentifierNode& node);
+    void visit(ASTTableIdentifierNode& node) override;
 
-    virtual void visit(ASTTableSubqueryNode& node);
+    void visit(ASTTableSubqueryNode& node) override;
 
-    virtual void visit(ASTCrossJoinNode& node);
+    void visit(ASTCrossJoinNode& node) override;
 
-    virtual void visit(ASTNaturalJoinNode& node);
+    void visit(ASTNaturalJoinNode& node) override;
 
-    virtual void visit(ASTInnerJoinNode& node);
+    void visit(ASTInnerJoinNode& node) override;
 
-    virtual void visit(ASTLeftJoinNode& node);
+    void visit(ASTLeftJoinNode& node) override;
 
-    virtual void visit(ASTRightJoinNode& node);
+    void visit(ASTRightJoinNode& node) override;
 
-    virtual void visit(ASTFullJoinNode& node);
+    void visit(ASTFullJoinNode& node) override;
 
-    virtual void visit(ASTWhereNode& node);
+    void visit(ASTWhereNode& node) override;
 
-    virtual void visit(ASTGroupByNode& node);
+    void visit(ASTGroupByNode& node) override;
 
-    virtual void visit(ASTHavingNode& node);
+    void visit(ASTHavingNode& node) override;
 
-    virtual void visit(ASTOrderByNode& node);
+    void visit(ASTOrderByNode& node) override;
 
-    virtual void visit(ASTLimitNode& node);
+    void visit(ASTLimitNode& node) override;
 
   private:
     const Database& _database;

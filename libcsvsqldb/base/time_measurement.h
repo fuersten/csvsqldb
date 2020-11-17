@@ -97,9 +97,14 @@ namespace csvsqldb
     /**
      * A clock for the retrieval of real, user and system time. Can be used to measure runtimes.
      */
-    class CSVSQLDB_EXPORT ProcessTimeClock : noncopyable
+    class CSVSQLDB_EXPORT ProcessTimeClock
     {
     public:
+      ProcessTimeClock(const ProcessTimeClock&) = delete;
+      ProcessTimeClock& operator=(const ProcessTimeClock&) = delete;
+      ProcessTimeClock(ProcessTimeClock&&) = delete;
+      ProcessTimeClock& operator=(ProcessTimeClock&&) = delete;
+
       // TODO LCF: move implementation to detail
       static ProcessTimePoint now();
     };

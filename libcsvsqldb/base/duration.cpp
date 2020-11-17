@@ -70,30 +70,6 @@ namespace csvsqldb
   {
   }
 
-  Duration::Duration(const Duration& duration)
-  : _years(duration._years)
-  , _months(duration._months)
-  , _days(duration._days)
-  , _hours(duration._hours)
-  , _minutes(duration._minutes)
-  , _seconds(duration._seconds)
-  , _sign(duration._sign)
-  {
-  }
-
-  Duration& Duration::operator=(const Duration& duration)
-  {
-    _years = duration._years;
-    _months = duration._months;
-    _days = duration._days;
-    _hours = duration._hours;
-    _minutes = duration._minutes;
-    _seconds = duration._seconds;
-    _sign = duration._sign;
-
-    return *this;
-  }
-
   bool Duration::operator==(const Duration& duration) const
   {
     return (_years == duration._years && _months == duration._months && _days == duration._days && _hours == duration._hours &&

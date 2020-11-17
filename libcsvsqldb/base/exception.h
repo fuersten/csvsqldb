@@ -41,12 +41,6 @@
 #include <sstream>
 #include <string>
 
-#if defined _MSC_VER
-  #define NOEXCEPT
-#else
-  #define NOEXCEPT noexcept
-#endif
-
 
 namespace csvsqldb
 {
@@ -61,34 +55,34 @@ namespace csvsqldb
      * @param ec The error code to set
      * @param message The message that shall be tied to this execption.
      */
-    explicit Exception(std::error_code ec, const std::string& message) NOEXCEPT;
+    explicit Exception(std::error_code ec, const std::string& message) noexcept;
 
     /**
      * Constructor.
      * @param ev The error value to set
      * @param message The message that shall be tied to this execption.
      */
-    explicit Exception(int ev, const std::string& message) NOEXCEPT;
+    explicit Exception(int ev, const std::string& message) noexcept;
 
     /**
      * Constructor.
      * @param ec The error condition to set
      * @param message The message that shall be tied to this execption.
      */
-    explicit Exception(std::errc ec, const std::string& message) NOEXCEPT;
+    explicit Exception(std::errc ec, const std::string& message) noexcept;
 
     /**
      * Constructor.
      * @param message The message that shall be tied to this execption.
      */
-    explicit Exception(const std::string& message) NOEXCEPT;
+    explicit Exception(const std::string& message) noexcept;
 
-    Exception(const Exception& ex) NOEXCEPT;
+    Exception(const Exception& ex) noexcept;
 
     /**
      * Returns the explanatory string.
      */
-    virtual const char* what() const NOEXCEPT;
+    const char* what() const noexcept override;
 
   private:
     std::string _message;
@@ -102,30 +96,35 @@ namespace csvsqldb
   class CSVSQLDB_EXPORT ex : public base                                                                                         \
   {                                                                                                                              \
   public:                                                                                                                        \
-    explicit ex(std::error_code ec, const std::string& message) NOEXCEPT;                                                        \
-    explicit ex(int ev, const std::string& message) NOEXCEPT;                                                                    \
-    explicit ex(std::errc ec, const std::string& message) NOEXCEPT;                                                              \
-    explicit ex(const std::string& message) NOEXCEPT;                                                                            \
-    ex(const base& ex) NOEXCEPT;                                                                                                 \
+    explicit ex(std::error_code ec, const std::string& message) noexcept;                                                        \
+    explicit ex(int ev, const std::string& message) noexcept;                                                                    \
+    explicit ex(std::errc ec, const std::string& message) noexcept;                                                              \
+    explicit ex(const std::string& message) noexcept;                                                                            \
+    ex(const base& ex) noexcept;                                                                                                 \
   }
 
 /**
  * Macro for exception class implementations with a specific base class.
  */
 #define CSVSQLDB_IMPLEMENT_EXCEPTION(ex, base)                                                                                   \
-  ex::ex(std::error_code ec, const std::string& message) NOEXCEPT : base(ec, message)                                            \
+  ex::ex(std::error_code ec, const std::string& message) noexcept                                                                \
+  : base(ec, message)                                                                                                            \
   {                                                                                                                              \
   }                                                                                                                              \
-  ex::ex(int ev, const std::string& message) NOEXCEPT : base(ev, message)                                                        \
+  ex::ex(int ev, const std::string& message) noexcept                                                                            \
+  : base(ev, message)                                                                                                            \
   {                                                                                                                              \
   }                                                                                                                              \
-  ex::ex(std::errc ec, const std::string& message) NOEXCEPT : base(ec, message)                                                  \
+  ex::ex(std::errc ec, const std::string& message) noexcept                                                                      \
+  : base(ec, message)                                                                                                            \
   {                                                                                                                              \
   }                                                                                                                              \
-  ex::ex(const std::string& message) NOEXCEPT : base(message)                                                                    \
+  ex::ex(const std::string& message) noexcept                                                                                    \
+  : base(message)                                                                                                                \
   {                                                                                                                              \
   }                                                                                                                              \
-  ex::ex(const base& ex) NOEXCEPT : base(ex)                                                                                     \
+  ex::ex(const base& ex) noexcept                                                                                                \
+  : base(ex)                                                                                                                     \
   {                                                                                                                              \
   }
 

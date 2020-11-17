@@ -49,9 +49,9 @@ namespace csvsqldb
     CreateTableExecutionNode(Database& database, const std::string& tableName, const ColumnDefinitions& columnDefinitions,
                              const TableConstraints& constraints, bool createIfNotExists);
 
-    virtual int64_t execute();
+    int64_t execute() override;
 
-    virtual void dump(std::ostream& stream) const;
+    void dump(std::ostream& stream) const override;
 
   private:
     Database& _database;
@@ -61,28 +61,30 @@ namespace csvsqldb
     bool _createIfNotExists;
   };
 
+
   class CSVSQLDB_EXPORT DropTableExecutionNode : public ExecutionNode
   {
   public:
     DropTableExecutionNode(Database& database, const std::string& tableName);
 
-    virtual int64_t execute();
+    int64_t execute() override;
 
-    virtual void dump(std::ostream& stream) const;
+    void dump(std::ostream& stream) const override;
 
   private:
     Database& _database;
     std::string _tableName;
   };
 
+
   class CSVSQLDB_EXPORT CreateMappingExecutionNode : public ExecutionNode
   {
   public:
     CreateMappingExecutionNode(Database& database, const std::string& tableName, const FileMapping::Mappings& mappings);
 
-    virtual int64_t execute();
+    int64_t execute() override;
 
-    virtual void dump(std::ostream& stream) const;
+    void dump(std::ostream& stream) const override;
 
   private:
     Database& _database;
@@ -90,14 +92,15 @@ namespace csvsqldb
     FileMapping::Mappings _mappings;
   };
 
+
   class CSVSQLDB_EXPORT DropMappingExecutionNode : public ExecutionNode
   {
   public:
     DropMappingExecutionNode(Database& database, const std::string& tableName);
 
-    virtual int64_t execute();
+    int64_t execute() override;
 
-    virtual void dump(std::ostream& stream) const;
+    void dump(std::ostream& stream) const override;
 
   private:
     Database& _database;

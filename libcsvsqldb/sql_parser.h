@@ -48,6 +48,11 @@ namespace csvsqldb
   public:
     SQLParser(const FunctionRegistry& functionRegistry);
 
+    SQLParser(const SQLParser&) = delete;
+    SQLParser& operator=(const SQLParser&) = delete;
+    SQLParser(SQLParser&&) = delete;
+    SQLParser& operator=(SQLParser&&) = delete;
+
     ASTNodePtr parse(const std::string& input);
     ASTNodePtr parse();
 

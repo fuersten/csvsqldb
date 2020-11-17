@@ -46,8 +46,7 @@ namespace csvsqldb
   /**
    * The global configuration is an abstraction that separates the configuration mechanism from the actual configuration.
    * All relevant configuration values are accessible through the global instance. By calling the GlobalConfiguration::configure
-   * method
-   * again, the configuraiton can be changed for the running system. Currently, you have to beware of race conditions!
+   * method again, the configuraiton can be changed for the running system. Currently, you have to beware of race conditions!
    */
   class CSVSQLDB_EXPORT GlobalConfiguration
   {
@@ -55,7 +54,13 @@ namespace csvsqldb
     typedef std::shared_ptr<GlobalConfiguration> Ptr;
     typedef std::map<std::string, int> DebugLevel;
 
+    GlobalConfiguration() = default;
     virtual ~GlobalConfiguration() = default;
+
+    GlobalConfiguration(const GlobalConfiguration&) = delete;
+    GlobalConfiguration(GlobalConfiguration&&) = delete;
+    GlobalConfiguration& operator=(const GlobalConfiguration&) = delete;
+    GlobalConfiguration& operator=(GlobalConfiguration&&) = delete;
 
     /**
      * Appilcation relevant configurations.
@@ -82,8 +87,8 @@ namespace csvsqldb
 
     /**
      * Creates a new global configuration instance and makes it accessible to the GlobalConfiguration::instance method. The
-     * type should
-     * be your inherited global configuration class. It should be called once before accessing global configuration values.
+     * type should be your inherited global configuration class. It should be called once before accessing global configuration
+     * values.
      */
     template<typename T>
     static void create()

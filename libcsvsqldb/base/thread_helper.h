@@ -53,6 +53,11 @@ namespace csvsqldb
      */
     ThreadJoinGuard(std::thread& t);
 
+    ThreadJoinGuard(const ThreadJoinGuard&) = delete;
+    ThreadJoinGuard& operator=(const ThreadJoinGuard&) = delete;
+    ThreadJoinGuard(ThreadJoinGuard&&) = delete;
+    ThreadJoinGuard& operator=(ThreadJoinGuard&&) = delete;
+
     /**
      * Joins the thread upon destruction.
      */

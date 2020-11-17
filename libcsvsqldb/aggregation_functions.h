@@ -49,9 +49,12 @@ namespace csvsqldb
   class CSVSQLDB_EXPORT AggregationFunction
   {
   public:
-    virtual ~AggregationFunction()
-    {
-    }
+    virtual ~AggregationFunction() = default;
+
+    AggregationFunction(const AggregationFunction&) = delete;
+    AggregationFunction& operator=(const AggregationFunction&) = delete;
+    AggregationFunction(AggregationFunction&&) = delete;
+    AggregationFunction& operator=(AggregationFunction&&) = delete;
 
     void init()
     {
@@ -80,9 +83,7 @@ namespace csvsqldb
     static AggregationFunctionPtr create(eAggregateFunction aggrFunc, eType type);
 
   protected:
-    AggregationFunction()
-    {
-    }
+    AggregationFunction() = default;
 
   private:
     virtual void doInit() = 0;
@@ -94,48 +95,42 @@ namespace csvsqldb
   class CSVSQLDB_EXPORT CountAggregationFunction : public AggregationFunction
   {
   public:
-    CountAggregationFunction()
-    : _count(INT)
-    {
-    }
+    CountAggregationFunction() = default;
 
-    virtual AggregationFunction* clone(BlockPtr block) const;
+    AggregationFunction* clone(BlockPtr block) const override;
 
-    virtual std::string toString() const
+    std::string toString() const override
     {
       return "COUNT";
     }
 
   private:
-    virtual void doInit();
-    virtual void doStep(const Variant& value);
-    virtual const Variant& doFinalize();
+    void doInit() override;
+    void doStep(const Variant& value) override;
+    const Variant& doFinalize() override;
 
-    Variant _count;
+    Variant _count{INT};
   };
 
 
   class CSVSQLDB_EXPORT RowCountAggregationFunction : public AggregationFunction
   {
   public:
-    RowCountAggregationFunction()
-    : _count(0)
-    {
-    }
+    RowCountAggregationFunction() = default;
 
-    virtual AggregationFunction* clone(BlockPtr block) const;
+    AggregationFunction* clone(BlockPtr block) const override;
 
-    virtual std::string toString() const
+    std::string toString() const override
     {
       return "COUNT_STAR";
     }
 
   private:
-    virtual void doInit();
-    virtual void doStep(const Variant& value);
-    virtual const Variant& doFinalize();
+    void doInit() override;
+    void doStep(const Variant& value) override;
+    const Variant& doFinalize() override;
 
-    Variant _count;
+    Variant _count{0};
   };
 
 
@@ -147,25 +142,25 @@ namespace csvsqldb
     {
     }
 
-    virtual AggregationFunction* clone(BlockPtr block) const;
+    AggregationFunction* clone(BlockPtr block) const override;
 
-    virtual std::string toString() const
+    std::string toString() const override
     {
       return "PATH_THROUGH";
     }
 
-    virtual bool suppress() const
+    bool suppress() const override
     {
       return _suppress;
     }
 
   private:
-    virtual void doInit();
-    virtual void doStep(const Variant& value);
-    virtual const Variant& doFinalize();
+    void doInit() override;
+    void doStep(const Variant& value) override;
+    const Variant& doFinalize() override;
 
     Variant _value;
-    bool _suppress;
+    bool _suppress{false};
   };
 
 
@@ -180,17 +175,17 @@ namespace csvsqldb
       }
     }
 
-    virtual AggregationFunction* clone(BlockPtr block) const;
+    AggregationFunction* clone(BlockPtr block) const override;
 
-    virtual std::string toString() const
+    std::string toString() const override
     {
       return "SUM";
     }
 
   private:
-    virtual void doInit();
-    virtual void doStep(const Variant& value);
-    virtual const Variant& doFinalize();
+    void doInit() override;
+    void doStep(const Variant& value) override;
+    const Variant& doFinalize() override;
 
     Variant _sum;
   };
@@ -200,27 +195,26 @@ namespace csvsqldb
   {
   public:
     AvgAggregationFunction(eType type)
-    : _count(0)
-    , _sum(type)
+    : _sum(type)
     {
       if (type != INT && type != REAL) {
         CSVSQLDB_THROW(csvsqldb::Exception, "only INT and REAL as summation aggregation allowed");
       }
     }
 
-    virtual AggregationFunction* clone(BlockPtr block) const;
+    AggregationFunction* clone(BlockPtr block) const override;
 
-    virtual std::string toString() const
+    std::string toString() const override
     {
       return "AVG";
     }
 
   private:
-    virtual void doInit();
-    virtual void doStep(const Variant& value);
-    virtual const Variant& doFinalize();
+    void doInit() override;
+    void doStep(const Variant& value) override;
+    const Variant& doFinalize() override;
 
-    Variant _count;
+    Variant _count{0};
     Variant _sum;
   };
 
@@ -233,17 +227,17 @@ namespace csvsqldb
     {
     }
 
-    virtual AggregationFunction* clone(BlockPtr block) const;
+    AggregationFunction* clone(BlockPtr block) const override;
 
-    virtual std::string toString() const
+    std::string toString() const override
     {
       return "MIN";
     }
 
   private:
-    virtual void doInit();
-    virtual void doStep(const Variant& value);
-    virtual const Variant& doFinalize();
+    void doInit() override;
+    void doStep(const Variant& value) override;
+    const Variant& doFinalize() override;
 
     Variant _value;
   };
@@ -257,17 +251,17 @@ namespace csvsqldb
     {
     }
 
-    virtual AggregationFunction* clone(BlockPtr block) const;
+    AggregationFunction* clone(BlockPtr block) const override;
 
-    virtual std::string toString() const
+    std::string toString() const override
     {
       return "MAX";
     }
 
   private:
-    virtual void doInit();
-    virtual void doStep(const Variant& value);
-    virtual const Variant& doFinalize();
+    void doInit() override;
+    void doStep(const Variant& value) override;
+    const Variant& doFinalize() override;
 
     Variant _value;
   };
@@ -281,17 +275,17 @@ namespace csvsqldb
     {
     }
 
-    virtual AggregationFunction* clone(BlockPtr block) const;
+    AggregationFunction* clone(BlockPtr block) const override;
 
-    virtual std::string toString() const
+    std::string toString() const override
     {
       return "ARBITRARY";
     }
 
   private:
-    virtual void doInit();
-    virtual void doStep(const Variant& value);
-    virtual const Variant& doFinalize();
+    void doInit() override;
+    void doStep(const Variant& value) override;
+    const Variant& doFinalize() override;
 
     Variant _value;
   };

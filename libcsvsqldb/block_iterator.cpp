@@ -555,10 +555,6 @@ namespace csvsqldb
   }
 
 
-  GroupingElement::GroupingElement()
-  {
-  }
-
   GroupingElement::GroupingElement(const Variants& groupingValues)
   : _groupingValues(groupingValues)
   {

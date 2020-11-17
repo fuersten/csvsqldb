@@ -71,7 +71,7 @@ namespace csvsqldb
     /** Constructs a time.
      *  All parts (hour, minute, second, millisecond) are set to 0.
      */
-    Time();
+    Time() = default;
 
     /** Constructs a time from an integer.
      *  If the given values do not give a valid time, a TimeException will be
@@ -95,10 +95,12 @@ namespace csvsqldb
      *  @param timeT The time_t value of a C-library function like time().
      */
     explicit Time(time_t timeT);
-    Time(const Time& time);
-    virtual ~Time();
+    ~Time() = default;
 
-    Time& operator=(const Time& time);
+    Time(const Time&) = default;
+    Time& operator=(const Time&) = default;
+    Time(Time&&) = default;
+    Time& operator=(Time&&) = default;
 
     bool operator==(const Time& time) const;
     bool operator!=(const Time& time) const;
@@ -250,7 +252,7 @@ namespace csvsqldb
     static int32_t calcNumberFromTime(uint16_t hour, uint16_t minute, uint16_t second, uint16_t millisecond);
 
   private:
-    int32_t _time;
+    int32_t _time{0};
   } __attribute__((__packed__));
 }
 

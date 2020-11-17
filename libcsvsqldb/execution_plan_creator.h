@@ -53,9 +53,9 @@ namespace csvsqldb
 
     void setRootOperatorNode(const RootOperatorNodePtr& queryOperationRoot);
 
-    virtual int64_t execute();
+    int64_t execute() override;
 
-    virtual void dump(std::ostream& stream) const;
+    void dump(std::ostream& stream) const override;
 
   private:
     const OperatorContext& _context;
@@ -67,9 +67,9 @@ namespace csvsqldb
   public:
     ExplainExecutionNode(OperatorContext& context, eDescriptionType descType, const ASTQueryNodePtr& query);
 
-    virtual int64_t execute();
+    int64_t execute() override;
 
-    virtual void dump(std::ostream& stream) const;
+    void dump(std::ostream& stream) const override;
 
   private:
     OperatorContext& _context;
@@ -89,46 +89,46 @@ namespace csvsqldb
     {
     }
 
-    virtual void visit(ASTCreateTableNode& node)
+    void visit(ASTCreateTableNode& node) override
     {
       ExecutionNode::UniquePtr execNode(new CreateTableExecutionNode(_context._database, node._tableName, node._columnDefinitions,
                                                                      node._tableConstraints, node._createIfNotExists));
       _executionPlan.addExecutionNode(execNode);
     }
 
-    virtual void visit(ASTMappingNode& node)
+    void visit(ASTMappingNode& node) override
     {
       ExecutionNode::UniquePtr execNode(new CreateMappingExecutionNode(_context._database, node._tableName, node._mappings));
       _executionPlan.addExecutionNode(execNode);
     }
 
-    virtual void visit(ASTDropMappingNode& node)
+    void visit(ASTDropMappingNode& node) override
     {
       ExecutionNode::UniquePtr execNode(new DropMappingExecutionNode(_context._database, node._tableName));
       _executionPlan.addExecutionNode(execNode);
     }
 
-    virtual void visit(ASTAlterTableAddNode& node)
+    void visit(ASTAlterTableAddNode& node) override
     {
     }
 
-    virtual void visit(ASTAlterTableDropNode& node)
+    void visit(ASTAlterTableDropNode& node) override
     {
     }
 
-    virtual void visit(ASTDropTableNode& node)
+    void visit(ASTDropTableNode& node) override
     {
       ExecutionNode::UniquePtr execNode(new DropTableExecutionNode(_context._database, node._tableName));
       _executionPlan.addExecutionNode(execNode);
     }
 
-    virtual void visit(ASTExplainNode& node)
+    void visit(ASTExplainNode& node) override
     {
       ExecutionNode::UniquePtr execNode(new ExplainExecutionNode(_context, node._descType, node._query));
       _executionPlan.addExecutionNode(execNode);
     }
 
-    virtual void visit(ASTQueryNode& node)
+    void visit(ASTQueryNode& node) override
     {
       std::unique_ptr<QueryExecutionNode> execNode(new QueryExecutionNode(_context));
       node._query->accept(*this);
@@ -143,7 +143,7 @@ namespace csvsqldb
       _executionPlan.addExecutionNode(epn);
     }
 
-    virtual void visit(ASTUnionNode& node)
+    void visit(ASTUnionNode& node) override
     {
       RowOperatorNodePtr unionop = OperatorFactory::createUnionOperatorNode(_context, node._rhs->symbolTable());
       node._rhs->accept(*this);
@@ -154,7 +154,7 @@ namespace csvsqldb
       _currentRowOperator = unionop;
     }
 
-    virtual void visit(ASTQuerySpecificationNode& node)
+    void visit(ASTQuerySpecificationNode& node) override
     {
       node._tableExpression->accept(*this);
 
@@ -187,7 +187,7 @@ namespace csvsqldb
       }
     }
 
-    virtual void visit(ASTTableExpressionNode& node)
+    void visit(ASTTableExpressionNode& node) override
     {
       node._from->accept(*this);
       if (node._where) {
@@ -195,54 +195,54 @@ namespace csvsqldb
       }
     }
 
-    virtual void visit(ASTBinaryNode& node)
+    void visit(ASTBinaryNode& node) override
     {
     }
 
-    virtual void visit(ASTUnaryNode& node)
+    void visit(ASTUnaryNode& node) override
     {
     }
 
-    virtual void visit(ASTValueNode& node)
+    void visit(ASTValueNode& node) override
     {
     }
 
-    virtual void visit(ASTLikeNode& node)
+    void visit(ASTLikeNode& node) override
     {
     }
 
-    virtual void visit(ASTBetweenNode& node)
+    void visit(ASTBetweenNode& node) override
     {
     }
 
-    virtual void visit(ASTInNode& node)
+    void visit(ASTInNode& node) override
     {
     }
 
-    virtual void visit(ASTFunctionNode& node)
+    void visit(ASTFunctionNode& node) override
     {
     }
 
-    virtual void visit(ASTAggregateFunctionNode& node)
+    void visit(ASTAggregateFunctionNode& node) override
     {
     }
 
-    virtual void visit(ASTIdentifier& node)
+    void visit(ASTIdentifier& node) override
     {
     }
 
-    virtual void visit(ASTQualifiedAsterisk& node)
+    void visit(ASTQualifiedAsterisk& node) override
     {
     }
 
-    virtual void visit(ASTFromNode& node)
+    void visit(ASTFromNode& node) override
     {
       for (const auto& reference : node._tableReferences) {
         reference->accept(*this);
       }
     }
 
-    virtual void visit(ASTTableIdentifierNode& node)
+    void visit(ASTTableIdentifierNode& node) override
     {
       RowOperatorNodePtr scan;
       if (node._factor->getQualifiedIdentifier().substr(0, 7) == "SYSTEM_") {
@@ -253,14 +253,14 @@ namespace csvsqldb
       _currentRowOperator = scan;
     }
 
-    virtual void visit(ASTTableSubqueryNode& node)
+    void visit(ASTTableSubqueryNode& node) override
     {
       node._query->accept(*this);
       // here the _currentRowOperator needs to be told, that it maybe has to supply an alias to its output symbols
       _currentRowOperator->setOutputAlias(node._queryAlias);
     }
 
-    virtual void visit(ASTCrossJoinNode& node)
+    void visit(ASTCrossJoinNode& node) override
     {
       RowOperatorNodePtr join = OperatorFactory::createCrossJoinOperatorNode(_context, node._factor->symbolTable());
       node._tableReference->accept(*this);
@@ -271,11 +271,11 @@ namespace csvsqldb
       _currentRowOperator = join;
     }
 
-    virtual void visit(ASTNaturalJoinNode& node)
+    void visit(ASTNaturalJoinNode& node) override
     {
     }
 
-    virtual void visit(ASTInnerJoinNode& node)
+    void visit(ASTInnerJoinNode& node) override
     {
       RowOperatorNodePtr join;
 
@@ -297,41 +297,41 @@ namespace csvsqldb
       _currentRowOperator = join;
     }
 
-    virtual void visit(ASTLeftJoinNode& node)
+    void visit(ASTLeftJoinNode& node) override
     {
     }
 
-    virtual void visit(ASTRightJoinNode& node)
+    void visit(ASTRightJoinNode& node) override
     {
     }
 
-    virtual void visit(ASTFullJoinNode& node)
+    void visit(ASTFullJoinNode& node) override
     {
     }
 
-    virtual void visit(ASTWhereNode& node)
+    void visit(ASTWhereNode& node) override
     {
       RowOperatorNodePtr select = OperatorFactory::createSelectOperatorNode(_context, node.symbolTable(), node._exp);
       select->connect(_currentRowOperator);
       _currentRowOperator = select;
     }
 
-    virtual void visit(ASTGroupByNode& node)
+    void visit(ASTGroupByNode& node) override
     {
     }
 
-    virtual void visit(ASTHavingNode& node)
+    void visit(ASTHavingNode& node) override
     {
     }
 
-    virtual void visit(ASTOrderByNode& node)
+    void visit(ASTOrderByNode& node) override
     {
       RowOperatorNodePtr sort = OperatorFactory::createSortOperatorNode(_context, node.symbolTable(), node._orderExpressions);
       sort->connect(_currentRowOperator);
       _currentRowOperator = sort;
     }
 
-    virtual void visit(ASTLimitNode& node)
+    void visit(ASTLimitNode& node) override
     {
       RowOperatorNodePtr limit =
         OperatorFactory::createLimitOperatorNode(_context, node.symbolTable(), node._limit, node._offset);

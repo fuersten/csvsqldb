@@ -59,11 +59,11 @@ namespace csvsqldb
     /**
      * Wraps a lua_State object. Overloaded type operator allows the usage with C/C++ lua API functions.
      */
-    struct CSVSQLDB_EXPORT lua_state {
+    struct CSVSQLDB_EXPORT LuaState {
       /**
-       * Constructs a luaState. Open lua base libs.
+       * Constructs a luaState and opens lua base libs.
        */
-      lua_state()
+      LuaState()
 #if LUA_VERSION_NUM >= 502
       : _L(luaL_newstate())
 #else
@@ -77,10 +77,15 @@ namespace csvsqldb
       /**
        * Destroy the lua_State object.
        */
-      ~lua_state()
+      ~LuaState()
       {
         lua_close(_L);
       }
+
+      LuaState(const LuaState&) = delete;
+      LuaState& operator=(const LuaState&) = delete;
+      LuaState(LuaState&&) = delete;
+      LuaState& operator=(LuaState&&) = delete;
 
       /**
        * Type operator returns the lua_State object.
@@ -218,14 +223,10 @@ namespace csvsqldb
     class FunctionObject
     {
     public:
-      virtual ~FunctionObject()
-      {
-      }
+      virtual ~FunctionObject() = default;
 
     protected:
-      FunctionObject()
-      {
-      }
+      FunctionObject() = default;
     };
 
     /**
@@ -449,15 +450,17 @@ namespace csvsqldb
 
     /**
      * Class to execute lua scripts. It is also possible to call functions from lua scripts and to register C++ functions to
-     * be called
-     * in lua scripts.
+     * be called in lua scripts.
      */
     class CSVSQLDB_EXPORT LuaEngine
     {
     public:
-      LuaEngine()
-      {
-      }
+      LuaEngine() = default;
+
+      LuaEngine(const LuaEngine&) = delete;
+      LuaEngine& operator=(const LuaEngine&) = delete;
+      LuaEngine(LuaEngine&&) = delete;
+      LuaEngine& operator=(LuaEngine&&) = delete;
 
       /**
        * Reads in a lua file and processes the script. Afterwards lua functions can be called or globals read out.
@@ -498,23 +501,6 @@ namespace csvsqldb
           throw std::runtime_error(err);
         }
       }
-
-      /**
-       * Is a guard which pops a lua object from the lua stack upon destruction.
-       */
-      struct LuaStackCleaner {
-        LuaStackCleaner(const lua_state& state)
-        : _state(state)
-        {
-        }
-
-        ~LuaStackCleaner()
-        {
-          lua_pop(_state, 1);
-        }
-
-        const lua_state& _state;
-      };
 
       /**
        * Helper for fetching a global lua value.
@@ -940,7 +926,25 @@ namespace csvsqldb
       }
 
     private:
-      mutable lua_state _L;
+      /**
+       * Is a guard which pops a lua object from the lua stack upon destruction.
+       */
+      struct LuaStackCleaner {
+        LuaStackCleaner(const LuaState& state)
+        : _state(state)
+        {
+        }
+
+        ~LuaStackCleaner()
+        {
+          lua_pop(_state, 1);
+        }
+
+        const LuaState& _state;
+      };
+
+
+      mutable LuaState _L;
 
       typedef std::map<std::string, FunctionObject*> FunctionMap;
       FunctionMap _functions;

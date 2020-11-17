@@ -81,6 +81,11 @@ namespace csvsqldb
       initBuildInFunctions(_functions);
     }
 
+    ExecutionEngine(const ExecutionEngine&) = delete;
+    ExecutionEngine& operator=(const ExecutionEngine&) = delete;
+    ExecutionEngine(ExecutionEngine&&) = delete;
+    ExecutionEngine& operator=(ExecutionEngine&&) = delete;
+
     int64_t execute(const std::string& sql, ExecutionStatistics& statistics, std::ostream& stream)
     {
       _parser.setInput(sql);

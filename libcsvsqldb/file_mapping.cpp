@@ -44,10 +44,6 @@ namespace csvsqldb
   CSVSQLDB_IMPLEMENT_EXCEPTION(MappingException, csvsqldb::Exception);
 
 
-  FileMapping::FileMapping()
-  {
-  }
-
   void FileMapping::initialize(const Mappings& mapping)
   {
     std::regex r(R"((.+)->([a-zA-Z_]+))");

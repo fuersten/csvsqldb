@@ -65,9 +65,7 @@ namespace csvsqldb
     virtual int onSignal(int signum) = 0;
 
   protected:
-    virtual ~SignalEventHandler()
-    {
-    }
+    virtual ~SignalEventHandler() = default;
   };
 
 
@@ -84,7 +82,7 @@ namespace csvsqldb
      */
     SignalHandler();
 
-    virtual ~SignalHandler();
+    ~SignalHandler();
 
     /**
      * Registers a SignalEventHandler instance for the given signal.

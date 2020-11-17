@@ -46,29 +46,33 @@
 
 namespace csvsqldb
 {
-  Exception::Exception(std::error_code ec, const std::string& message) NOEXCEPT : std::system_error(ec, message)
+  Exception::Exception(std::error_code ec, const std::string& message) noexcept
+  : std::system_error(ec, message)
   {
   }
 
-  Exception::Exception(int ev, const std::string& message) NOEXCEPT : std::system_error(ev, std::generic_category(), message)
+  Exception::Exception(int ev, const std::string& message) noexcept
+  : std::system_error(ev, std::generic_category(), message)
   {
   }
 
-  Exception::Exception(std::errc ec, const std::string& message) NOEXCEPT : std::system_error(std::make_error_code(ec), message)
+  Exception::Exception(std::errc ec, const std::string& message) noexcept
+  : std::system_error(std::make_error_code(ec), message)
   {
   }
 
-  Exception::Exception(const std::string& message) NOEXCEPT
+  Exception::Exception(const std::string& message) noexcept
   : std::system_error(std::error_code(0, std::generic_category()))
   , _message(message)
   {
   }
 
-  Exception::Exception(const Exception& ex) NOEXCEPT : std::system_error(ex)
+  Exception::Exception(const Exception& ex) noexcept
+  : std::system_error(ex)
   {
   }
 
-  const char* Exception::what() const NOEXCEPT
+  const char* Exception::what() const noexcept
   {
     if (code().value() == 0) {
       // a code value of 0 is seen as no code from csvsqldb

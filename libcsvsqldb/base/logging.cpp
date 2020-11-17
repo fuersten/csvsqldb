@@ -46,10 +46,6 @@ namespace csvsqldb
 {
   typedef std::shared_ptr<LogDevice> LogDevicePtr;
 
-  LogDevice::~LogDevice()
-  {
-  }
-
   void LogDevice::log(const LogEvent& event)
   {
     static std::string separator = config<GlobalConfiguration>()->logging.separator;

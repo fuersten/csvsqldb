@@ -53,7 +53,7 @@ namespace csvsqldb
     {
     }
 
-    virtual void visit(ASTCreateTableNode& node)
+    void visit(ASTCreateTableNode& node) override
     {
       std::cout << "ASTCreateTable" << std::endl;
       _indent += 2;
@@ -115,17 +115,17 @@ namespace csvsqldb
       _indent -= 4;
     }
 
-    virtual void visit(ASTMappingNode& node)
+    void visit(ASTMappingNode& node) override
     {
       std::cout << "ASTMappingNode" << std::endl;
     }
 
-    virtual void visit(ASTDropMappingNode& node)
+    void visit(ASTDropMappingNode& node) override
     {
       std::cout << "ASTDropMappingNode" << std::endl;
     }
 
-    virtual void visit(ASTAlterTableAddNode& node)
+    void visit(ASTAlterTableAddNode& node) override
     {
       std::cout << "ASTAlterTableAdd" << std::endl;
       _indent += 2;
@@ -141,7 +141,7 @@ namespace csvsqldb
       _indent -= 2;
     }
 
-    virtual void visit(ASTAlterTableDropNode& node)
+    void visit(ASTAlterTableDropNode& node) override
     {
       std::cout << "ASTAlterTableDrop" << std::endl;
       _indent += 2;
@@ -150,7 +150,7 @@ namespace csvsqldb
       _indent -= 2;
     }
 
-    virtual void visit(ASTDropTableNode& node)
+    void visit(ASTDropTableNode& node) override
     {
       std::cout << "ASTDropTable" << std::endl;
       _indent += 2;
@@ -159,12 +159,12 @@ namespace csvsqldb
       _indent -= 2;
     }
 
-    virtual void visit(ASTExplainNode& node)
+    void visit(ASTExplainNode& node) override
     {
       std::cout << "ASTExplainNode" << std::endl;
     }
 
-    virtual void visit(ASTUnionNode& node)
+    void visit(ASTUnionNode& node) override
     {
       std::cout << "ASTUnion" << std::endl;
       _indent += 2;
@@ -182,12 +182,12 @@ namespace csvsqldb
       _indent -= 2;
     }
 
-    virtual void visit(ASTQueryNode& node)
+    void visit(ASTQueryNode& node) override
     {
       node._query->accept(*this);
     }
 
-    virtual void visit(ASTQuerySpecificationNode& select)
+    void visit(ASTQuerySpecificationNode& select) override
     {
       std::cout << "ASTQuerySpecification" << std::endl;
       _indent += 2;
@@ -208,7 +208,7 @@ namespace csvsqldb
       _indent -= 2;
     }
 
-    virtual void visit(ASTTableExpressionNode& node)
+    void visit(ASTTableExpressionNode& node) override
     {
       indent();
       std::cout << "ASTTableExpression" << std::endl;
@@ -235,7 +235,7 @@ namespace csvsqldb
       _indent -= 2;
     }
 
-    virtual void visit(ASTBinaryNode& node)
+    void visit(ASTBinaryNode& node) override
     {
       std::cout << "ASTBinary" << std::endl;
 
@@ -261,7 +261,7 @@ namespace csvsqldb
       _indent -= 2;
     }
 
-    virtual void visit(ASTUnaryNode& node)
+    void visit(ASTUnaryNode& node) override
     {
       std::cout << "ASTUnary" << std::endl;
       _indent += 2;
@@ -278,7 +278,7 @@ namespace csvsqldb
       _indent -= 4;
     }
 
-    virtual void visit(ASTValueNode& node)
+    void visit(ASTValueNode& node) override
     {
       std::cout << "ASTValue -> ";
       std::cout << typeToString(node._value._type) << " ";
@@ -286,7 +286,7 @@ namespace csvsqldb
       std::cout << std::endl;
     }
 
-    virtual void visit(ASTLikeNode& node)
+    void visit(ASTLikeNode& node) override
     {
       std::cout << "ASTLike" << std::endl;
 
@@ -298,7 +298,7 @@ namespace csvsqldb
       _indent -= 2;
     }
 
-    virtual void visit(ASTBetweenNode& node)
+    void visit(ASTBetweenNode& node) override
     {
       std::cout << "ASTBetween" << std::endl;
 
@@ -319,7 +319,7 @@ namespace csvsqldb
       _indent -= 4;
     }
 
-    virtual void visit(ASTInNode& node)
+    void visit(ASTInNode& node) override
     {
       std::cout << "ASTIn" << std::endl;
 
@@ -336,7 +336,7 @@ namespace csvsqldb
       _indent -= 4;
     }
 
-    virtual void visit(ASTFunctionNode& node)
+    void visit(ASTFunctionNode& node) override
     {
       std::cout << "ASTFunction" << std::endl;
       _indent += 2;
@@ -353,7 +353,7 @@ namespace csvsqldb
       _indent -= 2;
     }
 
-    virtual void visit(ASTAggregateFunctionNode& node)
+    void visit(ASTAggregateFunctionNode& node) override
     {
       std::cout << "ASTAggregateFunction" << std::endl;
       _indent += 2;
@@ -380,7 +380,7 @@ namespace csvsqldb
       _indent -= 2;
     }
 
-    virtual void visit(ASTIdentifier& node)
+    void visit(ASTIdentifier& node) override
     {
       std::cout << "ASTIdentifier -> " << node.getQualifiedIdentifier();
       if (!node._info->_alias.empty()) {
@@ -389,12 +389,12 @@ namespace csvsqldb
       std::cout << std::endl;
     }
 
-    virtual void visit(ASTQualifiedAsterisk& node)
+    void visit(ASTQualifiedAsterisk& node) override
     {
       std::cout << "ASTQualifiedAsterisk -> " << node.getQualifiedIdentifier() << std::endl;
     }
 
-    virtual void visit(ASTFromNode& node)
+    void visit(ASTFromNode& node) override
     {
       std::cout << "ASTFrom" << std::endl;
 
@@ -406,7 +406,7 @@ namespace csvsqldb
       _indent -= 2;
     }
 
-    virtual void visit(ASTTableIdentifierNode& node)
+    void visit(ASTTableIdentifierNode& node) override
     {
       std::cout << "ASTTableIdentifier" << std::endl;
 
@@ -420,7 +420,7 @@ namespace csvsqldb
       std::cout << std::endl;
     }
 
-    virtual void visit(ASTTableSubqueryNode& node)
+    void visit(ASTTableSubqueryNode& node) override
     {
       std::cout << "ASTTableSubquery" << std::endl;
 
@@ -430,7 +430,7 @@ namespace csvsqldb
       _indent -= 2;
     }
 
-    virtual void visit(ASTCrossJoinNode& node)
+    void visit(ASTCrossJoinNode& node) override
     {
       std::cout << "ASTCrossJoin" << std::endl;
 
@@ -445,7 +445,7 @@ namespace csvsqldb
       std::cout << std::endl;
     }
 
-    virtual void visit(ASTNaturalJoinNode& node)
+    void visit(ASTNaturalJoinNode& node) override
     {
       std::cout << "ASTNaturalJoin" << std::endl;
 
@@ -478,35 +478,35 @@ namespace csvsqldb
       std::cout << std::endl;
     }
 
-    virtual void visit(ASTInnerJoinNode& node)
+    void visit(ASTInnerJoinNode& node) override
     {
       std::cout << "ASTInnerJoin" << std::endl;
 
       printJoin(node);
     }
 
-    virtual void visit(ASTLeftJoinNode& node)
+    void visit(ASTLeftJoinNode& node) override
     {
       std::cout << "ASTLeftJoin" << std::endl;
 
       printJoin(node);
     }
 
-    virtual void visit(ASTRightJoinNode& node)
+    void visit(ASTRightJoinNode& node) override
     {
       std::cout << "ASTRightJoin" << std::endl;
 
       printJoin(node);
     }
 
-    virtual void visit(ASTFullJoinNode& node)
+    void visit(ASTFullJoinNode& node) override
     {
       std::cout << "ASTFullJoin" << std::endl;
 
       printJoin(node);
     }
 
-    virtual void visit(ASTWhereNode& node)
+    void visit(ASTWhereNode& node) override
     {
       std::cout << "ASTWhere" << std::endl;
 
@@ -516,7 +516,7 @@ namespace csvsqldb
       _indent -= 2;
     }
 
-    virtual void visit(ASTGroupByNode& group)
+    void visit(ASTGroupByNode& group) override
     {
       std::cout << "ASTGroupBy" << std::endl;
       _indent += 2;
@@ -534,7 +534,7 @@ namespace csvsqldb
       _indent -= 2;
     }
 
-    virtual void visit(ASTHavingNode& node)
+    void visit(ASTHavingNode& node) override
     {
       std::cout << "ASTHaving" << std::endl;
       _indent += 2;
@@ -542,7 +542,7 @@ namespace csvsqldb
       _indent -= 2;
     }
 
-    virtual void visit(ASTOrderByNode& node)
+    void visit(ASTOrderByNode& node) override
     {
       std::cout << "ASTOrderBy" << std::endl;
       _indent += 2;
@@ -555,7 +555,7 @@ namespace csvsqldb
       _indent -= 2;
     }
 
-    virtual void visit(ASTLimitNode& node)
+    void visit(ASTLimitNode& node) override
     {
       std::cout << "ASTLimit" << std::endl;
       _indent += 2;
@@ -609,47 +609,47 @@ namespace csvsqldb
       }
     }
 
-    virtual void visit(ASTExplainNode& node)
+    void visit(ASTExplainNode& node) override
     {
       _ss << "EXPLAIN AST ";
       node._query->accept(*this);
     }
 
-    virtual void visit(ASTMappingNode& node)
+    void visit(ASTMappingNode& node) override
     {
     }
 
-    virtual void visit(ASTDropMappingNode& node)
+    void visit(ASTDropMappingNode& node) override
     {
     }
 
-    virtual void visit(ASTQualifiedAsterisk& node)
+    void visit(ASTQualifiedAsterisk& node) override
     {
       _ss << node.getQualifiedQuotedIdentifier();
     }
 
-    virtual void visit(ASTCreateTableNode& node)
+    void visit(ASTCreateTableNode& node) override
     {
     }
 
-    virtual void visit(ASTAlterTableAddNode& node)
+    void visit(ASTAlterTableAddNode& node) override
     {
     }
 
-    virtual void visit(ASTAlterTableDropNode& node)
+    void visit(ASTAlterTableDropNode& node) override
     {
     }
 
-    virtual void visit(ASTDropTableNode& node)
+    void visit(ASTDropTableNode& node) override
     {
     }
 
-    virtual void visit(ASTQueryNode& node)
+    void visit(ASTQueryNode& node) override
     {
       node._query->accept(*this);
     }
 
-    virtual void visit(ASTUnionNode& node)
+    void visit(ASTUnionNode& node) override
     {
       node._lhs->accept(*this);
       _ss << " UNION " << (node._quantifier == DISTINCT ? "DISTINCT " : "");
@@ -658,7 +658,7 @@ namespace csvsqldb
       _ss << ")";
     }
 
-    virtual void visit(ASTQuerySpecificationNode& node)
+    void visit(ASTQuerySpecificationNode& node) override
     {
       _ss << "SELECT ";
       if (node._quantifier == DISTINCT) {
@@ -676,7 +676,7 @@ namespace csvsqldb
       node._tableExpression->accept(*this);
     }
 
-    virtual void visit(ASTTableExpressionNode& node)
+    void visit(ASTTableExpressionNode& node) override
     {
       node._from->accept(*this);
       if (node._where) {
@@ -693,7 +693,7 @@ namespace csvsqldb
       }
     }
 
-    virtual void visit(ASTFromNode& node)
+    void visit(ASTFromNode& node) override
     {
       _ss << " FROM ";
       bool first = true;
@@ -707,26 +707,26 @@ namespace csvsqldb
       }
     }
 
-    virtual void visit(ASTTableIdentifierNode& node)
+    void visit(ASTTableIdentifierNode& node) override
     {
       node._factor->accept(*this);
     }
 
-    virtual void visit(ASTTableSubqueryNode& node)
+    void visit(ASTTableSubqueryNode& node) override
     {
       _ss << "(";
       node._query->accept(*this);
       _ss << ")";
     }
 
-    virtual void visit(ASTCrossJoinNode& node)
+    void visit(ASTCrossJoinNode& node) override
     {
       node._tableReference->accept(*this);
       _ss << " CROSS JOIN ";
       node._factor->accept(*this);
     }
 
-    virtual void visit(ASTNaturalJoinNode& node)
+    void visit(ASTNaturalJoinNode& node) override
     {
       node._tableReference->accept(*this);
       _ss << " " << naturalJoinToString(node._joinType);
@@ -734,7 +734,7 @@ namespace csvsqldb
       node._factor->accept(*this);
     }
 
-    virtual void visit(ASTInnerJoinNode& node)
+    void visit(ASTInnerJoinNode& node) override
     {
       node._tableReference->accept(*this);
       _ss << " INNER JOIN ";
@@ -743,7 +743,7 @@ namespace csvsqldb
       node._expression->accept(*this);
     }
 
-    virtual void visit(ASTLeftJoinNode& node)
+    void visit(ASTLeftJoinNode& node) override
     {
       node._tableReference->accept(*this);
       _ss << " LEFT OUTER JOIN ";
@@ -752,7 +752,7 @@ namespace csvsqldb
       node._expression->accept(*this);
     }
 
-    virtual void visit(ASTRightJoinNode& node)
+    void visit(ASTRightJoinNode& node) override
     {
       node._tableReference->accept(*this);
       _ss << " RIGHT OUTER JOIN ";
@@ -761,7 +761,7 @@ namespace csvsqldb
       node._expression->accept(*this);
     }
 
-    virtual void visit(ASTFullJoinNode& node)
+    void visit(ASTFullJoinNode& node) override
     {
       node._tableReference->accept(*this);
       _ss << " FULL OUTER JOIN ";
@@ -770,13 +770,13 @@ namespace csvsqldb
       node._expression->accept(*this);
     }
 
-    virtual void visit(ASTWhereNode& node)
+    void visit(ASTWhereNode& node) override
     {
       _ss << " WHERE ";
       node._exp->accept(*this);
     }
 
-    virtual void visit(ASTGroupByNode& node)
+    void visit(ASTGroupByNode& node) override
     {
       _ss << " GROUP BY ";
       bool first = true;
@@ -790,11 +790,11 @@ namespace csvsqldb
       }
     }
 
-    virtual void visit(ASTHavingNode& node)
+    void visit(ASTHavingNode& node) override
     {
     }
 
-    virtual void visit(ASTOrderByNode& node)
+    void visit(ASTOrderByNode& node) override
     {
       _ss << " ORDER BY ";
       bool first = true;
@@ -816,7 +816,7 @@ namespace csvsqldb
       }
     }
 
-    virtual void visit(ASTLimitNode& node)
+    void visit(ASTLimitNode& node) override
     {
       _ss << " LIMIT ";
       node._limit->accept(*this);
@@ -826,7 +826,7 @@ namespace csvsqldb
       }
     }
 
-    virtual void visit(ASTBinaryNode& node)
+    void visit(ASTBinaryNode& node) override
     {
       _ss << "(";
       node._lhs->accept(*this);
@@ -841,7 +841,7 @@ namespace csvsqldb
       }
     }
 
-    virtual void visit(ASTUnaryNode& node)
+    void visit(ASTUnaryNode& node) override
     {
       if (node._op == OP_CAST) {
         _ss << "CAST(";
@@ -867,7 +867,7 @@ namespace csvsqldb
       }
     }
 
-    virtual void visit(ASTValueNode& node)
+    void visit(ASTValueNode& node) override
     {
       if (node._value._type == STRING) {
         _ss << "'";
@@ -878,13 +878,13 @@ namespace csvsqldb
       }
     }
 
-    virtual void visit(ASTLikeNode& node)
+    void visit(ASTLikeNode& node) override
     {
       node._lhs->accept(*this);
       _ss << "'" << node._like << "'";
     }
 
-    virtual void visit(ASTBetweenNode& node)
+    void visit(ASTBetweenNode& node) override
     {
       node._lhs->accept(*this);
       _ss << " between ";
@@ -893,7 +893,7 @@ namespace csvsqldb
       node._to->accept(*this);
     }
 
-    virtual void visit(ASTInNode& node)
+    void visit(ASTInNode& node) override
     {
       node._lhs->accept(*this);
       _ss << " in (";
@@ -909,7 +909,7 @@ namespace csvsqldb
       _ss << ")";
     }
 
-    virtual void visit(ASTFunctionNode& node)
+    void visit(ASTFunctionNode& node) override
     {
       _ss << node._function->getName() << "(";
       bool first = true;
@@ -924,7 +924,7 @@ namespace csvsqldb
       _ss << ")";
     }
 
-    virtual void visit(ASTAggregateFunctionNode& node)
+    void visit(ASTAggregateFunctionNode& node) override
     {
       _ss << aggregateFunctionToString(node._aggregateFunction) << "(";
       bool first = true;
@@ -949,7 +949,7 @@ namespace csvsqldb
       }
     }
 
-    virtual void visit(ASTIdentifier& node)
+    void visit(ASTIdentifier& node) override
     {
       _ss << node.getQualifiedQuotedIdentifier();
       if (node._info && !node._info->_alias.empty() && node.getQualifiedQuotedIdentifier() != node._info->_alias) {
