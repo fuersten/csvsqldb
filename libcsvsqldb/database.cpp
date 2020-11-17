@@ -88,12 +88,16 @@ namespace csvsqldb
       std::string tableEntry = entry.string();
       std::ifstream tableStream(tableEntry);
 
-      TableData tabledata = TableData::fromJson(tableStream);
+      try {
+        TableData tabledata = TableData::fromJson(tableStream);
 
-      if (hasTable(tabledata.name())) {
-        CSVSQLDB_THROW(SqlException, "table '" << tabledata.name() << "' already added");
+        if (hasTable(tabledata.name())) {
+          CSVSQLDB_THROW(SqlException, "table '" << tabledata.name() << "' already added");
+        }
+        addTable(tabledata);
+      } catch (const Exception& ex) {
+        CSVSQLDB_THROW(SqlException, "Cannot load table file '" << tableEntry << "': " << ex.what());
       }
-      addTable(tabledata);
     }
   }
 

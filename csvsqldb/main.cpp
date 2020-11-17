@@ -203,8 +203,7 @@ private:
     app.add_flag("-V,--verbose", _verbose, "Output verbose statistics");
     app.add_option("--show-header-line", showHeader, "If set to 'on' outputs a header line");
     app.add_option("-p,--datbase-path", _databasePath, "Path to the database");
-    auto command_file_option =
-      app.add_option("-c,--command-file", _commandFile, "Command file with sql commands to process");
+    auto command_file_option = app.add_option("-c,--command-file", _commandFile, "Command file with sql commands to process");
     app.add_option("-s,--sql", _sql, "Sql commands to call")->excludes(command_file_option);
     app.add_option("-m,--mapping", mapping, "Mapping from csv file to table");
     app.add_option("files,-f,--files", _files, "Csv files to process, can use expansion patterns like ~ or *");

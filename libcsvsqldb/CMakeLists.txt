@@ -65,8 +65,6 @@ set(LIB_CSVSQLDB_BASE_SOURCES
     base/exception.cpp
     base/float_helper.cpp
     base/global_configuration.cpp
-    base/json_object.cpp
-    base/json_parser.cpp
     base/lexer.cpp
     base/log_devices.cpp
     base/logging.cpp
@@ -96,8 +94,7 @@ set(LIB_CSVSQLDB_BASE_HEADERS
     base/glob.h
     base/global_configuration.h
     base/hash_helper.h
-    base/json_object.h
-    base/json_parser.h
+    base/json.h
     base/lexer.h
     base/log_devices.h
     base/logging.h
@@ -155,6 +152,7 @@ add_library(csvsqldb SHARED ${LIB_CSVSQLDB_SOURCES})
 target_include_directories(csvsqldb PRIVATE ${CMAKE_SOURCE_DIR})
 target_include_directories(csvsqldb PRIVATE ${CMAKE_BINARY_DIR})
 target_include_directories(csvsqldb PRIVATE ${CMAKE_SOURCE_DIR}/libcsvsqldb)
+target_include_directories(csvsqldb PRIVATE ${CMAKE_SOURCE_DIR}/thirdparty/json/single_include/)
 target_include_directories(csvsqldb PRIVATE SYSTEM ${LUA_INCLUDE_DIR})
 
 set_target_properties(csvsqldb PROPERTIES DEFINE_SYMBOL LIBCSVSQLDB VERSION ${CSVSQLDB_VERSION} SOVERSION ${CSVSQLDB_VERSION_SHORT})

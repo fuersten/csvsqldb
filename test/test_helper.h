@@ -35,6 +35,7 @@
 #define csvsqldb_test_helper_h
 
 #include "libcsvsqldb/base/exception.h"
+
 #include "test/test_util.h"
 
 #include <fcntl.h>

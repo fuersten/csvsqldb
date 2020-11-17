@@ -24,7 +24,6 @@ add_executable(csvsqldbtest
     file_mapping_test.cpp
     groupby_test.cpp
     join_test.cpp
-    json_test.cpp
     lexer_test.cpp
     limit_test.cpp
     logging_test.cpp

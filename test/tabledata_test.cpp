@@ -65,4 +65,38 @@ TEST_CASE("Table Data Test", "[tables]")
     csvsqldb::TableData decoded = csvsqldb::TableData::fromJson(ss);
     CHECK(json == decoded.asJson());
   }
+
+  SECTION("json decode fail")
+  {
+    std::string invalidTableData = R"(
+    { "Table" :
+      { "My cool dump name" : "EMPLOYEES",
+        "columns" : [
+          { "name" : "EMP_NO", "type" : "INTEGER", "primary key" : false, "not null" : false, "unique" : false, "default" : "", "check" : "", "length" : 0 },
+          { "name" : "BIRTH_DATE", "type" : "DATE", "primary key" : false, "not null" : true, "unique" : false, "default" : "", "check" : "", "length" : 0 },
+          { "name" : "FIRST_NAME", "type" : "VARCHAR", "primary key" : false, "not null" : true, "unique" : false, "default" : "", "check" : "", "length" : 25 },
+          { "name" : "LAST_NAME", "type" : "VARCHAR", "primary key" : false, "not null" : true, "unique" : false, "default" : "", "check" : "", "length" : 50 },
+          { "name" : "GENDER", "type" : "VARCHAR", "primary key" : false, "not null" : false, "unique" : false, "default" : "", "check" : "", "length" : 0 },
+          { "name" : "HIRE_DATE", "type" : "DATE", "primary key" : false, "not null" : false, "unique" : false, "default" : "", "check" : "", "length" : 0 }
+        ],
+        "constraints" : [
+          { "primary keys" : [ "EMP_NO" ],
+            "unique keys" : [  ],
+            "check" : ""
+          }
+        ]
+      }
+    }
+    )";
+
+    std::stringstream ss(invalidTableData);
+    CHECK_THROWS_AS(csvsqldb::TableData::fromJson(ss), csvsqldb::Exception);
+
+    std::string brokenJson = R"(
+    { "Table" : }
+    )";
+
+    std::stringstream ss1(brokenJson);
+    CHECK_THROWS_AS(csvsqldb::TableData::fromJson(ss1), csvsqldb::Exception);
+  }
 }

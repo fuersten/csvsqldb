@@ -33,7 +33,7 @@
 
 #include "tabledata.h"
 
-#include "base/json_object.h"
+#include "base/json.h"
 #include "sql_astexpressionvisitor.h"
 #include "sql_parser.h"
 
@@ -197,59 +197,61 @@ namespace csvsqldb
 
   TableData TableData::fromJson(std::istream& stream)
   {
-    std::shared_ptr<csvsqldb::json::JsonObjectCallback> callback = std::make_shared<csvsqldb::json::JsonObjectCallback>();
-    csvsqldb::json::Parser parser(stream, callback);
-    parser.parse();
-    const csvsqldb::json::JsonObject& obj = callback->getObject();
-    csvsqldb::json::JsonObject table = obj["Table"];
-    std::string tableName = table["name"].getAsString();
+    try {
+      json j;
+      stream >> j;
 
-    TableData tabledata(tableName);
+      auto table = j["Table"];
+      auto tableName = table["name"].get<std::string>();
 
-    const csvsqldb::json::JsonObject::ObjectArray& columns = table["columns"].getArray();
-    for (const auto& column : columns) {
-      std::string name = column["name"].getAsString();
-      eType type = stringToType(column["type"].getAsString());
-      bool primaryKey = column["primary key"].getAsBool();
-      bool notNull = column["not null"].getAsBool();
-      bool unique = column["unique"].getAsBool();
-      std::any defaultValue;
-      if (!column["default"].getAsString().empty()) {
-        defaultValue = TypedValue::createValue(type, column["default"].getAsString())._value;
+      TableData tabledata(tableName);
+
+      for (const auto& column : table["columns"]) {
+        auto name = column["name"].get<std::string>();
+        eType type = stringToType(column["type"].get<std::string>());
+        bool primaryKey = column["primary key"].get<bool>();
+        bool notNull = column["not null"].get<bool>();
+        bool unique = column["unique"].get<bool>();
+        std::any defaultValue;
+        if (!column["default"].get<std::string>().empty()) {
+          defaultValue = TypedValue::createValue(type, column["default"].get<std::string>())._value;
+        }
+        ASTExprNodePtr check;
+        if (!column["check"].get<std::string>().empty()) {
+          // TODO LFG: needs the real function registry
+          FunctionRegistry registry;
+          SQLParser sqlparser(registry);
+          check = sqlparser.parseExpression(column["check"].get<std::string>());
+        }
+        uint32_t length = column["length"].get<uint32_t>();
+        tabledata.addColumn(name, type, primaryKey, unique, notNull, defaultValue, check, length);
       }
-      ASTExprNodePtr check;
-      if (!column["check"].getAsString().empty()) {
-        // TODO LFG: needs the real function registry
-        FunctionRegistry registry;
-        SQLParser sqlparser(registry);
-        check = sqlparser.parseExpression(column["check"].getAsString());
+
+      for (const auto& constraint : table["constraints"]) {
+        csvsqldb::StringVector primary;
+        for (const auto& key : constraint["primary keys"]) {
+          primary.push_back(key.get<std::string>());
+        }
+
+        csvsqldb::StringVector unique;
+        for (const auto& key : constraint["unique keys"]) {
+          unique.push_back(key.get<std::string>());
+        }
+
+        ASTExprNodePtr check;
+        if (!constraint["check"].get<std::string>().empty()) {
+          // TODO LFG: needs the concrete function registry
+          FunctionRegistry registry;
+          SQLParser sqlparser(registry);
+          check = sqlparser.parseExpression(constraint["check"].get<std::string>());
+        }
+        tabledata.addConstraint(primary, unique, check);
       }
-      uint32_t length = static_cast<uint32_t>(column["length"].getAsLong());
-      tabledata.addColumn(name, type, primaryKey, unique, notNull, defaultValue, check, length);
+
+      return tabledata;
+    } catch (const std::exception& ex) {
+      CSVSQLDB_THROW(JsonException, "No valid table data: " << ex.what());
     }
-    const csvsqldb::json::JsonObject::ObjectArray& constraints = table["constraints"].getArray();
-    for (const auto& constraint : constraints) {
-      const csvsqldb::json::JsonObject::ObjectArray& primaryKeys = constraint["primary keys"].getArray();
-      csvsqldb::StringVector primary;
-      for (const auto& key : primaryKeys) {
-        primary.push_back(key.getAsString());
-      }
-      const csvsqldb::json::JsonObject::ObjectArray& uniqueKeys = constraint["unique keys"].getArray();
-      csvsqldb::StringVector unique;
-      for (const auto& key : uniqueKeys) {
-        unique.push_back(key.getAsString());
-      }
-      ASTExprNodePtr check;
-      if (!constraint["check"].getAsString().empty()) {
-        // TODO LFG: needs the concrete function registry
-        FunctionRegistry registry;
-        SQLParser sqlparser(registry);
-        check = sqlparser.parseExpression(constraint["check"].getAsString());
-      }
-      tabledata.addConstraint(primary, unique, check);
-    }
-
-    return tabledata;
   }
 
   TableData TableData::fromCreateAST(const ASTCreateTableNodePtr& createNode)

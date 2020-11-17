@@ -97,4 +97,26 @@ TEST_CASE("Mapping Test", "[engine]")
     CHECK("employees.csv" == mapping.getMappingForTable("EMPLOYEES")._mapping);
     CHECK_THROWS_AS(mapping.getMappingForTable("SALARIES"), csvsqldb::MappingException);
   }
+
+  SECTION("json decode fail")
+  {
+    std::string invalidMapping = R"(
+    { "Map":
+      { "name": "EMPLOYEES",
+        "mappings": [
+          { "pattern": "employees.csv", "delimiter": ",", "skipFirstLine": true}
+        ]
+      }
+    }
+    )";
+    std::stringstream ss(invalidMapping);
+    CHECK_THROWS_AS(csvsqldb::FileMapping::fromJson(ss), csvsqldb::Exception);
+
+    std::string brokenJson = R"(
+    { "Mapping" : }
+    )";
+
+    std::stringstream ss1(brokenJson);
+    CHECK_THROWS_AS(csvsqldb::FileMapping::fromJson(ss1), csvsqldb::Exception);
+  }
 }

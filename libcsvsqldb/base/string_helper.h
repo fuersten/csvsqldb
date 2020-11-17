@@ -34,9 +34,9 @@
 #ifndef csvsqldb_string_helper_h
 #define csvsqldb_string_helper_h
 
+#include "libcsvsqldb/compat/put_time.h"
 #include "libcsvsqldb/inc.h"
 
-#include "libcsvsqldb/compat/put_time.h"
 #include "exception.h"
 #include "types.h"
 

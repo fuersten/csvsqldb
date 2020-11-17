@@ -34,9 +34,8 @@
 #ifndef csvsqldb_glob_h
 #define csvsqldb_glob_h
 
-#include "libcsvsqldb/inc.h"
-
 #include "libcsvsqldb/base/types.h"
+#include "libcsvsqldb/inc.h"
 
 #include <string>
 #include <vector>

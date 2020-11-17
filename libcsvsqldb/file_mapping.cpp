@@ -33,7 +33,7 @@
 
 #include "file_mapping.h"
 
-#include "base/json_object.h"
+#include "base/json.h"
 #include "base/string_helper.h"
 
 #include <fstream>
@@ -105,25 +105,26 @@ namespace csvsqldb
 
   FileMapping FileMapping::fromJson(std::istream& stream)
   {
-    std::shared_ptr<csvsqldb::json::JsonObjectCallback> callback = std::make_shared<csvsqldb::json::JsonObjectCallback>();
-    csvsqldb::json::Parser parser(stream, callback);
-    parser.parse();
-    const csvsqldb::json::JsonObject& obj = callback->getObject();
-    csvsqldb::json::JsonObject table = obj["Mapping"];
-    std::string tableName = table["name"].getAsString();
+    try {
+      json j;
+      stream >> j;
 
-    FileMapping fileMapping;
+      FileMapping fileMapping;
 
-    const csvsqldb::json::JsonObject::ObjectArray& mappings = table["mappings"].getArray();
-    for (const auto& mapping : mappings) {
-      Mapping map;
-      map._mapping = mapping["pattern"].getAsString();
-      map._delimiter = mapping["delimiter"].getAsString()[0];
-      map._skipFirstLine = mapping["skipFirstLine"].getAsBool();
-      fileMapping.addMapping(tableName, map);
+      auto mapping = j["Mapping"];
+      auto tableName = mapping["name"].get<std::string>();
+      for (const auto& element : mapping["mappings"]) {
+        Mapping map;
+        map._mapping = element["pattern"].get<std::string>();
+        map._delimiter = element["delimiter"].get<std::string>()[0];
+        map._skipFirstLine = element["skipFirstLine"].get<bool>();
+        fileMapping.addMapping(tableName, map);
+      }
+
+      return fileMapping;
+    } catch (const std::exception& ex) {
+      CSVSQLDB_THROW(JsonException, "Not a valid file mapping: " << ex.what());
     }
-
-    return fileMapping;
   }
 
   std::string FileMapping::asJson(const std::string& tableName, const Mappings& mappings)

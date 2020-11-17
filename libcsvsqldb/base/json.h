@@ -1,6 +1,6 @@
 //
-//  console.h
-//  csvdb
+//  database.h
+//  csvsqldb
 //
 //  BSD 3-Clause License
 //  Copyright (c) 2015-2020 Lars-Christian Fürstenberg
@@ -31,56 +31,9 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-#ifndef csvsqldb_console_h
-#define csvsqldb_console_h
+#pragma once
 
-#include "libcsvsqldb/inc.h"
-#include "libcsvsqldb/types.h"
+#include <nlohmann/json.hpp>
 
-#include <filesystem>
-#include <map>
-#include <memory>
-
-namespace fs = std::filesystem;
-
-
-namespace csvsqldb
-{
-  /**
-   * A console class to support interactive shells. The implementation is based on the linenoise library.
-   */
-  class CSVSQLDB_EXPORT Console
-  {
-  public:
-    typedef std::function<bool(const csvsqldb::StringVector&)> CommandFunction;
-    typedef std::function<bool(const std::string&)> DefaultCommandFunction;
-
-    Console(const std::string& prompt, const fs::path& historyPath, uint16_t historyLength = 128);
-
-    Console(const Console&) = delete;
-    Console(Console&&) = delete;
-    Console& operator=(const Console&) = delete;
-    Console& operator=(Console&&) = delete;
-
-    ~Console();
-
-    void run();
-    void stop();
-
-    void addCommand(const std::string& command, CommandFunction function);
-    void addDefault(DefaultCommandFunction function);
-
-    void clearHistory();
-
-  private:
-    typedef std::map<std::string, CommandFunction> Commands;
-
-    fs::path _historyPath;
-    Commands _commands;
-    DefaultCommandFunction _defaultCommand;
-    std::string _prompt;
-    bool _stop;
-  };
-}
-
-#endif
+// for convenience
+using json = nlohmann::json;
