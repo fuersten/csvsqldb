@@ -4,3 +4,6 @@
 [submodule "thirdparty/CLI11"]
 	path = thirdparty/CLI11
 	url = https://github.com/CLIUtils/CLI11.git
+[submodule "thirdparty/linenoise-ng"]
+	path = thirdparty/linenoise-ng
+	url = https://github.com/arangodb/linenoise-ng.git

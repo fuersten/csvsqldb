@@ -175,7 +175,7 @@ private:
   {
     std::stringstream ss;
     ss << "csvsqldb tool version " << CSVSQLDB_VERSION_STRING << std::endl;
-    ss << CSVSQLDB_COPYRIGHT_STRING;
+    ss << CSVSQLDB_COPYRIGHT_STRING << std::endl;
     return ss.str();
   }
 

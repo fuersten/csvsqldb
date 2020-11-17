@@ -23,25 +23,26 @@
 #include "libcsvsqldb/base/exception.h"
 #include "libcsvsqldb/base/string_helper.h"
 
-#include "linenoise-ng/linenoise.h"
-
 #include <iostream>
+#include <linenoise.h>
 #include <signal.h>
 
 
 namespace csvsqldb
 {
-  Console::Console(const std::string& prompt, const fs::path& historyPath)
+  Console::Console(const std::string& prompt, const fs::path& historyPath, uint16_t historyLength)
   : _historyPath(historyPath)
   , _prompt(prompt)
   , _stop(false)
   {
+    linenoiseHistorySetMaxLen(historyLength);
     linenoiseHistoryLoad(_historyPath.c_str());
   }
 
   Console::~Console()
   {
     linenoiseHistorySave(_historyPath.c_str());
+    linenoiseHistoryFree();
   }
 
   void Console::run()
@@ -67,10 +68,8 @@ namespace csvsqldb
           if (it->second(params)) {
             linenoiseHistoryAdd(line.c_str());
           }
-        } else if (_defaultCommand) {
-          if (_defaultCommand(line)) {
-            linenoiseHistoryAdd(line.c_str());
-          }
+        } else if (_defaultCommand && _defaultCommand(line)) {
+          linenoiseHistoryAdd(line.c_str());
         }
       }
     }

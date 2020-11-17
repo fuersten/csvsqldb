@@ -122,7 +122,7 @@ set(LIB_CSVSQLDB_COMPAT_HEADERS
 )
 
 if(NOT APPLE AND UNIX)
-    SET(LIB_CSVSQLDB_BASE_SOURCES ${LIB_CSVSQLDB_BASE_SOURCES}
+    set(LIB_CSVSQLDB_BASE_SOURCES ${LIB_CSVSQLDB_BASE_SOURCES}
         base/detail/posix/glob.cpp
         base/detail/posix/signalhandler.cpp
     )

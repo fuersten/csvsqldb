@@ -1,11 +1,8 @@
 configure_file(test_util.h.in ${CMAKE_CURRENT_BINARY_DIR}/test_util.h)
-set(CSVSQLDB_TEST_SOURCES ${CSVSQLDB_TEST_SOURCES} ${CMAKE_CURRENT_BINARY_DIR}/test_util.h)
+set(CSVSQLDB_TEST_SOURCES ${CMAKE_CURRENT_BINARY_DIR}/test_util.h)
 
-if(WIN32)
-    include_directories(detail/windows)
-else()
-    include_directories(detail/posix)
-    set(CSVSQLDB_TEST_SOURCES  ${CSVSQLDB_TEST_SOURCES} signalhandler_test.cpp glob_test.cpp)
+if(NOT WIN32)
+    set(CSVSQLDB_TEST_SOURCES ${CSVSQLDB_TEST_SOURCES} signalhandler_test.cpp glob_test.cpp)
 endif()
 
 add_executable(csvsqldbtest 
@@ -56,6 +53,12 @@ add_executable(csvsqldbtest
 
     ${CSVSQLDB_TEST_SOURCES}
 )
+
+if(WIN32)
+    target_include_directories(csvsqldbtest PRIVATE detail/windows)
+else()
+    target_include_directories(csvsqldbtest PRIVATE detail/posix)
+endif()
 
 target_include_directories(csvsqldbtest PRIVATE ${PROJECT_SOURCE_DIR}/thirdparty/Catch2/single_include)
 target_link_libraries(csvsqldbtest ${CSVSQLDB_PROJECT_LIBS} ${CSVSQLDB_PLATFORM_LIBS} csvsqldb)

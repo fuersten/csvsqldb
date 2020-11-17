@@ -78,7 +78,7 @@ You can find a detailed example here [Getting started](https://github.com/fuerst
 
 ## Interactive shell
 The interactive shell was implemented with the linenoise library and supports most of the readline default key bindings.
-It also supports a command history. Typeing _help_ will show you all possible commands in interactive mode.
+It also supports a command history. Typing _help_ will show you all possible commands in interactive mode.
 
 # SQL support
 ## Supported datatypes
