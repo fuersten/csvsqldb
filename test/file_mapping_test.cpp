@@ -43,13 +43,14 @@ TEST_CASE("Mapping Test", "[engine]")
   {
     csvsqldb::FileMapping::Mappings mappings;
     mappings.push_back({"employees.csv->employees", ',', false});
-    mappings.push_back({"salaries.csv->salaries", ';', true});
+    mappings.push_back({"salaries\\d*.csv->salaries", ';', true});
 
     csvsqldb::FileMapping mapping;
     mapping.initialize(mappings);
     CHECK("employees.csv" == mapping.getMappingForTable("EMPLOYEES")._mapping);
     CHECK(',' == mapping.getMappingForTable("EMPLOYEES")._delimiter);
-    CHECK("salaries.csv" == mapping.getMappingForTable("SALARIES")._mapping);
+    CHECK_FALSE(mapping.getMappingForTable("EMPLOYEES")._skipFirstLine);
+    CHECK("salaries\\d*.csv" == mapping.getMappingForTable("SALARIES")._mapping);
     CHECK(';' == mapping.getMappingForTable("SALARIES")._delimiter);
     CHECK(mapping.getMappingForTable("SALARIES")._skipFirstLine);
   }
@@ -83,7 +84,7 @@ TEST_CASE("Mapping Test", "[engine]")
 
     {
       csvsqldb::FileMapping::Mappings mappings;
-      mappings.push_back({"employees.csv->employees", ',', false});
+      mappings.push_back({"employees\\d*.csv->employees", ',', false});
       mappings.push_back({"salaries.csv->salaries", ',', false});
 
       csvsqldb::FileMapping mapping;
@@ -94,7 +95,7 @@ TEST_CASE("Mapping Test", "[engine]")
 
     std::stringstream ss(JSON);
     csvsqldb::FileMapping mapping = csvsqldb::FileMapping::fromJson(ss);
-    CHECK("employees.csv" == mapping.getMappingForTable("EMPLOYEES")._mapping);
+    CHECK("employees\\d*.csv" == mapping.getMappingForTable("EMPLOYEES")._mapping);
     CHECK_THROWS_AS(mapping.getMappingForTable("SALARIES"), csvsqldb::MappingException);
   }
 

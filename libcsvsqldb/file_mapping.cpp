@@ -130,10 +130,11 @@ namespace csvsqldb
   std::string FileMapping::asJson(const std::string& tableName, const Mappings& mappings)
   {
     std::regex r(R"((.+)->([a-zA-Z_]+))");
-    std::stringstream mapping;
 
-    mapping << "{ \"Mapping\" :\n  { \"name\" : \"" << csvsqldb::toupper_copy(tableName) << "\",\n    \"mappings\" : [\n";
-    int n = 0;
+    json j;
+    j["Mapping"]["name"] = csvsqldb::toupper_copy(tableName);
+
+    json mapping_array = json::array();
     for (const auto& map : mappings) {
       std::smatch match;
       if (!regex_match(map._mapping, match, r)) {
@@ -143,29 +144,16 @@ namespace csvsqldb
       std::string mappingPattern = match.str(1);
 
       if (mappingTableName == csvsqldb::toupper_copy(tableName)) {
-        if (n > 0) {
-          mapping << ",\n";
-        }
-        mapping << "{ \"pattern\" : ";
-        std::stringstream entry;
-        for (const auto& c : mappingPattern) {
-          if (c == '\\') {
-            entry << '\\';
-          }
-          entry << c;
-        }
-        mapping << "    "
-                << "\"" << entry.str() << "\"";
-        mapping << ", \"delimiter\" : \"" << map._delimiter << "\"";
-        mapping << ", \"skipFirstLine\" :" << (map._skipFirstLine ? "true" : "false");
-        mapping << "}\n";
-        ++n;
+        json entry{
+          {"pattern", mappingPattern}, {"delimiter", std::string(1, map._delimiter)}, {"skipFirstLine", map._skipFirstLine}};
+        mapping_array.push_back(entry);
       }
     }
-    mapping << "\n    ]";
-    mapping << "\n  }\n}";
+    j["Mapping"]["mappings"] = mapping_array;
 
-    return mapping.str();
+    std::stringstream ss;
+    ss << std::setw(2) << j << std::endl;
+    return ss.str();
   }
 
   void FileMapping::readFromPath(FileMapping& fileMapping, const fs::path& path)

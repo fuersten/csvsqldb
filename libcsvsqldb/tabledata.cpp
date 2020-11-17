@@ -103,96 +103,61 @@ namespace csvsqldb
 
   std::string TableData::asJson() const
   {
-    std::stringstream table;
+    json j;
+    j["Table"]["name"] = _tableName;
 
-    table << "{ \"Table\" :\n  { \"name\" : \"" << _tableName << "\",\n    \"columns\" : [\n";
-    int n = 0;
+    json columnArray = json::array();
     for (const auto& column : _columns) {
-      if (n > 0) {
-        table << ",\n";
-      }
-      table << "      { ";
-      table << "\"name\" : \"" << column._name << "\"";
-      table << ", \"type\" : \"" << typeToString(column._type) << "\"";
-      table << ", \"primary key\" : ";
-      if (column._primaryKey) {
-        table << "true";
-      } else {
-        table << "false";
-      }
-      table << ", \"not null\" : ";
-      if (column._notNull) {
-        table << "true";
-      } else {
-        table << "false";
-      }
-      table << ", \"unique\" : ";
-      if (column._unique) {
-        table << "true";
-      } else {
-        table << "false";
-      }
-      table << ", \"default\" : ";
+      json entry{{"name", column._name},        {"type", typeToString(column._type)}, {"primary key", column._primaryKey},
+                 {"not null", column._notNull}, {"unique", column._unique},           {"length", column._length}};
+
       if (column._defaultValue.has_value()) {
-        table << "\"" << printType(column._type, column._defaultValue) << "\"";
+        entry.push_back({"default", printType(column._type, column._defaultValue)});
       } else {
-        table << "\"\"";
+        entry.push_back({"default", ""});
       }
-      table << ", \"check\" : ";
+
       if (column._check) {
         ASTExpressionVisitor visitor;
         column._check->accept(visitor);
-        table << "\"" << visitor.toString() << "\"";
+        entry.push_back({"check", visitor.toString()});
       } else {
-        table << "\"\"";
+        entry.push_back({"check", ""});
       }
-      table << ", \"length\" : " << column._length;
-      table << " }";
-      ++n;
+      columnArray.push_back(entry);
     }
-    table << "\n    ],";
-    table << "\n    \"constraints\" : [ ";
-    int m = 0;
+    j["Table"]["columns"] = columnArray;
+
+    json cconstraintsArray = json::array();
     for (const auto& constraint : _constraints) {
-      if (m > 0) {
-        table << ",\n";
-      } else {
-        table << "\n";
-      }
-      table << "      { \"primary keys\" : [ ";
-      n = 0;
+      json constraintEntry;
+
+      json primaryKeys = json::array();
       for (const auto& pk : constraint._primaryKey) {
-        if (n > 0) {
-          table << ",";
-        }
-        table << "\"" << pk << "\"";
-        ++n;
+        primaryKeys.push_back(pk);
       }
-      table << " ]";
-      table << ",\n        \"unique keys\" : [ ";
-      n = 0;
+      constraintEntry["primary keys"] = primaryKeys;
+
+      json uniqueKeys = json::array();
       for (const auto& pk : constraint._unique) {
-        if (n > 0) {
-          table << ",";
-        }
-        table << "\"" << pk << "\"";
-        ++n;
+        uniqueKeys.push_back(pk);
       }
-      table << " ]";
-      table << ",\n        \"check\" : ";
+      constraintEntry["unique keys"] = uniqueKeys;
+
       if (constraint._check) {
         ASTExpressionVisitor visitor;
         constraint._check->accept(visitor);
-        table << "\"" << visitor.toString() << "\"";
+        constraintEntry["check"] = visitor.toString();
       } else {
-        table << "\"\"";
+        constraintEntry["check"] = "";
       }
-      table << "\n      }";
-      ++m;
+      cconstraintsArray.push_back(constraintEntry);
     }
-    table << "\n    ]\n  }\n}";
+    j["Table"]["constraints"] = cconstraintsArray;
 
-    return table.str();
+    std::stringstream ss;
+    ss << std::setw(2) << j << std::endl;
+    return ss.str();
   }
 
   TableData TableData::fromJson(std::istream& stream)
