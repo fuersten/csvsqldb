@@ -42,7 +42,6 @@ include_directories(${CMAKE_SOURCE_DIR})
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 
 find_package(Lua REQUIRED)
-find_package(Doxygen)
 find_package(Threads)
 
 if(NOT LUA_FOUND)
@@ -76,7 +75,7 @@ if(NOT APPLE AND UNIX)
     endif()
 
 elseif(APPLE AND CMAKE_GENERATOR STREQUAL Xcode)
-    message("Setting up Xcode for C++11 with libc++.")
+    message("Setting up Xcode for C++17 with libc++.")
     set(CSVSQLDB_PLATFORM_LIBS )
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wheader-hygiene -Wcast-align -Wconversion -Wfloat-equal -Wformat=2 -Wmissing-declarations -Woverlength-strings -Wshadow -Wunreachable-code -Wextra -Wno-unused-parameter -Wpedantic -Werror")
 elseif(APPLE)
@@ -91,13 +90,26 @@ else()
     set(CSVSQLDB_PLATFORM_LIBS )
 endif()
 
+find_package(Doxygen OPTIONAL_COMPONENTS dot)
+
 if(DOXYGEN_FOUND)
-    add_custom_target(
-        docs
-        ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/csvsqldb.cfg
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-        COMMENT "Generating API documentation with Doxygen" VERBATIM
-    )
+  set(DOXYGEN_PROJECT_BRIEF "A read only sql database that gets its data from supplied csv files.")
+  set(DOXYGEN_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/doc)
+  set(DOXYGEN_STRIP_FROM_INC_PATH ${PROJECT_SOURCE_DIR}/libcsvsqldb)
+  set(DOXYGEN_TAB_SIZE 2)
+  set(DOXYGEN_BUILTIN_STL_SUPPORT YES)
+  set(DOXYGEN_INLINE_SIMPLE_STRUCTS YES)
+  set(DOXYGEN_EXTRACT_ALL YES)
+  set(DOXYGEN_EXTRACT_STATIC YES)
+  set(DOXYGEN_WARN_NO_PARAMDOC YES)
+  set(DOXYGEN_FILE_PATTERN "*.h *.cpp")
+  set(DOXYGEN_RECURSIVE YES)
+  set(DOXYGEN_EXCLUDE_PATTERNS "*/detail*")
+  doxygen_add_docs(cmdoc
+          ${CMAKE_SOURCE_DIR}/libcsvsqldb
+          COMMENT "Generate HTML API documentation")
+else(DOXYGEN_FOUND)
+  message("Doxygen needs to be installed to generate the doxygen documentation")
 endif()
 
 add_subdirectory(csvsqldb)

@@ -130,14 +130,6 @@ namespace csvsqldb
      */
     explicit Timestamp(const Time& time);
 
-    /** Constructs a timestamp with the given time_t structure.
-     *  If the time_t structure does not give a valid date, a TimestampException
-     *  will be thrown.
-     *  @param timeT The time_t value of a C-library function like time().
-     */
-    // TODO LCF: we need another way to specify this or maybe we dont need it at all
-    // explicit Timestamp(time_t timeT);
-
     Timestamp(const Timestamp&) = default;
     Timestamp& operator=(const Timestamp&) = default;
     Timestamp(Timestamp&&) = default;
