@@ -3,7 +3,7 @@
 //  csvdb
 //
 //  BSD 3-Clause License
-//  Copyright (c) 2015, Lars-Christian Fürstenberg
+//  Copyright (c) 2015-2020 Lars-Christian Fürstenberg
 //  All rights reserved.
 //
 //  Redistribution and use in source and binary forms, with or without modification, are permitted
