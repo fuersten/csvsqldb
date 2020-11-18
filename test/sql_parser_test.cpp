@@ -37,6 +37,8 @@
 #include "libcsvsqldb/sql_parser.h"
 #include "libcsvsqldb/validation_visitor.h"
 
+#include "temporary_directory.h"
+
 #include <catch2/catch.hpp>
 
 
@@ -722,10 +724,13 @@ TEST_CASE("SQL Parser Test", "[parser]")
 
   SECTION("parse validate select")
   {
+    TemporaryDirectoryGuard tmpDir;
+    auto path = tmpDir.temporaryDirectoryPath();
+
     csvsqldb::FunctionRegistry functions;
     csvsqldb::SQLParser parser(functions);
 
-    csvsqldb::Database database("/tmp", csvsqldb::FileMapping());
+    csvsqldb::Database database(path, csvsqldb::FileMapping());
 
     csvsqldb::ASTNodePtr node = parser.parse(
       "CREATE TABLE employees(emp_no INTEGER,birth_date DATE NOT NULL,first_name VARCHAR(25) NOT NULL,last_name VARCHAR(50) "
@@ -735,7 +740,7 @@ TEST_CASE("SQL Parser Test", "[parser]")
     csvsqldb::ASTCreateTableNodePtr createNode = std::dynamic_pointer_cast<csvsqldb::ASTCreateTableNode>(node);
     csvsqldb::TableData tabledata = csvsqldb::TableData::fromCreateAST(createNode);
 
-    database.addTable(tabledata);
+    database.addTable(std::move(tabledata), false);
 
     node = parser.parse(
       "CREATE TABLE salaries(emp_no INTEGER PRIMARY KEY,salary FLOAT CHECK(salary > 0.0),from_date DATE,to_date DATE)");
@@ -744,7 +749,7 @@ TEST_CASE("SQL Parser Test", "[parser]")
     createNode = std::dynamic_pointer_cast<csvsqldb::ASTCreateTableNode>(node);
     tabledata = csvsqldb::TableData::fromCreateAST(createNode);
 
-    database.addTable(tabledata);
+    database.addTable(std::move(tabledata), false);
 
     csvsqldb::ASTValidationVisitor validationVisitor(database);
 

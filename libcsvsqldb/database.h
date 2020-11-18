@@ -49,8 +49,6 @@ namespace csvsqldb
   class CSVSQLDB_EXPORT Database
   {
   public:
-    typedef std::vector<TableData> Tables;
-
     Database(const fs::path& path, FileMapping mappings);
 
     Database(const Database&) = delete;
@@ -58,9 +56,7 @@ namespace csvsqldb
     Database(Database&&) = delete;
     Database& operator=(Database&&) = delete;
 
-    void setUp();
-
-    fs::path databasePath() const
+    fs::path path() const
     {
       return _path;
     }
@@ -80,29 +76,30 @@ namespace csvsqldb
     bool hasTable(const std::string& tableName) const;
     const TableData& getTable(const std::string& tableName) const;
 
-    void addTable(const TableData& table);
+    void addTable(TableData&& table, bool persist = true);
     void dropTable(const std::string& tableName);
 
     const Mapping& getMappingForTable(const std::string& tableName) const;
-    void addMapping(const FileMapping& mappings);
+    void addMapping(const std::string& tableName, const FileMapping& mapping);
     void removeMapping(const std::string& tableName);
 
-    void getTables(Tables& tables) const
+    std::vector<TableData> getTables() const
     {
-      tables = _tables;
+      return _tables;
     }
-    void getMappings(csvsqldb::StringVector& mappings) const
+    csvsqldb::StringVector getMappings() const
     {
-      mappings = _mappings.asStringVector();
+      return _mappings.asStringVector();
     }
 
   private:
+    void setUp();
     void addSystemTables();
     void readTablesFromPath();
     void readMappingsFromPath();
 
     fs::path _path;
-    Tables _tables;
+    std::vector<TableData> _tables;
     FileMapping _mappings;
   };
 }

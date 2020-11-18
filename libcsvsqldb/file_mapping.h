@@ -76,7 +76,7 @@ namespace csvsqldb
 
     static FileMapping fromJson(std::istream& stream);
 
-    static std::string asJson(const std::string& tableName, const Mappings& mappings);
+    std::string asJson(const std::string& tableName) const;
 
     static void readFromPath(FileMapping& fileMapping, const fs::path& path);
 

@@ -36,6 +36,7 @@
 #include "libcsvsqldb/base/string_helper.h"
 #include "libcsvsqldb/execution_engine.h"
 
+#include "temporary_directory.h"
 #include <initializer_list>
 
 #include <algorithm>
@@ -58,7 +59,7 @@ public:
     }
   }
 
-  const csvsqldb::TableData& getTable() const
+  csvsqldb::TableData getTable() const
   {
     return _table;
   }
@@ -72,7 +73,7 @@ class DatabaseTestWrapper
 {
 public:
   DatabaseTestWrapper()
-  : _database("/tmp", csvsqldb::FileMapping())
+  : _database(_tmpDir.temporaryDirectoryPath(), csvsqldb::FileMapping())
   {
   }
 
@@ -87,6 +88,7 @@ public:
   }
 
 private:
+  TemporaryDirectoryGuard _tmpDir;
   csvsqldb::Database _database;
 };
 

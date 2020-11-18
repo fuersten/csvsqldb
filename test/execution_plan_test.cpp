@@ -36,6 +36,8 @@
 #include "libcsvsqldb/sql_parser.h"
 #include "libcsvsqldb/validation_visitor.h"
 
+#include "temporary_directory.h"
+
 #include <catch2/catch.hpp>
 
 #include <filesystem>
@@ -51,10 +53,8 @@ TEST_CASE("Execution Plan Test", "[engine]")
     csvsqldb::FunctionRegistry functions;
     csvsqldb::SQLParser parser(functions);
 
-    fs::path tempDir = fs::temp_directory_path();
-    if (!fs::exists(tempDir)) {
-      fs::create_directories(tempDir);
-    }
+    TemporaryDirectoryGuard tmpDir;
+    auto path = tmpDir.temporaryDirectoryPath();
 
     csvsqldb::ASTNodePtr node = parser.parse(
       "CREATE TABLE employees(emp_no INTEGER,birth_date DATE NOT NULL,first_name VARCHAR(25) NOT NULL,last_name VARCHAR(50) "
@@ -65,14 +65,14 @@ TEST_CASE("Execution Plan Test", "[engine]")
 
     csvsqldb::TableData tabledata = csvsqldb::TableData::fromCreateAST(createNode);
     csvsqldb::StringVector files;
-    files.push_back((tempDir / "employees.csv").string());
+    files.push_back((path / "employees.csv").string());
     csvsqldb::FileMapping::Mappings mappings;
     mappings.push_back({"employees.csv->employees", ',', false});
     csvsqldb::FileMapping mapping;
     mapping.initialize(mappings);
 
-    csvsqldb::Database database(tempDir.string(), mapping);
-    database.addTable(tabledata);
+    csvsqldb::Database database(path, mapping);
+    database.addTable(std::move(tabledata), false);
 
     node = parser.parse(
       "SELECT emp_no,CAST((emp_no * 2) as real) as double_emp,emp.first_name as firstname,emp.last_name,birth_date,hire_date "
@@ -88,7 +88,7 @@ TEST_CASE("Execution Plan Test", "[engine]")
     //        symbolTable->dump();
     //        std::cout << std::endl;
 
-    std::fstream dataFile((tempDir / "employees.csv").string(), std::ios_base::trunc | std::ios_base::out);
+    std::fstream dataFile((path / "employees.csv").string(), std::ios_base::trunc | std::ios_base::out);
     CHECK(dataFile);
 
     dataFile << (R"(emp_no,birth_date,first_name,last_name,gender,hire_date

@@ -264,7 +264,6 @@ private:
     OUT("Running csvsqldb tool version " << CSVSQLDB_VERSION_STRING);
 
     csvsqldb::Database database(_databasePath, _mapping);
-    database.setUp();
 
     if (!_commandFile.empty()) {
       std::ifstream stream(_commandFile);
@@ -360,15 +359,11 @@ private:
       console.addCommand("show", [&database, &csvDB](const csvsqldb::StringVector& params) -> bool {
         if (params.size()) {
           if (csvsqldb::tolower_copy(params[0]) == "tables") {
-            csvsqldb::Database::Tables tables;
-            database.getTables(tables);
-            for (const auto& table : tables) {
+            for (const auto& table : database.getTables()) {
               std::cout << table.name() << "\n";
             }
           } else if (csvsqldb::tolower_copy(params[0]) == "mappings") {
-            csvsqldb::StringVector mappings;
-            database.getMappings(mappings);
-            for (const auto& mapping : mappings) {
+            for (const auto& mapping : database.getMappings()) {
               std::cout << mapping << "\n";
             }
           } else if (csvsqldb::tolower_copy(params[0]) == "columns") {
@@ -387,9 +382,7 @@ private:
           } else if (csvsqldb::tolower_copy(params[0]) == "functions") {
             csvsqldb::FunctionRegistry functionRegistry;
             csvsqldb::initBuildInFunctions(functionRegistry);
-            csvsqldb::FunctionRegistry::FunctionVector functions;
-            functionRegistry.getFunctions(functions);
-            for (const auto& func : functions) {
+            for (const auto& func : functionRegistry.getFunctions()) {
               std::cout << func->getName() << "(";
               bool first = true;
               for (const auto& param : func->getParameterTypes()) {

@@ -35,6 +35,8 @@
 #include "libcsvsqldb/sql_astdump.h"
 #include "libcsvsqldb/sql_parser.h"
 
+#include "temporary_directory.h"
+
 #include <catch2/catch.hpp>
 
 #include <sstream>
@@ -132,6 +134,8 @@ TEST_CASE("Row Processing Test", "[engine]")
 {
   csvsqldb::FunctionRegistry functions;
   csvsqldb::SQLParser parser(functions);
+  TemporaryDirectoryGuard tmpDir;
+  auto path = tmpDir.temporaryDirectoryPath();
 
   SECTION("processing")
   {
@@ -145,8 +149,8 @@ TEST_CASE("Row Processing Test", "[engine]")
     csvsqldb::TableData tabledata = csvsqldb::TableData::fromCreateAST(createNode);
     csvsqldb::FileMapping mapping;
 
-    csvsqldb::Database database("/tmp", mapping);
-    database.addTable(tabledata);
+    csvsqldb::Database database(path, mapping);
+    database.addTable(std::move(tabledata), false);
 
     node = parser.parse(
       "SELECT emp.emp_no as id,(first_name || ' ' || last_name) as name,birth_date birthday, 7 * 5 / 4 as calc FROM employees "
@@ -207,8 +211,8 @@ TEST_CASE("Row Processing Test", "[engine]")
     csvsqldb::TableData tabledata = csvsqldb::TableData::fromCreateAST(createNode);
     csvsqldb::FileMapping mapping;
 
-    csvsqldb::Database database("/tmp", mapping);
-    database.addTable(tabledata);
+    csvsqldb::Database database(path, mapping);
+    database.addTable(std::move(tabledata), false);
 
     node = parser.parse("SELECT * FROM employees emp WHERE emp_no BETWEEN 100 AND 9999 AND emp.birth_date > DATE'1960-01-01'");
 
@@ -267,8 +271,8 @@ TEST_CASE("Row Processing Test", "[engine]")
     csvsqldb::TableData tabledata = csvsqldb::TableData::fromCreateAST(createNode);
     csvsqldb::FileMapping mapping;
 
-    csvsqldb::Database database("/tmp", mapping);
-    database.addTable(tabledata);
+    csvsqldb::Database database(path, mapping);
+    database.addTable(std::move(tabledata), false);
 
     node = parser.parse("SELECT count(*) FROM employees");
 

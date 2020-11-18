@@ -1,8 +1,7 @@
 configure_file(test_util.h.in ${CMAKE_CURRENT_BINARY_DIR}/test_util.h)
-set(CSVSQLDB_TEST_SOURCES ${CMAKE_CURRENT_BINARY_DIR}/test_util.h)
 
 if(NOT WIN32)
-    set(CSVSQLDB_TEST_SOURCES ${CSVSQLDB_TEST_SOURCES} signalhandler_test.cpp glob_test.cpp)
+    set(CSVSQLDB_TEST_SOURCES signalhandler_test.cpp glob_test.cpp)
 endif()
 
 add_executable(csvsqldbtest 
@@ -17,7 +16,7 @@ add_executable(csvsqldbtest
     csv_parser_test.cpp
     csv_string_parser_test.cpp
     data_framework_test.cpp
-    data_test_framework.h
+    database_test.cpp
     date_test.cpp
     duration_test.cpp
     exception_test.cpp
@@ -53,6 +52,12 @@ add_executable(csvsqldbtest
     variant_test.cpp
 
     ${CSVSQLDB_TEST_SOURCES}
+
+    data_test_framework.h
+    temporary_directory.cpp
+    temporary_directory.h
+    test_helper.h
+    ${CMAKE_CURRENT_BINARY_DIR}/test_util.h
 )
 
 if(WIN32)

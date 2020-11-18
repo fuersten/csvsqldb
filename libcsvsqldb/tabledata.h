@@ -72,7 +72,7 @@ namespace csvsqldb
       uint32_t _length;
     };
 
-    TableData(const std::string& tableName);
+    TableData(std::string tableName);
 
     void addColumn(const std::string name, eType type, bool primaryKey, bool unique, bool notNull, std::any defaultValue,
                    const ASTExprNodePtr& check, uint32_t length);

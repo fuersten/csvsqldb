@@ -46,12 +46,6 @@ namespace csvsqldb
   CSVSQLDB_DECLARE_EXCEPTION(CreateTableException, SqlException);
   CSVSQLDB_IMPLEMENT_EXCEPTION(CreateTableException, SqlException);
 
-  CSVSQLDB_DECLARE_EXCEPTION(CreateMappingException, SqlException);
-  CSVSQLDB_IMPLEMENT_EXCEPTION(CreateMappingException, SqlException);
-
-  CSVSQLDB_DECLARE_EXCEPTION(DropMappingException, SqlException);
-  CSVSQLDB_IMPLEMENT_EXCEPTION(DropMappingException, SqlException);
-
 
   CreateTableExecutionNode::CreateTableExecutionNode(Database& database, const std::string& tableName,
                                                      const ColumnDefinitions& columnDefinitions,
@@ -83,15 +77,7 @@ namespace csvsqldb
       tabledata.addConstraint(constraint._primaryKeys, constraint._uniqueKeys, constraint._check);
     }
 
-    std::ofstream table((_database.tablePath() / _tableName).string());
-    if (!table.good()) {
-      CSVSQLDB_THROW(CreateTableException, "cant open table file");
-    }
-
-    table << tabledata.asJson();
-    table.close();
-
-    _database.addTable(tabledata);
+    _database.addTable(std::move(tabledata));
 
     return 0;
   }
@@ -128,32 +114,14 @@ namespace csvsqldb
 
   int64_t CreateMappingExecutionNode::execute()
   {
-    if (_tableName.substr(0, 7) == "SYSTEM_") {
-      CSVSQLDB_THROW(CreateMappingException, "cant add mapping for system tables");
+    for (auto& mapping : _mappings) {
+      mapping._mapping = mapping._mapping + "->" + _tableName;
     }
 
-    {
-      std::ofstream mappingFile((_database.mappingPath() / _tableName).string());
-      if (!mappingFile.good()) {
-        CSVSQLDB_THROW(CreateMappingException, "cant open mapping file");
-      }
+    FileMapping fileMapping;
+    fileMapping.initialize(_mappings);
 
-      for (auto& mapping : _mappings) {
-        mapping._mapping = mapping._mapping + "->" + _tableName;
-      }
-
-      mappingFile << FileMapping::asJson(_tableName, _mappings);
-      mappingFile.close();
-    }
-
-    std::ifstream mappingFile((_database.mappingPath() / _tableName).string());
-    if (!mappingFile.good()) {
-      CSVSQLDB_THROW(CreateMappingException, "cant open mapping file");
-    }
-
-    _database.addMapping(FileMapping::fromJson(mappingFile));
-
-    mappingFile.close();
+    _database.addMapping(_tableName, fileMapping);
 
     return 0;
   }
@@ -171,21 +139,6 @@ namespace csvsqldb
 
   int64_t DropMappingExecutionNode::execute()
   {
-    if (_tableName.substr(0, 7) == "SYSTEM_") {
-      CSVSQLDB_THROW(DropMappingException, "cant drop mapping for system tables");
-    }
-
-    fs::path mappingFile(_database.mappingPath() / _tableName);
-    if (!fs::exists(mappingFile)) {
-      CSVSQLDB_THROW(DropMappingException, "mapping file does not exist");
-    }
-
-    std::error_code ec;
-    fs::remove(mappingFile, ec);
-    if (ec) {
-      CSVSQLDB_THROW(DropMappingException, "could not remove mapping file (" << ec.message() << ")");
-    }
-
     _database.removeMapping(_tableName);
 
     return 0;

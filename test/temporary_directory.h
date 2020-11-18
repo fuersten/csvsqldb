@@ -1,6 +1,5 @@
 //
-//  function_registry.h
-//  csvsqldb
+//  csvsqldb test
 //
 //  BSD 3-Clause License
 //  Copyright (c) 2015-2020 Lars-Christian Fürstenberg
@@ -31,83 +30,26 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-#ifndef csvsqldb_function_registry_h
-#define csvsqldb_function_registry_h
-
-#include "libcsvsqldb/inc.h"
-
-#include "types.h"
-#include "variant.h"
-
-#include <map>
-#include <memory>
+#include <filesystem>
 
 
-namespace csvsqldb
+class TemporaryDirectoryGuard
 {
-  class CSVSQLDB_EXPORT Function
-  {
-  public:
-    typedef std::shared_ptr<Function> Ptr;
+public:
+  TemporaryDirectoryGuard();
 
-    Function(std::string name, eType retType, const Types parameterTypes)
-    : _name(name)
-    , _retType(retType)
-    , _parameterTypes(parameterTypes)
-    {
-    }
+  TemporaryDirectoryGuard(const TemporaryDirectoryGuard&) = delete;
+  TemporaryDirectoryGuard(TemporaryDirectoryGuard&&) = default;
+  TemporaryDirectoryGuard& operator=(const TemporaryDirectoryGuard&) = delete;
+  TemporaryDirectoryGuard& operator=(TemporaryDirectoryGuard&&) = delete;
 
-    virtual ~Function() = default;
+  const std::filesystem::path& temporaryDirectoryPath() const;
 
-    const Variant call(const Variants& parameter) const
-    {
-      return doCall(parameter);
-    }
+  ~TemporaryDirectoryGuard();
 
-    const std::string& getName() const
-    {
-      return _name;
-    }
-    eType getReturnType() const
-    {
-      return _retType;
-    }
-    const Types& getParameterTypes() const
-    {
-      return _parameterTypes;
-    }
+private:
+  static std::filesystem::path uniqueTempDirectoryPath();
+  static std::filesystem::path uniqueTempDirectoryPath(std::error_code& ec);
 
-  private:
-    virtual const Variant doCall(const Variants& parameter) const = 0;
-
-    std::string _name;
-    eType _retType;
-    const Types _parameterTypes;
-  };
-
-
-  class CSVSQLDB_EXPORT FunctionRegistry
-  {
-  public:
-    FunctionRegistry() = default;
-
-    void registerFunction(const Function::Ptr& function);
-
-    Function::Ptr getFunction(const std::string& funcname) const;
-
-    std::vector<Function::Ptr> getFunctions() const
-    {
-      std::vector<Function::Ptr> functions;
-      std::for_each(_functions.begin(), _functions.end(), [&functions](const auto& entry) { functions.push_back(entry.second); });
-
-      return functions;
-    }
-
-  private:
-    typedef std::map<std::string, Function::Ptr> Functions;
-
-    Functions _functions;
-  };
-}
-
-#endif
+  std::filesystem::path _path;
+};

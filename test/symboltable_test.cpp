@@ -37,11 +37,16 @@
 #include "libcsvsqldb/tabledata.h"
 #include "libcsvsqldb/validation_visitor.h"
 
+#include "temporary_directory.h"
+
 #include <catch2/catch.hpp>
 
 
 TEST_CASE("Symbol Table Test", "[engine]")
 {
+  TemporaryDirectoryGuard tmpDir;
+  auto path = tmpDir.temporaryDirectoryPath();
+
   SECTION("add symbol")
   {
     csvsqldb::SymbolTablePtr st = csvsqldb::SymbolTable::createSymbolTable();
@@ -121,8 +126,8 @@ TEST_CASE("Symbol Table Test", "[engine]")
     tabledata.addColumn("birth_date", csvsqldb::DATE, false, false, true, std::any(), csvsqldb::ASTExprNodePtr(), 0);
 
     csvsqldb::FileMapping mapping;
-    csvsqldb::Database database("/tmp", mapping);
-    database.addTable(tabledata);
+    csvsqldb::Database database(path, mapping);
+    database.addTable(std::move(tabledata), false);
 
     // simulating a symbol table for this query:
     // select first_name,last_name as name from (select first_name,last_name from employees)
@@ -221,8 +226,8 @@ TEST_CASE("Symbol Table Test", "[engine]")
     tabledata.addColumn("birth_date", csvsqldb::DATE, false, false, true, std::any(), csvsqldb::ASTExprNodePtr(), 0);
 
     csvsqldb::FileMapping mapping;
-    csvsqldb::Database database("/tmp", mapping);
-    database.addTable(tabledata);
+    csvsqldb::Database database(path, mapping);
+    database.addTable(std::move(tabledata), false);
 
     // simulating a symbol table for this query:
     // select emp.first_name,emp.last_name as name from (select first_name,last_name from employees) as emp
@@ -327,8 +332,8 @@ TEST_CASE("Symbol Table Test", "[engine]")
     csvsqldb::TableData tabledata = csvsqldb::TableData::fromCreateAST(createNode);
     csvsqldb::FileMapping mapping;
 
-    csvsqldb::Database database("/tmp", mapping);
-    database.addTable(tabledata);
+    csvsqldb::Database database(path, mapping);
+    database.addTable(std::move(tabledata), false);
 
     node =
       parser.parse("SELECT \"emp\".\"first_name\",emp.last_name,birth_date,hire_date FROM \"employees\" AS emp WHERE hire_date < "
@@ -351,7 +356,7 @@ TEST_CASE("Symbol Table Test", "[engine]")
     csvsqldb::FunctionRegistry functions;
     csvsqldb::SQLParser parser(functions);
 
-    csvsqldb::Database database("/tmp", csvsqldb::FileMapping());
+    csvsqldb::Database database(path, csvsqldb::FileMapping());
 
     csvsqldb::ASTNodePtr node = parser.parse(
       "CREATE TABLE employees(emp_no INTEGER,birth_date DATE NOT NULL,first_name VARCHAR(25) NOT NULL,last_name VARCHAR(50) "
@@ -361,7 +366,7 @@ TEST_CASE("Symbol Table Test", "[engine]")
     csvsqldb::ASTCreateTableNodePtr createNode = std::dynamic_pointer_cast<csvsqldb::ASTCreateTableNode>(node);
     csvsqldb::TableData tabledata = csvsqldb::TableData::fromCreateAST(createNode);
 
-    database.addTable(tabledata);
+    database.addTable(std::move(tabledata), false);
 
     node = parser.parse(
       "CREATE TABLE salaries(emp_no INTEGER PRIMARY KEY,salary FLOAT CHECK(salary > 0.0),from_date DATE,to_date DATE)");
@@ -370,7 +375,7 @@ TEST_CASE("Symbol Table Test", "[engine]")
     createNode = std::dynamic_pointer_cast<csvsqldb::ASTCreateTableNode>(node);
     tabledata = csvsqldb::TableData::fromCreateAST(createNode);
 
-    database.addTable(tabledata);
+    database.addTable(std::move(tabledata), false);
 
     csvsqldb::ASTValidationVisitor validationVisitor(database);
 

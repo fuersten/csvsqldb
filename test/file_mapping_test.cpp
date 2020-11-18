@@ -90,7 +90,7 @@ TEST_CASE("Mapping Test", "[engine]")
       csvsqldb::FileMapping mapping;
       mapping.initialize(mappings);
 
-      JSON = mapping.asJson("employees", mappings);
+      JSON = mapping.asJson("employees");
     }
 
     std::stringstream ss(JSON);

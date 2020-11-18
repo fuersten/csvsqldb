@@ -46,7 +46,8 @@ namespace csvsqldb
 
   void FileMapping::initialize(const Mappings& mapping)
   {
-    std::regex r(R"((.+)->([a-zA-Z_]+))");
+    static std::regex r(R"((.+)->([a-zA-Z_]+))");
+
     for (const auto& keyValue : mapping) {
       std::smatch match;
       if (!regex_match(keyValue._mapping, match, r)) {
@@ -127,28 +128,18 @@ namespace csvsqldb
     }
   }
 
-  std::string FileMapping::asJson(const std::string& tableName, const Mappings& mappings)
+  std::string FileMapping::asJson(const std::string& tableName) const
   {
-    std::regex r(R"((.+)->([a-zA-Z_]+))");
+    auto mapping = getMappingForTable(tableName);
 
     json j;
     j["Mapping"]["name"] = csvsqldb::toupper_copy(tableName);
 
     json mapping_array = json::array();
-    for (const auto& map : mappings) {
-      std::smatch match;
-      if (!regex_match(map._mapping, match, r)) {
-        CSVSQLDB_THROW(MappingException, "not a mapping expression '" << map._mapping << "'");
-      }
-      std::string mappingTableName = csvsqldb::toupper_copy(match.str(2));
-      std::string mappingPattern = match.str(1);
-
-      if (mappingTableName == csvsqldb::toupper_copy(tableName)) {
-        json entry{
-          {"pattern", mappingPattern}, {"delimiter", std::string(1, map._delimiter)}, {"skipFirstLine", map._skipFirstLine}};
-        mapping_array.push_back(entry);
-      }
-    }
+    json entry{{"pattern", mapping._mapping},
+               {"delimiter", std::string(1, mapping._delimiter)},
+               {"skipFirstLine", mapping._skipFirstLine}};
+    mapping_array.push_back(entry);
     j["Mapping"]["mappings"] = mapping_array;
 
     std::stringstream ss;

@@ -40,8 +40,8 @@
 
 namespace csvsqldb
 {
-  TableData::TableData(const std::string& tableName)
-  : _tableName(tableName)
+  TableData::TableData(std::string tableName)
+  : _tableName(std::move(tableName))
   {
   }
 
