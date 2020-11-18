@@ -63,7 +63,14 @@ target_include_directories(csvsqldbtest PRIVATE ${PROJECT_SOURCE_DIR}/thirdparty
 target_include_directories(csvsqldbtest PRIVATE ${CMAKE_SOURCE_DIR})
 target_include_directories(csvsqldbtest PRIVATE ${CMAKE_BINARY_DIR})
 target_include_directories(csvsqldbtest PRIVATE SYSTEM ${LUA_INCLUDE_DIR})
-target_link_libraries(csvsqldbtest ${CSVSQLDB_PROJECT_LIBS} ${CSVSQLDB_PLATFORM_LIBS} csvsqldb)
+target_link_libraries(csvsqldbtest PRIVATE ${CSVSQLDB_PLATFORM_LIBS} csvsqldb ${LUA_LIBRARY})
+
+if(COVERAGE)
+  target_link_libraries(csvsqldbtest PUBLIC --coverage)
+  target_compile_options(csvsqldbtest PUBLIC --coverage -g)
+else()
+  target_compile_options(csvsqldbtest PRIVATE ${CSVSQLDB_COMPILE_OPTIONS})
+endif()
 
 include(ParseAndAddCatchTests)
 ParseAndAddCatchTests(csvsqldbtest)

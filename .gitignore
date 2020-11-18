@@ -37,3 +37,7 @@ build
 
 # test artifacts
 test/std*.txt
+examples
+linux-build
+build_coverage
+docker

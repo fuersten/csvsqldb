@@ -156,5 +156,13 @@ target_include_directories(csvsqldb PRIVATE ${CMAKE_SOURCE_DIR}/thirdparty/json/
 target_include_directories(csvsqldb PRIVATE SYSTEM ${LUA_INCLUDE_DIR})
 
 set_target_properties(csvsqldb PROPERTIES DEFINE_SYMBOL LIBCSVSQLDB VERSION ${CSVSQLDB_VERSION} SOVERSION ${CSVSQLDB_VERSION_SHORT})
-target_link_libraries(csvsqldb ${CSVSQLDB_PROJECT_LIBS} ${CSVSQLDB_PLATFORM_LIBS} ${LUA_LIBRARY})
+target_link_libraries(csvsqldb PRIVATE ${CSVSQLDB_PLATFORM_LIBS} ${LUA_LIBRARY})
+
+if(COVERAGE)
+  target_link_libraries(csvsqldb PUBLIC --coverage)
+  target_compile_options(csvsqldb PUBLIC --coverage -g)
+else()
+  target_compile_options(csvsqldb PRIVATE ${CSVSQLDB_COMPILE_OPTIONS})
+endif()
+
 install(TARGETS csvsqldb LIBRARY DESTINATION lib ARCHIVE DESTINATION lib)
