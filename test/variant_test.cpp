@@ -45,7 +45,7 @@ TEST_CASE("Variant Test", "[variant]")
     CHECK(4711 == v1.asInt());
 
     csvsqldb::Variant v2(47.11);
-    CHECK(csvsqldb::compare(47.11, v2.asDouble()));
+    CHECK(47.11 == Approx(v2.asDouble()));
 
     csvsqldb::Variant v3(csvsqldb::Date(1970, csvsqldb::Date::September, 23));
     CHECK("1970-09-23" == v3.asDate().format("%F"));
@@ -230,7 +230,7 @@ TEST_CASE("Variant Test", "[variant]")
 
     v2 += csvsqldb::Variant(47.11);
     CHECK(csvsqldb::REAL == v2.getType());
-    CHECK(csvsqldb::compare(94.22, v2.asDouble()));
+    CHECK(94.22 == Approx(v2.asDouble()));
 
     v1 /= 2;
     CHECK(csvsqldb::INT == v1.getType());

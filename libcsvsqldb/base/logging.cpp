@@ -86,6 +86,11 @@ namespace csvsqldb
 
   static LogDevicePtr s_logDevice;
 
+  void LogDevice::flush()
+  {
+    doFlush();
+  }
+
   void Logging::init()
   {
     s_logDevice = LogDeviceFactory().create(config<GlobalConfiguration>()->logging.device);
@@ -93,11 +98,12 @@ namespace csvsqldb
 
   void Logging::log(const LogEvent& event)
   {
-    static std::mutex _serializeLog;
+    static std::mutex s_logMutex;
 
     if (s_logDevice) {
-      std::unique_lock<std::mutex> guard(_serializeLog);
+      std::unique_lock guard(s_logMutex);
       s_logDevice->log(event);
+      s_logDevice->flush();
     }
   }
 }

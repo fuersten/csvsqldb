@@ -16,6 +16,11 @@ daemonize = true
 test = {}
 test.wtf = 815
 
+logging = {}
+logging.device = 'None'
+logging.separator = ','
+logging.escape_newline = true
+
 debug.global_level = 1
 
 debug.level = { tcp_server = 2, connection = 3, filesystem = 1 }

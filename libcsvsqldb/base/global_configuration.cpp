@@ -42,7 +42,7 @@ namespace csvsqldb
   {
     _configuration = configuration;
 
-    logging.device = _configuration->get("logging.device", "None");
+    logging.device = _configuration->get("logging.device", "Console");
     logging.separator = " " + _configuration->get("logging.separator", "|") + " ";
     logging.escape_newline = _configuration->get("logging.escape_newline", false);
 

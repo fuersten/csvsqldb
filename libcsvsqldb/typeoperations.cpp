@@ -353,7 +353,7 @@ namespace csvsqldb
   struct CompareEqual<double, double> {
     bool operation(const double& lhs, const double& rhs) const
     {
-      return csvsqldb::compare(lhs, rhs);
+      return csvsqldb::Approx(lhs) == rhs;
     }
   };
 
@@ -426,7 +426,7 @@ namespace csvsqldb
   struct CompareNotEqual<double, double> {
     bool operation(const double& lhs, const double& rhs) const
     {
-      return !csvsqldb::compare(lhs, rhs);
+      return csvsqldb::Approx(lhs) != rhs;
     }
   };
 
@@ -934,7 +934,7 @@ namespace csvsqldb
   private:
     virtual bool operation(const double& lhs, const bool& rhs) const
     {
-      return !csvsqldb::compare(lhs, 0.0) && rhs;
+      return (csvsqldb::Approx(lhs) != 0.0) && rhs;
     }
 
     virtual Variant doHandleNull(const Variant& lhs, const Variant& rhs) const
@@ -972,7 +972,7 @@ namespace csvsqldb
   private:
     virtual bool operation(const double& lhs, const bool& rhs) const
     {
-      return !(!csvsqldb::compare(lhs, 0.0) && rhs);
+      return !((csvsqldb::Approx(lhs) != 0.0) && rhs);
     }
 
     virtual Variant doHandleNull(const Variant& lhs, const Variant& rhs) const

@@ -32,7 +32,6 @@
 
 
 #include "libcsvsqldb/base/csv_parser.h"
-#include "libcsvsqldb/base/csv_string_parser.h"
 
 #include "test/test_util.h"
 #include "test_helper.h"
@@ -141,11 +140,30 @@ namespace
     std::string _s;
     std::string::const_iterator _pos{_s.end()};
   };
+
+  void checkLog(const std::string& message)
+  {
+    std::ifstream log((CSVSQLDB_TEST_PATH + std::string("/stderr.txt")));
+    CHECK(true == log.good());
+    std::string line;
+    CHECK(std::getline(log, line).good());
+    CHECK(message == line);
+  }
+
+  void parse(csvsqldb::csv::CSVParser& csvparser)
+  {
+    while (csvparser.parseLine()) {
+    }
+  }
 }
 
 
 TEST_CASE("CSV Parser Test", "[csv]")
 {
+  MyCSVParserCallback callback;
+  csvsqldb::csv::CSVParserContext context;
+  context._skipFirstLine = true;
+
   SECTION("parse simple")
   {
     csvsqldb::csv::Types types;
@@ -161,14 +179,11 @@ TEST_CASE("CSV Parser Test", "[csv]")
     types.push_back(csvsqldb::csv::TIMESTAMP);
     types.push_back(csvsqldb::csv::LONG);
 
-    MyCSVParserCallback callback;
-    csvsqldb::csv::CSVParserContext context;
     context._skipFirstLine = false;
     std::fstream csvfile(CSVSQLDB_TEST_PATH + std::string("/testdata/csv/test.csv"));
     CHECK(csvfile);
     csvsqldb::csv::CSVParser csvparser(context, csvfile, types, callback);
-    while (csvparser.parseLine()) {
-    }
+    parse(csvparser);
 
     CHECK(2U == csvparser.getLineCount());
     CHECK(22U == callback._results.size());
@@ -199,7 +214,6 @@ TEST_CASE("CSV Parser Test", "[csv]")
     CHECK("<NULL>" == callback._results[secondRowBase + 9]);
     CHECK("525" == callback._results[secondRowBase + 10]);
   }
-
   SECTION("parse")
   {
     csvsqldb::csv::Types types;
@@ -226,12 +240,8 @@ TEST_CASE("CSV Parser Test", "[csv]")
 499553,1954-05-06,Hideyuki,Delgrande,F,2000-01-22
 )");
 
-    MyCSVParserCallback callback;
-    csvsqldb::csv::CSVParserContext context;
-    context._skipFirstLine = true;
     csvsqldb::csv::CSVParser csvparser(context, ss, types, callback);
-    while (csvparser.parseLine()) {
-    }
+    parse(csvparser);
 
     CHECK(14U == csvparser.getLineCount());
     CHECK(78U == callback._results.size());
@@ -269,35 +279,6 @@ TEST_CASE("CSV Parser Test", "[csv]")
     CHECK("F" == callback._results[76]);
     CHECK("2000-01-22" == callback._results[77]);
   }
-
-  SECTION("parse erroneous csv")
-  {
-    csvsqldb::csv::Types types;
-    types.push_back(csvsqldb::csv::LONG);
-    types.push_back(csvsqldb::csv::DATE);
-    types.push_back(csvsqldb::csv::STRING);
-
-    std::stringstream ss(R"(emp_no,birth_date,first_name
-47291,1960-09-09,"Ulf"
-60134,1964-04,Seshu
-72329,1953-02-09,Randi
-)");
-
-    MyCSVParserCallback callback;
-    csvsqldb::csv::CSVParserContext context;
-    context._skipFirstLine = true;
-    csvsqldb::csv::CSVParser csvparser(context, ss, types, callback);
-
-    RedirectStdErr red;
-    while (csvparser.parseLine()) {
-    }
-    std::ifstream log((CSVSQLDB_TEST_PATH + std::string("/stderr.txt")));
-    CHECK(true == log.good());
-    std::string line;
-    CHECK(std::getline(log, line).good());
-    CHECK("ERROR: skipping line 3: expected a date field (YYYY-mm-dd) in line 3" == line);
-  }
-
   SECTION("parse strings")
   {
     csvsqldb::csv::Types types;
@@ -307,7 +288,7 @@ TEST_CASE("CSV Parser Test", "[csv]")
 
     std::stringstream ss(R"(emp_no,first_name,birth_date
 47291,"Ulf",1960-09-09
-60134,Seshu,1964-04-21
++60134,Seshu,1964-04-21
 72329,'Randi',1953-02-09
 00001,"abc'def",1960-09-09
 00002,'abc"def',1960-09-09
@@ -317,12 +298,8 @@ TEST_CASE("CSV Parser Test", "[csv]")
 00006,'abc,def',1960-09-09
 )");
 
-    MyCSVParserCallback callback;
-    csvsqldb::csv::CSVParserContext context;
-    context._skipFirstLine = true;
     csvsqldb::csv::CSVParser csvparser(context, ss, types, callback);
-    while (csvparser.parseLine()) {
-    }
+    parse(csvparser);
 
     // 10 because the header line is also counted in order to output correct line numbers for errors
     CHECK(10U == csvparser.getLineCount());
@@ -361,72 +338,116 @@ TEST_CASE("CSV Parser Test", "[csv]")
     nextRowBase = 24;
     CHECK("abc,def" == callback._results[nextRowBase + 1]);
   }
+}
 
-  SECTION("string parser")
+TEST_CASE("CSV Parser Error Test", "[csv]")
+{
+  MyCSVParserCallback callback;
+  csvsqldb::csv::CSVParserContext context;
+  context._skipFirstLine = false;
+  RedirectStdErr red;
+
+  SECTION("parse erroneous csv")
   {
-    csvsqldb::csv::CSVStringParser::BufferType buffer;
-    buffer.resize(2);
-    StringReader sr;
-    csvsqldb::csv::CSVStringParser sp(buffer, 1024, std::bind(&StringReader::readNextChar, std::ref(sr), _1));
+    csvsqldb::csv::Types types;
+    types.push_back(csvsqldb::csv::LONG);
+    types.push_back(csvsqldb::csv::DATE);
+    types.push_back(csvsqldb::csv::STRING);
 
-    sr.setString("test");
-    CHECK(4U == sp.parseToBuffer());
-    CHECK("test" == std::string(&buffer[0]));
+    std::stringstream ss(R"(47291,1960-09-09,"Ulf"
+60134,1964-04,Seshu
+72329,1953-02-09,Randi
+)");
 
-    sr.setString("'test'");
-    CHECK(4U == sp.parseToBuffer());
-    CHECK("test" == std::string(&buffer[0]));
+    csvsqldb::csv::CSVParser csvparser(context, ss, types, callback);
+    parse(csvparser);
 
-    sr.setString("\"test\"");
-    CHECK(4U == sp.parseToBuffer());
-    CHECK("test" == std::string(&buffer[0]));
+    checkLog("ERROR: skipping line 2: expected a date field (YYYY-mm-dd) in line 2");
+  }
+  SECTION("too many fields")
+  {
+    csvsqldb::csv::Types types;
+    types.push_back(csvsqldb::csv::LONG);
+    types.push_back(csvsqldb::csv::DATE);
 
-    sr.setString("");
-    CHECK(0U == sp.parseToBuffer());
-    CHECK("" == std::string(&buffer[0]));
+    std::stringstream ss(R"(47291,1960-09-09,"Ulf"
+60134,1964-04-21,Seshu
+72329,1953-02-09,Randi
+)");
 
-    sr.setString("''");
-    CHECK(0U == sp.parseToBuffer());
-    CHECK("" == std::string(&buffer[0]));
+    csvsqldb::csv::CSVParser csvparser(context, ss, types, callback);
+    parse(csvparser);
 
-    sr.setString("\"\"");
-    CHECK(0U == sp.parseToBuffer());
-    CHECK("" == std::string(&buffer[0]));
+    checkLog("ERROR: skipping line 1: too many fields found in line 1");
+  }
+  SECTION("too few fields")
+  {
+    csvsqldb::csv::Types types;
+    types.push_back(csvsqldb::csv::LONG);
+    types.push_back(csvsqldb::csv::DATE);
+    types.push_back(csvsqldb::csv::STRING);
+    types.push_back(csvsqldb::csv::LONG);
 
-    sr.setString("te'st");
-    CHECK(5U == sp.parseToBuffer());
-    CHECK("te'st" == std::string(&buffer[0]));
+    std::stringstream ss(R"(47291,1960-09-09,"Ulf"
+60134,1964-04-21,Seshu
+72329,1953-02-09,Randi
+)");
 
-    sr.setString("te\"st");
-    CHECK(5U == sp.parseToBuffer());
-    CHECK("te\"st" == std::string(&buffer[0]));
+    csvsqldb::csv::CSVParser csvparser(context, ss, types, callback);
+    parse(csvparser);
 
-    sr.setString("'te\"st'");
-    CHECK(5U == sp.parseToBuffer());
-    CHECK("te\"st" == std::string(&buffer[0]));
+    checkLog("ERROR: skipping line 1: too few fields found in line 1");
+  }
+  SECTION("no more input")
+  {
+    csvsqldb::csv::Types types;
+    types.push_back(csvsqldb::csv::LONG);
+    types.push_back(csvsqldb::csv::DATE);
+    types.push_back(csvsqldb::csv::STRING);
 
-    sr.setString("\"te'st\"");
-    CHECK(5U == sp.parseToBuffer());
-    CHECK("te'st" == std::string(&buffer[0]));
+    std::stringstream ss(R"(47291,1960-09-09,"Ulf"
+60134,1964-04-21,Seshu
+72329,1953-02-09,)");
 
-    sr.setString("'te''st'");
-    CHECK(5U == sp.parseToBuffer());
-    CHECK("te'st" == std::string(&buffer[0]));
+    csvsqldb::csv::CSVParser csvparser(context, ss, types, callback);
+    parse(csvparser);
 
-    sr.setString("\"te\"\"st\"");
-    CHECK(5U == sp.parseToBuffer());
-    CHECK("te\"st" == std::string(&buffer[0]));
+    checkLog("ERROR: skipping line 3: too few fields found in line 3");
+  }
+  SECTION("no long type")
+  {
+    csvsqldb::csv::Types types;
+    types.push_back(csvsqldb::csv::LONG);
 
-    sr.setString("'te,st'");
-    CHECK(5U == sp.parseToBuffer());
-    CHECK("te,st" == std::string(&buffer[0]));
+    std::stringstream ss(R"(472gdb)");
 
-    sr.setString("te,st");
-    CHECK(2U == sp.parseToBuffer());
-    CHECK("te" == std::string(&buffer[0]));
+    csvsqldb::csv::CSVParser csvparser(context, ss, types, callback);
+    parse(csvparser);
 
-    sr.setString("M");
-    CHECK(1U == sp.parseToBuffer());
-    CHECK("M" == std::string(&buffer[0]));
+    checkLog("ERROR: skipping line 1: field is not a long in line 1");
+  }
+  SECTION("no bool type")
+  {
+    csvsqldb::csv::Types types;
+    types.push_back(csvsqldb::csv::BOOLEAN);
+
+    std::stringstream ss(R"(check)");
+
+    csvsqldb::csv::CSVParser csvparser(context, ss, types, callback);
+    parse(csvparser);
+
+    checkLog("ERROR: skipping line 1: field is not a bool in line 1");
+  }
+  SECTION("no time type")
+  {
+    csvsqldb::csv::Types types;
+    types.push_back(csvsqldb::csv::TIME);
+
+    std::stringstream ss(R"(12.06.34)");
+
+    csvsqldb::csv::CSVParser csvparser(context, ss, types, callback);
+    parse(csvparser);
+
+    checkLog("ERROR: skipping line 1: expected a time field (HH:MM:SS) in line 1");
   }
 }

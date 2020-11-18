@@ -53,15 +53,15 @@ TEST_CASE("Type operations Test", "[operations]")
 
     csvsqldb::Variant result1 = binaryOperation(csvsqldb::OP_ADD, lhs1, rhs1);
     CHECK(csvsqldb::REAL == result1.getType());
-    CHECK(csvsqldb::compare(5526.0, result1.asDouble()));
+    CHECK(5526.0 == Approx(result1.asDouble()));
 
     result1 = binaryOperation(csvsqldb::OP_ADD, lhs1, rhs);
     CHECK(csvsqldb::REAL == result1.getType());
-    CHECK(csvsqldb::compare(5526.0, result1.asDouble()));
+    CHECK(5526.0 == Approx(result1.asDouble()));
 
     result1 = binaryOperation(csvsqldb::OP_ADD, lhs, rhs1);
     CHECK(csvsqldb::REAL == result1.getType());
-    CHECK(csvsqldb::compare(5526.0, result1.asDouble()));
+    CHECK(5526.0 == Approx(result1.asDouble()));
   }
 
   SECTION("value concat")
@@ -129,12 +129,12 @@ TEST_CASE("Type operations Test", "[operations]")
 
     csvsqldb::Variant result = unaryOperation(csvsqldb::OP_CAST, csvsqldb::REAL, lhs);
     CHECK(csvsqldb::REAL == result.getType());
-    CHECK(csvsqldb::compare(4711.0, result.asDouble()));
+    CHECK(4711.0 == Approx(result.asDouble()));
 
     lhs = csvsqldb::Variant("4711.0");
     result = unaryOperation(csvsqldb::OP_CAST, csvsqldb::REAL, lhs);
     CHECK(csvsqldb::REAL == result.getType());
-    CHECK(csvsqldb::compare(4711.0, result.asDouble()));
+    CHECK(4711.0 == Approx(result.asDouble()));
 
     result = unaryOperation(csvsqldb::OP_CAST, csvsqldb::INT, lhs);
     CHECK(csvsqldb::INT == result.getType());

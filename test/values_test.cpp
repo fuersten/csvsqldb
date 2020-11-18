@@ -64,7 +64,7 @@ TEST_CASE("Values Test", "[values]")
     CHECK(csvsqldb::REAL == v1->getType());
     CHECK("47.110000" == v1->toString());
     csvsqldb::ValDouble* pd = static_cast<csvsqldb::ValDouble*>(v1);
-    CHECK(csvsqldb::compare(47.11, pd->asDouble()));
+    CHECK(47.11 == Approx(pd->asDouble()));
     delete v1;
 
     v1 = csvsqldb::ValueCreator<bool>::createValue(true);

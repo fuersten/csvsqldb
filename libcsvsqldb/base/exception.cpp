@@ -83,14 +83,11 @@ namespace csvsqldb
     }
   }
 
-  CSVSQLDB_IMPLEMENT_EXCEPTION(TimeoutException, Exception);
   CSVSQLDB_IMPLEMENT_EXCEPTION(ConfigurationException, Exception);
   CSVSQLDB_IMPLEMENT_EXCEPTION(FilesystemException, Exception);
   CSVSQLDB_IMPLEMENT_EXCEPTION(JsonException, Exception);
-  CSVSQLDB_IMPLEMENT_EXCEPTION(BadcastException, Exception);
   CSVSQLDB_IMPLEMENT_EXCEPTION(BadoptionException, Exception);
   CSVSQLDB_IMPLEMENT_EXCEPTION(IndexException, Exception);
-  CSVSQLDB_IMPLEMENT_EXCEPTION(InvalidParameterException, Exception);
   CSVSQLDB_IMPLEMENT_EXCEPTION(InvalidOperationException, Exception);
   CSVSQLDB_IMPLEMENT_EXCEPTION(LexicalAnalysisException, Exception);
   CSVSQLDB_IMPLEMENT_EXCEPTION(TimeException, Exception);
@@ -98,7 +95,6 @@ namespace csvsqldb
   CSVSQLDB_IMPLEMENT_EXCEPTION(DateException, Exception);
   CSVSQLDB_IMPLEMENT_EXCEPTION(DurationException, Exception);
   CSVSQLDB_IMPLEMENT_EXCEPTION(NoMoreInputException, Exception);
-  CSVSQLDB_IMPLEMENT_EXCEPTION(NotImplementedException, Exception);
   CSVSQLDB_IMPLEMENT_EXCEPTION(ChronoException, Exception);
   CSVSQLDB_IMPLEMENT_EXCEPTION(RegExpException, Exception);
 

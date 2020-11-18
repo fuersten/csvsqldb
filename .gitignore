@@ -41,3 +41,5 @@ examples
 linux-build
 build_coverage
 docker
+check_loc.sh
+todo.md

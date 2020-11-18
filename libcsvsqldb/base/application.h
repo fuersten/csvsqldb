@@ -88,7 +88,7 @@ namespace csvsqldb
     /**
      * Used to deinitialize the application.
      */
-    virtual void tearDown(){};
+    virtual void tearDown() = 0;
 
   private:
     int _argc;

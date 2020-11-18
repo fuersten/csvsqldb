@@ -51,7 +51,7 @@ namespace csvsqldb
   public:
     typedef std::shared_ptr<const Configuration> Ptr;
 
-    virtual ~Configuration();
+    virtual ~Configuration() = default;
 
     Configuration(const Configuration&) = delete;
     Configuration(Configuration&&) = delete;
@@ -143,7 +143,7 @@ namespace csvsqldb
     }
 
   protected:
-    Configuration();
+    Configuration() = default;
 
   private:
     /**

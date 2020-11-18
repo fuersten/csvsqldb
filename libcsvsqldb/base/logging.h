@@ -86,23 +86,17 @@ namespace csvsqldb
      */
     void log(const LogEvent& event);
 
+    /**
+     * Flushes the log device.
+     */
+    void flush();
+
   private:
     /**
      * Template method to do the actual logging to the specific log device.
      * @param stream The stream contains the foprmatted event information
      */
     virtual void doLog(std::ostringstream& stream) = 0;
-
-    /**
-     * Template method to open the specific log device.
-     * @return true if the device could be opened, otherwise false.
-     */
-    virtual bool doOpen() = 0;
-
-    /**
-     * Template method to close the specific log device.
-     */
-    virtual void doClose() = 0;
 
     /**
      * Template method to flush the specific log device.

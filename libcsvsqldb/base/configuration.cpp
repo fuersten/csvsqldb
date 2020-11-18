@@ -38,14 +38,6 @@
 
 namespace csvsqldb
 {
-  Configuration::Configuration()
-  {
-  }
-
-  Configuration::~Configuration()
-  {
-  }
-
   size_t Configuration::getProperties(const std::string& path, StringVector& properties) const
   {
     return doGetProperties(path, properties);

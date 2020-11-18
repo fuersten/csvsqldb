@@ -176,6 +176,6 @@ TEST_CASE("Buildin Functions Test", "[engine]")
     parameter.push_back(csvsqldb::Variant(2.0));
     csvsqldb::Variant result = function->call(parameter);
     CHECK(csvsqldb::REAL == result.getType());
-    CHECK(csvsqldb::compare(100.0, result.asDouble()));
+    CHECK(100.0 == Approx(result.asDouble()));
   }
 }

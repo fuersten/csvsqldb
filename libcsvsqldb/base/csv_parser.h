@@ -136,6 +136,7 @@ namespace csvsqldb
       void parseTime();
       void parseTimestamp();
 
+      void skipLine();
       void findEndOfLine();
       char readNextChar(bool ignoreDelimiter = false);
       bool checkBuffer();

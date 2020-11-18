@@ -103,6 +103,8 @@ namespace csvsqldb
           }
         } catch (const csvsqldb::Exception& ex) {
           std::cerr << "ERROR: skipping line " << _lineCount << ": " << ex.what() << "\n";
+          skipLine();
+          return true;
         }
 
         if (_n == static_cast<size_t>(_count) && _state == LINESTART) {
@@ -128,7 +130,7 @@ namespace csvsqldb
         }
       }
 
-      return true;
+      return false;
     }
 
     void CSVParser::parseString()
@@ -300,12 +302,17 @@ namespace csvsqldb
       }
     }
 
+    void CSVParser::skipLine()
+    {
+      while (_state != LINESTART && _state != END) {
+        readNextChar();
+      }
+    }
+
     void CSVParser::findEndOfLine()
     {
       readNextChar();
-      while (_state != LINESTART) {
-        readNextChar();
-      }
+      skipLine();
     }
 
     char CSVParser::readNextChar(bool ignoreDelimiter)

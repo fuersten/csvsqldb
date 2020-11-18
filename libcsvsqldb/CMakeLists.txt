@@ -63,7 +63,6 @@ set(LIB_CSVSQLDB_BASE_SOURCES
     base/default_configuration.cpp
     base/duration.cpp
     base/exception.cpp
-    base/float_helper.cpp
     base/global_configuration.cpp
     base/lexer.cpp
     base/log_devices.cpp

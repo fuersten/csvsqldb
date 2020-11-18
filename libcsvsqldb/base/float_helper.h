@@ -38,16 +38,41 @@
 
 #include "types.h"
 
+#include <cmath>
+
 
 namespace csvsqldb
 {
-  /**
-   * Compares to floating point values for equality.
-   * @param lhs first value to compare
-   * @param rhs second value to compare
-   * @return true if the values are (at least approximately) equal, otherwise false
-   */
-  CSVSQLDB_EXPORT bool compare(double lhs, double rhs);
+  static constexpr double epsilon = 0.0001f;
+
+  class CSVSQLDB_EXPORT Approx
+  {
+  public:
+    explicit Approx(float f)
+    : d_{f}
+    {
+    }
+
+    explicit Approx(double d)
+    : d_{d}
+    {
+    }
+
+    friend bool operator==(const Approx& approx, double d)
+    {
+      auto ff = fabs(approx.d_ - d);
+      return ff < epsilon;
+    }
+
+    friend bool operator!=(const Approx& approx, double d)
+    {
+      return !(approx == d);
+    }
+
+  private:
+    double d_;
+  };
+
 }
 
 #endif

@@ -33,6 +33,8 @@
 
 #include "libcsvsqldb/base/exception.h"
 
+#include "test_helper.h"
+
 #include <catch2/catch.hpp>
 
 #include <cstring>
@@ -41,6 +43,34 @@
 
 TEST_CASE("Exception Test", "[exception]")
 {
+  SECTION("construction")
+  {
+    auto ex = csvsqldb::Exception(ENOENT, "Filesystem");
+    CHECK(ex.code().value() == ENOENT);
+    CHECK(std::string("Filesystem: No such file or directory") == ex.what());
+
+    auto ex1 = csvsqldb::Exception(std::errc::invalid_argument, "Parameter");
+    CHECK(ex1.code().value() == EINVAL);
+    CHECK(std::string("Parameter: Invalid argument") == ex1.what());
+
+    auto ex2 = csvsqldb::Exception("check");
+    CHECK(ex2.code().value() == 0);
+    CHECK(std::string("check") == ex2.what());
+
+    auto ex3 = csvsqldb::Exception(std::make_error_code(std::errc::invalid_argument), "Parameter");
+    CHECK(ex3.code().value() == EINVAL);
+    CHECK(std::string("Parameter: Invalid argument") == ex3.what());
+  }
+
+  SECTION("copy")
+  {
+    auto ex = csvsqldb::Exception(ENOENT, "Filesystem");
+    auto ex1{ex};
+
+    CHECK(ex1.code().value() == ENOENT);
+    CHECK(std::string("Filesystem: No such file or directory") == ex1.what());
+  }
+
   SECTION("exception")
   {
     try {
@@ -67,6 +97,64 @@ TEST_CASE("Exception Test", "[exception]")
       errno = EWOULDBLOCK;
       std::string expected = csvsqldb::errnoText();
       CHECK("mydomain" + std::string(": ") + expected == ex.what());
+    }
+  }
+
+  SECTION("evaluate exception")
+  {
+    RedirectStdErr red;
+
+    try {
+      CSVSQLDB_THROW(csvsqldb::Exception, "check");
+    } catch (...) {
+      csvsqldb::evaluateException();
+    }
+
+    try {
+      throw std::system_error(std::make_error_code(std::io_errc::stream));
+    } catch (...) {
+      csvsqldb::evaluateException();
+    }
+
+    try {
+      throw std::runtime_error{"test"};
+    } catch (...) {
+      csvsqldb::evaluateException();
+    }
+
+    try {
+      throw std::string{"test"};
+    } catch (...) {
+      csvsqldb::evaluateException();
+    }
+  }
+
+  SECTION("evaluate and throw exception")
+  {
+    RedirectStdErr red;
+
+    try {
+      CSVSQLDB_THROW(csvsqldb::Exception, "check");
+    } catch (...) {
+      CHECK_THROWS_AS(csvsqldb::evaluateExceptionAndThrow(), csvsqldb::Exception);
+    }
+
+    try {
+      throw std::system_error(std::make_error_code(std::io_errc::stream));
+    } catch (...) {
+      CHECK_THROWS_AS(csvsqldb::evaluateExceptionAndThrow(), std::system_error);
+    }
+
+    try {
+      throw std::runtime_error{"test"};
+    } catch (...) {
+      CHECK_THROWS_AS(csvsqldb::evaluateExceptionAndThrow(), std::runtime_error);
+    }
+
+    try {
+      throw std::string{"test"};
+    } catch (...) {
+      CHECK_THROWS_AS(csvsqldb::evaluateExceptionAndThrow(), std::string);
     }
   }
 }

@@ -66,17 +66,18 @@ TEST_CASE("Configuration Test", "[config]")
       std::make_shared<csvsqldb::LuaConfiguration>(CSVSQLDB_TEST_PATH + std::string("/testdata/luaengine/test.lua")));
 
     CHECK(10474 == config->get("port", 9999));
-    CHECK(std::fabs(47.11 - config->get("factor", 8.15)) < 0.0001);
+    CHECK(47.11 == Approx(config->get("factor", 8.15)));
     CHECK("Thor" == config->get("hostname", "horst"));
     CHECK(100 == config->get("server.threads", 10));
     CHECK("LUA" == config->get("server.api.code", "php"));
-    CHECK(std::fabs(47.11 - config->get<double>("factor")) < 0.0001);
+    CHECK(47.11 == Approx(config->get<double>("factor")));
     CHECK(config->get<bool>("daemonize"));
     CHECK(2 == config->get<int32_t>("debug.level.tcp_server"));
-
+  }
+  SECTION("non existent config")
+  {
     CHECK_THROWS_AS(csvsqldb::LuaConfiguration("not existent configuration"), csvsqldb::FilesystemException);
   }
-
   SECTION("config check")
   {
     csvsqldb::Configuration::Ptr config(
@@ -87,6 +88,36 @@ TEST_CASE("Configuration Test", "[config]")
     CHECK_FALSE(config->hasProperty("not_available_entry"));
 
     CHECK(1 == config->get<int32_t>("debug.global_level"));
+    CHECK_THROWS_AS(config->get<int32_t>("non.existent.value"), csvsqldb::ConfigurationException);
+    CHECK(1 == config->get("debug.global_level", static_cast<int32_t>(5)));
+    CHECK(5 == config->get("non.existent.value", static_cast<int32_t>(5)));
+
+    CHECK(1 == config->get<int64_t>("debug.global_level"));
+    CHECK_THROWS_AS(config->get<int64_t>("non.existent.value"), csvsqldb::ConfigurationException);
+    CHECK(1 == config->get("debug.global_level", static_cast<int64_t>(5)));
+    CHECK(5 == config->get("non.existent.value", static_cast<int64_t>(5)));
+
+    CHECK(47.11 == Approx(config->get<double>("factor")));
+    CHECK_THROWS_AS(config->get<double>("non.existent.value"), csvsqldb::ConfigurationException);
+    CHECK(47.11 == Approx(config->get("factor", 8.15)));
+    CHECK(8.15 == Approx(config->get("non.existent.value", 8.15)));
+
+    CHECK(47.11f == Approx(config->get<float>("factor")));
+    CHECK_THROWS_AS(config->get<float>("non.existent.value"), csvsqldb::ConfigurationException);
+    CHECK(47.11f == Approx(config->get("factor", 8.15f)));
+    CHECK(8.15f == Approx(config->get("non.existent.value", 8.15f)));
+
+    CHECK(config->get<bool>("daemonize"));
+    CHECK_THROWS_AS(config->get<bool>("non.existent.value"), csvsqldb::ConfigurationException);
+    CHECK(config->get("daemonize", false));
+    CHECK_FALSE(config->get("non.existent.value", false));
+
+    CHECK("LUA" == config->get<std::string>("server.api.code"));
+    CHECK_THROWS_AS(config->get<std::string>("non.existent.value"), csvsqldb::ConfigurationException);
+    CHECK("LUA" == config->get("server.api.code", std::string("PHP")));
+    CHECK("PHP" == config->get("non.existent.value", std::string("PHP")));
+    CHECK("LUA" == config->get("server.api.code", "PHP"));
+    CHECK("PHP" == config->get("non.existent.value", "PHP"));
 
     csvsqldb::StringVector properties;
     CHECK(3u == config->getProperties("debug.level", properties));
@@ -96,7 +127,6 @@ TEST_CASE("Configuration Test", "[config]")
     CHECK(props.find("connection") != props.end());
     CHECK(props.find("filesystem") != props.end());
   }
-
   SECTION("default config")
   {
     csvsqldb::Configuration::Ptr config(std::make_shared<csvsqldb::DefaultConfiguration>());
@@ -108,9 +138,33 @@ TEST_CASE("Configuration Test", "[config]")
     csvsqldb::StringVector properties;
     CHECK(0u == config->getProperties("debug.level", properties));
     CHECK_THROWS_AS(config->get<int32_t>("debug.global_level"), csvsqldb::ConfigurationException);
+    CHECK_THROWS_AS(config->get<int64_t>("non.existent.value"), csvsqldb::ConfigurationException);
+    CHECK_THROWS_AS(config->get<float>("non.existent.value"), csvsqldb::ConfigurationException);
+    CHECK_THROWS_AS(config->get<double>("non.existent.value"), csvsqldb::ConfigurationException);
   }
-
   SECTION("global config")
+  {
+    csvsqldb::Configuration::Ptr config(
+      std::make_shared<csvsqldb::LuaConfiguration>(CSVSQLDB_TEST_PATH + std::string("/testdata/luaengine/test.lua")));
+    csvsqldb::GlobalConfiguration::create<csvsqldb::GlobalConfiguration>();
+    csvsqldb::GlobalConfiguration::instance<csvsqldb::GlobalConfiguration>()->configure(config);
+
+    CHECK(1 == csvsqldb::GlobalConfiguration::instance<csvsqldb::GlobalConfiguration>()->debug.global_level);
+    CHECK(3 == csvsqldb::GlobalConfiguration::instance<csvsqldb::GlobalConfiguration>()->debug.level["connection"]);
+  }
+  SECTION("global config default values")
+  {
+    csvsqldb::Configuration::Ptr config(std::make_shared<csvsqldb::DefaultConfiguration>());
+    csvsqldb::GlobalConfiguration::create<csvsqldb::GlobalConfiguration>();
+    csvsqldb::GlobalConfiguration::instance<csvsqldb::GlobalConfiguration>()->configure(config);
+
+    CHECK("Console" == csvsqldb::GlobalConfiguration::instance<csvsqldb::GlobalConfiguration>()->logging.device);
+    CHECK(" | " == csvsqldb::GlobalConfiguration::instance<csvsqldb::GlobalConfiguration>()->logging.separator);
+    CHECK_FALSE(csvsqldb::GlobalConfiguration::instance<csvsqldb::GlobalConfiguration>()->logging.escape_newline);
+    CHECK(csvsqldb::GlobalConfiguration::instance<csvsqldb::GlobalConfiguration>()->debug.level.empty());
+    CHECK(0 == csvsqldb::GlobalConfiguration::instance<csvsqldb::GlobalConfiguration>()->debug.global_level);
+  }
+  SECTION("custom global config")
   {
     csvsqldb::Configuration::Ptr config(
       std::make_shared<csvsqldb::LuaConfiguration>(CSVSQLDB_TEST_PATH + std::string("/testdata/luaengine/test.lua")));
@@ -120,5 +174,14 @@ TEST_CASE("Configuration Test", "[config]")
     CHECK(1 == csvsqldb::GlobalConfiguration::instance<MyGlobalConfiguration>()->debug.global_level);
     CHECK(3 == csvsqldb::GlobalConfiguration::instance<MyGlobalConfiguration>()->debug.level["connection"]);
     CHECK(815 == csvsqldb::config<MyGlobalConfiguration>()->test.wtf);
+  }
+  SECTION("custom global config default values")
+  {
+    csvsqldb::Configuration::Ptr config(std::make_shared<csvsqldb::DefaultConfiguration>());
+    csvsqldb::GlobalConfiguration::create<MyGlobalConfiguration>();
+    csvsqldb::GlobalConfiguration::instance<MyGlobalConfiguration>()->configure(config);
+
+    CHECK(0 == csvsqldb::GlobalConfiguration::instance<MyGlobalConfiguration>()->debug.global_level);
+    CHECK(4711 == csvsqldb::config<MyGlobalConfiguration>()->test.wtf);
   }
 }

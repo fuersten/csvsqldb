@@ -63,12 +63,6 @@ namespace csvsqldb
     GlobalConfiguration& operator=(GlobalConfiguration&&) = delete;
 
     /**
-     * Appilcation relevant configurations.
-     */
-    struct Application {
-    };
-
-    /**
      * Debug logging relevant configurations.
      */
     struct Debug {
@@ -112,7 +106,6 @@ namespace csvsqldb
      */
     void configure(const Configuration::Ptr& configuration);
 
-    Application application;
     Debug debug;
     Logging logging;
 

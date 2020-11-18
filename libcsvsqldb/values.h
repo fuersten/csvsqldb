@@ -229,7 +229,7 @@ namespace csvsqldb
       if (isNull() || rhs.isNull()) {
         return false;
       }
-      return csvsqldb::compare(_val, dynamic_cast<const ValDouble&>(rhs)._val);
+      return csvsqldb::Approx(_val) == dynamic_cast<const ValDouble&>(rhs)._val;
     }
 
     size_t getHash() const override

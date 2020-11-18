@@ -47,15 +47,13 @@ namespace csvsqldb
   class CSVSQLDB_EXPORT ConsoleLogDevice : public LogDevice
   {
   public:
-    ConsoleLogDevice();
+    ConsoleLogDevice() = default;
 
     const std::string& name() const override;
 
   private:
     void doLog(std::ostringstream& stream) override;
 
-    bool doOpen() override;
-    void doClose() override;
     void doFlush() override;
   };
 }

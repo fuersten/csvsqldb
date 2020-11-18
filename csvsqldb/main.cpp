@@ -429,6 +429,10 @@ private:
     return 0;
   }
 
+  void tearDown() override
+  {
+  }
+
   std::string _databasePath;
   std::string _commandFile;
   std::string _sql;

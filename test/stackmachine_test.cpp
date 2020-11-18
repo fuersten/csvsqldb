@@ -466,7 +466,7 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
         mixedStore.addVariable(0, aVar);
         mixedStore.addVariable(1, bVar);
 
-        CHECK(csvsqldb::compare(74.0, sm.evaluate(mixedStore, functions).asDouble()));
+        CHECK(74.0 == Approx(sm.evaluate(mixedStore, functions).asDouble()));
       }
     }
 
@@ -505,7 +505,7 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
-      CHECK(csvsqldb::compare(50, sm.evaluate(store, functions).asDouble()));
+      CHECK(50 == Approx(sm.evaluate(store, functions).asDouble()));
     }
 
     {
@@ -587,7 +587,7 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
-      CHECK(csvsqldb::compare(50, sm.evaluate(store, functions).asDouble()));
+      CHECK(50 == Approx(sm.evaluate(store, functions).asDouble()));
     }
 
     {
@@ -598,7 +598,7 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
-      CHECK(csvsqldb::compare(50, sm.evaluate(store, functions).asDouble()));
+      CHECK(50 == Approx(sm.evaluate(store, functions).asDouble()));
     }
 
     {

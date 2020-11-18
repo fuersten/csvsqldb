@@ -32,6 +32,7 @@
 
 
 #include "libcsvsqldb/base/configuration.h"
+#include "libcsvsqldb/base/log_devices.h"
 #include "libcsvsqldb/base/logging.h"
 
 #include "test_helper.h"
@@ -164,5 +165,47 @@ TEST_CASE("Logging Test", "[logging]")
       ++line_count;
     }
     log.close();
+  }
+  SECTION("multiline logging")
+  {
+    csvsqldb::GlobalConfiguration::create<csvsqldb::GlobalConfiguration>();
+    csvsqldb::config<csvsqldb::GlobalConfiguration>()->configure(std::make_shared<StaticConfiguration>());
+    csvsqldb::config<csvsqldb::GlobalConfiguration>()->logging.escape_newline = true;
+    csvsqldb::Logging::init();
+
+    RedirectStdErr red;
+
+    CSVSQLDB_INFOLOG("This is a multiline\ninfo log.");
+
+    std::ifstream log((CSVSQLDB_TEST_PATH + std::string("/stderr.txt")));
+    CHECK(log.good());
+    std::string line;
+    CHECK(std::getline(log, line).good());
+    CHECK(line.find("This is a multiline\\ninfo log.") != std::string::npos);
+  }
+  SECTION("none logger")
+  {
+    csvsqldb::GlobalConfiguration::create<csvsqldb::GlobalConfiguration>();
+    csvsqldb::config<csvsqldb::GlobalConfiguration>()->configure(std::make_shared<StaticConfiguration>());
+    csvsqldb::config<csvsqldb::GlobalConfiguration>()->logging.device = "None";
+    csvsqldb::Logging::init();
+
+    CSVSQLDB_INFOLOG("Cannot be hidden");
+  }
+  SECTION("class logging error")
+  {
+    csvsqldb::GlobalConfiguration::create<csvsqldb::GlobalConfiguration>();
+    csvsqldb::config<csvsqldb::GlobalConfiguration>()->configure(std::make_shared<StaticConfiguration>());
+    csvsqldb::config<csvsqldb::GlobalConfiguration>()->logging.device = "Unknown device";
+    CHECK_THROWS_AS(csvsqldb::Logging::init(), csvsqldb::Exception);
+  }
+}
+
+TEST_CASE("LogDevice Test", "[logging]")
+{
+  SECTION("ConsoleLogDevice")
+  {
+    csvsqldb::ConsoleLogDevice dev;
+    CHECK("ConsoleLogDevice" == dev.name());
   }
 }

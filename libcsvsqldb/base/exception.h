@@ -129,11 +129,6 @@ namespace csvsqldb
   }
 
   /**
-   * Exception object for timeout exceptions.
-   */
-  CSVSQLDB_DECLARE_EXCEPTION(TimeoutException, Exception);
-
-  /**
    * Exception object for configuration exceptions.
    */
   CSVSQLDB_DECLARE_EXCEPTION(ConfigurationException, Exception);
@@ -149,11 +144,6 @@ namespace csvsqldb
   CSVSQLDB_DECLARE_EXCEPTION(JsonException, Exception);
 
   /**
-   * Exception object for bad casts.
-   */
-  CSVSQLDB_DECLARE_EXCEPTION(BadcastException, Exception);
-
-  /**
    * Exception object for bad options.
    */
   CSVSQLDB_DECLARE_EXCEPTION(BadoptionException, Exception);
@@ -162,11 +152,6 @@ namespace csvsqldb
    * Exception object for index errors.
    */
   CSVSQLDB_DECLARE_EXCEPTION(IndexException, Exception);
-
-  /**
-   * Exception object for parameter errors.
-   */
-  CSVSQLDB_DECLARE_EXCEPTION(InvalidParameterException, Exception);
 
   /**
    * Exception object for invalid operations.
@@ -202,11 +187,6 @@ namespace csvsqldb
    * Exception object for input errors.
    */
   CSVSQLDB_DECLARE_EXCEPTION(NoMoreInputException, Exception);
-
-  /**
-   * Exception object for not implemented features.
-   */
-  CSVSQLDB_DECLARE_EXCEPTION(NotImplementedException, Exception);
 
   /**
    * Exception object for chrono errors.

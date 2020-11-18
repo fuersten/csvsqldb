@@ -250,7 +250,7 @@ namespace csvsqldb
         return ::strcoll(_storage._string, rhs._storage._string) == 0;
         break;
       case REAL:
-        return csvsqldb::compare(_storage._real, rhs._storage._real);
+        return csvsqldb::Approx(_storage._real) == rhs._storage._real;
         break;
       case INT:
         return _storage._int == rhs._storage._int;
@@ -287,7 +287,7 @@ namespace csvsqldb
         return ::strcoll(_storage._string, rhs._storage._string) != 0;
         break;
       case REAL:
-        return !csvsqldb::compare(_storage._real, rhs._storage._real);
+        return csvsqldb::Approx(_storage._real) != rhs._storage._real;
         break;
       case INT:
         return _storage._int != rhs._storage._int;
@@ -515,7 +515,7 @@ namespace csvsqldb
       case INT:
         return _storage._int != 0;
       case REAL:
-        return csvsqldb::compare(_storage._real, 0.0);
+        return csvsqldb::Approx(_storage._real) == 0.0;
       case STRING:
         return _storage._string;
       case DATE:

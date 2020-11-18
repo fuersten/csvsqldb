@@ -1,6 +1,5 @@
 //
-//  float_helper.cpp
-//  csvsqldb
+//  csvsqldb test
 //
 //  BSD 3-Clause License
 //  Copyright (c) 2015-2020 Lars-Christian Fürstenberg
@@ -31,21 +30,23 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-#include "float_helper.h"
 
-#include <algorithm>
-#include <cmath>
+#include "libcsvsqldb/base/float_helper.h"
+
+#include <catch2/catch.hpp>
 
 
-namespace csvsqldb
+TEST_CASE("Float Helper Test", "[utils]")
 {
-  const double absTol = 0.0001;
-
-  bool compare(double lhs, double rhs)
+  SECTION("equal")
   {
-    if (std::fabs(lhs - rhs) <= absTol * std::max({1.0, std::fabs(lhs), std::fabs(rhs)})) {
-      return true;
-    }
-    return false;
+    CHECK(47.11 == Approx(47.11));
+    CHECK_FALSE(47.11 == Approx(8.15));
+  }
+
+  SECTION("non equal")
+  {
+    CHECK_FALSE(47.11 != Approx(47.11));
+    CHECK(47.11 != Approx(8.15));
   }
 }

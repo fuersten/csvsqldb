@@ -15,6 +15,7 @@ add_executable(csvsqldbtest
     buildin_functions_test.cpp
     configuration_test.cpp
     csv_parser_test.cpp
+    csv_string_parser_test.cpp
     data_framework_test.cpp
     data_test_framework.h
     date_test.cpp
@@ -47,6 +48,7 @@ add_executable(csvsqldbtest
     typeoperations_test.cpp
     types_test.cpp
     union_test.cpp
+    utils_test.cpp
     values_test.cpp
     variant_test.cpp
 

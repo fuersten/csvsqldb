@@ -33,24 +33,25 @@
 
 #include "libcsvsqldb/base/application.h"
 
+#include "test_helper.h"
+
 #include <catch2/catch.hpp>
 
+#include <fstream>
 
 class MyApplication : public csvsqldb::Application
 {
 public:
-  MyApplication(int argc, char** argv, bool setUp)
+  MyApplication(int argc, char** argv, bool setUp, bool throwException = false)
   : csvsqldb::Application(argc, argv)
-  , _didSetup(false)
-  , _didRun(false)
-  , _didTearDown(false)
   , _setUp(setUp)
+  , _throwException{throwException}
   {
   }
 
-  bool _didSetup;
-  bool _didRun;
-  bool _didTearDown;
+  bool _didSetup{false};
+  bool _didRun{false};
+  bool _didTearDown{false};
 
 private:
   virtual bool setUp(int argc, char** argv)
@@ -62,6 +63,11 @@ private:
   virtual int doRun()
   {
     _didRun = true;
+
+    if (_throwException) {
+      throw std::runtime_error{"throw in doRun"};
+    }
+
     return 0;
   }
 
@@ -70,7 +76,8 @@ private:
     _didTearDown = true;
   }
 
-  bool _setUp;
+  bool _setUp{false};
+  bool _throwException{false};
 };
 
 
@@ -89,7 +96,6 @@ TEST_CASE("Application Test", "[app]")
     CHECK(true == myapp._didRun);
     CHECK(true == myapp._didTearDown);
   }
-
   SECTION("dont run")
   {
     int argc = 2;
@@ -102,5 +108,27 @@ TEST_CASE("Application Test", "[app]")
     CHECK(true == myapp._didSetup);
     CHECK(false == myapp._didRun);
     CHECK(false == myapp._didTearDown);
+  }
+  SECTION("throw in run")
+  {
+    int argc = 2;
+    const char* args[] = {"MyApp", "Arg1"};
+
+    RedirectStdErr red;
+
+    MyApplication myapp(argc, const_cast<char**>(args), true, true);
+    int ret = myapp.run();
+
+    CHECK(-1 == ret);
+    CHECK(true == myapp._didSetup);
+    CHECK(true == myapp._didRun);
+    CHECK(false == myapp._didTearDown);
+
+    std::ifstream log((CSVSQLDB_TEST_PATH + std::string("/stderr.txt")));
+    CHECK(log.good());
+    std::string line;
+
+    CHECK(std::getline(log, line).good());
+    CHECK(line.find("throw in doRun") != std::string::npos);
   }
 }
