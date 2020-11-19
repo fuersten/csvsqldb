@@ -38,21 +38,6 @@
 
 namespace csvsqldb
 {
-  struct DefaultConfiguration::Private {
-    Private()
-    {
-    }
-  };
-
-  DefaultConfiguration::DefaultConfiguration()
-  : _p(new Private())
-  {
-  }
-
-  DefaultConfiguration::~DefaultConfiguration()
-  {
-  }
-
   size_t DefaultConfiguration::doGetProperties(const std::string& path, StringVector& properties) const
   {
     return 0;

@@ -31,8 +31,7 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-#ifndef csvsqldb_exception_h
-#define csvsqldb_exception_h
+#pragma once
 
 #include "libcsvsqldb/inc.h"
 
@@ -230,5 +229,3 @@ namespace csvsqldb
     throw ex(XX_ss__.str());                                                                                                     \
   } while (0);
 }
-
-#endif

@@ -31,8 +31,7 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-#ifndef csvsqldb_thread_pool_h
-#define csvsqldb_thread_pool_h
+#pragma once
 
 #include "libcsvsqldb/inc.h"
 
@@ -57,7 +56,7 @@ namespace csvsqldb
   class CSVSQLDB_EXPORT ThreadPool
   {
   public:
-    typedef std::function<void()> Callback;
+    using Callback = std::function<void()>;
 
     /**
      * Constructs a thread pool with the given number of threads to execute ThreadPool::Callback handler. The threads will be
@@ -118,21 +117,16 @@ namespace csvsqldb
     void enqueueTask(Callback task);
 
   private:
-    typedef std::vector<std::thread> ThreadGroup;
-    typedef std::queue<Callback> CallbackQueue;
-
     /**
      * The thread entry function.
      */
     void run();
 
-    CallbackQueue _taskQueue;
+    std::queue<Callback> _taskQueue;
     const uint16_t _numberOfThreads;
-    ThreadGroup _serviceThreads;
+    std::vector<std::thread> _serviceThreads;
     std::atomic<bool> _quit;
     std::mutex _taskQueueMutex;
     std::condition_variable _taskQueueCondition;
   };
 }
-
-#endif

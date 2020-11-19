@@ -31,8 +31,7 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-#ifndef csvsqldb_signalhandler_h
-#define csvsqldb_signalhandler_h
+#pragma once
 
 #include "libcsvsqldb/inc.h"
 
@@ -75,7 +74,7 @@ namespace csvsqldb
   class CSVSQLDB_EXPORT SignalHandler
   {
   public:
-    typedef std::list<SignalEventHandler*> SignalEventHandlerList;
+    using SignalEventHandlerList = std::list<SignalEventHandler*>;
 
     /**
      * Creates the signal handler object. Throws an Exception if the internal system signal handler could not be installed.
@@ -160,5 +159,3 @@ namespace csvsqldb
     SignalEventHandler* _handler;
   };
 }
-
-#endif

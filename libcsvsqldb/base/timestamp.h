@@ -31,8 +31,7 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-#ifndef csvsqldb_timestamp_h
-#define csvsqldb_timestamp_h
+#pragma once
 
 #include "libcsvsqldb/inc.h"
 
@@ -319,6 +318,3 @@ namespace csvsqldb
     int64_t _time{0};
   } __attribute__((__packed__));
 }
-
-
-#endif

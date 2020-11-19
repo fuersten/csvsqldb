@@ -31,8 +31,7 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-#ifndef csvsqldb_default_configuration_h
-#define csvsqldb_default_configuration_h
+#pragma once
 
 #include "libcsvsqldb/inc.h"
 
@@ -51,9 +50,7 @@ namespace csvsqldb
     /**
      * Constructs a default configuration. Will throw a ConfigurationException if an error occurs.
      */
-    DefaultConfiguration();
-
-    ~DefaultConfiguration() override;
+    DefaultConfiguration() = default;
 
   private:
     size_t doGetProperties(const std::string& path, StringVector& properties) const override;
@@ -71,10 +68,5 @@ namespace csvsqldb
     double get(const std::string& path, Typer<double> typer) const override;
 
     std::string get(const std::string& path, Typer<std::string> typer) const override;
-
-    struct Private;
-    std::unique_ptr<Private> _p;
   };
 }
-
-#endif

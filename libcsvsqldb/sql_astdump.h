@@ -31,8 +31,7 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-#ifndef csvsqldb_astdump_h
-#define csvsqldb_astdump_h
+#pragma once
 
 #include "libcsvsqldb/inc.h"
 
@@ -961,5 +960,3 @@ namespace csvsqldb
     std::stringstream _ss;
   };
 }
-
-#endif

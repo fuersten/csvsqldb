@@ -31,8 +31,7 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-#ifndef csvsqldb_visitor_h
-#define csvsqldb_visitor_h
+#pragma once
 
 #include "libcsvsqldb/inc.h"
 
@@ -209,6 +208,7 @@ namespace csvsqldb
     size_t _index;
   };
 
+
   class ASTExpressionVariableVisitor : public ASTExpressionNodeVisitor
   {
   public:
@@ -268,5 +268,3 @@ namespace csvsqldb
     IdentifierSet& _variables;
   };
 }
-
-#endif

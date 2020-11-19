@@ -32,8 +32,7 @@
 //
 // \file base/types.h
 
-#ifndef csvsqldb_base_types_h
-#define csvsqldb_base_types_h
+#pragma once
 
 #include "libcsvsqldb/inc.h"
 
@@ -53,11 +52,10 @@ namespace csvsqldb
   /**
    * Timestamp
    */
-  typedef std::chrono::system_clock::time_point Timepoint;
+  using Timepoint = std::chrono::system_clock::time_point;
 
-  typedef std::vector<std::string> StringVector;
-  typedef std::set<std::string> StringSet;
-  typedef std::vector<size_t> IndexVector;
+  using StringVector = std::vector<std::string>;
+  using IndexVector = std::vector<size_t>;
 
   /**
    * Converts the given integer into a string representation. The string will be null terminated.
@@ -217,5 +215,3 @@ namespace csvsqldb
   struct is_output_streamable : detail::is_output_streamable_impl<T> {
   };
 }
-
-#endif

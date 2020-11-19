@@ -44,10 +44,6 @@ namespace csvsqldb
   CSVSQLDB_IMPLEMENT_EXCEPTION(StackMachineException, csvsqldb::Exception);
 
 
-  VariableStore::VariableStore()
-  {
-  }
-
   const Variant& VariableStore::operator[](size_t index) const
   {
     return _variables[index];
@@ -182,7 +178,7 @@ namespace csvsqldb
     }
   }
 
-  Variant& StackMachine::evaluate(const VariableStore& store, const FunctionRegistry& functions)
+  const Variant& StackMachine::evaluate(const VariableStore& store, const FunctionRegistry& functions)
   {
     reset();
 
@@ -323,7 +319,7 @@ namespace csvsqldb
           if (!instruction._r) {
             CSVSQLDB_THROW(StackMachineException, "expected a regexp in LIKE expression");
           }
-          Variant lhs = getTopValue();
+          Variant lhs = getNextValue();
           if (lhs.getType() != STRING) {
             lhs = unaryOperation(OP_CAST, STRING, lhs);
             CSVSQLDB_THROW(StackMachineException, "can only do like operations on strings");

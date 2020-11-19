@@ -31,8 +31,7 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-#ifndef csvsqldb_float_helper_h
-#define csvsqldb_float_helper_h
+#pragma once
 
 #include "libcsvsqldb/inc.h"
 
@@ -74,5 +73,3 @@ namespace csvsqldb
   };
 
 }
-
-#endif

@@ -31,8 +31,7 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-#ifndef csvsqldb_csv_parser_h
-#define csvsqldb_csv_parser_h
+#pragma once
 
 #include "libcsvsqldb/inc.h"
 
@@ -84,7 +83,7 @@ namespace csvsqldb
     };
 
     enum CsvTypes { LONG, DOUBLE, STRING, DATE, TIME, TIMESTAMP, BOOLEAN };
-    typedef std::vector<CsvTypes> Types;
+    using Types = std::vector<CsvTypes>;
 
 
     /**
@@ -126,7 +125,7 @@ namespace csvsqldb
     private:
       enum State { INIT, LINESTART, FIELDSTART, END };
 
-      typedef std::vector<char> BufferType;
+      using BufferType = std::vector<char>;
 
       void parseString();
       void parseLong();
@@ -156,10 +155,7 @@ namespace csvsqldb
       size_t _n;
       std::streamsize _count;
       CSVStringParser _stringParser;
-      static const std::streamsize _bufferLength = 8192;
+      static constexpr std::streamsize _bufferLength = 8192;
     };
   }
 }
-
-
-#endif

@@ -45,7 +45,6 @@ namespace csvsqldb
     , _bufferSize(bufferSize)
     , _readFunction(readFunction)
     , _currentBufferSize(_buffer.capacity())
-    , _currentState(START)
     {
       initializeTransitionTable();
     }

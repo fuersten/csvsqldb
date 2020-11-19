@@ -86,79 +86,69 @@ namespace csvsqldb
   }
 
   Variant::Variant(eType type)
-  : _refCount(nullptr)
-  , _type(type)
+  : _type(type)
   , _isNull(true)
   {
   }
 
   Variant::Variant(int32_t integer)
-  : _refCount(nullptr)
-  , _type(INT)
+  : _type(INT)
   , _isNull(false)
   {
     _storage._int = integer;
   }
 
   Variant::Variant(int64_t integer)
-  : _refCount(nullptr)
-  , _type(INT)
+  : _type(INT)
   , _isNull(false)
   {
     _storage._int = integer;
   }
 
   Variant::Variant(size_t integer)
-  : _refCount(nullptr)
-  , _type(INT)
+  : _type(INT)
   , _isNull(false)
   {
     _storage._int = static_cast<int64_t>(integer);
   }
 
   Variant::Variant(double real)
-  : _refCount(nullptr)
-  , _type(REAL)
+  : _type(REAL)
   , _isNull(false)
   {
     _storage._real = real;
   }
 
   Variant::Variant(const csvsqldb::Date& date)
-  : _refCount(nullptr)
-  , _type(DATE)
+  : _type(DATE)
   , _isNull(false)
   {
     _storage._date = date.asJulianDay();
   }
 
   Variant::Variant(const csvsqldb::Time& time)
-  : _refCount(nullptr)
-  , _type(TIME)
+  : _type(TIME)
   , _isNull(false)
   {
     _storage._time = time.asInteger();
   }
 
   Variant::Variant(const csvsqldb::Timestamp& timestamp)
-  : _refCount(nullptr)
-  , _type(TIMESTAMP)
+  : _type(TIMESTAMP)
   , _isNull(false)
   {
     _storage._timestamp = timestamp.asInteger();
   }
 
   Variant::Variant(bool boolean)
-  : _refCount(nullptr)
-  , _type(BOOLEAN)
+  : _type(BOOLEAN)
   , _isNull(false)
   {
     _storage._bool = boolean;
   }
 
   Variant::Variant(const char* string, bool owner)
-  : _refCount(nullptr)
-  , _type(STRING)
+  : _type(STRING)
   , _isNull(false)
   {
     if (owner) {

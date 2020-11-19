@@ -61,7 +61,7 @@ namespace csvsqldb
 
   bool FileMapping::addMapping(const std::string& tableName, const Mapping& mapping)
   {
-    FileTableMapping::const_iterator iter = _fileTableMapping.find(csvsqldb::toupper_copy(tableName));
+    const auto iter = _fileTableMapping.find(csvsqldb::toupper_copy(tableName));
     if (iter == _fileTableMapping.end()) {
       _fileTableMapping.insert(std::make_pair(csvsqldb::toupper_copy(tableName), mapping));
       return true;
@@ -71,7 +71,7 @@ namespace csvsqldb
 
   void FileMapping::removeMapping(const std::string& tableName)
   {
-    FileTableMapping::iterator iter = _fileTableMapping.find(csvsqldb::toupper_copy(tableName));
+    auto iter = _fileTableMapping.find(csvsqldb::toupper_copy(tableName));
     if (iter != _fileTableMapping.end()) {
       _fileTableMapping.erase(iter);
     }
@@ -79,7 +79,7 @@ namespace csvsqldb
 
   const Mapping& FileMapping::getMappingForTable(const std::string& tableName) const
   {
-    FileTableMapping::const_iterator iter = _fileTableMapping.find(csvsqldb::toupper_copy(tableName));
+    const auto iter = _fileTableMapping.find(csvsqldb::toupper_copy(tableName));
     if (iter == _fileTableMapping.end()) {
       CSVSQLDB_THROW(MappingException, "no mapping found for table '" << tableName << "'");
     }

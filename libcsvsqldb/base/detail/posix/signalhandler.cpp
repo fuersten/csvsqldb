@@ -46,8 +46,6 @@
 
 namespace csvsqldb
 {
-  typedef std::map<int, SignalHandler::SignalEventHandlerList> SignalToHandlerMap;
-
   static std::mutex signal_mutex;
   static sigset_t signal_mask;
 
@@ -121,7 +119,7 @@ namespace csvsqldb
       _handlerThread = std::thread(std::bind(&SignalHandlerThreadObject::run, &_threadObject));
     }
 
-    SignalToHandlerMap _handlerMap;
+    std::map<int, SignalHandler::SignalEventHandlerList> _handlerMap;
     volatile bool _stopSignalHandling;
     SignalHandlerThreadObject _threadObject;
     std::thread _handlerThread;
@@ -150,11 +148,12 @@ namespace csvsqldb
 
   SignalHandler::~SignalHandler()
   {
+    // Needs to be specified due to the unique_ptr impl.
   }
 
   void SignalHandler::addHandler(int signum, SignalEventHandler* handler)
   {
-    std::unique_lock<std::mutex> guard(signal_mutex);
+    std::unique_lock guard(signal_mutex);
 
     auto iter = _p->_handlerMap.find(signum);
     if (iter == _p->_handlerMap.end()) {
@@ -168,7 +167,7 @@ namespace csvsqldb
 
   void SignalHandler::removeHandler(int signum, SignalEventHandler* handler)
   {
-    std::unique_lock<std::mutex> guard(signal_mutex);
+    std::unique_lock guard(signal_mutex);
 
     auto iter = _p->_handlerMap.find(signum);
     if (iter != _p->_handlerMap.end()) {
@@ -178,7 +177,7 @@ namespace csvsqldb
 
   SignalHandler::SignalEventHandlerList SignalHandler::handler(int signum) const
   {
-    std::unique_lock<std::mutex> guard(signal_mutex);
+    std::unique_lock guard(signal_mutex);
 
     auto iter = _p->_handlerMap.find(signum);
     if (iter != _p->_handlerMap.end()) {

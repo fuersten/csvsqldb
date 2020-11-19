@@ -31,8 +31,7 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-#ifndef csvsqldb_string_helper_h
-#define csvsqldb_string_helper_h
+#pragma once
 
 #include "libcsvsqldb/compat/put_time.h"
 #include "libcsvsqldb/inc.h"
@@ -198,6 +197,3 @@ namespace csvsqldb
    */
   CSVSQLDB_EXPORT bool decode(const std::string& in, std::string& out);
 }
-
-
-#endif

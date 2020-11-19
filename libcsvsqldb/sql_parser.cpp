@@ -41,8 +41,7 @@
 namespace csvsqldb
 {
   SQLParser::SQLParser(const FunctionRegistry& functionRegistry)
-  : _lexer("")
-  , _functionRegistry(functionRegistry)
+  : _functionRegistry(functionRegistry)
   {
     _currentToken._token = TOK_NONE;
   }

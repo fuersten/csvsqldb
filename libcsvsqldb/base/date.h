@@ -34,8 +34,7 @@
  www.tondering.dk/claus/cal
  */
 
-#ifndef csvsqldb_date_h
-#define csvsqldb_date_h
+#pragma once
 
 #include "libcsvsqldb/inc.h"
 
@@ -261,6 +260,3 @@ namespace csvsqldb
     uint32_t _julianDay{0};
   } __attribute__((__packed__));
 }
-
-
-#endif

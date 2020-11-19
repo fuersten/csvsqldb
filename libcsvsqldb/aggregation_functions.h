@@ -31,8 +31,7 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-#ifndef csvsqldb_aggregation_functions_h
-#define csvsqldb_aggregation_functions_h
+#pragma once
 
 #include "libcsvsqldb/inc.h"
 
@@ -42,13 +41,15 @@
 namespace csvsqldb
 {
   class AggregationFunction;
-  typedef std::shared_ptr<AggregationFunction> AggregationFunctionPtr;
-  typedef std::vector<AggregationFunctionPtr> AggregationFunctions;
+  using AggregationFunctionPtr = std::shared_ptr<AggregationFunction>;
+  using AggregationFunctions = std::vector<AggregationFunctionPtr>;
 
 
   class CSVSQLDB_EXPORT AggregationFunction
   {
   public:
+    AggregationFunction() = default;
+
     virtual ~AggregationFunction() = default;
 
     AggregationFunction(const AggregationFunction&) = delete;
@@ -81,9 +82,6 @@ namespace csvsqldb
     virtual AggregationFunction* clone(BlockPtr block) const = 0;
 
     static AggregationFunctionPtr create(eAggregateFunction aggrFunc, eType type);
-
-  protected:
-    AggregationFunction() = default;
 
   private:
     virtual void doInit() = 0;
@@ -290,5 +288,3 @@ namespace csvsqldb
     Variant _value;
   };
 }
-
-#endif

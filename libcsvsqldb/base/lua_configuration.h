@@ -31,8 +31,7 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-#ifndef csvsqldb_lua_configuration_h
-#define csvsqldb_lua_configuration_h
+#pragma once
 
 #include "libcsvsqldb/inc.h"
 
@@ -78,5 +77,3 @@ namespace csvsqldb
     std::unique_ptr<Private> _p;
   };
 }
-
-#endif

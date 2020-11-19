@@ -31,8 +31,7 @@
 //
 
 
-#ifndef csvsqldb_test_helper_h
-#define csvsqldb_test_helper_h
+#pragma once
 
 #include "libcsvsqldb/base/exception.h"
 
@@ -118,5 +117,3 @@ private:
   int _fdo;
   int _newstderr;
 };
-
-#endif

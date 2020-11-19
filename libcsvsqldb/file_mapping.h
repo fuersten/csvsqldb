@@ -31,8 +31,7 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-#ifndef csvsqldb_file_mapping_h
-#define csvsqldb_file_mapping_h
+#pragma once
 
 #include "libcsvsqldb/inc.h"
 
@@ -60,7 +59,7 @@ namespace csvsqldb
   class CSVSQLDB_EXPORT FileMapping
   {
   public:
-    typedef std::vector<Mapping> Mappings;
+    using Mappings = std::vector<Mapping>;
 
     FileMapping() = default;
 
@@ -81,12 +80,8 @@ namespace csvsqldb
     static void readFromPath(FileMapping& fileMapping, const fs::path& path);
 
   private:
-    typedef std::map<std::string, Mapping> FileTableMapping;
-
     bool addMapping(const std::string& tableName, const Mapping& mapping);
 
-    FileTableMapping _fileTableMapping;
+    std::map<std::string, Mapping> _fileTableMapping;
   };
 }
-
-#endif

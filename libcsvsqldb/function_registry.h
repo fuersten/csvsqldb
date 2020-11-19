@@ -31,8 +31,7 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-#ifndef csvsqldb_function_registry_h
-#define csvsqldb_function_registry_h
+#pragma once
 
 #include "libcsvsqldb/inc.h"
 
@@ -48,7 +47,7 @@ namespace csvsqldb
   class CSVSQLDB_EXPORT Function
   {
   public:
-    typedef std::shared_ptr<Function> Ptr;
+    using Ptr = std::shared_ptr<Function>;
 
     Function(std::string name, eType retType, const Types parameterTypes)
     : _name(name)
@@ -104,10 +103,6 @@ namespace csvsqldb
     }
 
   private:
-    typedef std::map<std::string, Function::Ptr> Functions;
-
-    Functions _functions;
+    std::map<std::string, Function::Ptr> _functions;
   };
 }
-
-#endif

@@ -31,8 +31,7 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-#ifndef csvsqldb_typeoperations_h
-#define csvsqldb_typeoperations_h
+#pragma once
 
 #include "libcsvsqldb/inc.h"
 
@@ -52,5 +51,3 @@ namespace csvsqldb
 
   CSVSQLDB_EXPORT void initTypeSystem();
 }
-
-#endif

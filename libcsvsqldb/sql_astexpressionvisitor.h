@@ -31,8 +31,7 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-#ifndef csvsqldb_astexpressionvisitor_h
-#define csvsqldb_astexpressionvisitor_h
+#pragma once
 
 #include "libcsvsqldb/inc.h"
 
@@ -183,5 +182,3 @@ namespace csvsqldb
     std::stringstream _ss;
   };
 }
-
-#endif

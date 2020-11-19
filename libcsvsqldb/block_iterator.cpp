@@ -44,10 +44,6 @@ namespace csvsqldb
   : _blockProvider(blockProvider)
   , _blockManager(blockManager)
   , _types(types)
-  , _block(nullptr)
-  , _previousBlock(nullptr)
-  , _offset(0)
-  , _endOffset(0)
   , _typeOffset(_types.begin())
   {
     _row.resize(_types.size());
@@ -149,10 +145,6 @@ namespace csvsqldb
   : _rowProvider(rowProvider)
   , _blockManager(blockManager)
   , _types(types)
-  , _currentBlock(0)
-  , _offset(0)
-  , _endOffset(0)
-  , _useCache(false)
   , _typeOffset(_types.begin())
   {
     _row.resize(_types.size());
@@ -286,9 +278,6 @@ namespace csvsqldb
     : _types(types)
     , _sortOrders(sortOrders)
     , _blocks(blocks)
-    , _offset(0)
-    , _endOffset(0)
-    , _currentBlock(0)
     {
       _leftCompare.resize(_sortOrders.size());
       _rightCompare.resize(_sortOrders.size());
@@ -406,9 +395,9 @@ namespace csvsqldb
     Types::const_iterator _typeOffset;
     const SortingBlockIterator::SortOrders& _sortOrders;
     const Blocks& _blocks;
-    size_t _offset;
-    size_t _endOffset;
-    size_t _currentBlock;
+    size_t _offset{0};
+    size_t _endOffset{0};
+    size_t _currentBlock{0};
     Values _leftCompare;
     Values _rightCompare;
   };
@@ -418,10 +407,6 @@ namespace csvsqldb
   : _rowProvider(rowProvider)
   , _blockManager(blockManager)
   , _types(types)
-  , _currentBlock(0)
-  , _offset(0)
-  , _endOffset(0)
-  , _initialize(true)
   , _typeOffset(_types.begin())
   , _sortOrders(sortOrders)
   {
@@ -599,10 +584,6 @@ namespace csvsqldb
   : _rowProvider(rowProvider)
   , _blockManager(blockManager)
   , _types(types)
-  , _currentBlock(0)
-  , _offset(0)
-  , _endOffset(0)
-  , _useCache(false)
   , _groupingIndices(groupingIndices)
   , _outputIndices(outputIndices)
   , _typeOffset(_types.begin())
@@ -640,7 +621,7 @@ namespace csvsqldb
             element._groupingValues.push_back(valueToVariant(*(*row)[index]));
           }
 
-          GroupMap::iterator iter = _groupMap.find(element);
+          auto iter = _groupMap.find(element);
           if (iter == _groupMap.end()) {
             // group currently not contained - add new group
             AggregationFunctionPtrs groupValues;
@@ -789,10 +770,6 @@ namespace csvsqldb
   : _rowProvider(rowProvider)
   , _blockManager(blockManager)
   , _types(types)
-  , _currentBlock(0)
-  , _offset(0)
-  , _endOffset(0)
-  , _useCache(false)
   , _hashTableKeyPosition(hashTableKeyPosition)
   , _typeOffset(_types.begin())
   {
@@ -810,7 +787,7 @@ namespace csvsqldb
 
   void HashingBlockIterator::setContextForKeyValue(const Value& keyValue)
   {
-    std::pair<HashTable::const_iterator, HashTable::const_iterator> range = _hashTable.equal_range(valueToVariant(keyValue));
+    const auto range = _hashTable.equal_range(valueToVariant(keyValue));
     _context._it = range.first;
     _context._end = range.second;
   }
@@ -832,7 +809,7 @@ namespace csvsqldb
       ++_context._it;
 
       size_t index = 0;
-      for (auto type : _types) {
+      for (const auto& type : _types) {
         Value* val = getNextValue();
         if (!val) {
           CSVSQLDB_THROW(csvsqldb::Exception, "expected more values to fill the row (" << typeToString(type) << ")");
@@ -897,7 +874,7 @@ namespace csvsqldb
       }
 
       size_t index = 0;
-      for (auto type : _types) {
+      for (const auto& type : _types) {
         Value* val = getNextValue();
         if (!val) {
           CSVSQLDB_THROW(csvsqldb::Exception, "expected more values to fill the row");

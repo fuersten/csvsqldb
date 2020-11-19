@@ -31,8 +31,7 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-#ifndef csvsqldb_application_h
-#define csvsqldb_application_h
+#pragma once
 
 #include "libcsvsqldb/inc.h"
 
@@ -48,6 +47,14 @@ namespace csvsqldb
   class CSVSQLDB_EXPORT Application
   {
   public:
+    /**
+     * Constructs the application object.
+     * Normally the parameters are the same as to the main function.
+     * @param argc Number of arguments supplied by argv
+     * @param argv Arguments to the application
+     */
+    Application(int argc, char** argv);
+
     Application(const Application&) = delete;
     Application(Application&&) = delete;
     Application& operator=(const Application&) = delete;
@@ -64,14 +71,6 @@ namespace csvsqldb
     int run();
 
   protected:
-    /**
-     * Constructs the application object.
-     * Normally the parameters are the same as to the main function.
-     * @param argc Number of arguments supplied by argv
-     * @param argv Arguments to the application
-     */
-    Application(int argc, char** argv);
-
     /**
      * Used to configure the application.
      * @return Should return true, if the application should go on calling doRun or false in order to terminate the
@@ -95,5 +94,3 @@ namespace csvsqldb
     char** _argv;
   };
 }
-
-#endif

@@ -45,7 +45,6 @@ namespace csvsqldb
                                                std::ostream& stream)
   : RootOperatorNode(context, symbolTable)
   , _stream(stream)
-  , _firstCall(true)
   {
   }
 
@@ -74,7 +73,7 @@ namespace csvsqldb
     const Values* row = nullptr;
     while ((row = _input->getNextRow())) {
       bool first = true;
-      for (const auto value : *row) {
+      for (const auto& value : *row) {
         if (!first) {
           _outputBuffer << ",";
         } else {
@@ -132,8 +131,6 @@ namespace csvsqldb
   LimitOperatorNode::LimitOperatorNode(const OperatorContext& context, const SymbolTablePtr& symbolTable,
                                        const ASTExprNodePtr& limit, const ASTExprNodePtr& offset)
   : RowOperatorNode(context, symbolTable)
-  , _limit(-1)
-  , _offset(0)
   {
     {
       StackMachine sm;
@@ -528,7 +525,7 @@ namespace csvsqldb
     while ((row = _input->getNextRow())) {
       for (auto& aggrFunc : _aggregateFunctions) {
         fillVariableStore(_sms[smIndex]._store, _sms[smIndex]._variableMappings, *row);
-        Variant& variant = _sms[smIndex]._sm.evaluate(_sms[smIndex]._store, _context._functions);
+        const Variant& variant = _sms[smIndex]._sm.evaluate(_sms[smIndex]._store, _context._functions);
         aggrFunc->step(variant);
         ++n;
         ++smIndex;
@@ -537,7 +534,6 @@ namespace csvsqldb
       smIndex = 0;
     }
 
-    n = 0;
     for (auto& aggrFunc : _aggregateFunctions) {
       _block->addValue(aggrFunc->finalize());
     }
@@ -568,7 +564,6 @@ namespace csvsqldb
                                                                  const SymbolTablePtr& symbolTable, const Expressions& nodes)
   : RowOperatorNode(context, symbolTable)
   , _nodes(nodes)
-  , _block(nullptr)
   {
   }
 
@@ -605,7 +600,7 @@ namespace csvsqldb
           CSVSQLDB_THROW(csvsqldb::Exception, "select list expression '" << ident->_info->_name << "' not found in context");
         }
       } else if (std::dynamic_pointer_cast<ASTQualifiedAsterisk>(exp)) {
-        std::string prefixName = std::dynamic_pointer_cast<ASTQualifiedAsterisk>(exp)->_prefix;
+        const std::string& prefixName = std::dynamic_pointer_cast<ASTQualifiedAsterisk>(exp)->_prefix;
 
         SymbolInfoPtr table;
         if (!prefixName.empty() && getSymbolTable().hasTableSymbol(prefixName)) {
@@ -616,9 +611,8 @@ namespace csvsqldb
           if (!_context._database.hasTable(table->_identifier)) {
             CSVSQLDB_THROW(csvsqldb::Exception, "cannot find table '" << table->_identifier << "'");
           }
-          // TODO LCF: this is not quite ok, as we could have a different sorting, so better so go through the
-          // _inputSymbols and find the right
-          // table symbols
+          // TODO LCF: this is not quite ok, as we could have a different sorting, so better go through the
+          // _inputSymbols and find the right table symbols
           const TableData& tableData = _context._database.getTable(table->_identifier);
 
           for (size_t n = 0; n < tableData.columnCount(); ++n) {
@@ -715,7 +709,7 @@ namespace csvsqldb
             _block->addValue(*(rrow[iter->second]));
           }
         } else if (std::dynamic_pointer_cast<ASTQualifiedAsterisk>(exp)) {
-          std::string prefixName = std::dynamic_pointer_cast<ASTQualifiedAsterisk>(exp)->_prefix;
+          const std::string& prefixName = std::dynamic_pointer_cast<ASTQualifiedAsterisk>(exp)->_prefix;
 
           SymbolInfoPtr table;
           if (!prefixName.empty() && getSymbolTable().hasTableSymbol(prefixName)) {
@@ -726,9 +720,8 @@ namespace csvsqldb
             if (!_context._database.hasTable(table->_identifier)) {
               CSVSQLDB_THROW(csvsqldb::Exception, "cannot find table '" << table->_identifier << "'");
             }
-            // TODO LCF: this is not quite ok, as we could have a different sorting, so better so go through the
-            // _inputSymbols and find the right
-            // table symbols
+            // TODO LCF: this is not quite ok, as we could have a different sorting, so better go through the
+            // _inputSymbols and find the right table symbols
             const TableData& tableData = _context._database.getTable(table->_identifier);
 
             const Values& rrow = *row;
@@ -792,7 +785,6 @@ namespace csvsqldb
 
   CrossJoinOperatorNode::CrossJoinOperatorNode(const OperatorContext& context, const SymbolTablePtr& symbolTable)
   : RowOperatorNode(context, symbolTable)
-  , _currentLhs(nullptr)
   {
   }
 
@@ -952,9 +944,7 @@ namespace csvsqldb
   InnerHashJoinOperatorNode::InnerHashJoinOperatorNode(const OperatorContext& context, const SymbolTablePtr& symbolTable,
                                                        const ASTExprNodePtr& exp)
   : RowOperatorNode(context, symbolTable)
-  , _currentLhs(nullptr)
   , _exp(exp)
-  , _hashTableKeyPosition(0)
   {
   }
 
@@ -1219,7 +1209,6 @@ namespace csvsqldb
   SystemTableScanOperatorNode::SystemTableScanOperatorNode(const OperatorContext& context, const SymbolTablePtr& symbolTable,
                                                            const SymbolInfo& tableInfo)
   : ScanOperatorNode(context, symbolTable, tableInfo)
-  , _currentBlock(nullptr)
   {
   }
 
@@ -1248,27 +1237,9 @@ namespace csvsqldb
   }
 
 
-  TableScanOperatorNode::TableScanOperatorNode(const OperatorContext& context, const SymbolTablePtr& symbolTable,
-                                               const SymbolInfo& tableInfo)
-  : ScanOperatorNode(context, symbolTable, tableInfo)
-  , _blockReader(_context._blockManager)
-  {
-  }
-
-  const Values* TableScanOperatorNode::getNextRow()
-  {
-    if (!_blockReader.valid()) {
-      initializeBlockReader();
-    }
-
-    return _iterator->getNextRow();
-  }
-
-
   BlockReader::BlockReader(BlockManager& blockManager)
   : _blockManager(blockManager)
   , _block(_blockManager.createBlock())
-  , _continue(true)
   {
   }
 
@@ -1280,15 +1251,15 @@ namespace csvsqldb
     }
   }
 
-  void BlockReader::initialize(CSVParserPtr csvparser)
+  void BlockReader::initialize(std::unique_ptr<csvsqldb::csv::CSVParser> csvparser)
   {
-    _csvparser = csvparser;
+    _csvparser.swap(csvparser);
     _readThread = std::thread(std::bind(&BlockReader::readBlocks, this));
   }
 
   BlockPtr BlockReader::getNextBlock()
   {
-    std::unique_lock<std::mutex> lk(_queueMutex);
+    std::unique_lock lk(_queueMutex);
     if (_blocks.empty() && !_block) {
       return nullptr;
     }
@@ -1313,7 +1284,7 @@ namespace csvsqldb
       _block->nextRow();
     }
     {
-      std::unique_lock<std::mutex> lk(_queueMutex);
+      std::unique_lock lk(_queueMutex);
       _block->endBlocks();
       _blocks.push(_block);
       _block = nullptr;
@@ -1324,10 +1295,12 @@ namespace csvsqldb
   void BlockReader::onLong(int64_t num, bool isNull)
   {
     if (!_block->addInt(num, isNull)) {
-      std::unique_lock<std::mutex> lk(_queueMutex);
       _block->markNextBlock();
-      _blocks.push(_block);
-      _cv.notify_all();
+      {
+        std::unique_lock lk(_queueMutex);
+        _blocks.push(_block);
+        _cv.notify_all();
+      }
       _block = _blockManager.createBlock();
       _block->addInt(num, isNull);
     }
@@ -1336,10 +1309,12 @@ namespace csvsqldb
   void BlockReader::onDouble(double num, bool isNull)
   {
     if (!_block->addReal(num, isNull)) {
-      std::unique_lock<std::mutex> lk(_queueMutex);
       _block->markNextBlock();
-      _blocks.push(_block);
-      _cv.notify_all();
+      {
+        std::unique_lock lk(_queueMutex);
+        _blocks.push(_block);
+        _cv.notify_all();
+      }
       _block = _blockManager.createBlock();
       _block->addReal(num, isNull);
     }
@@ -1348,10 +1323,12 @@ namespace csvsqldb
   void BlockReader::onString(const char* s, size_t len, bool isNull)
   {
     if (!_block->addString(s, len, isNull)) {
-      std::unique_lock<std::mutex> lk(_queueMutex);
       _block->markNextBlock();
-      _blocks.push(_block);
-      _cv.notify_all();
+      {
+        std::unique_lock lk(_queueMutex);
+        _blocks.push(_block);
+        _cv.notify_all();
+      }
       _block = _blockManager.createBlock();
       _block->addString(s, len, isNull);
     }
@@ -1360,10 +1337,12 @@ namespace csvsqldb
   void BlockReader::onDate(const csvsqldb::Date& date, bool isNull)
   {
     if (!_block->addDate(date, isNull)) {
-      std::unique_lock<std::mutex> lk(_queueMutex);
       _block->markNextBlock();
-      _blocks.push(_block);
-      _cv.notify_all();
+      {
+        std::unique_lock lk(_queueMutex);
+        _blocks.push(_block);
+        _cv.notify_all();
+      }
       _block = _blockManager.createBlock();
       _block->addDate(date, isNull);
     }
@@ -1372,10 +1351,12 @@ namespace csvsqldb
   void BlockReader::onTime(const csvsqldb::Time& time, bool isNull)
   {
     if (!_block->addTime(time, isNull)) {
-      std::unique_lock<std::mutex> lk(_queueMutex);
       _block->markNextBlock();
-      _blocks.push(_block);
-      _cv.notify_all();
+      {
+        std::unique_lock lk(_queueMutex);
+        _blocks.push(_block);
+        _cv.notify_all();
+      }
       _block = _blockManager.createBlock();
       _block->addTime(time, isNull);
     }
@@ -1384,10 +1365,12 @@ namespace csvsqldb
   void BlockReader::onTimestamp(const csvsqldb::Timestamp& timestamp, bool isNull)
   {
     if (!_block->addTimestamp(timestamp, isNull)) {
-      std::unique_lock<std::mutex> lk(_queueMutex);
       _block->markNextBlock();
-      _blocks.push(_block);
-      _cv.notify_all();
+      {
+        std::unique_lock lk(_queueMutex);
+        _blocks.push(_block);
+        _cv.notify_all();
+      }
       _block = _blockManager.createBlock();
       _block->addTimestamp(timestamp, isNull);
     }
@@ -1396,15 +1379,33 @@ namespace csvsqldb
   void BlockReader::onBoolean(bool boolean, bool isNull)
   {
     if (!_block->addBool(boolean, isNull)) {
-      std::unique_lock<std::mutex> lk(_queueMutex);
       _block->markNextBlock();
-      _blocks.push(_block);
-      _cv.notify_all();
+      {
+        std::unique_lock lk(_queueMutex);
+        _blocks.push(_block);
+        _cv.notify_all();
+      }
       _block = _blockManager.createBlock();
       _block->addBool(boolean, isNull);
     }
   }
 
+
+  TableScanOperatorNode::TableScanOperatorNode(const OperatorContext& context, const SymbolTablePtr& symbolTable,
+                                               const SymbolInfo& tableInfo)
+  : ScanOperatorNode(context, symbolTable, tableInfo)
+  , _blockReader(_context._blockManager)
+  {
+  }
+
+  const Values* TableScanOperatorNode::getNextRow()
+  {
+    if (!_blockReader.valid()) {
+      initializeBlockReader();
+    }
+
+    return _iterator->getNextRow();
+  }
 
   BlockPtr TableScanOperatorNode::getNextBlock()
   {
@@ -1462,7 +1463,7 @@ namespace csvsqldb
       CSVSQLDB_THROW(MappingException, "no file found for mapping '" << filePattern << "'");
     }
 
-    _stream = std::make_shared<std::fstream>(pathToCsvFile.string());
+    _stream = std::make_unique<std::fstream>(pathToCsvFile.string());
     if (!_stream || _stream->fail()) {
       std::cerr << csvsqldb::errnoText() << std::endl;
       CSVSQLDB_THROW(csvsqldb::FilesystemException, "could not open file '" << pathToCsvFile << "'");
@@ -1470,8 +1471,7 @@ namespace csvsqldb
 
     _csvContext._skipFirstLine = true;
     _csvContext._delimiter = mapping._delimiter;
-    _csvparser = std::make_shared<csvsqldb::csv::CSVParser>(_csvContext, *_stream, types, _blockReader);
-    _blockReader.initialize(_csvparser);
+    _blockReader.initialize(std::make_unique<csvsqldb::csv::CSVParser>(_csvContext, *_stream, types, _blockReader));
   }
 
   void TableScanOperatorNode::dump(std::ostream& stream) const

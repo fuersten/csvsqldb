@@ -43,9 +43,9 @@
 
 namespace csvsqldb
 {
-  Database::Database(const fs::path& path, FileMapping mappings)
-  : _path(path)
-  , _mappings(mappings)
+  Database::Database(fs::path path, FileMapping mappings)
+  : _path(std::move(path))
+  , _mappings(std::move(mappings))
   {
     setUp();
   }

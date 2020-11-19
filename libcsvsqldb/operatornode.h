@@ -31,8 +31,7 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-#ifndef csvsqldb_operation_node_h
-#define csvsqldb_operation_node_h
+#pragma once
 
 #include "libcsvsqldb/inc.h"
 
@@ -62,7 +61,6 @@ namespace csvsqldb
     , _functions(functions)
     , _blockManager(blockManager)
     , _files(files)
-    , _showHeaderLine(true)
     {
     }
 
@@ -70,25 +68,25 @@ namespace csvsqldb
     const FunctionRegistry& _functions;
     BlockManager& _blockManager;
     const csvsqldb::StringVector& _files;
-    bool _showHeaderLine;
+    bool _showHeaderLine{true};
   };
 
 
   class OperatorBaseNode;
-  typedef std::shared_ptr<OperatorBaseNode> OperatorBaseNodePtr;
+  using OperatorBaseNodePtr = std::shared_ptr<OperatorBaseNode>;
 
   class RowOperatorNode;
-  typedef std::shared_ptr<RowOperatorNode> RowOperatorNodePtr;
+  using RowOperatorNodePtr = std::shared_ptr<RowOperatorNode>;
 
   class RootOperatorNode;
-  typedef std::shared_ptr<RootOperatorNode> RootOperatorNodePtr;
+  using RootOperatorNodePtr = std::shared_ptr<RootOperatorNode>;
 
 
   class CSVSQLDB_EXPORT OperatorBaseNode
   {
   public:
-    typedef std::vector<std::pair<size_t, size_t>> VariableMapping;
-    typedef std::map<size_t, size_t> OutputInputMapping;
+    using VariableMapping = std::vector<std::pair<size_t, size_t>>;
+    using OutputInputMapping = std::map<size_t, size_t>;
 
     struct StackMachineType {
       StackMachineType() = default;
@@ -104,9 +102,20 @@ namespace csvsqldb
       VariableMapping _variableMappings;
     };
 
-    typedef std::vector<StackMachineType> StackMachines;
+    using StackMachines = std::vector<StackMachineType>;
+
+    OperatorBaseNode(const OperatorContext& context, const SymbolTablePtr& symbolTable)
+    : _context(context)
+    , _symbolTable(symbolTable)
+    {
+    }
 
     virtual ~OperatorBaseNode() = default;
+
+    OperatorBaseNode(const OperatorBaseNode&) = delete;
+    OperatorBaseNode& operator=(const OperatorBaseNode&) = delete;
+    OperatorBaseNode(OperatorBaseNode&&) = delete;
+    OperatorBaseNode& operator=(OperatorBaseNode&&) = delete;
 
     virtual bool connect(const RowOperatorNodePtr& input) = 0;
 
@@ -129,8 +138,8 @@ namespace csvsqldb
 
     size_t getMapping(const std::string& variable, const StackMachine::VariableMapping& mapping)
     {
-      StackMachine::VariableMapping::const_iterator iter = std::find_if(
-        mapping.begin(), mapping.end(), [&](const StackMachine::VariableIndex& var) { return var.first == variable; });
+      const auto iter = std::find_if(mapping.begin(), mapping.end(),
+                                     [&](const StackMachine::VariableIndex& var) { return var.first == variable; });
       if (iter == mapping.end()) {
         CSVSQLDB_THROW(csvsqldb::Exception, "no mapping found for variable '" << variable << "'");
       } else {
@@ -148,12 +157,6 @@ namespace csvsqldb
     virtual void dump(std::ostream& stream) const = 0;
 
   protected:
-    OperatorBaseNode(const OperatorContext& context, const SymbolTablePtr& symbolTable)
-    : _context(context)
-    , _symbolTable(symbolTable)
-    {
-    }
-
     const OperatorContext& _context;
     SymbolTablePtr _symbolTable;
   };
@@ -164,17 +167,17 @@ namespace csvsqldb
   , public RowProvider
   {
   public:
+    RowOperatorNode(const OperatorContext& context, const SymbolTablePtr& symbolTable)
+    : OperatorBaseNode(context, symbolTable)
+    {
+    }
+
     virtual void setOutputAlias(const std::string& alias)
     {
       _outputAlias = alias;
     }
 
   protected:
-    RowOperatorNode(const OperatorContext& context, const SymbolTablePtr& symbolTable)
-    : OperatorBaseNode(context, symbolTable)
-    {
-    }
-
     void remapOutputSymbols(SymbolInfos& outputSymbols)
     {
       if (!_outputAlias.empty()) {
@@ -192,13 +195,12 @@ namespace csvsqldb
   class CSVSQLDB_EXPORT RootOperatorNode : public OperatorBaseNode
   {
   public:
-    virtual int64_t process() = 0;
-
-  protected:
     RootOperatorNode(const OperatorContext& context, const SymbolTablePtr& symbolTable)
     : OperatorBaseNode(context, symbolTable)
     {
     }
+
+    virtual int64_t process() = 0;
   };
 
 
@@ -218,7 +220,7 @@ namespace csvsqldb
   private:
     std::ostream& _stream;
     std::stringstream _outputBuffer;
-    bool _firstCall;
+    bool _firstCall{true};
     RowOperatorNodePtr _input;
   };
 
@@ -240,8 +242,8 @@ namespace csvsqldb
   private:
     RowOperatorNodePtr _input;
     SymbolInfos _inputSymbols;
-    int64_t _limit;
-    int64_t _offset;
+    int64_t _limit{-1};
+    int64_t _offset{0};
   };
 
 
@@ -352,7 +354,7 @@ namespace csvsqldb
     SymbolInfos _inputSymbols;
     SymbolInfos _outputSymbols;
     const Expressions& _nodes;
-    BlockPtr _block;
+    BlockPtr _block{nullptr};
     StackMachines _sms;
     OutputInputMapping _outputInputMapping;
     RowOperatorNodePtr _input;
@@ -380,7 +382,7 @@ namespace csvsqldb
 
   private:
     Values _row;
-    const Values* _currentLhs;
+    const Values* _currentLhs{nullptr};
     CachingBlockIteratorPtr _rhsIterator;
     SymbolInfos _outputSymbols;
     RowOperatorNodePtr _lhsInput;
@@ -425,13 +427,13 @@ namespace csvsqldb
     SymbolInfos _inputRhsSymbols;
 
     Values _row;
-    const Values* _currentLhs;
+    const Values* _currentLhs{nullptr};
     HashingBlockIteratorPtr _rhsIterator;
     SymbolInfos _outputSymbols;
     RowOperatorNodePtr _lhsInput;
     RowOperatorNodePtr _rhsInput;
     ASTExprNodePtr _exp;
-    size_t _hashTableKeyPosition;
+    size_t _hashTableKeyPosition{0};
   };
 
 
@@ -514,7 +516,7 @@ namespace csvsqldb
     BlockPtr getNextBlock() override;
 
   private:
-    BlockPtr _currentBlock;
+    BlockPtr _currentBlock{nullptr};
     BlockIteratorPtr _iterator;
   };
 
@@ -522,13 +524,11 @@ namespace csvsqldb
   class CSVSQLDB_EXPORT BlockReader : public csvsqldb::csv::CSVParserCallback
   {
   public:
-    typedef std::shared_ptr<csvsqldb::csv::CSVParser> CSVParserPtr;
-
     BlockReader(BlockManager& blockManager);
 
     ~BlockReader();
 
-    void initialize(CSVParserPtr csvparser);
+    void initialize(std::unique_ptr<csvsqldb::csv::CSVParser> csvparser);
 
     bool valid() const
     {
@@ -553,18 +553,18 @@ namespace csvsqldb
     void onBoolean(bool boolean, bool isNull) override;
 
   private:
-    typedef std::queue<BlockPtr> Blocks;
+    using Blocks = std::queue<BlockPtr>;
 
     void readBlocks();
 
-    CSVParserPtr _csvparser;
+    std::unique_ptr<csvsqldb::csv::CSVParser> _csvparser;
     BlockManager& _blockManager;
     Blocks _blocks;
-    BlockPtr _block;
+    BlockPtr _block{nullptr};
     std::thread _readThread;
     std::condition_variable _cv;
     std::mutex _queueMutex;
-    bool _continue;
+    bool _continue{true};
   };
 
 
@@ -583,18 +583,12 @@ namespace csvsqldb
     BlockPtr getNextBlock() override;
 
   private:
-    typedef std::shared_ptr<std::istream> IStreamPtr;
-    typedef std::shared_ptr<csvsqldb::csv::CSVParser> CSVParserPtr;
-
     void initializeBlockReader();
 
     BlockReader _blockReader;
     BlockIteratorPtr _iterator;
 
-    IStreamPtr _stream;
-    CSVParserPtr _csvparser;
+    std::unique_ptr<std::istream> _stream;
     csvsqldb::csv::CSVParserContext _csvContext;
   };
 }
-
-#endif

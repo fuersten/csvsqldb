@@ -31,14 +31,12 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-#ifndef csvsqldb_glob_h
-#define csvsqldb_glob_h
+#pragma once
 
 #include "libcsvsqldb/base/types.h"
 #include "libcsvsqldb/inc.h"
 
 #include <string>
-#include <vector>
 
 
 namespace csvsqldb
@@ -51,6 +49,3 @@ namespace csvsqldb
    */
   CSVSQLDB_EXPORT size_t expand(const std::string& pattern, StringVector& files);
 }
-
-
-#endif

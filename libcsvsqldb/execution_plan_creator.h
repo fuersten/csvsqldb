@@ -31,8 +31,7 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-#ifndef csvsqldb_execution_plan_creator_h
-#define csvsqldb_execution_plan_creator_h
+#pragma once
 
 #include "libcsvsqldb/inc.h"
 
@@ -61,6 +60,7 @@ namespace csvsqldb
     const OperatorContext& _context;
     RootOperatorNodePtr _queryOperationRoot;
   };
+
 
   class CSVSQLDB_EXPORT ExplainExecutionNode : public ExecutionNode
   {
@@ -165,8 +165,7 @@ namespace csvsqldb
                                                                  node._tableExpression->_group->_identifiers);
       } else if (std::dynamic_pointer_cast<ASTAggregateFunctionNode>(node._nodes[0])) {
         for (const auto& aggrNode : node._nodes) {
-          ASTAggregateFunctionNodePtr aggr = std::dynamic_pointer_cast<ASTAggregateFunctionNode>(aggrNode);
-          if (!aggr) {
+          if (!std::dynamic_pointer_cast<ASTAggregateFunctionNode>(aggrNode)) {
             CSVSQLDB_THROW(csvsqldb::Exception, "no aggregation on other than aggregation functions");
           }
         }
@@ -256,7 +255,7 @@ namespace csvsqldb
     void visit(ASTTableSubqueryNode& node) override
     {
       node._query->accept(*this);
-      // here the _currentRowOperator needs to be told, that it maybe has to supply an alias to its output symbols
+      // here the _currentRowOperator needs to be told, that it may have to supply an alias to its output symbols
       _currentRowOperator->setOutputAlias(node._queryAlias);
     }
 
@@ -346,5 +345,3 @@ namespace csvsqldb
     std::ostream& _outputStream;
   };
 }
-
-#endif

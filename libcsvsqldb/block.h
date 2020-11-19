@@ -31,8 +31,7 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-#ifndef csvsqldb_block_h
-#define csvsqldb_block_h
+#pragma once
 
 #include "libcsvsqldb/inc.h"
 
@@ -46,17 +45,17 @@
 
 namespace csvsqldb
 {
-  typedef char* StoreType;
+  using StoreType = char*;
 
   class Block;
   typedef Block* BlockPtr;
   typedef std::vector<BlockPtr> Blocks;
 
   class BlockProvider;
-  typedef std::shared_ptr<BlockProvider> BlockProviderPtr;
+  using BlockProviderPtr = std::shared_ptr<BlockProvider>;
 
   class RowProvider;
-  typedef std::shared_ptr<RowProvider> RowProviderPtr;
+  using RowProviderPtr = std::shared_ptr<RowProvider>;
 
 
   class CSVSQLDB_EXPORT BlockManager
@@ -85,9 +84,9 @@ namespace csvsqldb
     Blocks _blocks;
     size_t _blockCapacity;
     size_t _maxActiveBlocks;
-    size_t _activeBlocks;
-    size_t _maxCountActiveBlocks;
-    size_t _totalBlocks;
+    size_t _activeBlocks{0};
+    size_t _maxCountActiveBlocks{0};
+    size_t _totalBlocks{0};
 
     static size_t sBlockNumber;
   };
@@ -163,7 +162,7 @@ namespace csvsqldb
 
     size_t _capacity;
     StoreType _store;
-    size_t _offset;
+    size_t _offset{0};
     size_t _blockNumber;
 
     friend class BlockIterator;
@@ -175,5 +174,3 @@ namespace csvsqldb
     friend struct GroupingElement;
   };
 }
-
-#endif

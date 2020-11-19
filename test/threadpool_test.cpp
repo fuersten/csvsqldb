@@ -85,7 +85,7 @@ TEST_CASE("Threadpool Test", "[utils]")
     tp.enqueueTask(std::bind(&CallObject::testit, o, std::ref(count)));
     tp.enqueueTask(std::bind(&CallObject::testit, o, std::ref(count)));
 
-    std::unique_lock<std::mutex> condition_guard(g_mutex);
+    std::unique_lock condition_guard(g_mutex);
     g_condition.wait_for(condition_guard, std::chrono::milliseconds(150), [&] { return count.load() == 5; });
 
     CHECK(5 == count.load());

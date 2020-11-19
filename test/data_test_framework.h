@@ -30,8 +30,7 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-#ifndef csvsqldb_data_test_framework_h
-#define csvsqldb_data_test_framework_h
+#pragma once
 
 #include "libcsvsqldb/base/string_helper.h"
 #include "libcsvsqldb/execution_engine.h"
@@ -268,5 +267,3 @@ public:
     return std::make_shared<TestScanOperatorNode<TestRowProvider>>(context, symbolTable, tableInfo);
   }
 };
-
-#endif

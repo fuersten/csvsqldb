@@ -31,8 +31,7 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-#ifndef csvsqldb_sql_parser_h
-#define csvsqldb_sql_parser_h
+#pragma once
 
 #include "libcsvsqldb/inc.h"
 
@@ -117,10 +116,8 @@ namespace csvsqldb
     ASTExprNodePtr parseFactor(const SymbolTablePtr& symboltable);
     ASTExprNodePtr parseUnary(const SymbolTablePtr& symboltable);
 
-    SQLLexer _lexer;
+    SQLLexer _lexer{""};
     csvsqldb::lexer::Token _currentToken;
     const FunctionRegistry& _functionRegistry;
   };
 }
-
-#endif

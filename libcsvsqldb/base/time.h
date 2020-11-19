@@ -31,8 +31,7 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-#ifndef csvsqldb_time_h
-#define csvsqldb_time_h
+#pragma once
 
 #include "libcsvsqldb/inc.h"
 
@@ -255,5 +254,3 @@ namespace csvsqldb
     int32_t _time{0};
   } __attribute__((__packed__));
 }
-
-#endif

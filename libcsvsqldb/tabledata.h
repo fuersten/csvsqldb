@@ -31,8 +31,7 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-#ifndef csvsqldb_tabledata_h
-#define csvsqldb_tabledata_h
+#pragma once
 
 #include "libcsvsqldb/inc.h"
 
@@ -45,31 +44,24 @@
 namespace csvsqldb
 {
   class ASTExprNode;
-  typedef std::shared_ptr<ASTExprNode> ASTExprNodePtr;
+  using ASTExprNodePtr = std::shared_ptr<ASTExprNode>;
   class ASTCreateTableNode;
-  typedef std::shared_ptr<ASTCreateTableNode> ASTCreateTableNodePtr;
+  using ASTCreateTableNodePtr = std::shared_ptr<ASTCreateTableNode>;
 
   class CSVSQLDB_EXPORT TableData
   {
   public:
     struct CSVSQLDB_EXPORT Column {
-      Column()
-      : _type(NONE)
-      , _primaryKey(false)
-      , _unique(false)
-      , _notNull(false)
-      , _length(0)
-      {
-      }
+      Column() = default;
 
       std::string _name;
-      eType _type;
-      bool _primaryKey;
-      bool _unique;
-      bool _notNull;
+      eType _type{NONE};
+      bool _primaryKey{false};
+      bool _unique{false};
+      bool _notNull{false};
       std::any _defaultValue;
       ASTExprNodePtr _check;
-      uint32_t _length;
+      uint32_t _length{0};
     };
 
     TableData(std::string tableName);
@@ -97,19 +89,14 @@ namespace csvsqldb
     bool hasColumn(const std::string& name) const;
 
   private:
-    typedef std::vector<Column> Columns;
-
     struct TableConstraint {
       csvsqldb::StringVector _primaryKey;
       csvsqldb::StringVector _unique;
       ASTExprNodePtr _check;
     };
-    typedef std::vector<TableConstraint> TableConstraints;
 
     std::string _tableName;
-    Columns _columns;
-    TableConstraints _constraints;
+    std::vector<Column> _columns;
+    std::vector<TableConstraint> _constraints;
   };
 }
-
-#endif

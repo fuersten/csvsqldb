@@ -31,8 +31,7 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-#ifndef csvsqldb_validation_visitor_h
-#define csvsqldb_validation_visitor_h
+#pragma once
 
 #include "libcsvsqldb/inc.h"
 
@@ -121,5 +120,3 @@ namespace csvsqldb
     const Database& _database;
   };
 }
-
-#endif

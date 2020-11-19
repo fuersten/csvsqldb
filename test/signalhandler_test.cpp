@@ -80,7 +80,7 @@ TEST_CASE("Signalhandler Test", "[utils]")
 
     ::kill(getpid(), SIGINT);
 
-    std::unique_lock<std::mutex> condition_guard(_test_mutex);
+    std::unique_lock condition_guard(_test_mutex);
     _test_condition.wait_for(condition_guard, std::chrono::milliseconds(150), [&] { return tester._signalSet == true; });
 
     CHECK(tester._signalSet);

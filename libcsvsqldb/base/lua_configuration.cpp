@@ -67,6 +67,7 @@ namespace csvsqldb
 
   LuaConfiguration::~LuaConfiguration()
   {
+    // Needs to be specified due to the unique_ptr impl.
   }
 
   size_t LuaConfiguration::doGetProperties(const std::string& path, StringVector& properties) const

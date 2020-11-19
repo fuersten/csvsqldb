@@ -207,10 +207,8 @@ namespace csvsqldb
   bool SymbolTable::hasSymbolNameForTable(const std::string& tableName, const std::string& columnName) const
   {
     for (auto& info : _symbols) {
-      if (info->_symbolType == PLAIN) {
-        if (info->_relation == tableName && info->_identifier == columnName) {
-          return true;
-        }
+      if (info->_symbolType == PLAIN && (info->_relation == tableName && info->_identifier == columnName)) {
+        return true;
       }
     }
     return false;
@@ -219,10 +217,8 @@ namespace csvsqldb
   const SymbolInfoPtr& SymbolTable::findSymbolNameForTable(const std::string& tableName, const std::string& columnName) const
   {
     for (auto& info : _symbols) {
-      if (info->_symbolType == PLAIN) {
-        if (info->_relation == tableName && info->_identifier == columnName) {
-          return info;
-        }
+      if (info->_symbolType == PLAIN && (info->_relation == tableName && info->_identifier == columnName)) {
+        return info;
       }
     }
     throw std::runtime_error("symbol '" + tableName + "." + columnName + "' not found in scope");
@@ -270,7 +266,7 @@ namespace csvsqldb
     }
   }
 
-  bool SymbolTable::fillInfoFromTablePrefix(const Database& database, const SymbolInfos& tables, SymbolInfoPtr info)
+  bool SymbolTable::fillInfoFromTablePrefix(const Database& database, const SymbolInfos& tables, SymbolInfoPtr info) const
   {
     std::string table = info->_prefix;
     std::string relation = info->_prefix;
@@ -300,7 +296,7 @@ namespace csvsqldb
     return true;
   }
 
-  bool SymbolTable::fillInfoFromTable(const Database& database, const SymbolInfos& tables, SymbolInfoPtr info)
+  bool SymbolTable::fillInfoFromTable(const Database& database, const SymbolInfos& tables, SymbolInfoPtr info) const
   {
     bool found = false;
     for (const auto& table : tables) {
@@ -343,7 +339,7 @@ namespace csvsqldb
     return true;
   }
 
-  bool SymbolTable::fillInfoFromSubquery(const Database& database, const SymbolInfos& subqueries, SymbolInfoPtr info)
+  bool SymbolTable::fillInfoFromSubquery(const Database& database, const SymbolInfos& subqueries, SymbolInfoPtr info) const
   {
     bool found = false;
     for (const auto& query : subqueries) {

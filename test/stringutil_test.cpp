@@ -199,18 +199,4 @@ TEST_CASE("String Util Test", "[utils]")
     s = "no right whitespace";
     CHECK("no right whitespace" == csvsqldb::trim_right(s));
   }
-
-  SECTION("decode")
-  {
-    std::string encoded(
-      "wikiPageName=Testpage&wikiPageMarkdown=Markdown%0D%0A%3D%3D%3D%3D%3D%3D%3D%3D%0D%0A%0D%0A-+some+tests%0D%0A-+and+more%"
-      "0D%0A%0D%0A");
-    std::string decoded;
-    CHECK(csvsqldb::decode(encoded, decoded));
-    CHECK("wikiPageName=Testpage&wikiPageMarkdown=Markdown\r\n========\r\n\r\n- some tests\r\n- and more\r\n\r\n" == decoded);
-
-    encoded = "wikiPageName=Testpage&wikiPageMarkdown=Markdown% "
-              "%0A%3D%3D%3D%3D%3D%3D%3D%3D%0D%0A%0D%0A-+some+tests%0D%0A-+and+more%0D%0A%0D%0A";
-    CHECK_FALSE(csvsqldb::decode(encoded, decoded));
-  }
 }

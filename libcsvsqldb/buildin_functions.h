@@ -31,8 +31,7 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-#ifndef csvsqldb_buildin_functions_h
-#define csvsqldb_buildin_functions_h
+#pragma once
 
 #include "libcsvsqldb/inc.h"
 
@@ -161,5 +160,3 @@ namespace csvsqldb
     const Variant doCall(const Variants& parameter) const override;
   };
 }
-
-#endif

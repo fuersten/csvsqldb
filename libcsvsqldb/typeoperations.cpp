@@ -667,7 +667,7 @@ namespace csvsqldb
   };
 
   struct BinaryOperation;
-  typedef std::shared_ptr<const BinaryOperation> BinaryOperationPtr;
+  using BinaryOperationPtr = std::unique_ptr<const BinaryOperation>;
 
   struct BinaryOperation {
     virtual eOperationType opType() const = 0;
@@ -699,33 +699,33 @@ namespace csvsqldb
 
   template<eOperationType OP_TYPE, typename RET, typename LHS, typename RHS>
   struct BinaryOperationBase : public BinaryOperation {
-    virtual eOperationType opType() const
+    eOperationType opType() const override
     {
       return OP_TYPE;
     }
 
-    virtual eType lhsType() const
+    eType lhsType() const override
     {
       return ctype2eType<LHS>();
     }
 
-    virtual eType rhsType() const
+    eType rhsType() const override
     {
       return ctype2eType<RHS>();
     }
 
-    virtual eType retType() const
+    eType retType() const override
     {
       return ctype2eType<RET>();
     }
 
   private:
-    virtual Variant doExecute(const Variant& lhs, const Variant& rhs) const
+    Variant doExecute(const Variant& lhs, const Variant& rhs) const override
     {
       return Variant(operation(ValueGetter<LHS>::getValue(lhs), ValueGetter<RHS>::getValue(rhs)));
     }
 
-    virtual Variant doHandleNull(const Variant& lhs, const Variant& rhs) const
+    Variant doHandleNull(const Variant& lhs, const Variant& rhs) const override
     {
       return Variant(retType());
     }
@@ -736,7 +736,7 @@ namespace csvsqldb
   template<typename RET, typename CAST, typename LHS, typename RHS>
   struct OperationAdd : public BinaryOperationBase<OP_ADD, RET, LHS, RHS> {
   private:
-    virtual RET operation(const LHS& lhs, const RHS& rhs) const
+    RET operation(const LHS& lhs, const RHS& rhs) const override
     {
       return op_add<RET, CAST, CAST>(static_cast<const CAST&>(lhs), static_cast<const CAST&>(rhs));
     }
@@ -745,7 +745,7 @@ namespace csvsqldb
   template<typename RET, typename CAST, typename LHS, typename RHS>
   struct OperationSub : public BinaryOperationBase<OP_SUB, RET, LHS, RHS> {
   private:
-    virtual RET operation(const LHS& lhs, const RHS& rhs) const
+    RET operation(const LHS& lhs, const RHS& rhs) const override
     {
       return op_sub<RET, CAST, CAST>(static_cast<const CAST&>(lhs), static_cast<const CAST&>(rhs));
     }
@@ -754,7 +754,7 @@ namespace csvsqldb
   template<typename RET, typename CAST, typename LHS, typename RHS>
   struct OperationMul : public BinaryOperationBase<OP_MUL, RET, LHS, RHS> {
   private:
-    virtual RET operation(const LHS& lhs, const RHS& rhs) const
+    RET operation(const LHS& lhs, const RHS& rhs) const override
     {
       return op_mul<RET, CAST, CAST>(static_cast<const CAST&>(lhs), static_cast<const CAST&>(rhs));
     }
@@ -763,7 +763,7 @@ namespace csvsqldb
   template<typename RET, typename CAST, typename LHS, typename RHS>
   struct OperationDiv : public BinaryOperationBase<OP_DIV, RET, LHS, RHS> {
   private:
-    virtual RET operation(const LHS& lhs, const RHS& rhs) const
+    RET operation(const LHS& lhs, const RHS& rhs) const override
     {
       return op_div<RET, CAST, CAST>(static_cast<const CAST&>(lhs), static_cast<const CAST&>(rhs));
     }
@@ -772,7 +772,7 @@ namespace csvsqldb
   template<typename RET, typename CAST, typename LHS, typename RHS>
   struct OperationMod : public BinaryOperationBase<OP_MOD, RET, LHS, RHS> {
   private:
-    virtual RET operation(const LHS& lhs, const RHS& rhs) const
+    RET operation(const LHS& lhs, const RHS& rhs) const override
     {
       return op_mod(static_cast<const CAST&>(lhs), static_cast<const CAST&>(rhs));
     }
@@ -781,7 +781,7 @@ namespace csvsqldb
   template<typename CAST, typename LHS, typename RHS>
   struct OperationGTCast : public BinaryOperationBase<OP_GT, bool, LHS, RHS> {
   private:
-    virtual bool operation(const LHS& lhs, const RHS& rhs) const
+    bool operation(const LHS& lhs, const RHS& rhs) const override
     {
       return _greater.operation(static_cast<const CAST&>(lhs), static_cast<const CAST&>(rhs));
     }
@@ -792,7 +792,7 @@ namespace csvsqldb
   template<typename RET, typename LHS, typename RHS>
   struct OperationGT : public BinaryOperationBase<OP_GT, bool, LHS, RHS> {
   private:
-    virtual bool operation(const LHS& lhs, const RHS& rhs) const
+    bool operation(const LHS& lhs, const RHS& rhs) const override
     {
       return _greater.operation(lhs, rhs);
     }
@@ -803,7 +803,7 @@ namespace csvsqldb
   template<typename CAST, typename LHS, typename RHS>
   struct OperationGECast : public BinaryOperationBase<OP_GE, bool, LHS, RHS> {
   private:
-    virtual bool operation(const LHS& lhs, const RHS& rhs) const
+    bool operation(const LHS& lhs, const RHS& rhs) const override
     {
       return _greater.operation(static_cast<const CAST&>(lhs), static_cast<const CAST&>(rhs));
     }
@@ -814,7 +814,7 @@ namespace csvsqldb
   template<typename RET, typename LHS, typename RHS>
   struct OperationGE : public BinaryOperationBase<OP_GE, bool, LHS, RHS> {
   private:
-    virtual bool operation(const LHS& lhs, const RHS& rhs) const
+    bool operation(const LHS& lhs, const RHS& rhs) const override
     {
       return _greater.operation(lhs, rhs);
     }
@@ -825,7 +825,7 @@ namespace csvsqldb
   template<typename CAST, typename LHS, typename RHS>
   struct OperationLTCast : public BinaryOperationBase<OP_LT, bool, LHS, RHS> {
   private:
-    virtual bool operation(const LHS& lhs, const RHS& rhs) const
+    bool operation(const LHS& lhs, const RHS& rhs) const override
     {
       return _lesser.operation(static_cast<const CAST&>(lhs), static_cast<const CAST&>(rhs));
     }
@@ -836,7 +836,7 @@ namespace csvsqldb
   template<typename RET, typename LHS, typename RHS>
   struct OperationLT : public BinaryOperationBase<OP_LT, bool, LHS, RHS> {
   private:
-    virtual bool operation(const LHS& lhs, const RHS& rhs) const
+    bool operation(const LHS& lhs, const RHS& rhs) const override
     {
       return _lesser.operation(lhs, rhs);
     }
@@ -847,7 +847,7 @@ namespace csvsqldb
   template<typename CAST, typename LHS, typename RHS>
   struct OperationLECast : public BinaryOperationBase<OP_LE, bool, LHS, RHS> {
   private:
-    virtual bool operation(const LHS& lhs, const RHS& rhs) const
+    bool operation(const LHS& lhs, const RHS& rhs) const override
     {
       return _lesser.operation(static_cast<const CAST&>(lhs), static_cast<const CAST&>(rhs));
     }
@@ -858,7 +858,7 @@ namespace csvsqldb
   template<typename RET, typename LHS, typename RHS>
   struct OperationLE : public BinaryOperationBase<OP_LE, bool, LHS, RHS> {
   private:
-    virtual bool operation(const LHS& lhs, const RHS& rhs) const
+    bool operation(const LHS& lhs, const RHS& rhs) const override
     {
       return _lesser.operation(lhs, rhs);
     }
@@ -869,7 +869,7 @@ namespace csvsqldb
   template<typename CAST, typename LHS, typename RHS>
   struct OperationEQCast : public BinaryOperationBase<OP_EQ, bool, LHS, RHS> {
   private:
-    virtual bool operation(const LHS& lhs, const RHS& rhs) const
+    bool operation(const LHS& lhs, const RHS& rhs) const override
     {
       return _compare.operation(static_cast<const CAST&>(lhs), static_cast<const CAST&>(rhs));
     }
@@ -880,7 +880,7 @@ namespace csvsqldb
   template<typename CAST, typename LHS, typename RHS>
   struct OperationEQ : public BinaryOperationBase<OP_EQ, bool, LHS, RHS> {
   private:
-    virtual bool operation(const LHS& lhs, const RHS& rhs) const
+    bool operation(const LHS& lhs, const RHS& rhs) const override
     {
       return _compare.operation(lhs, rhs);
     }
@@ -891,7 +891,7 @@ namespace csvsqldb
   template<typename CAST, typename LHS, typename RHS>
   struct OperationNEQCast : public BinaryOperationBase<OP_NEQ, bool, LHS, RHS> {
   private:
-    virtual bool operation(const LHS& lhs, const RHS& rhs) const
+    bool operation(const LHS& lhs, const RHS& rhs) const override
     {
       return _compare.operation(static_cast<const CAST&>(lhs), static_cast<const CAST&>(rhs));
     }
@@ -902,7 +902,7 @@ namespace csvsqldb
   template<typename CAST, typename LHS, typename RHS>
   struct OperationNEQ : public BinaryOperationBase<OP_NEQ, bool, LHS, RHS> {
   private:
-    virtual bool operation(const LHS& lhs, const RHS& rhs) const
+    bool operation(const LHS& lhs, const RHS& rhs) const override
     {
       return _compare.operation(lhs, rhs);
     }
@@ -913,12 +913,12 @@ namespace csvsqldb
   template<typename LHS, typename RHS>
   struct OperationIs : public BinaryOperationBase<OP_IS, bool, LHS, RHS> {
   private:
-    virtual bool operation(const LHS& lhs, const RHS& rhs) const
+    bool operation(const LHS& lhs, const RHS& rhs) const override
     {
       return lhs && rhs;
     }
 
-    virtual Variant doHandleNull(const Variant& lhs, const Variant& rhs) const
+    Variant doHandleNull(const Variant& lhs, const Variant& rhs) const override
     {
       if (rhs.isNull()) {
         return Variant(lhs.isNull());
@@ -932,12 +932,12 @@ namespace csvsqldb
   template<>
   struct OperationIs<double, bool> : public BinaryOperationBase<OP_IS, bool, double, bool> {
   private:
-    virtual bool operation(const double& lhs, const bool& rhs) const
+    bool operation(const double& lhs, const bool& rhs) const override
     {
       return (csvsqldb::Approx(lhs) != 0.0) && rhs;
     }
 
-    virtual Variant doHandleNull(const Variant& lhs, const Variant& rhs) const
+    Variant doHandleNull(const Variant& lhs, const Variant& rhs) const override
     {
       if (rhs.isNull()) {
         return Variant(lhs.isNull());
@@ -951,12 +951,12 @@ namespace csvsqldb
   template<typename LHS, typename RHS>
   struct OperationIsNot : public BinaryOperationBase<OP_ISNOT, bool, LHS, RHS> {
   private:
-    virtual bool operation(const LHS& lhs, const RHS& rhs) const
+    bool operation(const LHS& lhs, const RHS& rhs) const override
     {
       return !(lhs && rhs);
     }
 
-    virtual Variant doHandleNull(const Variant& lhs, const Variant& rhs) const
+    Variant doHandleNull(const Variant& lhs, const Variant& rhs) const override
     {
       if (rhs.isNull()) {
         return Variant(!lhs.isNull());
@@ -970,12 +970,12 @@ namespace csvsqldb
   template<>
   struct OperationIsNot<double, bool> : public BinaryOperationBase<OP_ISNOT, bool, double, bool> {
   private:
-    virtual bool operation(const double& lhs, const bool& rhs) const
+    bool operation(const double& lhs, const bool& rhs) const override
     {
       return !((csvsqldb::Approx(lhs) != 0.0) && rhs);
     }
 
-    virtual Variant doHandleNull(const Variant& lhs, const Variant& rhs) const
+    Variant doHandleNull(const Variant& lhs, const Variant& rhs) const override
     {
       if (rhs.isNull()) {
         return Variant(!lhs.isNull());
@@ -989,12 +989,12 @@ namespace csvsqldb
   template<typename LHS, typename RHS>
   struct OperationAnd : public BinaryOperationBase<OP_AND, bool, LHS, RHS> {
   private:
-    virtual bool operation(const LHS& lhs, const RHS& rhs) const
+    bool operation(const LHS& lhs, const RHS& rhs) const override
     {
       return _and.operation(lhs, rhs);
     }
 
-    virtual Variant doHandleNull(const Variant& lhs, const Variant& rhs) const
+    Variant doHandleNull(const Variant& lhs, const Variant& rhs) const override
     {
       if (lhs.isNull() && !rhs.isNull() && !rhs.asBool()) {
         return Variant(false);
@@ -1011,12 +1011,12 @@ namespace csvsqldb
   template<typename LHS, typename RHS>
   struct OperationOr : public BinaryOperationBase<OP_OR, bool, LHS, RHS> {
   private:
-    virtual bool operation(const LHS& lhs, const RHS& rhs) const
+    bool operation(const LHS& lhs, const RHS& rhs) const override
     {
       return _or.operation(lhs, rhs);
     }
 
-    virtual Variant doHandleNull(const Variant& lhs, const Variant& rhs) const
+    Variant doHandleNull(const Variant& lhs, const Variant& rhs) const override
     {
       if (!lhs.isNull() && rhs.isNull() && lhs.asBool()) {
         return Variant(true);
@@ -1178,24 +1178,24 @@ namespace csvsqldb
   template<typename RET, typename CAST, typename LHS, typename RHS>
   struct OperationConcat : public BinaryOperationBase<OP_CONCAT, RET, LHS, RHS> {
   private:
-    virtual Variant doExecute(const Variant& lhs, const Variant& rhs) const
+    Variant doExecute(const Variant& lhs, const Variant& rhs) const override
     {
       return Variant(operation(ValueGetter<LHS>::getValue(lhs), ValueGetter<RHS>::getValue(rhs)), true);
     }
 
-    virtual RET operation(const LHS& lhs, const RHS& rhs) const
+    RET operation(const LHS& lhs, const RHS& rhs) const override
     {
       return op_concat<RET>(lhs, rhs);
     }
   };
 
 
-  typedef std::map<OperationKey, BinaryOperationPtr> BinaryOperationType;
+  using BinaryOperationType = std::map<OperationKey, BinaryOperationPtr>;
   BinaryOperationType g_binaryOperations;
 
   Variant binaryOperation(eOperationType op, const Variant& lhs, const Variant& rhs)
   {
-    BinaryOperationType::iterator iter = g_binaryOperations.find(OperationKey(op, lhs.getType(), rhs.getType()));
+    const auto iter = g_binaryOperations.find(OperationKey(op, lhs.getType(), rhs.getType()));
 
     if (iter != g_binaryOperations.end()) {
       return iter->second->execute(lhs, rhs);
@@ -1206,7 +1206,7 @@ namespace csvsqldb
 
   eType inferTypeOfBinaryOperation(eOperationType op, eType lhs, eType rhs)
   {
-    BinaryOperationType::iterator iter = g_binaryOperations.find(OperationKey(op, lhs, rhs));
+    const auto iter = g_binaryOperations.find(OperationKey(op, lhs, rhs));
 
     if (iter != g_binaryOperations.end()) {
       return iter->second->retType();
@@ -1217,7 +1217,7 @@ namespace csvsqldb
 
 
   struct UnaryOperation;
-  typedef std::shared_ptr<const UnaryOperation> UnaryOperationPtr;
+  using UnaryOperationPtr = std::unique_ptr<const UnaryOperation>;
 
   struct UnaryOperation {
     virtual eOperationType opType() const = 0;
@@ -1237,9 +1237,7 @@ namespace csvsqldb
       return OperationKey(opType(), retType(), rhsType());
     }
 
-    virtual ~UnaryOperation()
-    {
-    }
+    virtual ~UnaryOperation() = default;
 
   private:
     virtual Variant doExecute(const Variant& rhs) const = 0;
@@ -1247,23 +1245,23 @@ namespace csvsqldb
 
   template<eOperationType OP_TYPE, typename RET, typename RHS>
   struct UnaryOperationBase : public UnaryOperation {
-    virtual eOperationType opType() const
+    eOperationType opType() const override
     {
       return OP_TYPE;
     }
 
-    virtual eType rhsType() const
+    eType rhsType() const override
     {
       return ctype2eType<RHS>();
     }
 
-    virtual eType retType() const
+    eType retType() const override
     {
       return ctype2eType<RET>();
     }
 
   private:
-    virtual Variant doExecute(const Variant& rhs) const
+    Variant doExecute(const Variant& rhs) const override
     {
       return operation(ValueGetter<RHS>::getValue(rhs));
     }
@@ -1274,7 +1272,7 @@ namespace csvsqldb
   template<typename RHS>
   struct OperationNot : public UnaryOperationBase<OP_NOT, bool, RHS> {
   private:
-    virtual bool operation(const RHS& rhs) const
+    bool operation(const RHS& rhs) const override
     {
       return op_not(static_cast<bool>(rhs));
     }
@@ -1283,7 +1281,7 @@ namespace csvsqldb
   template<typename RHS>
   struct OperationMinus : public UnaryOperationBase<OP_MINUS, RHS, RHS> {
   private:
-    virtual RHS operation(const RHS& rhs) const
+    RHS operation(const RHS& rhs) const override
     {
       return op_minus(rhs);
     }
@@ -1292,7 +1290,7 @@ namespace csvsqldb
   template<typename RHS>
   struct OperationPlus : public UnaryOperationBase<OP_PLUS, RHS, RHS> {
   private:
-    virtual RHS operation(const RHS& rhs) const
+    RHS operation(const RHS& rhs) const override
     {
       return op_plus(rhs);
     }
@@ -1301,7 +1299,7 @@ namespace csvsqldb
   template<typename CAST, typename RHS>
   struct OperationCast : public UnaryOperationBase<OP_CAST, CAST, RHS> {
   private:
-    virtual CAST operation(const RHS& rhs) const
+    CAST operation(const RHS& rhs) const override
     {
       return _cast.operation(rhs);
     }
@@ -1312,19 +1310,19 @@ namespace csvsqldb
   template<typename CAST>
   struct OperationNullCast : public UnaryOperationBase<OP_CAST, CAST, NoneType> {
   private:
-    virtual CAST operation(const NoneType& rhs) const
+    CAST operation(const NoneType& rhs) const override
     {
       CSVSQLDB_THROW(std::runtime_error, "Should have returned a null value before getting here");
     }
   };
 
 
-  typedef std::map<OperationKey, UnaryOperationPtr> UnaryOperationType;
+  using UnaryOperationType = std::map<OperationKey, UnaryOperationPtr>;
   UnaryOperationType g_unaryOperations;
 
   Variant unaryOperation(eOperationType op, eType retType, const Variant& rhs)
   {
-    UnaryOperationType::iterator iter = g_unaryOperations.find(OperationKey(op, retType, rhs.getType()));
+    const auto iter = g_unaryOperations.find(OperationKey(op, retType, rhs.getType()));
 
     if (iter != g_unaryOperations.end()) {
       return iter->second->execute(rhs);
@@ -1339,7 +1337,7 @@ namespace csvsqldb
 
   eType inferTypeOfUnaryOperation(eOperationType op, eType retType, eType rhs)
   {
-    UnaryOperationType::iterator iter = g_unaryOperations.find(OperationKey(op, retType, rhs));
+    const auto iter = g_unaryOperations.find(OperationKey(op, retType, rhs));
 
     if (iter != g_unaryOperations.end()) {
       return iter->second->retType();
@@ -1355,682 +1353,682 @@ namespace csvsqldb
 
   void initTypeSystem()
   {
-    typedef OperationAdd<int64_t, int64_t, int64_t, int64_t> op_add_ii;
-    typedef OperationAdd<double, double, int64_t, double> op_add_if;
-    typedef OperationAdd<double, double, double, int64_t> op_add_fi;
-    typedef OperationAdd<double, double, double, double> op_add_ff;
+    using op_add_ii = OperationAdd<int64_t, int64_t, int64_t, int64_t>;
+    using op_add_if = OperationAdd<double, double, int64_t, double>;
+    using op_add_fi = OperationAdd<double, double, double, int64_t>;
+    using op_add_ff = OperationAdd<double, double, double, double>;
 
-    typedef OperationSub<int64_t, int64_t, int64_t, int64_t> op_sub_ii;
-    typedef OperationSub<double, double, int64_t, double> op_sub_if;
-    typedef OperationSub<double, double, double, int64_t> op_sub_fi;
-    typedef OperationSub<double, double, double, double> op_sub_ff;
-    typedef OperationSub<int64_t, csvsqldb::Date, csvsqldb::Date, csvsqldb::Date> op_sub_dd;
-    typedef OperationSub<int64_t, csvsqldb::Time, csvsqldb::Time, csvsqldb::Time> op_sub_tt;
-    typedef OperationSub<int64_t, csvsqldb::Timestamp, csvsqldb::Timestamp, csvsqldb::Timestamp> op_sub_zz;
+    using op_sub_ii = OperationSub<int64_t, int64_t, int64_t, int64_t>;
+    using op_sub_if = OperationSub<double, double, int64_t, double>;
+    using op_sub_fi = OperationSub<double, double, double, int64_t>;
+    using op_sub_ff = OperationSub<double, double, double, double>;
+    using op_sub_dd = OperationSub<int64_t, csvsqldb::Date, csvsqldb::Date, csvsqldb::Date>;
+    using op_sub_tt = OperationSub<int64_t, csvsqldb::Time, csvsqldb::Time, csvsqldb::Time>;
+    using op_sub_zz = OperationSub<int64_t, csvsqldb::Timestamp, csvsqldb::Timestamp, csvsqldb::Timestamp>;
 
-    typedef OperationMul<int64_t, int64_t, int64_t, int64_t> op_mul_ii;
-    typedef OperationMul<double, double, int64_t, double> op_mul_if;
-    typedef OperationMul<double, double, double, int64_t> op_mul_fi;
-    typedef OperationMul<double, double, double, double> op_mul_ff;
+    using op_mul_ii = OperationMul<int64_t, int64_t, int64_t, int64_t>;
+    using op_mul_if = OperationMul<double, double, int64_t, double>;
+    using op_mul_fi = OperationMul<double, double, double, int64_t>;
+    using op_mul_ff = OperationMul<double, double, double, double>;
 
-    typedef OperationDiv<int64_t, int64_t, int64_t, int64_t> op_div_ii;
-    typedef OperationDiv<double, double, int64_t, double> op_div_if;
-    typedef OperationDiv<double, double, double, int64_t> op_div_fi;
-    typedef OperationDiv<double, double, double, double> op_div_ff;
+    using op_div_ii = OperationDiv<int64_t, int64_t, int64_t, int64_t>;
+    using op_div_if = OperationDiv<double, double, int64_t, double>;
+    using op_div_fi = OperationDiv<double, double, double, int64_t>;
+    using op_div_ff = OperationDiv<double, double, double, double>;
 
-    typedef OperationMod<int64_t, int64_t, int64_t, int64_t> op_mod_ii;
-    typedef OperationMod<double, double, int64_t, double> op_mod_if;
-    typedef OperationMod<double, double, double, int64_t> op_mod_fi;
-    typedef OperationMod<double, double, double, double> op_mod_ff;
+    using op_mod_ii = OperationMod<int64_t, int64_t, int64_t, int64_t>;
+    using op_mod_if = OperationMod<double, double, int64_t, double>;
+    using op_mod_fi = OperationMod<double, double, double, int64_t>;
+    using op_mod_ff = OperationMod<double, double, double, double>;
 
-    typedef OperationGTCast<int64_t, int64_t, int64_t> op_gt_ii;
-    typedef OperationGTCast<double, int64_t, double> op_gt_if;
-    typedef OperationGTCast<double, double, int64_t> op_gt_fi;
-    typedef OperationGTCast<double, double, double> op_gt_ff;
-    typedef OperationGTCast<StringType, StringType, StringType> op_gt_ss;
-    typedef OperationGT<csvsqldb::Date, csvsqldb::Date, csvsqldb::Date> op_gt_dd;
-    typedef OperationGT<csvsqldb::Date, csvsqldb::Date, StringType> op_gt_ds;
-    typedef OperationGT<csvsqldb::Date, StringType, csvsqldb::Date> op_gt_sd;
-    typedef OperationGT<csvsqldb::Time, csvsqldb::Time, csvsqldb::Time> op_gt_tt;
-    typedef OperationGT<csvsqldb::Time, csvsqldb::Time, StringType> op_gt_ts;
-    typedef OperationGT<csvsqldb::Time, StringType, csvsqldb::Time> op_gt_st;
-    typedef OperationGT<csvsqldb::Timestamp, csvsqldb::Timestamp, csvsqldb::Timestamp> op_gt_zz;
-    typedef OperationGT<csvsqldb::Timestamp, csvsqldb::Timestamp, StringType> op_gt_zs;
-    typedef OperationGT<csvsqldb::Timestamp, StringType, csvsqldb::Timestamp> op_gt_sz;
+    using op_gt_ii = OperationGTCast<int64_t, int64_t, int64_t>;
+    using op_gt_if = OperationGTCast<double, int64_t, double>;
+    using op_gt_fi = OperationGTCast<double, double, int64_t>;
+    using op_gt_ff = OperationGTCast<double, double, double>;
+    using op_gt_ss = OperationGTCast<StringType, StringType, StringType>;
+    using op_gt_dd = OperationGT<csvsqldb::Date, csvsqldb::Date, csvsqldb::Date>;
+    using op_gt_ds = OperationGT<csvsqldb::Date, csvsqldb::Date, StringType>;
+    using op_gt_sd = OperationGT<csvsqldb::Date, StringType, csvsqldb::Date>;
+    using op_gt_tt = OperationGT<csvsqldb::Time, csvsqldb::Time, csvsqldb::Time>;
+    using op_gt_ts = OperationGT<csvsqldb::Time, csvsqldb::Time, StringType>;
+    using op_gt_st = OperationGT<csvsqldb::Time, StringType, csvsqldb::Time>;
+    using op_gt_zz = OperationGT<csvsqldb::Timestamp, csvsqldb::Timestamp, csvsqldb::Timestamp>;
+    using op_gt_zs = OperationGT<csvsqldb::Timestamp, csvsqldb::Timestamp, StringType>;
+    using op_gt_sz = OperationGT<csvsqldb::Timestamp, StringType, csvsqldb::Timestamp>;
 
-    typedef OperationGECast<int64_t, int64_t, int64_t> op_ge_ii;
-    typedef OperationGECast<double, int64_t, double> op_ge_if;
-    typedef OperationGECast<double, double, int64_t> op_ge_fi;
-    typedef OperationGECast<double, double, double> op_ge_ff;
-    typedef OperationGECast<StringType, StringType, StringType> op_ge_ss;
-    typedef OperationGE<csvsqldb::Date, csvsqldb::Date, csvsqldb::Date> op_ge_dd;
-    typedef OperationGE<csvsqldb::Date, csvsqldb::Date, StringType> op_ge_ds;
-    typedef OperationGE<csvsqldb::Date, StringType, csvsqldb::Date> op_ge_sd;
-    typedef OperationGE<csvsqldb::Time, csvsqldb::Time, csvsqldb::Time> op_ge_tt;
-    typedef OperationGE<csvsqldb::Time, csvsqldb::Time, StringType> op_ge_ts;
-    typedef OperationGE<csvsqldb::Time, StringType, csvsqldb::Time> op_ge_st;
-    typedef OperationGE<csvsqldb::Timestamp, csvsqldb::Timestamp, csvsqldb::Timestamp> op_ge_zz;
-    typedef OperationGE<csvsqldb::Timestamp, csvsqldb::Timestamp, StringType> op_ge_zs;
-    typedef OperationGE<csvsqldb::Timestamp, StringType, csvsqldb::Timestamp> op_ge_sz;
+    using op_ge_ii = OperationGECast<int64_t, int64_t, int64_t>;
+    using op_ge_if = OperationGECast<double, int64_t, double>;
+    using op_ge_fi = OperationGECast<double, double, int64_t>;
+    using op_ge_ff = OperationGECast<double, double, double>;
+    using op_ge_ss = OperationGECast<StringType, StringType, StringType>;
+    using op_ge_dd = OperationGE<csvsqldb::Date, csvsqldb::Date, csvsqldb::Date>;
+    using op_ge_ds = OperationGE<csvsqldb::Date, csvsqldb::Date, StringType>;
+    using op_ge_sd = OperationGE<csvsqldb::Date, StringType, csvsqldb::Date>;
+    using op_ge_tt = OperationGE<csvsqldb::Time, csvsqldb::Time, csvsqldb::Time>;
+    using op_ge_ts = OperationGE<csvsqldb::Time, csvsqldb::Time, StringType>;
+    using op_ge_st = OperationGE<csvsqldb::Time, StringType, csvsqldb::Time>;
+    using op_ge_zz = OperationGE<csvsqldb::Timestamp, csvsqldb::Timestamp, csvsqldb::Timestamp>;
+    using op_ge_zs = OperationGE<csvsqldb::Timestamp, csvsqldb::Timestamp, StringType>;
+    using op_ge_sz = OperationGE<csvsqldb::Timestamp, StringType, csvsqldb::Timestamp>;
 
-    typedef OperationLTCast<int64_t, int64_t, int64_t> op_lt_ii;
-    typedef OperationLTCast<double, int64_t, double> op_lt_if;
-    typedef OperationLTCast<double, double, int64_t> op_lt_fi;
-    typedef OperationLTCast<double, double, double> op_lt_ff;
-    typedef OperationLTCast<StringType, StringType, StringType> op_lt_ss;
-    typedef OperationLT<csvsqldb::Date, csvsqldb::Date, csvsqldb::Date> op_lt_dd;
-    typedef OperationLT<csvsqldb::Date, csvsqldb::Date, StringType> op_lt_ds;
-    typedef OperationLT<csvsqldb::Date, StringType, csvsqldb::Date> op_lt_sd;
-    typedef OperationLT<csvsqldb::Time, csvsqldb::Time, csvsqldb::Time> op_lt_tt;
-    typedef OperationLT<csvsqldb::Time, csvsqldb::Time, StringType> op_lt_ts;
-    typedef OperationLT<csvsqldb::Time, StringType, csvsqldb::Time> op_lt_st;
-    typedef OperationLT<csvsqldb::Timestamp, csvsqldb::Timestamp, csvsqldb::Timestamp> op_lt_zz;
-    typedef OperationLT<csvsqldb::Timestamp, csvsqldb::Timestamp, StringType> op_lt_zs;
-    typedef OperationLT<csvsqldb::Timestamp, StringType, csvsqldb::Timestamp> op_lt_sz;
+    using op_lt_ii = OperationLTCast<int64_t, int64_t, int64_t>;
+    using op_lt_if = OperationLTCast<double, int64_t, double>;
+    using op_lt_fi = OperationLTCast<double, double, int64_t>;
+    using op_lt_ff = OperationLTCast<double, double, double>;
+    using op_lt_ss = OperationLTCast<StringType, StringType, StringType>;
+    using op_lt_dd = OperationLT<csvsqldb::Date, csvsqldb::Date, csvsqldb::Date>;
+    using op_lt_ds = OperationLT<csvsqldb::Date, csvsqldb::Date, StringType>;
+    using op_lt_sd = OperationLT<csvsqldb::Date, StringType, csvsqldb::Date>;
+    using op_lt_tt = OperationLT<csvsqldb::Time, csvsqldb::Time, csvsqldb::Time>;
+    using op_lt_ts = OperationLT<csvsqldb::Time, csvsqldb::Time, StringType>;
+    using op_lt_st = OperationLT<csvsqldb::Time, StringType, csvsqldb::Time>;
+    using op_lt_zz = OperationLT<csvsqldb::Timestamp, csvsqldb::Timestamp, csvsqldb::Timestamp>;
+    using op_lt_zs = OperationLT<csvsqldb::Timestamp, csvsqldb::Timestamp, StringType>;
+    using op_lt_sz = OperationLT<csvsqldb::Timestamp, StringType, csvsqldb::Timestamp>;
 
-    typedef OperationLECast<int64_t, int64_t, int64_t> op_le_ii;
-    typedef OperationLECast<double, int64_t, double> op_le_if;
-    typedef OperationLECast<double, double, int64_t> op_le_fi;
-    typedef OperationLECast<double, double, double> op_le_ff;
-    typedef OperationLECast<StringType, StringType, StringType> op_le_ss;
-    typedef OperationLE<csvsqldb::Date, csvsqldb::Date, csvsqldb::Date> op_le_dd;
-    typedef OperationLE<csvsqldb::Date, csvsqldb::Date, StringType> op_le_ds;
-    typedef OperationLE<csvsqldb::Date, StringType, csvsqldb::Date> op_le_sd;
-    typedef OperationLE<csvsqldb::Time, csvsqldb::Time, csvsqldb::Time> op_le_tt;
-    typedef OperationLE<csvsqldb::Time, csvsqldb::Time, StringType> op_le_ts;
-    typedef OperationLE<csvsqldb::Time, StringType, csvsqldb::Time> op_le_st;
-    typedef OperationLE<csvsqldb::Timestamp, csvsqldb::Timestamp, csvsqldb::Timestamp> op_le_zz;
-    typedef OperationLE<csvsqldb::Timestamp, csvsqldb::Timestamp, StringType> op_le_zs;
-    typedef OperationLE<csvsqldb::Timestamp, StringType, csvsqldb::Timestamp> op_le_sz;
+    using op_le_ii = OperationLECast<int64_t, int64_t, int64_t>;
+    using op_le_if = OperationLECast<double, int64_t, double>;
+    using op_le_fi = OperationLECast<double, double, int64_t>;
+    using op_le_ff = OperationLECast<double, double, double>;
+    using op_le_ss = OperationLECast<StringType, StringType, StringType>;
+    using op_le_dd = OperationLE<csvsqldb::Date, csvsqldb::Date, csvsqldb::Date>;
+    using op_le_ds = OperationLE<csvsqldb::Date, csvsqldb::Date, StringType>;
+    using op_le_sd = OperationLE<csvsqldb::Date, StringType, csvsqldb::Date>;
+    using op_le_tt = OperationLE<csvsqldb::Time, csvsqldb::Time, csvsqldb::Time>;
+    using op_le_ts = OperationLE<csvsqldb::Time, csvsqldb::Time, StringType>;
+    using op_le_st = OperationLE<csvsqldb::Time, StringType, csvsqldb::Time>;
+    using op_le_zz = OperationLE<csvsqldb::Timestamp, csvsqldb::Timestamp, csvsqldb::Timestamp>;
+    using op_le_zs = OperationLE<csvsqldb::Timestamp, csvsqldb::Timestamp, StringType>;
+    using op_le_sz = OperationLE<csvsqldb::Timestamp, StringType, csvsqldb::Timestamp>;
 
-    typedef OperationEQCast<bool, bool, bool> op_eq_bb;
-    typedef OperationEQCast<bool, bool, int64_t> op_eq_bi;
-    typedef OperationEQCast<bool, int64_t, bool> op_eq_ib;
-    typedef OperationEQCast<bool, bool, double> op_eq_bf;
-    typedef OperationEQCast<bool, double, bool> op_eq_fb;
-    typedef OperationEQCast<int64_t, int64_t, int64_t> op_eq_ii;
-    typedef OperationEQCast<double, int64_t, double> op_eq_if;
-    typedef OperationEQCast<double, double, int64_t> op_eq_fi;
-    typedef OperationEQCast<double, double, double> op_eq_ff;
-    typedef OperationEQCast<StringType, StringType, StringType> op_eq_ss;
-    typedef OperationEQ<csvsqldb::Date, csvsqldb::Date, csvsqldb::Date> op_eq_dd;
-    typedef OperationEQ<csvsqldb::Date, csvsqldb::Date, StringType> op_eq_ds;
-    typedef OperationEQ<csvsqldb::Date, StringType, csvsqldb::Date> op_eq_sd;
-    typedef OperationEQ<csvsqldb::Time, csvsqldb::Time, csvsqldb::Time> op_eq_tt;
-    typedef OperationEQ<csvsqldb::Time, csvsqldb::Time, StringType> op_eq_ts;
-    typedef OperationEQ<csvsqldb::Time, StringType, csvsqldb::Time> op_eq_st;
-    typedef OperationEQ<csvsqldb::Timestamp, csvsqldb::Timestamp, csvsqldb::Timestamp> op_eq_zz;
-    typedef OperationEQ<csvsqldb::Timestamp, csvsqldb::Timestamp, StringType> op_eq_zs;
-    typedef OperationEQ<csvsqldb::Timestamp, StringType, csvsqldb::Timestamp> op_eq_sz;
+    using op_eq_bb = OperationEQCast<bool, bool, bool>;
+    using op_eq_bi = OperationEQCast<bool, bool, int64_t>;
+    using op_eq_ib = OperationEQCast<bool, int64_t, bool>;
+    using op_eq_bf = OperationEQCast<bool, bool, double>;
+    using op_eq_fb = OperationEQCast<bool, double, bool>;
+    using op_eq_ii = OperationEQCast<int64_t, int64_t, int64_t>;
+    using op_eq_if = OperationEQCast<double, int64_t, double>;
+    using op_eq_fi = OperationEQCast<double, double, int64_t>;
+    using op_eq_ff = OperationEQCast<double, double, double>;
+    using op_eq_ss = OperationEQCast<StringType, StringType, StringType>;
+    using op_eq_dd = OperationEQ<csvsqldb::Date, csvsqldb::Date, csvsqldb::Date>;
+    using op_eq_ds = OperationEQ<csvsqldb::Date, csvsqldb::Date, StringType>;
+    using op_eq_sd = OperationEQ<csvsqldb::Date, StringType, csvsqldb::Date>;
+    using op_eq_tt = OperationEQ<csvsqldb::Time, csvsqldb::Time, csvsqldb::Time>;
+    using op_eq_ts = OperationEQ<csvsqldb::Time, csvsqldb::Time, StringType>;
+    using op_eq_st = OperationEQ<csvsqldb::Time, StringType, csvsqldb::Time>;
+    using op_eq_zz = OperationEQ<csvsqldb::Timestamp, csvsqldb::Timestamp, csvsqldb::Timestamp>;
+    using op_eq_zs = OperationEQ<csvsqldb::Timestamp, csvsqldb::Timestamp, StringType>;
+    using op_eq_sz = OperationEQ<csvsqldb::Timestamp, StringType, csvsqldb::Timestamp>;
 
-    typedef OperationNEQCast<bool, bool, bool> op_neq_bb;
-    typedef OperationNEQCast<bool, bool, int64_t> op_neq_bi;
-    typedef OperationNEQCast<bool, int64_t, bool> op_neq_ib;
-    typedef OperationNEQCast<bool, bool, double> op_neq_bf;
-    typedef OperationNEQCast<bool, double, bool> op_neq_fb;
-    typedef OperationNEQCast<int64_t, int64_t, int64_t> op_neq_ii;
-    typedef OperationNEQCast<double, int64_t, double> op_neq_if;
-    typedef OperationNEQCast<double, double, int64_t> op_neq_fi;
-    typedef OperationNEQCast<double, double, double> op_neq_ff;
-    typedef OperationNEQCast<StringType, StringType, StringType> op_neq_ss;
-    typedef OperationNEQ<csvsqldb::Date, csvsqldb::Date, csvsqldb::Date> op_neq_dd;
-    typedef OperationNEQ<csvsqldb::Date, csvsqldb::Date, StringType> op_neq_ds;
-    typedef OperationNEQ<csvsqldb::Date, StringType, csvsqldb::Date> op_neq_sd;
-    typedef OperationNEQ<csvsqldb::Time, csvsqldb::Time, csvsqldb::Time> op_neq_tt;
-    typedef OperationNEQ<csvsqldb::Time, csvsqldb::Time, StringType> op_neq_ts;
-    typedef OperationNEQ<csvsqldb::Time, StringType, csvsqldb::Time> op_neq_st;
-    typedef OperationNEQ<csvsqldb::Timestamp, csvsqldb::Timestamp, csvsqldb::Timestamp> op_neq_zz;
-    typedef OperationNEQ<csvsqldb::Timestamp, csvsqldb::Timestamp, StringType> op_neq_zs;
-    typedef OperationNEQ<csvsqldb::Timestamp, StringType, csvsqldb::Timestamp> op_neq_sz;
+    using op_neq_bb = OperationNEQCast<bool, bool, bool>;
+    using op_neq_bi = OperationNEQCast<bool, bool, int64_t>;
+    using op_neq_ib = OperationNEQCast<bool, int64_t, bool>;
+    using op_neq_bf = OperationNEQCast<bool, bool, double>;
+    using op_neq_fb = OperationNEQCast<bool, double, bool>;
+    using op_neq_ii = OperationNEQCast<int64_t, int64_t, int64_t>;
+    using op_neq_if = OperationNEQCast<double, int64_t, double>;
+    using op_neq_fi = OperationNEQCast<double, double, int64_t>;
+    using op_neq_ff = OperationNEQCast<double, double, double>;
+    using op_neq_ss = OperationNEQCast<StringType, StringType, StringType>;
+    using op_neq_dd = OperationNEQ<csvsqldb::Date, csvsqldb::Date, csvsqldb::Date>;
+    using op_neq_ds = OperationNEQ<csvsqldb::Date, csvsqldb::Date, StringType>;
+    using op_neq_sd = OperationNEQ<csvsqldb::Date, StringType, csvsqldb::Date>;
+    using op_neq_tt = OperationNEQ<csvsqldb::Time, csvsqldb::Time, csvsqldb::Time>;
+    using op_neq_ts = OperationNEQ<csvsqldb::Time, csvsqldb::Time, StringType>;
+    using op_neq_st = OperationNEQ<csvsqldb::Time, StringType, csvsqldb::Time>;
+    using op_neq_zz = OperationNEQ<csvsqldb::Timestamp, csvsqldb::Timestamp, csvsqldb::Timestamp>;
+    using op_neq_zs = OperationNEQ<csvsqldb::Timestamp, csvsqldb::Timestamp, StringType>;
+    using op_neq_sz = OperationNEQ<csvsqldb::Timestamp, StringType, csvsqldb::Timestamp>;
 
-    typedef OperationIs<bool, bool> op_is_bb;
-    typedef OperationIs<int64_t, bool> op_is_ib;
-    typedef OperationIs<double, bool> op_is_fb;
-    typedef OperationIs<StringType, bool> op_is_sb;
-    typedef OperationIs<csvsqldb::Date, bool> op_is_db;
-    typedef OperationIs<csvsqldb::Time, bool> op_is_tb;
-    typedef OperationIs<csvsqldb::Timestamp, bool> op_is_zb;
+    using op_is_bb = OperationIs<bool, bool>;
+    using op_is_ib = OperationIs<int64_t, bool>;
+    using op_is_fb = OperationIs<double, bool>;
+    using op_is_sb = OperationIs<StringType, bool>;
+    using op_is_db = OperationIs<csvsqldb::Date, bool>;
+    using op_is_tb = OperationIs<csvsqldb::Time, bool>;
+    using op_is_zb = OperationIs<csvsqldb::Timestamp, bool>;
 
-    typedef OperationIsNot<bool, bool> op_isnot_bb;
-    typedef OperationIsNot<int64_t, bool> op_isnot_ib;
-    typedef OperationIsNot<double, bool> op_isnot_fb;
-    typedef OperationIsNot<StringType, bool> op_isnot_sb;
-    typedef OperationIsNot<csvsqldb::Date, bool> op_isnot_db;
-    typedef OperationIsNot<csvsqldb::Time, bool> op_isnot_tb;
-    typedef OperationIsNot<csvsqldb::Timestamp, bool> op_isnot_zb;
+    using op_isnot_bb = OperationIsNot<bool, bool>;
+    using op_isnot_ib = OperationIsNot<int64_t, bool>;
+    using op_isnot_fb = OperationIsNot<double, bool>;
+    using op_isnot_sb = OperationIsNot<StringType, bool>;
+    using op_isnot_db = OperationIsNot<csvsqldb::Date, bool>;
+    using op_isnot_tb = OperationIsNot<csvsqldb::Time, bool>;
+    using op_isnot_zb = OperationIsNot<csvsqldb::Timestamp, bool>;
 
-    typedef OperationAnd<bool, bool> op_and_bb;
-    typedef OperationAnd<bool, int64_t> op_and_bi;
-    typedef OperationAnd<int64_t, bool> op_and_ib;
-    typedef OperationAnd<double, bool> op_and_fb;
-    typedef OperationAnd<bool, double> op_and_bf;
-    typedef OperationAnd<int64_t, int64_t> op_and_ii;
-    typedef OperationAnd<int64_t, double> op_and_if;
-    typedef OperationAnd<double, int64_t> op_and_fi;
-    typedef OperationAnd<double, double> op_and_ff;
-    typedef OperationAnd<bool, StringType> op_and_bs;
-    typedef OperationAnd<StringType, bool> op_and_sb;
-    typedef OperationAnd<int64_t, StringType> op_and_is;
-    typedef OperationAnd<StringType, int64_t> op_and_si;
-    typedef OperationAnd<double, StringType> op_and_fs;
-    typedef OperationAnd<StringType, double> op_and_sf;
-    typedef OperationAnd<StringType, StringType> op_and_ss;
-    typedef OperationAnd<csvsqldb::Date, bool> op_and_db;
-    typedef OperationAnd<bool, csvsqldb::Date> op_and_bd;
-    typedef OperationAnd<csvsqldb::Date, csvsqldb::Date> op_and_dd;
-    typedef OperationAnd<csvsqldb::Time, bool> op_and_tb;
-    typedef OperationAnd<bool, csvsqldb::Time> op_and_bt;
-    typedef OperationAnd<csvsqldb::Time, csvsqldb::Time> op_and_tt;
+    using op_and_bb = OperationAnd<bool, bool>;
+    using op_and_bi = OperationAnd<bool, int64_t>;
+    using op_and_ib = OperationAnd<int64_t, bool>;
+    using op_and_fb = OperationAnd<double, bool>;
+    using op_and_bf = OperationAnd<bool, double>;
+    using op_and_ii = OperationAnd<int64_t, int64_t>;
+    using op_and_if = OperationAnd<int64_t, double>;
+    using op_and_fi = OperationAnd<double, int64_t>;
+    using op_and_ff = OperationAnd<double, double>;
+    using op_and_bs = OperationAnd<bool, StringType>;
+    using op_and_sb = OperationAnd<StringType, bool>;
+    using op_and_is = OperationAnd<int64_t, StringType>;
+    using op_and_si = OperationAnd<StringType, int64_t>;
+    using op_and_fs = OperationAnd<double, StringType>;
+    using op_and_sf = OperationAnd<StringType, double>;
+    using op_and_ss = OperationAnd<StringType, StringType>;
+    using op_and_db = OperationAnd<csvsqldb::Date, bool>;
+    using op_and_bd = OperationAnd<bool, csvsqldb::Date>;
+    using op_and_dd = OperationAnd<csvsqldb::Date, csvsqldb::Date>;
+    using op_and_tb = OperationAnd<csvsqldb::Time, bool>;
+    using op_and_bt = OperationAnd<bool, csvsqldb::Time>;
+    using op_and_tt = OperationAnd<csvsqldb::Time, csvsqldb::Time>;
 
-    typedef OperationOr<bool, bool> op_or_bb;
-    typedef OperationOr<bool, int64_t> op_or_bi;
-    typedef OperationOr<int64_t, bool> op_or_ib;
-    typedef OperationOr<double, bool> op_or_fb;
-    typedef OperationOr<bool, double> op_or_bf;
-    typedef OperationOr<int64_t, int64_t> op_or_ii;
-    typedef OperationOr<int64_t, double> op_or_if;
-    typedef OperationOr<double, int64_t> op_or_fi;
-    typedef OperationOr<double, double> op_or_ff;
-    typedef OperationOr<bool, StringType> op_or_bs;
-    typedef OperationOr<StringType, bool> op_or_sb;
-    typedef OperationOr<int64_t, StringType> op_or_is;
-    typedef OperationOr<StringType, int64_t> op_or_si;
-    typedef OperationOr<double, StringType> op_or_fs;
-    typedef OperationOr<StringType, double> op_or_sf;
-    typedef OperationOr<StringType, StringType> op_or_ss;
+    using op_or_bb = OperationOr<bool, bool>;
+    using op_or_bi = OperationOr<bool, int64_t>;
+    using op_or_ib = OperationOr<int64_t, bool>;
+    using op_or_fb = OperationOr<double, bool>;
+    using op_or_bf = OperationOr<bool, double>;
+    using op_or_ii = OperationOr<int64_t, int64_t>;
+    using op_or_if = OperationOr<int64_t, double>;
+    using op_or_fi = OperationOr<double, int64_t>;
+    using op_or_ff = OperationOr<double, double>;
+    using op_or_bs = OperationOr<bool, StringType>;
+    using op_or_sb = OperationOr<StringType, bool>;
+    using op_or_is = OperationOr<int64_t, StringType>;
+    using op_or_si = OperationOr<StringType, int64_t>;
+    using op_or_fs = OperationOr<double, StringType>;
+    using op_or_sf = OperationOr<StringType, double>;
+    using op_or_ss = OperationOr<StringType, StringType>;
 
-    typedef OperationConcat<StringType, StringType, StringType, StringType> op_concat_ss;
-    typedef OperationConcat<StringType, StringType, StringType, int64_t> op_concat_sl;
-    typedef OperationConcat<StringType, StringType, int64_t, StringType> op_concat_ls;
-    typedef OperationConcat<StringType, StringType, StringType, double> op_concat_sf;
-    typedef OperationConcat<StringType, StringType, double, StringType> op_concat_fs;
-    typedef OperationConcat<StringType, StringType, csvsqldb::Date, StringType> op_concat_ds;
-    typedef OperationConcat<StringType, StringType, StringType, csvsqldb::Date> op_concat_sd;
-    typedef OperationConcat<StringType, StringType, csvsqldb::Time, StringType> op_concat_ts;
-    typedef OperationConcat<StringType, StringType, StringType, csvsqldb::Time> op_concat_st;
-    typedef OperationConcat<StringType, StringType, csvsqldb::Timestamp, StringType> op_concat_zs;
-    typedef OperationConcat<StringType, StringType, StringType, csvsqldb::Timestamp> op_concat_sz;
+    using op_concat_ss = OperationConcat<StringType, StringType, StringType, StringType>;
+    using op_concat_sl = OperationConcat<StringType, StringType, StringType, int64_t>;
+    using op_concat_ls = OperationConcat<StringType, StringType, int64_t, StringType>;
+    using op_concat_sf = OperationConcat<StringType, StringType, StringType, double>;
+    using op_concat_fs = OperationConcat<StringType, StringType, double, StringType>;
+    using op_concat_ds = OperationConcat<StringType, StringType, csvsqldb::Date, StringType>;
+    using op_concat_sd = OperationConcat<StringType, StringType, StringType, csvsqldb::Date>;
+    using op_concat_ts = OperationConcat<StringType, StringType, csvsqldb::Time, StringType>;
+    using op_concat_st = OperationConcat<StringType, StringType, StringType, csvsqldb::Time>;
+    using op_concat_zs = OperationConcat<StringType, StringType, csvsqldb::Timestamp, StringType>;
+    using op_concat_sz = OperationConcat<StringType, StringType, StringType, csvsqldb::Timestamp>;
 
     if (g_binaryOperations.empty()) {
       BinaryOperationPtr operation;
-      operation = std::make_shared<op_add_ii>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_add_if>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_add_fi>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_add_ff>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
+      operation = std::make_unique<op_add_ii>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_add_if>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_add_fi>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_add_ff>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
 
-      operation = std::make_shared<op_sub_ii>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_sub_if>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_sub_fi>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_sub_ff>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_sub_dd>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_sub_tt>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_sub_zz>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
+      operation = std::make_unique<op_sub_ii>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_sub_if>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_sub_fi>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_sub_ff>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_sub_dd>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_sub_tt>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_sub_zz>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
 
-      operation = std::make_shared<op_mul_ii>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_mul_if>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_mul_fi>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_mul_ff>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
+      operation = std::make_unique<op_mul_ii>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_mul_if>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_mul_fi>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_mul_ff>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
 
-      operation = std::make_shared<op_div_ii>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_div_if>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_div_fi>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_div_ff>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
+      operation = std::make_unique<op_div_ii>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_div_if>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_div_fi>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_div_ff>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
 
-      operation = std::make_shared<op_mod_ii>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_mod_if>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_mod_fi>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_mod_ff>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
+      operation = std::make_unique<op_mod_ii>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_mod_if>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_mod_fi>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_mod_ff>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
 
-      operation = std::make_shared<op_gt_ii>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_gt_if>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_gt_fi>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_gt_ff>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_gt_ss>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_gt_dd>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_gt_ds>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_gt_sd>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_gt_tt>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_gt_ts>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_gt_st>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_gt_zz>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_gt_zs>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_gt_sz>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
+      operation = std::make_unique<op_gt_ii>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_gt_if>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_gt_fi>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_gt_ff>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_gt_ss>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_gt_dd>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_gt_ds>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_gt_sd>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_gt_tt>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_gt_ts>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_gt_st>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_gt_zz>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_gt_zs>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_gt_sz>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
 
-      operation = std::make_shared<op_ge_ii>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_ge_if>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_ge_fi>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_ge_ff>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_ge_ss>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_ge_dd>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_ge_ds>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_ge_sd>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_ge_tt>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_ge_ts>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_ge_st>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_ge_zz>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_ge_zs>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_ge_sz>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
+      operation = std::make_unique<op_ge_ii>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_ge_if>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_ge_fi>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_ge_ff>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_ge_ss>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_ge_dd>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_ge_ds>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_ge_sd>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_ge_tt>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_ge_ts>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_ge_st>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_ge_zz>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_ge_zs>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_ge_sz>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
 
-      operation = std::make_shared<op_lt_ii>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_lt_if>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_lt_fi>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_lt_ff>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_lt_ss>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_lt_dd>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_lt_ds>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_lt_sd>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_lt_tt>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_lt_ts>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_lt_st>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_lt_zz>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_lt_zs>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_lt_sz>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
+      operation = std::make_unique<op_lt_ii>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_lt_if>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_lt_fi>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_lt_ff>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_lt_ss>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_lt_dd>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_lt_ds>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_lt_sd>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_lt_tt>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_lt_ts>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_lt_st>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_lt_zz>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_lt_zs>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_lt_sz>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
 
-      operation = std::make_shared<op_le_ii>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_le_if>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_le_fi>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_le_ff>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_le_ss>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_le_dd>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_le_ds>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_le_sd>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_le_tt>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_le_ts>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_le_st>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_le_zz>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_le_zs>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_le_sz>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
+      operation = std::make_unique<op_le_ii>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_le_if>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_le_fi>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_le_ff>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_le_ss>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_le_dd>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_le_ds>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_le_sd>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_le_tt>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_le_ts>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_le_st>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_le_zz>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_le_zs>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_le_sz>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
 
-      operation = std::make_shared<op_eq_bb>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_eq_bi>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_eq_ib>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_eq_bf>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_eq_fb>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_eq_ii>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_eq_if>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_eq_fi>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_eq_ff>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_eq_ss>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_eq_dd>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_eq_ds>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_eq_sd>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_eq_tt>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_eq_ts>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_eq_st>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_eq_zz>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_eq_zs>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_eq_sz>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
+      operation = std::make_unique<op_eq_bb>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_eq_bi>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_eq_ib>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_eq_bf>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_eq_fb>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_eq_ii>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_eq_if>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_eq_fi>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_eq_ff>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_eq_ss>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_eq_dd>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_eq_ds>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_eq_sd>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_eq_tt>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_eq_ts>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_eq_st>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_eq_zz>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_eq_zs>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_eq_sz>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
 
-      operation = std::make_shared<op_neq_bb>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_neq_bi>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_neq_ib>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_neq_bf>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_neq_fb>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_neq_ii>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_neq_if>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_neq_fi>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_neq_ff>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_neq_ss>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_neq_dd>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_neq_ds>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_neq_sd>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_neq_tt>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_neq_ts>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_neq_st>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_neq_zz>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_neq_zs>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_neq_sz>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
+      operation = std::make_unique<op_neq_bb>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_neq_bi>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_neq_ib>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_neq_bf>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_neq_fb>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_neq_ii>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_neq_if>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_neq_fi>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_neq_ff>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_neq_ss>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_neq_dd>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_neq_ds>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_neq_sd>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_neq_tt>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_neq_ts>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_neq_st>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_neq_zz>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_neq_zs>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_neq_sz>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
 
-      operation = std::make_shared<op_is_bb>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_is_ib>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_is_fb>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_is_sb>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_is_db>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_is_tb>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_is_zb>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
+      operation = std::make_unique<op_is_bb>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_is_ib>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_is_fb>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_is_sb>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_is_db>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_is_tb>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_is_zb>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
 
-      operation = std::make_shared<op_isnot_bb>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_isnot_ib>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_isnot_fb>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_isnot_sb>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_isnot_db>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_isnot_tb>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_isnot_zb>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
+      operation = std::make_unique<op_isnot_bb>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_isnot_ib>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_isnot_fb>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_isnot_sb>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_isnot_db>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_isnot_tb>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_isnot_zb>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
 
-      operation = std::make_shared<op_and_bb>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_and_bi>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_and_ib>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_and_fb>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_and_bf>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_and_ii>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_and_if>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_and_fi>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_and_ff>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_and_bs>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_and_sb>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_and_is>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_and_si>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_and_fs>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_and_sf>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_and_ss>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_and_bd>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_and_db>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_and_dd>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_and_bt>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_and_tb>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_and_tt>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
+      operation = std::make_unique<op_and_bb>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_and_bi>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_and_ib>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_and_fb>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_and_bf>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_and_ii>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_and_if>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_and_fi>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_and_ff>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_and_bs>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_and_sb>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_and_is>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_and_si>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_and_fs>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_and_sf>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_and_ss>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_and_bd>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_and_db>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_and_dd>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_and_bt>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_and_tb>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_and_tt>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
 
-      operation = std::make_shared<op_or_bb>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_or_bi>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_or_ib>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_or_fb>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_or_bf>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_or_ii>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_or_if>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_or_fi>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_or_ff>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_or_bs>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_or_sb>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_or_is>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_or_si>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_or_fs>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_or_sf>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_or_ss>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
+      operation = std::make_unique<op_or_bb>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_or_bi>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_or_ib>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_or_fb>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_or_bf>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_or_ii>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_or_if>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_or_fi>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_or_ff>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_or_bs>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_or_sb>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_or_is>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_or_si>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_or_fs>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_or_sf>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_or_ss>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
 
-      operation = std::make_shared<op_concat_ss>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_concat_sl>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_concat_ls>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_concat_sf>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_concat_fs>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_concat_ds>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_concat_sd>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_concat_ts>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_concat_st>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_concat_zs>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_concat_sz>();
-      g_binaryOperations.insert(std::make_pair(operation->key(), operation));
+      operation = std::make_unique<op_concat_ss>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_concat_sl>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_concat_ls>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_concat_sf>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_concat_fs>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_concat_ds>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_concat_sd>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_concat_ts>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_concat_st>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_concat_zs>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_concat_sz>();
+      g_binaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
     }
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    typedef OperationNot<bool> op_not_b;
-    typedef OperationNot<int64_t> op_not_i;
-    typedef OperationNot<double> op_not_f;
+    using op_not_b = OperationNot<bool>;
+    using op_not_i = OperationNot<int64_t>;
+    using op_not_f = OperationNot<double>;
 
-    typedef OperationMinus<int64_t> op_minus_i;
-    typedef OperationMinus<double> op_minus_f;
+    using op_minus_i = OperationMinus<int64_t>;
+    using op_minus_f = OperationMinus<double>;
 
-    typedef OperationPlus<int64_t> op_plus_i;
-    typedef OperationPlus<double> op_plus_f;
+    using op_plus_i = OperationPlus<int64_t>;
+    using op_plus_f = OperationPlus<double>;
 
-    typedef OperationCast<int64_t, int64_t> op_cast_ii;
-    typedef OperationCast<int64_t, double> op_cast_fi;
-    typedef OperationCast<double, double> op_cast_ff;
-    typedef OperationCast<double, int64_t> op_cast_if;
-    typedef OperationCast<int64_t, bool> op_cast_bi;
-    typedef OperationCast<bool, bool> op_cast_bb;
-    typedef OperationCast<bool, int64_t> op_cast_ib;
-    // typedef OperationCast<bool, double> op_cast_fb;
-    typedef OperationCast<StringType, StringType> op_cast_ss;
-    typedef OperationCast<bool, StringType> op_cast_sb;
-    typedef OperationCast<double, StringType> op_cast_sf;
-    typedef OperationCast<int64_t, StringType> op_cast_si;
-    typedef OperationCast<csvsqldb::Date, StringType> op_cast_sd;
-    typedef OperationCast<csvsqldb::Time, StringType> op_cast_st;
-    typedef OperationCast<csvsqldb::Timestamp, StringType> op_cast_sz;
-    typedef OperationCast<csvsqldb::Timestamp, csvsqldb::Date> op_cast_dz;
-    typedef OperationCast<csvsqldb::Timestamp, csvsqldb::Time> op_cast_tz;
-    typedef OperationNullCast<bool> op_null_cast_nb;
-    typedef OperationNullCast<int64_t> op_null_cast_ni;
-    typedef OperationNullCast<double> op_null_cast_nf;
-    typedef OperationNullCast<StringType> op_null_cast_ns;
-    typedef OperationNullCast<csvsqldb::Date> op_null_cast_nd;
-    typedef OperationNullCast<csvsqldb::Time> op_null_cast_nt;
-    typedef OperationNullCast<csvsqldb::Timestamp> op_null_cast_nz;
+    using op_cast_ii = OperationCast<int64_t, int64_t>;
+    using op_cast_fi = OperationCast<int64_t, double>;
+    using op_cast_ff = OperationCast<double, double>;
+    using op_cast_if = OperationCast<double, int64_t>;
+    using op_cast_bi = OperationCast<int64_t, bool>;
+    using op_cast_bb = OperationCast<bool, bool>;
+    using op_cast_ib = OperationCast<bool, int64_t>;
+    // using op_cast_fb = OperationCast<bool, double>;
+    using op_cast_ss = OperationCast<StringType, StringType>;
+    using op_cast_sb = OperationCast<bool, StringType>;
+    using op_cast_sf = OperationCast<double, StringType>;
+    using op_cast_si = OperationCast<int64_t, StringType>;
+    using op_cast_sd = OperationCast<csvsqldb::Date, StringType>;
+    using op_cast_st = OperationCast<csvsqldb::Time, StringType>;
+    using op_cast_sz = OperationCast<csvsqldb::Timestamp, StringType>;
+    using op_cast_dz = OperationCast<csvsqldb::Timestamp, csvsqldb::Date>;
+    using op_cast_tz = OperationCast<csvsqldb::Timestamp, csvsqldb::Time>;
+    using op_null_cast_nb = OperationNullCast<bool>;
+    using op_null_cast_ni = OperationNullCast<int64_t>;
+    using op_null_cast_nf = OperationNullCast<double>;
+    using op_null_cast_ns = OperationNullCast<StringType>;
+    using op_null_cast_nd = OperationNullCast<csvsqldb::Date>;
+    using op_null_cast_nt = OperationNullCast<csvsqldb::Time>;
+    using op_null_cast_nz = OperationNullCast<csvsqldb::Timestamp>;
 
     if (g_unaryOperations.empty()) {
       UnaryOperationPtr operation;
-      operation = std::make_shared<op_not_b>();
-      g_unaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_not_i>();
-      g_unaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_not_f>();
-      g_unaryOperations.insert(std::make_pair(operation->key(), operation));
+      operation = std::make_unique<op_not_b>();
+      g_unaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_not_i>();
+      g_unaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_not_f>();
+      g_unaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
 
-      operation = std::make_shared<op_minus_i>();
-      g_unaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_minus_f>();
-      g_unaryOperations.insert(std::make_pair(operation->key(), operation));
+      operation = std::make_unique<op_minus_i>();
+      g_unaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_minus_f>();
+      g_unaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
 
-      operation = std::make_shared<op_plus_i>();
-      g_unaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_plus_f>();
-      g_unaryOperations.insert(std::make_pair(operation->key(), operation));
+      operation = std::make_unique<op_plus_i>();
+      g_unaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_plus_f>();
+      g_unaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
 
-      operation = std::make_shared<op_cast_ii>();
-      g_unaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_cast_fi>();
-      g_unaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_cast_ff>();
-      g_unaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_cast_if>();
-      g_unaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_cast_bb>();
-      g_unaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_cast_bi>();
-      g_unaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_cast_ib>();
-      g_unaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_cast_ss>();
-      g_unaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_cast_sb>();
-      g_unaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_cast_sf>();
-      g_unaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_cast_si>();
-      g_unaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_cast_sd>();
-      g_unaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_cast_st>();
-      g_unaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_cast_sz>();
-      g_unaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_cast_dz>();
-      g_unaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_cast_tz>();
-      g_unaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_null_cast_nb>();
-      g_unaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_null_cast_ni>();
-      g_unaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_null_cast_nf>();
-      g_unaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_null_cast_ns>();
-      g_unaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_null_cast_nd>();
-      g_unaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_null_cast_nt>();
-      g_unaryOperations.insert(std::make_pair(operation->key(), operation));
-      operation = std::make_shared<op_null_cast_nz>();
-      g_unaryOperations.insert(std::make_pair(operation->key(), operation));
+      operation = std::make_unique<op_cast_ii>();
+      g_unaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_cast_fi>();
+      g_unaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_cast_ff>();
+      g_unaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_cast_if>();
+      g_unaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_cast_bb>();
+      g_unaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_cast_bi>();
+      g_unaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_cast_ib>();
+      g_unaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_cast_ss>();
+      g_unaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_cast_sb>();
+      g_unaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_cast_sf>();
+      g_unaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_cast_si>();
+      g_unaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_cast_sd>();
+      g_unaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_cast_st>();
+      g_unaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_cast_sz>();
+      g_unaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_cast_dz>();
+      g_unaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_cast_tz>();
+      g_unaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_null_cast_nb>();
+      g_unaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_null_cast_ni>();
+      g_unaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_null_cast_nf>();
+      g_unaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_null_cast_ns>();
+      g_unaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_null_cast_nd>();
+      g_unaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_null_cast_nt>();
+      g_unaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_null_cast_nz>();
+      g_unaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
     }
   }
 }

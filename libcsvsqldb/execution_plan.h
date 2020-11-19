@@ -31,8 +31,7 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-#ifndef csvsqldb_execution_plan_h
-#define csvsqldb_execution_plan_h
+#pragma once
 
 #include "libcsvsqldb/inc.h"
 
@@ -48,7 +47,9 @@ namespace csvsqldb
   class CSVSQLDB_EXPORT ExecutionNode
   {
   public:
-    typedef std::unique_ptr<ExecutionNode> UniquePtr;
+    using UniquePtr = std::unique_ptr<ExecutionNode>;
+
+    ExecutionNode() = default;
 
     ExecutionNode(const ExecutionNode&) = delete;
     ExecutionNode& operator=(const ExecutionNode&) = delete;
@@ -60,9 +61,6 @@ namespace csvsqldb
     virtual int64_t execute() = 0;
 
     virtual void dump(std::ostream& stream) const = 0;
-
-  protected:
-    ExecutionNode() = default;
   };
 
 
@@ -83,10 +81,8 @@ namespace csvsqldb
     void dump(std::ostream& stream) const;
 
   private:
-    typedef std::vector<ExecutionNode::UniquePtr> ExecutionNodes;
+    using ExecutionNodes = std::vector<ExecutionNode::UniquePtr>;
 
     ExecutionNodes _executionNodes;
   };
 }
-
-#endif

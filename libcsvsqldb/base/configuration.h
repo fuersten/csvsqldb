@@ -31,8 +31,7 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-#ifndef csvsqldb_configuration_h
-#define csvsqldb_configuration_h
+#pragma once
 
 #include "libcsvsqldb/inc.h"
 
@@ -49,7 +48,9 @@ namespace csvsqldb
   class CSVSQLDB_EXPORT Configuration
   {
   public:
-    typedef std::shared_ptr<const Configuration> Ptr;
+    using Ptr = std::shared_ptr<const Configuration>;
+
+    Configuration() = default;
 
     virtual ~Configuration() = default;
 
@@ -142,9 +143,6 @@ namespace csvsqldb
       return get(path, typer);
     }
 
-  protected:
-    Configuration() = default;
-
   private:
     /**
      * Template method to return all sub-properties of the given path.
@@ -222,5 +220,3 @@ namespace csvsqldb
     virtual std::string get(const std::string& path, Typer<std::string> typer) const = 0;
   };
 }
-
-#endif

@@ -38,7 +38,6 @@ namespace csvsqldb
 {
   ExecutionContext::ExecutionContext(Database& database)
   : _database(database)
-  , _showHeaderLine(true)
   {
   }
 }

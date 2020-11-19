@@ -31,8 +31,7 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-#ifndef csvsqldb_symboltable_h
-#define csvsqldb_symboltable_h
+#pragma once
 
 #include "libcsvsqldb/inc.h"
 
@@ -56,17 +55,11 @@ namespace csvsqldb
 
   class SymbolTable;
   typedef std::shared_ptr<SymbolTable> SymbolTablePtr;
-  typedef std::vector<SymbolInfoPtr> SymbolMap;
-
 
   struct CSVSQLDB_EXPORT SymbolInfo {
     typedef std::shared_ptr<ASTExprNode> ASTExprNodePtr;
 
-    SymbolInfo()
-    : _symbolType(NOSYM)
-    , _type(NONE)
-    {
-    }
+    SymbolInfo() = default;
 
     SymbolInfoPtr clone()
     {
@@ -85,8 +78,8 @@ namespace csvsqldb
       return info;
     }
 
-    eSymbolType _symbolType;
-    eType _type;
+    eSymbolType _symbolType{NOSYM};
+    eType _type{NONE};
     std::string _name;  //!< real context name
     std::string _alias;
     std::string _prefix;
@@ -101,7 +94,7 @@ namespace csvsqldb
   class CSVSQLDB_EXPORT SymbolTable : public std::enable_shared_from_this<SymbolTable>
   {
   public:
-    SymbolTablePtr getParent()
+    SymbolTablePtr getParent() const
     {
       return _parent;
     }
@@ -141,18 +134,16 @@ namespace csvsqldb
     {
     }
 
-    bool fillInfoFromTablePrefix(const Database& database, const SymbolInfos& tables, SymbolInfoPtr info);
-    bool fillInfoFromTable(const Database& database, const SymbolInfos& tables, SymbolInfoPtr info);
-    bool fillInfoFromSubquery(const Database& database, const SymbolInfos& subqueries, SymbolInfoPtr info);
+    bool fillInfoFromTablePrefix(const Database& database, const SymbolInfos& tables, SymbolInfoPtr info) const;
+    bool fillInfoFromTable(const Database& database, const SymbolInfos& tables, SymbolInfoPtr info) const;
+    bool fillInfoFromSubquery(const Database& database, const SymbolInfos& subqueries, SymbolInfoPtr info) const;
     SymbolInfos getSubqueries() const;
     void fillWithTableData(const Database& database, const SymbolInfos& tables);
 
     SymbolInfoPtr internFindSymbol(const std::string& name);
 
-    SymbolMap _symbols;
+    std::vector<SymbolInfoPtr> _symbols;
     uint32_t _aliasCount;
     SymbolTablePtr _parent;
   };
 }
-
-#endif

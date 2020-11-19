@@ -31,8 +31,7 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-#ifndef csvsqldb_get_time_h
-#define csvsqldb_get_time_h
+#pragma once
 
 #ifdef HAS_GET_TIME
 #include <iomanip>
@@ -74,6 +73,4 @@ namespace csvsqldb
         return is;
     }
 }
-#endif
-
 #endif

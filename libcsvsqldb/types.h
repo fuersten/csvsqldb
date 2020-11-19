@@ -32,8 +32,7 @@
 //
 // \file libcsvsqldb/types.h
 
-#ifndef csvsqldb_types_h
-#define csvsqldb_types_h
+#pragma once
 
 #include "libcsvsqldb/inc.h"
 
@@ -68,9 +67,9 @@ namespace csvsqldb
   CSVSQLDB_EXPORT eType stringToType(const std::string& s);
   CSVSQLDB_EXPORT std::string printType(eType type, const std::any& value);
 
-  typedef std::vector<eType> Types;
+  using Types = std::vector<eType>;
 
-  typedef char* StringType;
+  using StringType = char*;
 
   enum eAggregateFunction { SUM, COUNT, COUNT_STAR, AVG, MIN, MAX, ARBITRARY };
 
@@ -118,9 +117,9 @@ namespace csvsqldb
 
   CSVSQLDB_EXPORT std::string printType(const TypedValue& value);
 
-  typedef std::vector<TypedValue> TypedValues;
+  using TypedValues = std::vector<TypedValue>;
 
-  typedef int2type<NONE> NoneType;
+  using NoneType = int2type<NONE>;
 
   template<typename ctype>
   inline eType ctype2eType()
@@ -216,5 +215,3 @@ namespace csvsqldb
 
   CSVSQLDB_EXPORT std::string operationTypeToString(eOperationType type);
 }
-
-#endif

@@ -78,7 +78,7 @@ namespace csvsqldb
     if (_quit.load()) {
       throw InvalidOperationException("The thread pool was stopped.");
     }
-    std::unique_lock<std::mutex> guard(_taskQueueMutex);
+    std::unique_lock guard(_taskQueueMutex);
     _taskQueue.push(task);
     _taskQueueCondition.notify_one();
   }
@@ -89,7 +89,7 @@ namespace csvsqldb
       Callback task;
 
       {
-        std::unique_lock<std::mutex> guard(_taskQueueMutex);
+        std::unique_lock guard(_taskQueueMutex);
         _taskQueueCondition.wait_for(guard, std::chrono::milliseconds(150), [&] { return _quit.load() || !_taskQueue.empty(); });
         if (_taskQueue.empty() || _quit.load()) {
           continue;

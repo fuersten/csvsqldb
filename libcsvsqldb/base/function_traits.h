@@ -31,8 +31,7 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-#ifndef csvsqldb_function_traits_h
-#define csvsqldb_function_traits_h
+#pragma once
 
 #include <type_traits>
 
@@ -80,5 +79,3 @@ namespace csvsqldb
     };
   };
 }
-
-#endif

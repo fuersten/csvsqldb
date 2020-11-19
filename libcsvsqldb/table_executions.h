@@ -31,8 +31,7 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-#ifndef csvsqldb_table_executions_h
-#define csvsqldb_table_executions_h
+#pragma once
 
 #include "libcsvsqldb/inc.h"
 
@@ -107,5 +106,3 @@ namespace csvsqldb
     std::string _tableName;
   };
 }
-
-#endif

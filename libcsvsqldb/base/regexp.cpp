@@ -44,20 +44,17 @@ namespace csvsqldb
 {
   enum eToken { STAR, PLUS, PIPE, QUEST, LPAREN, RPAREN, CHAR, CHARCLASS, CHARSET, EOP };
 
-  typedef std::vector<std::string> Groups;
+  using Groups = std::vector<std::string>;
 
   struct CharacterSet {
     bool _negate;
     Groups _groups;
   };
 
-  typedef std::list<CharacterSet> CharacterSets;
+  using CharacterSets = std::list<CharacterSet>;
 
   struct Token {
-    Token()
-    : _token(EOP)
-    {
-    }
+    Token() = default;
 
     std::string tostring() const
     {
@@ -84,7 +81,7 @@ namespace csvsqldb
       }
     }
 
-    eToken _token;
+    eToken _token{EOP};
     char _lexeme;
     CharacterSet _charSet;
   };
@@ -243,7 +240,6 @@ namespace csvsqldb
 
     Transition(eType type, char c)
     : _c(c)
-    , _charSet(0)
     , _type(type)
     {
     }
@@ -255,7 +251,7 @@ namespace csvsqldb
     }
 
     char _c;
-    const CharacterSet* _charSet;
+    const CharacterSet* _charSet{nullptr};
     eType _type;
   };
 
@@ -265,19 +261,13 @@ namespace csvsqldb
     enum eType { Accept, Final };
 
     State(eType type = Accept, char c = 0, Transition::eType tranType = Transition::Char)
-    : _out1(NULL)
-    , _out2(NULL)
-    , _end(NULL)
-    , _type(type)
+    : _type(type)
     , _tran(tranType, c)
     {
     }
 
     State(const CharacterSet* charSet)
-    : _out1(NULL)
-    , _out2(NULL)
-    , _end(NULL)
-    , _type(Accept)
+    : _type(Accept)
     , _tran(charSet)
     {
     }
@@ -358,9 +348,9 @@ namespace csvsqldb
       _tran._type = Transition::Epsilon;
     }
 
-    State* _out1;
-    State* _out2;
-    State* _end;
+    State* _out1{nullptr};
+    State* _out2{nullptr};
+    State* _end{nullptr};
 
   private:
     eType _type;
@@ -374,8 +364,8 @@ namespace csvsqldb
   class Parser
   {
   public:
-    typedef std::list<State> States;
-    typedef std::vector<State*> WorkStates;
+    using States = std::list<State>;
+    using WorkStates = std::vector<State*>;
 
     Parser(std::string&& s)
     : _lexer(std::move(s))
@@ -600,7 +590,7 @@ namespace csvsqldb
     Lexer _lexer;
     Token _tok;
     States _states;
-    State* _start;
+    State* _start{nullptr};
     CharacterSets _charSets;
   };
 
@@ -608,13 +598,12 @@ namespace csvsqldb
   struct RegExp::Private {
     Private(std::string s)
     : _parser(std::move(s))
-    , _regex(s)
     {
     }
 
     Parser _parser;
-    std::string _regex;
   };
+
 
   RegExp::RegExp()
   : _m(new Private(""))
@@ -624,6 +613,7 @@ namespace csvsqldb
 
   RegExp::~RegExp()
   {
+    // Needs to be specified due to the unique_ptr impl.
   }
 
   RegExp::RegExp(RegExp&& r)

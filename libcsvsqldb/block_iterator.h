@@ -31,8 +31,7 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-#ifndef csvsqldb_block_iterator_h
-#define csvsqldb_block_iterator_h
+#pragma once
 
 #include "libcsvsqldb/inc.h"
 
@@ -70,26 +69,26 @@ namespace std
 namespace csvsqldb
 {
   class BlockIterator;
-  typedef std::shared_ptr<BlockIterator> BlockIteratorPtr;
+  using BlockIteratorPtr = std::shared_ptr<BlockIterator>;
 
   class CachingBlockIterator;
-  typedef std::shared_ptr<CachingBlockIterator> CachingBlockIteratorPtr;
+  using CachingBlockIteratorPtr = std::shared_ptr<CachingBlockIterator>;
 
   class SortingBlockIterator;
-  typedef std::shared_ptr<SortingBlockIterator> SortingBlockIteratorPtr;
+  using SortingBlockIteratorPtr = std::shared_ptr<SortingBlockIterator>;
 
   class GroupingBlockIterator;
-  typedef std::shared_ptr<GroupingBlockIterator> GroupingBlockIteratorPtr;
+  using GroupingBlockIteratorPtr = std::shared_ptr<GroupingBlockIterator>;
 
   class HashingBlockIterator;
-  typedef std::shared_ptr<HashingBlockIterator> HashingBlockIteratorPtr;
+  using HashingBlockIteratorPtr = std::shared_ptr<HashingBlockIterator>;
 
   struct CSVSQLDB_EXPORT BlockPosition {
-    size_t _block;
-    size_t _offset;
+    size_t _block{0};
+    size_t _offset{0};
   };
 
-  typedef std::unordered_multimap<Variant, BlockPosition> HashTable;
+  using HashTable = std::unordered_multimap<Variant, BlockPosition>;
 
   struct CSVSQLDB_EXPORT HashingBlockIteratorContext {
     HashTable::const_iterator _it;
@@ -118,10 +117,10 @@ namespace csvsqldb
     BlockManager& _blockManager;
     Values _row;
     Types _types;
-    BlockPtr _block;
-    BlockPtr _previousBlock;
-    size_t _offset;
-    size_t _endOffset;
+    BlockPtr _block{nullptr};
+    BlockPtr _previousBlock{nullptr};
+    size_t _offset{0};
+    size_t _endOffset{0};
     Types::iterator _typeOffset;
   };
 
@@ -151,10 +150,10 @@ namespace csvsqldb
     Values _row;
     Types _types;
     Blocks _blocks;
-    size_t _currentBlock;
-    size_t _offset;
-    size_t _endOffset;
-    bool _useCache;
+    size_t _currentBlock{0};
+    size_t _offset{0};
+    size_t _endOffset{0};
+    bool _useCache{false};
     Types::iterator _typeOffset;
   };
 
@@ -163,11 +162,11 @@ namespace csvsqldb
   {
   public:
     struct SortOrder {
-      size_t _index;
-      eOrder _order;
+      size_t _index{0};
+      eOrder _order{ASC};
     };
 
-    typedef std::vector<SortOrder> SortOrders;
+    using SortOrders = std::vector<SortOrder>;
 
     SortingBlockIterator(const Types& types, const SortOrders& sortOrders, RowProvider& rowProvider, BlockManager& blockManager);
 
@@ -191,12 +190,12 @@ namespace csvsqldb
     Values _row;
     const Types& _types;
     Blocks _blocks;
-    size_t _currentBlock;
-    size_t _offset;
-    size_t _endOffset;
+    size_t _currentBlock{0};
+    size_t _offset{0};
+    size_t _endOffset{0};
     Rows _rows;
     Rows::const_iterator _rowIter;
-    bool _initialize;
+    bool _initialize{true};
     Types::const_iterator _typeOffset;
     const SortOrders _sortOrders;
   };
@@ -219,8 +218,8 @@ namespace csvsqldb
     const Values* getNextRow();
 
   private:
-    typedef std::vector<AggregationFunction*> AggregationFunctionPtrs;
-    typedef std::unordered_map<GroupingElement, AggregationFunctionPtrs> GroupMap;
+    using AggregationFunctionPtrs = std::vector<AggregationFunction*>;
+    using GroupMap = std::unordered_map<GroupingElement, AggregationFunctionPtrs>;
 
     Value* getNextValue();
     void getNextBlock();
@@ -230,11 +229,11 @@ namespace csvsqldb
     Values _row;
     Types _types;
     Blocks _blocks;
-    size_t _currentBlock;
-    size_t _offset;
-    size_t _endOffset;
+    size_t _currentBlock{0};
+    size_t _offset{0};
+    size_t _endOffset{0};
     Blocks _aggrFuncBlocks;
-    bool _useCache;
+    bool _useCache{false};
     GroupMap _groupMap;
     const csvsqldb::IndexVector _groupingIndices;
     const csvsqldb::IndexVector _outputIndices;
@@ -271,15 +270,13 @@ namespace csvsqldb
     Values _row;
     Types _types;
     Blocks _blocks;
-    size_t _currentBlock;
-    size_t _offset;
-    size_t _endOffset;
-    bool _useCache;
+    size_t _currentBlock{0};
+    size_t _offset{0};
+    size_t _endOffset{0};
+    bool _useCache{false};
     HashTable _hashTable;
     size_t _hashTableKeyPosition;
     HashingBlockIteratorContext _context;
     Types::iterator _typeOffset;
   };
 }
-
-#endif

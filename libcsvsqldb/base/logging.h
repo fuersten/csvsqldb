@@ -31,8 +31,7 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-#ifndef csvsqldb_logging_h
-#define csvsqldb_logging_h
+#pragma once
 
 #include "libcsvsqldb/inc.h"
 
@@ -126,7 +125,7 @@ namespace csvsqldb
     /**
      * As the Logging class is a singleton, the constructor is private and deleted.
      */
-    Logging();
+    Logging() = delete;
   };
 
 
@@ -200,5 +199,3 @@ namespace csvsqldb
     csvsqldb::Logging::log(event);                                                                                               \
   } while (0)
 }
-
-#endif

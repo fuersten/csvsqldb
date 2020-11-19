@@ -47,8 +47,7 @@ namespace csvsqldb
 
   bool TableData::hasColumn(const std::string& name) const
   {
-    Columns::const_iterator iter =
-      std::find_if(_columns.begin(), _columns.end(), [&name](const Column& col) { return name == col._name; });
+    const auto iter = std::find_if(_columns.begin(), _columns.end(), [&name](const Column& col) { return name == col._name; });
     if (iter == _columns.end()) {
       return false;
     }
@@ -57,8 +56,7 @@ namespace csvsqldb
 
   const TableData::Column& TableData::getColumn(const std::string& name) const
   {
-    Columns::const_iterator iter =
-      std::find_if(_columns.begin(), _columns.end(), [&name](const Column& col) { return name == col._name; });
+    const auto iter = std::find_if(_columns.begin(), _columns.end(), [&name](const Column& col) { return name == col._name; });
     if (iter == _columns.end()) {
       CSVSQLDB_THROW(SqlException, "column '" << name << "' not found in table " << _tableName);
     }

@@ -31,8 +31,7 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-#ifndef csvsqldb_thread_helper_h
-#define csvsqldb_thread_helper_h
+#pragma once
 
 #include "libcsvsqldb/inc.h"
 
@@ -67,5 +66,3 @@ namespace csvsqldb
     std::thread& _t;
   };
 }
-
-#endif

@@ -31,8 +31,7 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-#ifndef csvsqldb_hash_helper_h
-#define csvsqldb_hash_helper_h
+#pragma once
 
 #include "libcsvsqldb/inc.h"
 
@@ -43,8 +42,8 @@ namespace std
 {
   template<>
   struct hash<const char*> {
-    typedef const char* argument_type;
-    typedef std::size_t result_type;
+    using argument_type = const char*;
+    using result_type = std::size_t;
 
     result_type operator()(argument_type const& val) const
     {
@@ -87,5 +86,3 @@ namespace csvsqldb
     return seed;
   }
 }
-
-#endif

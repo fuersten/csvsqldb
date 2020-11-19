@@ -31,8 +31,7 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-#ifndef csvsqldb_log_devices_h
-#define csvsqldb_log_devices_h
+#pragma once
 
 #include "libcsvsqldb/inc.h"
 
@@ -57,5 +56,3 @@ namespace csvsqldb
     void doFlush() override;
   };
 }
-
-#endif

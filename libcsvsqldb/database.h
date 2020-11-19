@@ -31,8 +31,7 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-#ifndef csvsqldb_database_h
-#define csvsqldb_database_h
+#pragma once
 
 #include "libcsvsqldb/inc.h"
 
@@ -49,7 +48,7 @@ namespace csvsqldb
   class CSVSQLDB_EXPORT Database
   {
   public:
-    Database(const fs::path& path, FileMapping mappings);
+    Database(fs::path path, FileMapping mappings);
 
     Database(const Database&) = delete;
     Database& operator=(const Database&) = delete;
@@ -103,5 +102,3 @@ namespace csvsqldb
     FileMapping _mappings;
   };
 }
-
-#endif

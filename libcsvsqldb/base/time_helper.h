@@ -31,8 +31,7 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-#ifndef csvsqldb_time_helper_h
-#define csvsqldb_time_helper_h
+#pragma once
 
 #include "libcsvsqldb/inc.h"
 
@@ -97,5 +96,3 @@ namespace csvsqldb
    */
   CSVSQLDB_EXPORT Timestamp timestampFromString(const std::string& isotimestamp);
 }
-
-#endif

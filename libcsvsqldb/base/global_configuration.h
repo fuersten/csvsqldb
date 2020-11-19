@@ -31,8 +31,7 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-#ifndef csvsqldb_gloabl_configuration_h
-#define csvsqldb_gloabl_configuration_h
+#pragma once
 
 #include "libcsvsqldb/inc.h"
 
@@ -51,8 +50,8 @@ namespace csvsqldb
   class CSVSQLDB_EXPORT GlobalConfiguration
   {
   public:
-    typedef std::shared_ptr<GlobalConfiguration> Ptr;
-    typedef std::map<std::string, int> DebugLevel;
+    using Ptr = std::shared_ptr<GlobalConfiguration>;
+    using DebugLevel = std::map<std::string, int>;
 
     GlobalConfiguration() = default;
     virtual ~GlobalConfiguration() = default;
@@ -131,5 +130,3 @@ namespace csvsqldb
     return GlobalConfiguration::instance<T>();
   }
 }
-
-#endif

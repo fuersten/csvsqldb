@@ -111,15 +111,6 @@ namespace csvsqldb
   {
   }
 
-  /*
-  Timestamp::Timestamp(time_t timeT)
-  {
-   struct tm ptime;
-   if(!localtime_r(&timeT, &ptime)) {
-          CSVSQLDB_THROW(TimestampException, "Invalid time_t specified: " << timeT);
-      }
-  }*/
-
   bool Timestamp::operator==(const Timestamp& timestamp) const
   {
     return _time == timestamp._time;

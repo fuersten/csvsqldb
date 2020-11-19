@@ -31,9 +31,7 @@
 //
 
 
-#ifndef CSVSQLDB_TEST_UTIL_H
-#define CSVSQLDB_TEST_UTIL_H
+#pragma once
 
 #define CSVSQLDB_TEST_PATH "${CMAKE_CURRENT_SOURCE_DIR}"
 
-#endif

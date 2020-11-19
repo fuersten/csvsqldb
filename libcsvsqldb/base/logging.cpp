@@ -44,7 +44,7 @@
 
 namespace csvsqldb
 {
-  typedef std::shared_ptr<LogDevice> LogDevicePtr;
+  using LogDevicePtr = std::shared_ptr<LogDevice>;
 
   void LogDevice::log(const LogEvent& event)
   {
@@ -58,7 +58,7 @@ namespace csvsqldb
       os << event._classname << separator;
     }
     if (config<GlobalConfiguration>()->logging.escape_newline) {
-      std::regex exp("\n|\r");
+      static std::regex exp("\n|\r");
       os << regex_replace(event._message, exp, std::string("\\n"));
     } else {
       os << event._message;

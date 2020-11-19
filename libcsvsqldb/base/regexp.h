@@ -31,8 +31,7 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-#ifndef csvsqldb_regexp_h
-#define csvsqldb_regexp_h
+#pragma once
 
 #include <memory>
 #include <string>
@@ -100,5 +99,3 @@ namespace csvsqldb
     std::unique_ptr<Private> _m;
   };
 }
-
-#endif

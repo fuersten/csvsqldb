@@ -31,8 +31,7 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-#ifndef csvsqldb_execution_engine_h
-#define csvsqldb_execution_engine_h
+#pragma once
 
 #include "libcsvsqldb/inc.h"
 
@@ -53,7 +52,7 @@ namespace csvsqldb
 
     Database& _database;
     csvsqldb::StringVector _files;
-    bool _showHeaderLine;
+    bool _showHeaderLine{true};
   };
 
   struct CSVSQLDB_EXPORT ExecutionStatistics {
@@ -64,9 +63,9 @@ namespace csvsqldb
     csvsqldb::chrono::ProcessTimePoint _startExecution;
     csvsqldb::chrono::ProcessTimePoint _endExecution;
 
-    size_t _maxUsedBlocks;
-    size_t _totalBlocks;
-    size_t _maxUsedCapacity;
+    size_t _maxUsedBlocks{0};
+    size_t _totalBlocks{0};
+    size_t _maxUsedCapacity{0};
   };
 
   template<typename OperatorNodeFactory>
@@ -133,5 +132,3 @@ namespace csvsqldb
     BlockManager _blockManager;
   };
 }
-
-#endif

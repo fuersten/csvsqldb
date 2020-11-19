@@ -31,8 +31,7 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-#ifndef csvsqldb_ast_h
-#define csvsqldb_ast_h
+#pragma once
 
 #include "libcsvsqldb/inc.h"
 
@@ -90,54 +89,54 @@ namespace csvsqldb
   class ASTOrderByNode;
   class ASTLimitNode;
 
-  typedef std::shared_ptr<ASTNode> ASTNodePtr;
-  typedef std::shared_ptr<ASTExplainNode> ASTDescribeNodePtr;
-  typedef std::shared_ptr<ASTCreateTableNode> ASTCreateTableNodePtr;
-  typedef std::shared_ptr<ASTMappingNode> ASTMappingNodePtr;
-  typedef std::shared_ptr<ASTDropMappingNode> ASTDropMappingNodePtr;
-  typedef std::shared_ptr<ASTAlterTableNode> ASTAlterTableNodePtr;
-  typedef std::shared_ptr<ASTDropTableNode> ASTDropTableNodePtr;
-  typedef std::shared_ptr<ASTQueryNode> ASTQueryNodePtr;
-  typedef std::shared_ptr<ASTQueryExpressionNode> ASTQueryExpressionNodePtr;
-  typedef std::shared_ptr<ASTUnionNode> ASTUnionNodePtr;
-  typedef std::shared_ptr<ASTQuerySpecificationNode> ASTQuerySpecificationNodePtr;
-  typedef std::shared_ptr<ASTTableExpressionNode> ASTTableExpressionNodePtr;
-  typedef std::shared_ptr<ASTTableReferenceNode> ASTTableReferenceNodePtr;
-  typedef std::shared_ptr<ASTTableFactorNode> ASTTableFactorNodePtr;
-  typedef std::shared_ptr<ASTTableIdentifierNode> ASTTableIdentifierNodePtr;
-  typedef std::shared_ptr<ASTTableSubqueryNode> ASTTableSubqueryNodePtr;
-  typedef std::shared_ptr<ASTJoinNode> ASTJoinNodePtr;
-  typedef std::shared_ptr<ASTCrossJoinNode> ASTCrossJoinNodePtr;
-  typedef std::shared_ptr<ASTNaturalJoinNode> ASTNaturalJoinNodePtr;
-  typedef std::shared_ptr<ASTJoinWithCondition> ASTJoinWithConditionPtr;
-  typedef std::shared_ptr<ASTInnerJoinNode> ASTInnerJoinNodePtr;
-  typedef std::shared_ptr<ASTLeftJoinNode> ASTLeftJoinNodePtr;
-  typedef std::shared_ptr<ASTRightJoinNode> ASTRightJoinNodePtr;
-  typedef std::shared_ptr<ASTFullJoinNode> ASTFullJoinNodePtr;
-  typedef std::shared_ptr<ASTExprNode> ASTExprNodePtr;
-  typedef std::shared_ptr<ASTBinaryNode> ASTBinaryNodePtr;
-  typedef std::shared_ptr<ASTUnaryNode> ASTUnaryNodePtr;
-  typedef std::shared_ptr<ASTValueNode> ASTValueNodePtr;
-  typedef std::shared_ptr<ASTLikeNode> ASTLikeNodePtr;
-  typedef std::shared_ptr<ASTBetweenNode> ASTBetweenNodePtr;
-  typedef std::shared_ptr<ASTInNode> ASTInNodePtr;
-  typedef std::shared_ptr<ASTFunctionNode> ASTFunctionNodePtr;
-  typedef std::shared_ptr<ASTAggregateFunctionNode> ASTAggregateFunctionNodePtr;
-  typedef std::shared_ptr<ASTIdentifier> ASTIdentifierPtr;
-  typedef std::shared_ptr<ASTQualifiedAsterisk> ASTQualifiedAsteriskPtr;
-  typedef std::shared_ptr<ASTFromNode> ASTFromNodePtr;
-  typedef std::shared_ptr<ASTWhereNode> ASTWhereNodePtr;
-  typedef std::shared_ptr<ASTGroupByNode> ASTGroupByNodePtr;
-  typedef std::shared_ptr<ASTHavingNode> ASTHavingNodePtr;
-  typedef std::shared_ptr<ASTOrderByNode> ASTOrderByNodePtr;
-  typedef std::shared_ptr<ASTLimitNode> ASTLimitNodePtr;
+  using ASTNodePtr = std::shared_ptr<ASTNode>;
+  using ASTDescribeNodePtr = std::shared_ptr<ASTExplainNode>;
+  using ASTCreateTableNodePtr = std::shared_ptr<ASTCreateTableNode>;
+  using ASTMappingNodePtr = std::shared_ptr<ASTMappingNode>;
+  using ASTDropMappingNodePtr = std::shared_ptr<ASTDropMappingNode>;
+  using ASTAlterTableNodePtr = std::shared_ptr<ASTAlterTableNode>;
+  using ASTDropTableNodePtr = std::shared_ptr<ASTDropTableNode>;
+  using ASTQueryNodePtr = std::shared_ptr<ASTQueryNode>;
+  using ASTQueryExpressionNodePtr = std::shared_ptr<ASTQueryExpressionNode>;
+  using ASTUnionNodePtr = std::shared_ptr<ASTUnionNode>;
+  using ASTQuerySpecificationNodePtr = std::shared_ptr<ASTQuerySpecificationNode>;
+  using ASTTableExpressionNodePtr = std::shared_ptr<ASTTableExpressionNode>;
+  using ASTTableReferenceNodePtr = std::shared_ptr<ASTTableReferenceNode>;
+  using ASTTableFactorNodePtr = std::shared_ptr<ASTTableFactorNode>;
+  using ASTTableIdentifierNodePtr = std::shared_ptr<ASTTableIdentifierNode>;
+  using ASTTableSubqueryNodePtr = std::shared_ptr<ASTTableSubqueryNode>;
+  using ASTJoinNodePtr = std::shared_ptr<ASTJoinNode>;
+  using ASTCrossJoinNodePtr = std::shared_ptr<ASTCrossJoinNode>;
+  using ASTNaturalJoinNodePtr = std::shared_ptr<ASTNaturalJoinNode>;
+  using ASTJoinWithConditionPtr = std::shared_ptr<ASTJoinWithCondition>;
+  using ASTInnerJoinNodePtr = std::shared_ptr<ASTInnerJoinNode>;
+  using ASTLeftJoinNodePtr = std::shared_ptr<ASTLeftJoinNode>;
+  using ASTRightJoinNodePtr = std::shared_ptr<ASTRightJoinNode>;
+  using ASTFullJoinNodePtr = std::shared_ptr<ASTFullJoinNode>;
+  using ASTExprNodePtr = std::shared_ptr<ASTExprNode>;
+  using ASTBinaryNodePtr = std::shared_ptr<ASTBinaryNode>;
+  using ASTUnaryNodePtr = std::shared_ptr<ASTUnaryNode>;
+  using ASTValueNodePtr = std::shared_ptr<ASTValueNode>;
+  using ASTLikeNodePtr = std::shared_ptr<ASTLikeNode>;
+  using ASTBetweenNodePtr = std::shared_ptr<ASTBetweenNode>;
+  using ASTInNodePtr = std::shared_ptr<ASTInNode>;
+  using ASTFunctionNodePtr = std::shared_ptr<ASTFunctionNode>;
+  using ASTAggregateFunctionNodePtr = std::shared_ptr<ASTAggregateFunctionNode>;
+  using ASTIdentifierPtr = std::shared_ptr<ASTIdentifier>;
+  using ASTQualifiedAsteriskPtr = std::shared_ptr<ASTQualifiedAsterisk>;
+  using ASTFromNodePtr = std::shared_ptr<ASTFromNode>;
+  using ASTWhereNodePtr = std::shared_ptr<ASTWhereNode>;
+  using ASTGroupByNodePtr = std::shared_ptr<ASTGroupByNode>;
+  using ASTHavingNodePtr = std::shared_ptr<ASTHavingNode>;
+  using ASTOrderByNodePtr = std::shared_ptr<ASTOrderByNode>;
+  using ASTLimitNodePtr = std::shared_ptr<ASTLimitNode>;
 
-  typedef std::vector<ASTExprNodePtr> Expressions;
-  typedef std::pair<ASTExprNodePtr, eOrder> OrderExpression;
-  typedef std::vector<OrderExpression> OrderExpressions;
-  typedef std::vector<ASTIdentifierPtr> Identifiers;
-  typedef std::vector<ASTTableReferenceNodePtr> TableReferences;
-  typedef std::set<ASTIdentifier> IdentifierSet;
+  using Expressions = std::vector<ASTExprNodePtr>;
+  using OrderExpression = std::pair<ASTExprNodePtr, eOrder>;
+  using OrderExpressions = std::vector<OrderExpression>;
+  using Identifiers = std::vector<ASTIdentifierPtr>;
+  using TableReferences = std::vector<ASTTableReferenceNodePtr>;
+  using IdentifierSet = std::set<ASTIdentifier>;
 
   struct CSVSQLDB_EXPORT ColumnDefinition {
     ColumnDefinition(const std::string& name)
@@ -159,7 +158,7 @@ namespace csvsqldb
     uint32_t _length;
   };
 
-  typedef std::vector<ColumnDefinition> ColumnDefinitions;
+  using ColumnDefinitions = std::vector<ColumnDefinition>;
 
   struct CSVSQLDB_EXPORT TableConstraint {
     std::string _name;
@@ -168,13 +167,13 @@ namespace csvsqldb
     ASTExprNodePtr _check;
   };
 
-  typedef std::vector<TableConstraint> TableConstraints;
+  using TableConstraints = std::vector<TableConstraint>;
 
   struct CSVSQLDB_EXPORT Parameter {
     ASTExprNodePtr _exp;
   };
 
-  typedef std::vector<Parameter> Parameters;
+  using Parameters = std::vector<Parameter>;
 
   struct CSVSQLDB_EXPORT NamedType {
     std::string _name;
@@ -186,12 +185,13 @@ namespace csvsqldb
     }
   };
 
-  typedef std::vector<NamedType> RelationOutputParameter;
+  using RelationOutputParameter = std::vector<NamedType>;
 
 
   class CSVSQLDB_EXPORT ASTNodeVisitor
   {
   public:
+    ASTNodeVisitor() = default;
     virtual ~ASTNodeVisitor() = default;
 
     virtual void visit(ASTCreateTableNode& node) = 0;
@@ -229,15 +229,14 @@ namespace csvsqldb
     virtual void visit(ASTHavingNode& node) = 0;
     virtual void visit(ASTOrderByNode& node) = 0;
     virtual void visit(ASTLimitNode& node) = 0;
-
-  protected:
-    ASTNodeVisitor() = default;
   };
 
 
   class CSVSQLDB_EXPORT ASTExpressionNodeVisitor : public ASTNodeVisitor
   {
   public:
+    ASTExpressionNodeVisitor() = default;
+
     void visit(ASTBinaryNode& node) override
     {
     }
@@ -371,15 +370,17 @@ namespace csvsqldb
     {
       CSVSQLDB_THROW(SqlParserException, "Visting non expression node");
     }
-
-  protected:
-    ASTExpressionNodeVisitor() = default;
   };
 
 
   class CSVSQLDB_EXPORT ASTNode
   {
   public:
+    ASTNode(const SymbolTablePtr& symbolTable)
+    : _symbolTable(symbolTable)
+    {
+    }
+
     virtual ~ASTNode() = default;
 
     SymbolTablePtr symbolTable() const
@@ -394,11 +395,6 @@ namespace csvsqldb
     virtual void accept(ASTNodeVisitor& visitor) = 0;
 
   protected:
-    ASTNode(const SymbolTablePtr& symbolTable)
-    : _symbolTable(symbolTable)
-    {
-    }
-
     SymbolTablePtr _symbolTable;
   };
 
@@ -1342,5 +1338,3 @@ namespace csvsqldb
     std::string _tableName;
   };
 }
-
-#endif

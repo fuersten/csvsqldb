@@ -31,8 +31,7 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-#ifndef CSVSQLDB_INC_H
-#define CSVSQLDB_INC_H
+#pragma once
 
 #if defined _MSC_VER
   #if defined LIBCSVSQLDB
@@ -42,6 +41,4 @@
   #endif
 #else
   #define CSVSQLDB_EXPORT
-#endif
-
 #endif

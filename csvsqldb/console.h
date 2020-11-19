@@ -31,8 +31,7 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-#ifndef csvsqldb_console_h
-#define csvsqldb_console_h
+#pragma once
 
 #include "libcsvsqldb/inc.h"
 #include "libcsvsqldb/types.h"
@@ -52,8 +51,8 @@ namespace csvsqldb
   class CSVSQLDB_EXPORT Console
   {
   public:
-    typedef std::function<bool(const csvsqldb::StringVector&)> CommandFunction;
-    typedef std::function<bool(const std::string&)> DefaultCommandFunction;
+    using CommandFunction = std::function<bool(const csvsqldb::StringVector&)>;
+    using DefaultCommandFunction = std::function<bool(const std::string&)>;
 
     Console(const std::string& prompt, const fs::path& historyPath, uint16_t historyLength = 128);
 
@@ -73,7 +72,7 @@ namespace csvsqldb
     void clearHistory();
 
   private:
-    typedef std::map<std::string, CommandFunction> Commands;
+    using Commands = std::map<std::string, CommandFunction>;
 
     fs::path _historyPath;
     Commands _commands;
@@ -82,5 +81,3 @@ namespace csvsqldb
     bool _stop;
   };
 }
-
-#endif

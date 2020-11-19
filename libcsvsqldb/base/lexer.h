@@ -31,8 +31,7 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-#ifndef csvsqldb_lexer_h
-#define csvsqldb_lexer_h
+#pragma once
 
 #include "libcsvsqldb/inc.h"
 
@@ -68,18 +67,13 @@ namespace csvsqldb
       /**
        * Constructs an empty token. The token identifier will be set to INDEFINED.
        */
-      Token()
-      : _token(UNDEFINED)
-      , _lineCount(0)
-      , _charCount(0)
-      {
-      }
+      Token() = default;
 
-      std::string _name;    //!< Name/group of the token
-      int32_t _token;       //!< The token identifier, either an eToken or a user defined value
-      std::string _value;   //!< The corresponding string value of the token
-      uint32_t _lineCount;  //!< The starting line of the token
-      uint16_t _charCount;  //!< The starting column position of the token
+      std::string _name;          //!< Name/group of the token
+      int32_t _token{UNDEFINED};  //!< The token identifier, either an eToken or a user defined value
+      std::string _value;         //!< The corresponding string value of the token
+      uint32_t _lineCount{0};     //!< The starting line of the token
+      uint16_t _charCount{0};     //!< The starting column position of the token
     };
 
     /**
@@ -95,7 +89,7 @@ namespace csvsqldb
     class CSVSQLDB_EXPORT Lexer
     {
     public:
-      typedef std::function<void(Token&)> InspectTokenCallback;
+      using InspectTokenCallback = std::function<void(Token&)>;
       /**
        * Constructs a Lexer
        */
@@ -162,7 +156,7 @@ namespace csvsqldb
         std::regex _rx;
         int32_t _token;
       };
-      typedef std::vector<TokenDefinition> TokenDefinitionVector;
+      using TokenDefinitionVector = std::vector<TokenDefinition>;
 
       TokenDefinitionVector _tokenDefinitions;
       InspectTokenCallback _callback;
@@ -174,5 +168,3 @@ namespace csvsqldb
     };
   }
 }
-
-#endif

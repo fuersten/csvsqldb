@@ -125,12 +125,12 @@ namespace csvsqldb
   }
 
 
-  const int64_t sSecond = 1;
-  const int64_t sMinute = 2;
-  const int64_t sHour = 3;
-  const int64_t sDay = 4;
-  const int64_t sMonth = 5;
-  const int64_t sYear = 6;
+  static constexpr int64_t sSecond = 1;
+  static constexpr int64_t sMinute = 2;
+  static constexpr int64_t sHour = 3;
+  static constexpr int64_t sDay = 4;
+  static constexpr int64_t sMonth = 5;
+  static constexpr int64_t sYear = 6;
 
   ExtractFunction::ExtractFunction()
   : Function("EXTRACT", INT, Types({INT, TIMESTAMP}))

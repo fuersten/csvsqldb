@@ -31,8 +31,7 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-#ifndef csvsqldb_csv_string_parser_h
-#define csvsqldb_csv_string_parser_h
+#pragma once
 
 #include "libcsvsqldb/inc.h"
 
@@ -62,8 +61,8 @@ namespace csvsqldb
     class CSVSQLDB_EXPORT CSVStringParser
     {
     public:
-      typedef std::vector<char> BufferType;
-      typedef std::function<char(bool)> ReadFunction;
+      using BufferType = std::vector<char>;
+      using ReadFunction = std::function<char(bool)>;
 
       /**
        * Constructs a CSV string parser.
@@ -129,11 +128,8 @@ namespace csvsqldb
       const size_t _bufferSize;
       ReadFunction _readFunction;
       size_t _currentBufferSize;
-      eState _currentState;
+      eState _currentState{START};
       std::vector<std::vector<State>> _transitionTable;
     };
   }
 }
-
-
-#endif

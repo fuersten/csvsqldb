@@ -31,8 +31,7 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-#ifndef csvsqldb_operation_node_factory_h
-#define csvsqldb_operation_node_factory_h
+#pragma once
 
 #include "libcsvsqldb/inc.h"
 
@@ -90,5 +89,3 @@ namespace csvsqldb
                                                                      const SymbolInfo& tableInfo);
   };
 }
-
-#endif

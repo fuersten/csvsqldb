@@ -32,7 +32,6 @@
 //
 
 #pragma once
-
 #include <nlohmann/json.hpp>
 
 // for convenience

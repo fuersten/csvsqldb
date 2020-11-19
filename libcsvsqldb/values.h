@@ -31,8 +31,7 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-#ifndef csvsqldb_values_h
-#define csvsqldb_values_h
+#pragma once
 
 #include "libcsvsqldb/inc.h"
 
@@ -49,7 +48,14 @@ namespace csvsqldb
   class CSVSQLDB_EXPORT Value
   {
   public:
+    Value() = default;
+
     virtual ~Value() = default;
+
+    Value(const Value&) = default;
+    Value& operator=(const Value&) = default;
+    Value(Value&&) = default;
+    Value& operator=(Value&&) = default;
 
     virtual void toStream(std::ostream& stream) const = 0;
 
@@ -757,5 +763,3 @@ namespace std
     }
   };
 }
-
-#endif

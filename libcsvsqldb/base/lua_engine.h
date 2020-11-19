@@ -31,8 +31,7 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-#ifndef csvsqldb_lua_engine_h
-#define csvsqldb_lua_engine_h
+#pragma once
 
 #include "libcsvsqldb/inc.h"
 
@@ -946,10 +945,7 @@ namespace csvsqldb
 
       mutable LuaState _L;
 
-      typedef std::map<std::string, FunctionObject*> FunctionMap;
-      FunctionMap _functions;
+      std::map<std::string, FunctionObject*> _functions;
     };
   }
 }
-
-#endif

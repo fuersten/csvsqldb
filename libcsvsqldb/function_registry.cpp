@@ -43,7 +43,7 @@ namespace csvsqldb
 
   Function::Ptr FunctionRegistry::getFunction(const std::string& funcname) const
   {
-    Functions::const_iterator iter = _functions.find(funcname);
+    const auto iter = _functions.find(funcname);
     if (iter == _functions.end()) {
       return Function::Ptr();
     }

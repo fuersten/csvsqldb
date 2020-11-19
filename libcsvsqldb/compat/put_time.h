@@ -31,8 +31,7 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-#ifndef csvsqldb_put_time_h
-#define csvsqldb_put_time_h
+#pragma once
 
 #ifdef HAS_PUT_TIME
 #include <iomanip>
@@ -56,6 +55,4 @@ namespace csvsqldb
         return buffer.data();
     }
 }
-#endif
-
 #endif

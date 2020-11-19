@@ -31,8 +31,7 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-#ifndef csvsqldb_duration_h
-#define csvsqldb_duration_h
+#pragma once
 
 #include "libcsvsqldb/inc.h"
 
@@ -112,5 +111,3 @@ namespace csvsqldb
     Duration::enSign _sign;
   };
 }
-
-#endif

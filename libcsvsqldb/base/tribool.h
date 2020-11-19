@@ -31,8 +31,7 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-#ifndef csvsqldb_tribool_h
-#define csvsqldb_tribool_h
+#pragma once
 
 #include "libcsvsqldb/inc.h"
 
@@ -136,5 +135,3 @@ namespace csvsqldb
     bool _isIndeterminate;
   };
 }
-
-#endif

@@ -31,8 +31,7 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-#ifndef csvsqldb_time_measurement_h
-#define csvsqldb_time_measurement_h
+#pragma once
 
 #include "libcsvsqldb/inc.h"
 
@@ -115,5 +114,3 @@ namespace std
 {
   CSVSQLDB_EXPORT std::ostream& operator<<(std::ostream& out, const csvsqldb::chrono::ProcessTimeDuration& duration);
 }
-
-#endif

@@ -31,8 +31,7 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-#ifndef csvsqldb_stackmachine_h
-#define csvsqldb_stackmachine_h
+#pragma once
 
 #include "libcsvsqldb/inc.h"
 
@@ -52,24 +51,22 @@ namespace csvsqldb
   class CSVSQLDB_EXPORT VariableStore
   {
   public:
-    VariableStore();
+    VariableStore() = default;
 
     void addVariable(size_t index, const Variant& value);
 
     const Variant& operator[](size_t index) const;
 
   private:
-    typedef std::vector<Variant> Variables;
-
-    Variables _variables;
+    std::vector<Variant> _variables;
   };
 
 
   class CSVSQLDB_EXPORT StackMachine
   {
   public:
-    typedef std::pair<std::string, size_t> VariableIndex;
-    typedef std::vector<VariableIndex> VariableMapping;
+    using VariableIndex = std::pair<std::string, size_t>;
+    using VariableMapping = std::vector<VariableIndex>;
 
     enum OpCode {
       ADD,
@@ -104,23 +101,17 @@ namespace csvsqldb
     struct CSVSQLDB_EXPORT Instruction {
       Instruction(OpCode opCode)
       : _opCode(opCode)
-      , _value(NONE)
-      , _refCount(nullptr)
-      , _r(nullptr)
       {
       }
 
       Instruction(OpCode opCode, Variant value)
       : _opCode(opCode)
       , _value(value)
-      , _refCount(nullptr)
-      , _r(nullptr)
       {
       }
 
       Instruction(OpCode opCode, csvsqldb::RegExp* r)
       : _opCode(opCode)
-      , _value(NONE)
       , _refCount(new RefCount)
       , _r(r)
       {
@@ -149,23 +140,20 @@ namespace csvsqldb
       }
 
       OpCode _opCode;
-      Variant _value;
-      RefCount* _refCount;
-      csvsqldb::RegExp* _r;
+      Variant _value{NONE};
+      RefCount* _refCount{nullptr};
+      csvsqldb::RegExp* _r{nullptr};
     };
 
     void addInstruction(const Instruction& instruction);
 
-    Variant& evaluate(const VariableStore& store, const FunctionRegistry& functions);
+    const Variant& evaluate(const VariableStore& store, const FunctionRegistry& functions);
 
     void reset();
 
     void dump(std::ostream& stream) const;
 
   private:
-    typedef std::vector<Instruction> Instructions;
-    typedef std::stack<Variant> ValueStack;
-
     Variant& getTopValue();
     const Variant getNextValue();
     eOperationType mapOpCodeToBinaryOperationType(OpCode code)
@@ -208,9 +196,7 @@ namespace csvsqldb
       }
     }
 
-    Instructions _instructions;
-    ValueStack _valueStack;
+    std::vector<Instruction> _instructions;
+    std::stack<Variant> _valueStack;
   };
 }
-
-#endif

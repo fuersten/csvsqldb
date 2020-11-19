@@ -31,8 +31,7 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-#ifndef csvsqldb_variant_h
-#define csvsqldb_variant_h
+#pragma once
 
 #include "libcsvsqldb/inc.h"
 
@@ -91,9 +90,9 @@ namespace csvsqldb
       const char* _string;
     };
 
-    ~Variant();
-
     Variant() = default;
+
+    ~Variant();
 
     Variant(const Variant& rhs);
 
@@ -171,7 +170,7 @@ namespace csvsqldb
   } __attribute__((__packed__));
 
 
-  typedef std::vector<Variant> Variants;
+  using Variants = std::vector<Variant>;
 
   CSVSQLDB_EXPORT Variant typedValueToVariant(const TypedValue& value);
   CSVSQLDB_EXPORT Variant valueToVariant(const Value& value);
@@ -267,5 +266,3 @@ namespace std
     }
   };
 }
-
-#endif
