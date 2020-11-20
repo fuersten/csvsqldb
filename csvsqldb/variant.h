@@ -118,6 +118,8 @@ namespace csvsqldb
 
     Variant(const std::string& s);
 
+    bool isDisconnected() const;
+
     void disconnect();
 
     Variant& operator=(const Variant& rhs);

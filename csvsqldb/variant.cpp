@@ -168,6 +168,15 @@ namespace csvsqldb
     const_cast<char*>(_storage._string)[len] = '\0';
   }
 
+  bool Variant::isDisconnected() const
+  {
+    if (_type != STRING) {
+      return true;
+    }
+
+    return !_isNull && _type == STRING && _refCount;
+  }
+
   void Variant::disconnect()
   {
     if (!_isNull && _type == STRING && !_refCount) {

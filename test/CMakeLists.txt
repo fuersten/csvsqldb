@@ -7,6 +7,7 @@ endif()
 add_executable(csvsqldbtest 
     main.cpp
 
+    aggregation_functions_test.cpp
     aggregation_test.cpp
     application_test.cpp
     block_test.cpp

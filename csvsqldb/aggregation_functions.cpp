@@ -226,6 +226,7 @@ namespace csvsqldb
     if (!value.isNull()) {
       if (_value.isNull()) {
         _value = value;
+        _value.disconnect();
       } else {
         if (value < _value) {
           _value = value;
@@ -260,6 +261,7 @@ namespace csvsqldb
     if (!value.isNull()) {
       if (_value.isNull()) {
         _value = value;
+        _value.disconnect();
       } else {
         if (_value < value) {
           _value = value;
