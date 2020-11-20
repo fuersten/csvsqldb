@@ -320,7 +320,7 @@ namespace csvsqldb
                 return !negate;
               }
             } else {
-              for (auto tmp : group) {
+              for (const auto& tmp : group) {
                 if (c == tmp) {
                   return !negate;
                 }

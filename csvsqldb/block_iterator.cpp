@@ -88,7 +88,7 @@ namespace csvsqldb
     }
 
     size_t index = 0;
-    for (auto type : _types) {
+    for (const auto& type : _types) {
       Value* val = getNextValue();
       if (!val) {
         CSVSQLDB_THROW(csvsqldb::Exception, "expected more values to fill the row (" << typeToString(type) << ")");
@@ -201,7 +201,7 @@ namespace csvsqldb
       }
 
       size_t index = 0;
-      for (auto type : _types) {
+      for (const auto& type : _types) {
         Value* val = getNextValue();
         if (!val) {
           CSVSQLDB_THROW(csvsqldb::Exception, "expected more values to fill the row (" << typeToString(type) << ")");
@@ -475,7 +475,7 @@ namespace csvsqldb
     }
 
     size_t index = 0;
-    for (auto type : _types) {
+    for (const auto& type : _types) {
       Value* val = getNextValue();
       if (!val) {
         CSVSQLDB_THROW(csvsqldb::Exception, "expected more values to fill the row (" << typeToString(type) << ")");
@@ -699,7 +699,7 @@ namespace csvsqldb
     }
 
     size_t index = 0;
-    for (auto type : _types) {
+    for (const auto& type : _types) {
       Value* val = getNextValue();
       if (!val) {
         CSVSQLDB_THROW(csvsqldb::Exception, "expected more values to fill the row");

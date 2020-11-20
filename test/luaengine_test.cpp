@@ -144,7 +144,7 @@ TEST_CASE("Lua Engine Test", "[lua]")
 
     CHECK(4u == properties.size());
     std::set<std::string> props;
-    for (auto& property : properties) {
+    for (const auto& property : properties) {
       props.insert(property);
     }
     CHECK(4u == props.size());

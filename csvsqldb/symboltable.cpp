@@ -206,7 +206,7 @@ namespace csvsqldb
 
   bool SymbolTable::hasSymbolNameForTable(const std::string& tableName, const std::string& columnName) const
   {
-    for (auto& info : _symbols) {
+    for (const auto& info : _symbols) {
       if (info->_symbolType == PLAIN && (info->_relation == tableName && info->_identifier == columnName)) {
         return true;
       }
@@ -216,7 +216,7 @@ namespace csvsqldb
 
   const SymbolInfoPtr& SymbolTable::findSymbolNameForTable(const std::string& tableName, const std::string& columnName) const
   {
-    for (auto& info : _symbols) {
+    for (const auto& info : _symbols) {
       if (info->_symbolType == PLAIN && (info->_relation == tableName && info->_identifier == columnName)) {
         return info;
       }
@@ -226,7 +226,7 @@ namespace csvsqldb
 
   const SymbolInfoPtr& SymbolTable::findAliasedSymbol(const std::string& alias) const
   {
-    for (auto& info : _symbols) {
+    for (const auto& info : _symbols) {
       if (info->_alias == alias) {
         return info;
       }
@@ -238,7 +238,7 @@ namespace csvsqldb
   {
     SymbolInfos symbols;
 
-    for (auto& info : _symbols) {
+    for (const auto& info : _symbols) {
       if (info->_symbolType == PLAIN && info->_relation == tableName) {
         symbols.push_back(info);
       }
@@ -303,7 +303,7 @@ namespace csvsqldb
       const TableData& tableData = database.getTable(table->_identifier);
       std::string ident = info->_identifier;
       if (!tableData.hasColumn(ident)) {
-        for (auto& info2 : _symbols) {
+        for (const auto& info2 : _symbols) {
           if (info2->_alias == ident) {
             ident = info2->_identifier;
             break;
@@ -374,7 +374,7 @@ namespace csvsqldb
     SymbolInfos tables = getTables();
     fillWithTableData(database, tables);
 
-    for (auto& info : _symbols) {
+    for (const auto& info : _symbols) {
       if (info->_symbolType == PLAIN && info->_qualifiedIdentifier.empty()) {
         if (!info->_prefix.empty()) {
           if (!fillInfoFromTablePrefix(database, tables, info)) {

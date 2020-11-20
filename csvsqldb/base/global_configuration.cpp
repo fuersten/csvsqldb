@@ -50,7 +50,7 @@ namespace csvsqldb
     if (_configuration->hasProperty("debug.level")) {
       StringVector properties;
       _configuration->getProperties("debug.level", properties);
-      for (auto& property : properties) {
+      for (const auto& property : properties) {
         debug.level.insert(std::make_pair(property, _configuration->get<int32_t>("debug.level." + property)));
       }
     }

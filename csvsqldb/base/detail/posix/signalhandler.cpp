@@ -74,7 +74,7 @@ namespace csvsqldb
               case SIGUSR1:
               case SIGUSR2: {
                 CSVSQLDB_CLASSLOG(SignalHandler, 1, "Signal " << sig_caught << " intercepted.");
-                for (auto handler : _sighandler->handler(sig_caught)) {
+                for (auto& handler : _sighandler->handler(sig_caught)) {
                   if (handler->onSignal(sig_caught) < 0) {
                     break;
                   }

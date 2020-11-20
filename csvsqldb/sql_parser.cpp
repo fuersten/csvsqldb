@@ -890,7 +890,7 @@ namespace csvsqldb
       if (op == OP_LIKE) {
         std::string value = expect(TOK_CONST_STRING);
         std::stringstream regexp;
-        for (auto& c : value) {
+        for (const auto& c : value) {
           switch (c) {
             case '%':
               regexp << ".*";

@@ -1417,7 +1417,7 @@ namespace csvsqldb
     _iterator = std::make_shared<BlockIterator>(_types, *this, getBlockManager());
 
     csvsqldb::csv::Types types;
-    for (auto& type : _types) {
+    for (const auto& type : _types) {
       switch (type) {
         case INT:
           types.push_back(csvsqldb::csv::LONG);
