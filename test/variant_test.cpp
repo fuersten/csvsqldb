@@ -31,8 +31,8 @@
 //
 
 
-#include "libcsvsqldb/base/float_helper.h"
-#include "libcsvsqldb/variant.h"
+#include "csvsqldb/base/float_helper.h"
+#include "csvsqldb/variant.h"
 
 #include <catch2/catch.hpp>
 

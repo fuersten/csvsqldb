@@ -31,10 +31,10 @@
 //
 
 
-#include "libcsvsqldb/execution_plan_creator.h"
-#include "libcsvsqldb/operatornode_factory.h"
-#include "libcsvsqldb/sql_parser.h"
-#include "libcsvsqldb/validation_visitor.h"
+#include "csvsqldb/execution_plan_creator.h"
+#include "csvsqldb/operatornode_factory.h"
+#include "csvsqldb/sql_parser.h"
+#include "csvsqldb/validation_visitor.h"
 
 #include "temporary_directory.h"
 

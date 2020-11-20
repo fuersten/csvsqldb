@@ -31,7 +31,7 @@
 //
 
 
-#include "libcsvsqldb/base/application.h"
+#include "csvsqldb/base/application.h"
 
 #include "test_helper.h"
 

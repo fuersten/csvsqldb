@@ -31,7 +31,7 @@
 //
 
 
-#include "libcsvsqldb/base/csv_string_parser.h"
+#include "csvsqldb/base/csv_string_parser.h"
 
 #include "test/test_util.h"
 #include "test_helper.h"

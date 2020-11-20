@@ -31,8 +31,8 @@
 //
 
 
-#include "libcsvsqldb/sql_parser.h"
-#include "libcsvsqldb/tabledata.h"
+#include "csvsqldb/sql_parser.h"
+#include "csvsqldb/tabledata.h"
 
 #include <catch2/catch.hpp>
 

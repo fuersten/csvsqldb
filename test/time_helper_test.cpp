@@ -31,9 +31,9 @@
 //
 
 
-#include "libcsvsqldb/base/date.h"
-#include "libcsvsqldb/base/string_helper.h"
-#include "libcsvsqldb/base/time_helper.h"
+#include "csvsqldb/base/date.h"
+#include "csvsqldb/base/string_helper.h"
+#include "csvsqldb/base/time_helper.h"
 
 #include <catch2/catch.hpp>
 

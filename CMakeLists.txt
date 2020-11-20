@@ -77,7 +77,7 @@ find_package(Doxygen OPTIONAL_COMPONENTS dot)
 if(DOXYGEN_FOUND)
   set(DOXYGEN_PROJECT_BRIEF "A read only sql database that gets its data from supplied csv files.")
   set(DOXYGEN_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/doc)
-  set(DOXYGEN_STRIP_FROM_INC_PATH ${PROJECT_SOURCE_DIR}/libcsvsqldb)
+  set(DOXYGEN_STRIP_FROM_INC_PATH ${PROJECT_SOURCE_DIR}/csvsqldb)
   set(DOXYGEN_TAB_SIZE 2)
   set(DOXYGEN_BUILTIN_STL_SUPPORT YES)
   set(DOXYGEN_INLINE_SIMPLE_STRUCTS YES)
@@ -88,12 +88,12 @@ if(DOXYGEN_FOUND)
   set(DOXYGEN_RECURSIVE YES)
   set(DOXYGEN_EXCLUDE_PATTERNS "*/detail*")
   doxygen_add_docs(cmdoc
-          ${CMAKE_SOURCE_DIR}/libcsvsqldb
+          ${CMAKE_SOURCE_DIR}/csvsqldb
           COMMENT "Generate HTML API documentation")
 else(DOXYGEN_FOUND)
   message("Doxygen needs to be installed to generate the doxygen documentation")
 endif()
 
+add_subdirectory(apps)
 add_subdirectory(csvsqldb)
-add_subdirectory(libcsvsqldb)
 add_subdirectory(test)

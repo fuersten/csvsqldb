@@ -31,8 +31,8 @@
 //
 
 
-#include "libcsvsqldb/base/lexer.h"
-#include "libcsvsqldb/base/string_helper.h"
+#include "csvsqldb/base/lexer.h"
+#include "csvsqldb/base/string_helper.h"
 
 #include "test/test_util.h"
 #include "test_helper.h"

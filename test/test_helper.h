@@ -33,7 +33,7 @@
 
 #pragma once
 
-#include "libcsvsqldb/base/exception.h"
+#include "csvsqldb/base/exception.h"
 
 #include "test/test_util.h"
 

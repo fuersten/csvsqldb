@@ -31,7 +31,7 @@
 //
 
 
-#include "libcsvsqldb/sql_ast.h"
+#include "csvsqldb/sql_ast.h"
 
 #include <catch2/catch.hpp>
 

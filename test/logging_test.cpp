@@ -31,9 +31,9 @@
 //
 
 
-#include "libcsvsqldb/base/configuration.h"
-#include "libcsvsqldb/base/log_devices.h"
-#include "libcsvsqldb/base/logging.h"
+#include "csvsqldb/base/configuration.h"
+#include "csvsqldb/base/log_devices.h"
+#include "csvsqldb/base/logging.h"
 
 #include "test_helper.h"
 

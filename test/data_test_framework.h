@@ -32,8 +32,8 @@
 
 #pragma once
 
-#include "libcsvsqldb/base/string_helper.h"
-#include "libcsvsqldb/execution_engine.h"
+#include "csvsqldb/base/string_helper.h"
+#include "csvsqldb/execution_engine.h"
 
 #include "temporary_directory.h"
 #include <initializer_list>

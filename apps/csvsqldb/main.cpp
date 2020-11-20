@@ -31,18 +31,18 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-#include "libcsvsqldb/base/application.h"
-#include "libcsvsqldb/base/default_configuration.h"
-#include "libcsvsqldb/base/exception.h"
-#include "libcsvsqldb/base/glob.h"
-#include "libcsvsqldb/base/global_configuration.h"
-#include "libcsvsqldb/base/logging.h"
-#include "libcsvsqldb/base/lua_configuration.h"
-#include "libcsvsqldb/base/signalhandler.h"
-#include "libcsvsqldb/base/string_helper.h"
-#include "libcsvsqldb/base/time_measurement.h"
-#include "libcsvsqldb/execution_engine.h"
-#include "libcsvsqldb/version.h"
+#include "csvsqldb/base/application.h"
+#include "csvsqldb/base/default_configuration.h"
+#include "csvsqldb/base/exception.h"
+#include "csvsqldb/base/glob.h"
+#include "csvsqldb/base/global_configuration.h"
+#include "csvsqldb/base/logging.h"
+#include "csvsqldb/base/lua_configuration.h"
+#include "csvsqldb/base/signalhandler.h"
+#include "csvsqldb/base/string_helper.h"
+#include "csvsqldb/base/time_measurement.h"
+#include "csvsqldb/execution_engine.h"
+#include "csvsqldb/version.h"
 
 #include "console.h"
 #include <CLI/App.hpp>

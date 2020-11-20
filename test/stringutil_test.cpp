@@ -31,7 +31,7 @@
 //
 
 
-#include "libcsvsqldb/base/string_helper.h"
+#include "csvsqldb/base/string_helper.h"
 
 #include <catch2/catch.hpp>
 

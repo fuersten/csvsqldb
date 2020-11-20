@@ -31,7 +31,7 @@
 //
 
 
-#include "libcsvsqldb/base/tribool.h"
+#include "csvsqldb/base/tribool.h"
 
 #include <catch2/catch.hpp>
 

@@ -31,7 +31,7 @@
 //
 
 
-#include "libcsvsqldb/block.h"
+#include "csvsqldb/block.h"
 
 #include "data_test_framework.h"
 

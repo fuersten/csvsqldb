@@ -31,8 +31,8 @@
 //
 
 
-#include "libcsvsqldb/base/exception.h"
-#include "libcsvsqldb/base/thread_pool.h"
+#include "csvsqldb/base/exception.h"
+#include "csvsqldb/base/thread_pool.h"
 
 #include <condition_variable>
 
