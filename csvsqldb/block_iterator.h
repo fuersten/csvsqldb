@@ -112,6 +112,7 @@ namespace csvsqldb
 
   private:
     const Value* getNextValue();
+    void checkNextBlock();
 
     BlockProvider& _blockProvider;
     BlockManager& _blockManager;

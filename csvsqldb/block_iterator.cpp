@@ -75,13 +75,7 @@ namespace csvsqldb
     }
 
     // look for next block marker
-    if (_block->isBlock(_offset)) {
-      _blockManager.release(_previousBlock);
-      _previousBlock = _block;
-      _block = _blockProvider.getNextBlock();
-      _offset = 0;
-      _endOffset = _block->offset();
-    }
+    checkNextBlock();
 
     if (_offset == _endOffset) {
       CSVSQLDB_THROW(csvsqldb::Exception, "should have found the end marker in the first place");
@@ -106,13 +100,7 @@ namespace csvsqldb
     }
 
     // look for next block marker
-    if (_block->isBlock(_offset)) {
-      _blockManager.release(_previousBlock);
-      _previousBlock = _block;
-      _block = _blockProvider.getNextBlock();
-      _offset = 0;
-      _endOffset = _block->offset();
-    }
+    checkNextBlock();
 
     // look for next value marker
     if (!_block->isValue(_offset)) {
@@ -129,6 +117,20 @@ namespace csvsqldb
     _offset += val->size();
     ++_typeOffset;
     return val;
+  }
+
+  void BlockIterator::checkNextBlock()
+  {
+    if (_block->isBlock(_offset)) {
+      _blockManager.release(_previousBlock);
+      _previousBlock = _block;
+      _block = _blockProvider.getNextBlock();
+      if (!_block) {
+        CSVSQLDB_THROW(csvsqldb::Exception, "next block is missing");
+      }
+      _offset = 0;
+      _endOffset = _block->offset();
+    }
   }
 
 
