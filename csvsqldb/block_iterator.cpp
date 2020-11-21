@@ -60,27 +60,27 @@ namespace csvsqldb
     if (!_block) {
       _block = _blockProvider.getNextBlock();
       _offset = 0;
-      _endOffset = _block->_offset;
+      _endOffset = _block->offset();
     }
     if (_offset != 0) {
-      if (*(&(_block->_store)[0] + _offset) != sRowMarker) {
+      if (!_block->isRow(_offset)) {
         CSVSQLDB_THROW(csvsqldb::Exception, "should be at row delimiter");
       }
       ++_offset;
       _typeOffset = _types.begin();
     }
-    if (*(&(_block->_store)[0] + _offset) == sEndMarker) {
+    if (_block->isEnd(_offset)) {
       // no more rows left
       return nullptr;
     }
 
     // look for next block marker
-    if (*(&(_block->_store)[0] + _offset) == sBlockMarker) {
+    if (_block->isBlock(_offset)) {
       _blockManager.release(_previousBlock);
       _previousBlock = _block;
       _block = _blockProvider.getNextBlock();
       _offset = 0;
-      _endOffset = _block->_offset;
+      _endOffset = _block->offset();
     }
 
     if (_offset == _endOffset) {
@@ -106,16 +106,16 @@ namespace csvsqldb
     }
 
     // look for next block marker
-    if (*(&(_block->_store)[0] + _offset) == sBlockMarker) {
+    if (_block->isBlock(_offset)) {
       _blockManager.release(_previousBlock);
       _previousBlock = _block;
       _block = _blockProvider.getNextBlock();
       _offset = 0;
-      _endOffset = _block->_offset;
+      _endOffset = _block->offset();
     }
 
     // look for next value marker
-    if (*(&(_block->_store)[0] + _offset) != sValueMarker) {
+    if (!_block->isValue(_offset)) {
       CSVSQLDB_THROW(csvsqldb::Exception, "missing value separator");
     }
     ++_offset;
@@ -130,7 +130,7 @@ namespace csvsqldb
       case BOOLEAN:
       case INT:
       case REAL:
-        val = reinterpret_cast<Value*>(&(_block->_store)[0] + _offset);
+        val = reinterpret_cast<Value*>(_block->getRawBuffer(_offset));
         break;
       case NONE:
         CSVSQLDB_THROW(csvsqldb::Exception, "type not allowed " << typeToString(type));
@@ -180,19 +180,19 @@ namespace csvsqldb
       }
     } else {
       if (_offset != 0) {
-        if (*(&(_blocks[_currentBlock]->_store)[0] + _offset) != sRowMarker) {
+        if (!_blocks[_currentBlock]->isRow(_offset)) {
           CSVSQLDB_THROW(csvsqldb::Exception, "should be at row delimiter");
         }
         ++_offset;
         _typeOffset = _types.begin();
       }
-      if (*(&(_blocks[_currentBlock]->_store)[0] + _offset) == sEndMarker) {
+      if (_blocks[_currentBlock]->isEnd(_offset)) {
         // no more rows left
         return nullptr;
       }
 
       // look for next block marker
-      if (*(&(_blocks[_currentBlock]->_store)[0] + _offset) == sBlockMarker) {
+      if (_blocks[_currentBlock]->isBlock(_offset)) {
         getNextBlock();
       }
 
@@ -221,12 +221,12 @@ namespace csvsqldb
     }
 
     // look for next block marker
-    if (*(&(_blocks[_currentBlock]->_store)[0] + _offset) == sBlockMarker) {
+    if (_blocks[_currentBlock]->isBlock(_offset)) {
       getNextBlock();
     }
 
     // look for next value marker
-    if (*(&(_blocks[_currentBlock]->_store)[0] + _offset) != sValueMarker) {
+    if (!_blocks[_currentBlock]->isValue(_offset)) {
       CSVSQLDB_THROW(csvsqldb::Exception, "missing value separator");
     }
     ++_offset;
@@ -241,7 +241,7 @@ namespace csvsqldb
       case BOOLEAN:
       case INT:
       case REAL:
-        val = reinterpret_cast<Value*>(&(_blocks[_currentBlock]->_store)[0] + _offset);
+        val = reinterpret_cast<Value*>(_blocks[_currentBlock]->getRawBuffer(_offset));
         break;
       case NONE:
         CSVSQLDB_THROW(csvsqldb::Exception, "type not allowed " << typeToString(type));
@@ -256,7 +256,7 @@ namespace csvsqldb
     _useCache = true;
     _currentBlock = 0;
     _offset = 0;
-    _endOffset = _blocks[_currentBlock]->_offset;
+    _endOffset = _blocks[_currentBlock]->offset();
   }
 
   void CachingBlockIterator::getNextBlock()
@@ -268,7 +268,7 @@ namespace csvsqldb
     } else {
       ++_currentBlock;
       _offset = 0;
-      _endOffset = _blocks[_currentBlock]->_offset;
+      _endOffset = _blocks[_currentBlock]->offset();
     }
   }
 
@@ -287,7 +287,7 @@ namespace csvsqldb
     {
       _currentBlock = left._block;
       _offset = left._offset;
-      _endOffset = _blocks[_currentBlock]->_offset;
+      _endOffset = _blocks[_currentBlock]->offset();
       _typeOffset = _types.begin();
 
       for (size_t n = 0, count = 0; count < _types.size(); ++count) {
@@ -303,7 +303,7 @@ namespace csvsqldb
 
       _currentBlock = right._block;
       _offset = right._offset;
-      _endOffset = _blocks[_currentBlock]->_offset;
+      _endOffset = _blocks[_currentBlock]->offset();
       _typeOffset = _types.begin();
 
       for (size_t n = 0, count = 0; count < _types.size(); ++count) {
@@ -354,12 +354,12 @@ namespace csvsqldb
       }
 
       // look for next block marker
-      if (*(&(_blocks[_currentBlock]->_store)[0] + _offset) == sBlockMarker) {
+      if (_blocks[_currentBlock]->isBlock(_offset)) {
         getNextBlock();
       }
 
       // look for next value marker
-      if (*(&(_blocks[_currentBlock]->_store)[0] + _offset) != sValueMarker) {
+      if (!_blocks[_currentBlock]->isValue(_offset)) {
         CSVSQLDB_THROW(csvsqldb::Exception, "missing value separator");
       }
       ++_offset;
@@ -374,7 +374,7 @@ namespace csvsqldb
         case BOOLEAN:
         case INT:
         case REAL:
-          val = reinterpret_cast<Value*>(&(_blocks[_currentBlock]->_store)[0] + _offset);
+          val = reinterpret_cast<Value*>(_blocks[_currentBlock]->getRawBuffer(_offset));
           break;
         case NONE:
           CSVSQLDB_THROW(csvsqldb::Exception, "type not allowed " << typeToString(type));
@@ -388,7 +388,7 @@ namespace csvsqldb
     {
       ++_currentBlock;
       _offset = 0;
-      _endOffset = _blocks[_currentBlock]->_offset;
+      _endOffset = _blocks[_currentBlock]->offset();
     }
 
     const Types& _types;
@@ -465,11 +465,11 @@ namespace csvsqldb
     }
 
     _currentBlock = _rowIter->_block;
-    _endOffset = _blocks[_currentBlock]->_offset;
+    _endOffset = _blocks[_currentBlock]->offset();
     _offset = _rowIter->_offset;
     _typeOffset = _types.begin();
 
-    if (*(&(_blocks[_currentBlock]->_store)[0] + _offset) == sEndMarker) {
+    if (_blocks[_currentBlock]->isEnd(_offset)) {
       // no more rows left
       return nullptr;
     }
@@ -496,12 +496,12 @@ namespace csvsqldb
     }
 
     // look for next block marker
-    if (*(&(_blocks[_currentBlock]->_store)[0] + _offset) == sBlockMarker) {
+    if (_blocks[_currentBlock]->isBlock(_offset)) {
       getNextBlock();
     }
 
     // look for next value marker
-    if (*(&(_blocks[_currentBlock]->_store)[0] + _offset) != sValueMarker) {
+    if (!_blocks[_currentBlock]->isValue(_offset)) {
       CSVSQLDB_THROW(csvsqldb::Exception, "missing value separator");
     }
     ++_offset;
@@ -516,7 +516,7 @@ namespace csvsqldb
       case BOOLEAN:
       case INT:
       case REAL:
-        val = reinterpret_cast<Value*>(&(_blocks[_currentBlock]->_store)[0] + _offset);
+        val = reinterpret_cast<Value*>(_blocks[_currentBlock]->getRawBuffer(_offset));
         break;
       case NONE:
         CSVSQLDB_THROW(csvsqldb::Exception, "type not allowed " << typeToString(type));
@@ -535,7 +535,7 @@ namespace csvsqldb
     } else {
       ++_currentBlock;
       _offset = 0;
-      _endOffset = _blocks[_currentBlock]->_offset;
+      _endOffset = _blocks[_currentBlock]->offset();
     }
   }
 
@@ -673,24 +673,24 @@ namespace csvsqldb
       // reset to start of blocks
       _currentBlock = 0;
       _offset = 0;
-      _endOffset = _blocks[_currentBlock]->_offset;
+      _endOffset = _blocks[_currentBlock]->offset();
       _useCache = true;
     }
     _typeOffset = _types.begin();
     if (_offset != 0) {
-      if (*(&(_blocks[_currentBlock]->_store)[0] + _offset) != sRowMarker) {
+      if (!_blocks[_currentBlock]->isRow(_offset)) {
         CSVSQLDB_THROW(csvsqldb::Exception, "should be at row delimiter");
       }
       ++_offset;
       _typeOffset = _types.begin();
     }
-    if (*(&(_blocks[_currentBlock]->_store)[0] + _offset) == sEndMarker) {
+    if (_blocks[_currentBlock]->isEnd(_offset)) {
       // no more rows left
       return nullptr;
     }
 
     // look for next block marker
-    if (*(&(_blocks[_currentBlock]->_store)[0] + _offset) == sBlockMarker) {
+    if (_blocks[_currentBlock]->isBlock(_offset)) {
       getNextBlock();
     }
 
@@ -721,12 +721,12 @@ namespace csvsqldb
     }
 
     // look for next block marker
-    if (*(&(_blocks[_currentBlock]->_store)[0] + _offset) == sBlockMarker) {
+    if (_blocks[_currentBlock]->isBlock(_offset)) {
       getNextBlock();
     }
 
     // look for next value marker
-    if (*(&(_blocks[_currentBlock]->_store)[0] + _offset) != sValueMarker) {
+    if (!_blocks[_currentBlock]->isValue(_offset)) {
       CSVSQLDB_THROW(csvsqldb::Exception, "missing value separator");
     }
     ++_offset;
@@ -741,7 +741,7 @@ namespace csvsqldb
       case BOOLEAN:
       case INT:
       case REAL:
-        val = reinterpret_cast<Value*>(&(_blocks[_currentBlock]->_store)[0] + _offset);
+        val = reinterpret_cast<Value*>(_blocks[_currentBlock]->getRawBuffer(_offset));
         break;
       case NONE:
         CSVSQLDB_THROW(csvsqldb::Exception, "type not allowed " << typeToString(type));
@@ -760,7 +760,7 @@ namespace csvsqldb
     } else {
       ++_currentBlock;
       _offset = 0;
-      _endOffset = _blocks[_currentBlock]->_offset;
+      _endOffset = _blocks[_currentBlock]->offset();
     }
   }
 
@@ -804,7 +804,7 @@ namespace csvsqldb
     if (_context._it != _context._end) {
       _currentBlock = _context._it->second._block;
       _offset = _context._it->second._offset;
-      _endOffset = _blocks[_currentBlock]->_offset;
+      _endOffset = _blocks[_currentBlock]->offset();
       _typeOffset = _types.begin();
       ++_context._it;
 
@@ -833,7 +833,7 @@ namespace csvsqldb
       if (row) {
         BlockPosition pos;
         pos._block = _currentBlock;
-        pos._offset = _blocks[_currentBlock]->_offset;
+        pos._offset = _blocks[_currentBlock]->offset();
 
         size_t n = 0;
         for (const auto& value : *row) {
@@ -853,19 +853,19 @@ namespace csvsqldb
       }
     } else {
       if (_offset != 0) {
-        if (*(&(_blocks[_currentBlock]->_store)[0] + _offset) != sRowMarker) {
+        if (!_blocks[_currentBlock]->isRow(_offset)) {
           CSVSQLDB_THROW(csvsqldb::Exception, "should be at row delimiter");
         }
         ++_offset;
         _typeOffset = _types.begin();
       }
-      if (*(&(_blocks[_currentBlock]->_store)[0] + _offset) == sEndMarker) {
+      if (_blocks[_currentBlock]->isEnd(_offset)) {
         // no more rows left
         return nullptr;
       }
 
       // look for next block marker
-      if (*(&(_blocks[_currentBlock]->_store)[0] + _offset) == sBlockMarker) {
+      if (_blocks[_currentBlock]->isBlock(_offset)) {
         getNextBlock();
       }
 
@@ -897,12 +897,12 @@ namespace csvsqldb
     }
 
     // look for next block marker
-    if (*(&(_blocks[_currentBlock]->_store)[0] + _offset) == sBlockMarker) {
+    if (_blocks[_currentBlock]->isBlock(_offset)) {
       getNextBlock();
     }
 
     // look for next value marker
-    if (*(&(_blocks[_currentBlock]->_store)[0] + _offset) != sValueMarker) {
+    if (!_blocks[_currentBlock]->isValue(_offset)) {
       CSVSQLDB_THROW(csvsqldb::Exception, "missing value separator");
     }
     ++_offset;
@@ -917,7 +917,7 @@ namespace csvsqldb
       case BOOLEAN:
       case INT:
       case REAL:
-        val = reinterpret_cast<Value*>(&(_blocks[_currentBlock]->_store)[0] + _offset);
+        val = reinterpret_cast<Value*>(_blocks[_currentBlock]->getRawBuffer(_offset));
         break;
       case NONE:
         CSVSQLDB_THROW(csvsqldb::Exception, "type not allowed " << typeToString(type));
@@ -950,7 +950,7 @@ namespace csvsqldb
     } else {
       ++_currentBlock;
       _offset = 0;
-      _endOffset = _blocks[_currentBlock]->_offset;
+      _endOffset = _blocks[_currentBlock]->offset();
     }
   }
 }

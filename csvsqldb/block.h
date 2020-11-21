@@ -152,17 +152,62 @@ namespace csvsqldb
       return _offset;
     }
 
-    void moveOffset(size_t add)
-    {
-      _offset += add;
-    }
-
     inline StoreType* getRawBuffer()
     {
       return &_store[_offset];
     }
 
-    bool hasSizeFor(size_t size) const;
+    inline StoreType* getRawBuffer(size_t offset)
+    {
+      return &_store[offset];
+    }
+
+    inline bool isValue(size_t offset) const
+    {
+      return (*(&_store[0] + offset) == sValueMarker);
+    }
+
+    inline bool isRow(size_t offset) const
+    {
+      return (*(&_store[0] + offset) == sRowMarker);
+    }
+
+    inline bool isBlock(size_t offset) const
+    {
+      return (*(&_store[0] + offset) == sBlockMarker);
+    }
+
+    inline bool isEnd(size_t offset) const
+    {
+      return (*(&_store[0] + offset) == sEndMarker);
+    }
+
+    inline bool hasSizeFor(size_t size) const
+    {
+      return _offset + size + 2 < _capacity;
+    }
+
+    template<typename T>
+    T* allocate()
+    {
+      if (!hasSizeFor(sizeof(T))) {
+        return nullptr;
+      }
+      T* t = new (&_store[_offset]) T();
+      _offset += sizeof(T);
+      return t;
+    }
+
+    template<typename T, typename A>
+    T* allocate(A arg)
+    {
+      if (!hasSizeFor(sizeof(T))) {
+        return nullptr;
+      }
+      T* t = new (&_store[_offset]) T(arg);
+      _offset += sizeof(T);
+      return t;
+    }
 
   private:
     void markValue();
@@ -171,13 +216,5 @@ namespace csvsqldb
     size_t _offset{0};
     size_t _blockNumber{0};
     std::unique_ptr<StoreType[]> _store;
-
-    friend class BlockIterator;
-    friend class CachingBlockIterator;
-    friend class SortingBlockIterator;
-    friend class GroupingBlockIterator;
-    friend class HashingBlockIterator;
-    friend struct SortOperation;
-    friend struct GroupingElement;
   };
 }

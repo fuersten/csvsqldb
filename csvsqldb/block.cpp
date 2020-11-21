@@ -120,11 +120,6 @@ namespace csvsqldb
   {
   }
 
-  bool Block::hasSizeFor(size_t size) const
-  {
-    return _offset + size + 2 < _capacity;
-  }
-
   Value* Block::addInt(int64_t num, bool isNull)
   {
     Value* val = nullptr;

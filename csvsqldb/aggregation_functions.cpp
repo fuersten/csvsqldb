@@ -59,12 +59,7 @@ namespace csvsqldb
 
   AggregationFunction* CountAggregationFunction::clone(BlockPtr block) const
   {
-    if (!block->hasSizeFor(sizeof(CountAggregationFunction))) {
-      return nullptr;
-    }
-    AggregationFunction* tmp = new (block->getRawBuffer()) CountAggregationFunction();
-    block->moveOffset(sizeof(CountAggregationFunction));
-    return tmp;
+    return block->allocate<CountAggregationFunction>();
   }
 
   void CountAggregationFunction::doInit()
@@ -90,12 +85,7 @@ namespace csvsqldb
 
   AggregationFunction* RowCountAggregationFunction::clone(BlockPtr block) const
   {
-    if (!block->hasSizeFor(sizeof(RowCountAggregationFunction))) {
-      return nullptr;
-    }
-    AggregationFunction* tmp = new (block->getRawBuffer()) RowCountAggregationFunction();
-    block->moveOffset(sizeof(RowCountAggregationFunction));
-    return tmp;
+    return block->allocate<RowCountAggregationFunction>();
   }
 
   void RowCountAggregationFunction::doInit()
@@ -115,12 +105,7 @@ namespace csvsqldb
 
   AggregationFunction* PaththroughAggregationFunction::clone(BlockPtr block) const
   {
-    if (!block->hasSizeFor(sizeof(PaththroughAggregationFunction))) {
-      return nullptr;
-    }
-    AggregationFunction* tmp = new (block->getRawBuffer()) PaththroughAggregationFunction(_suppress);
-    block->moveOffset(sizeof(PaththroughAggregationFunction));
-    return tmp;
+    return block->allocate<PaththroughAggregationFunction>(_suppress);
   }
 
   void PaththroughAggregationFunction::doInit()
@@ -143,12 +128,7 @@ namespace csvsqldb
 
   AggregationFunction* SumAggregationFunction::clone(BlockPtr block) const
   {
-    if (!block->hasSizeFor(sizeof(SumAggregationFunction))) {
-      return nullptr;
-    }
-    AggregationFunction* tmp = new (block->getRawBuffer()) SumAggregationFunction(_sum.getType());
-    block->moveOffset(sizeof(SumAggregationFunction));
-    return tmp;
+    return block->allocate<SumAggregationFunction>(_sum.getType());
   }
 
   void SumAggregationFunction::doInit()
@@ -174,12 +154,7 @@ namespace csvsqldb
 
   AggregationFunction* AvgAggregationFunction::clone(BlockPtr block) const
   {
-    if (!block->hasSizeFor(sizeof(AvgAggregationFunction))) {
-      return nullptr;
-    }
-    AggregationFunction* tmp = new (block->getRawBuffer()) AvgAggregationFunction(_sum.getType());
-    block->moveOffset(sizeof(AvgAggregationFunction));
-    return tmp;
+    return block->allocate<AvgAggregationFunction>(_sum.getType());
   }
 
   void AvgAggregationFunction::doInit()
@@ -209,12 +184,7 @@ namespace csvsqldb
 
   AggregationFunction* MinAggregationFunction::clone(BlockPtr block) const
   {
-    if (!block->hasSizeFor(sizeof(MinAggregationFunction))) {
-      return nullptr;
-    }
-    AggregationFunction* tmp = new (block->getRawBuffer()) MinAggregationFunction(_value.getType());
-    block->moveOffset(sizeof(MinAggregationFunction));
-    return tmp;
+    return block->allocate<MinAggregationFunction>(_value.getType());
   }
 
   void MinAggregationFunction::doInit()
@@ -244,12 +214,7 @@ namespace csvsqldb
 
   AggregationFunction* MaxAggregationFunction::clone(BlockPtr block) const
   {
-    if (!block->hasSizeFor(sizeof(MaxAggregationFunction))) {
-      return nullptr;
-    }
-    AggregationFunction* tmp = new (block->getRawBuffer()) MaxAggregationFunction(_value.getType());
-    block->moveOffset(sizeof(MaxAggregationFunction));
-    return tmp;
+    return block->allocate<MaxAggregationFunction>(_value.getType());
   }
 
   void MaxAggregationFunction::doInit()
@@ -279,12 +244,7 @@ namespace csvsqldb
 
   AggregationFunction* ArbitraryAggregationFunction::clone(BlockPtr block) const
   {
-    if (!block->hasSizeFor(sizeof(ArbitraryAggregationFunction))) {
-      return nullptr;
-    }
-    AggregationFunction* tmp = new (block->getRawBuffer()) ArbitraryAggregationFunction(_value.getType());
-    block->moveOffset(sizeof(ArbitraryAggregationFunction));
-    return tmp;
+    return block->allocate<ArbitraryAggregationFunction>(_value.getType());
   }
 
   void ArbitraryAggregationFunction::doInit()
