@@ -95,7 +95,7 @@ namespace csvsqldb
     size_t _maxCountActiveBlocks{0};
     size_t _totalBlocks{0};
 
-    static size_t sBlockNumber;
+    inline static size_t sBlockNumber{0};
   };
 
 
@@ -184,6 +184,9 @@ namespace csvsqldb
 
     inline bool hasSizeFor(size_t size) const
     {
+      if (size >= std::numeric_limits<size_t>::max() - 2) {
+        return false;
+      }
       return _offset + size + 2 < _capacity;
     }
 

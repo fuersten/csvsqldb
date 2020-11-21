@@ -38,8 +38,6 @@
 
 namespace csvsqldb
 {
-  size_t BlockManager::sBlockNumber = 0;
-
   BlockManager::BlockManager(size_t maxActiveBlocks, size_t blockCapacity)
   : _blockCapacity(blockCapacity)
   , _maxActiveBlocks(maxActiveBlocks)
@@ -51,14 +49,15 @@ namespace csvsqldb
 
   BlockPtr BlockManager::createBlock()
   {
-    ++_activeBlocks;
-    ++_totalBlocks;
-    _maxCountActiveBlocks = std::max(_activeBlocks, _maxCountActiveBlocks);
-    if (_activeBlocks > _maxActiveBlocks) {
+    auto maxCountActiveBlocks = std::max(_activeBlocks + 1, _maxCountActiveBlocks);
+    if ((_activeBlocks + 1) > _maxActiveBlocks) {
       CSVSQLDB_THROW(csvsqldb::Exception, "exceeded maximum number of active blocks");
     }
     BlockPtr block = new Block(++sBlockNumber, _blockCapacity);
     _blocks.push_back(block);
+    ++_activeBlocks;
+    ++_totalBlocks;
+    _maxCountActiveBlocks = maxCountActiveBlocks;
 
     return block;
   }
@@ -300,7 +299,7 @@ namespace csvsqldb
         }
         break;
       case STRING: {
-        size_t len = ::strlen(value.asString());
+        size_t len = value.isNull() ? 0 : ::strlen(value.asString());
         if (hasSizeFor(ValString::baseSize() + len + 1)) {
           markValue();
           if (!value.isNull()) {

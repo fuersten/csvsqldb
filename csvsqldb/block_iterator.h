@@ -111,7 +111,7 @@ namespace csvsqldb
     const Values* getNextRow();
 
   private:
-    Value* getNextValue();
+    const Value* getNextValue();
 
     BlockProvider& _blockProvider;
     BlockManager& _blockManager;
@@ -262,7 +262,7 @@ namespace csvsqldb
     void reset();
 
   private:
-    Value* getNextValue();
+    const Value* getNextValue();
     void getNextBlock();
 
     RowProvider& _rowProvider;

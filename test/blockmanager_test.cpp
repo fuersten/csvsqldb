@@ -42,8 +42,8 @@ TEST_CASE("BlockManager Test", "[block]")
   {
     {
       csvsqldb::BlockManager blockManager;
-      CHECK(1u * 1024 * 1024 == blockManager.getBlockCapacity());
-      CHECK(100u == blockManager.getMaxActiveBlocks());
+      CHECK(csvsqldb::sDefaultBlockCapacity == blockManager.getBlockCapacity());
+      CHECK(csvsqldb::sDefaultMaxActiveBlocks == blockManager.getMaxActiveBlocks());
       CHECK(0u == blockManager.getActiveBlocks());
       CHECK(0u == blockManager.getMaxUsedBlocks());
       CHECK(0u == blockManager.getTotalBlocks());
@@ -58,7 +58,6 @@ TEST_CASE("BlockManager Test", "[block]")
       CHECK(0u == blockManager.getTotalBlocks());
     }
   }
-
   SECTION("create blocks")
   {
     csvsqldb::Types types;
@@ -84,14 +83,22 @@ TEST_CASE("BlockManager Test", "[block]")
     CHECK(2u == blockManager.getTotalBlocks());
     CHECK(0u == blockManager.getActiveBlocks());
   }
-
+  SECTION("create too many blocks")
+  {
+    csvsqldb::BlockManager blockManager{2};
+    CHECK(2 == blockManager.getMaxActiveBlocks());
+    blockManager.createBlock();
+    blockManager.createBlock();
+    CHECK(2 == blockManager.getActiveBlocks());
+    CHECK(2 == blockManager.getTotalBlocks());
+    CHECK(2 == blockManager.getMaxUsedBlocks());
+    CHECK_THROWS_AS(blockManager.createBlock(), csvsqldb::Exception);
+    CHECK(2 == blockManager.getActiveBlocks());
+    CHECK(2 == blockManager.getTotalBlocks());
+    CHECK(2 == blockManager.getMaxUsedBlocks());
+  }
   SECTION("get block")
   {
-    csvsqldb::Types types;
-    types.push_back(csvsqldb::INT);
-    types.push_back(csvsqldb::DATE);
-    types.push_back(csvsqldb::STRING);
-
     csvsqldb::BlockManager blockManager;
 
     csvsqldb::BlockPtr block = blockManager.createBlock();
@@ -99,6 +106,7 @@ TEST_CASE("BlockManager Test", "[block]")
 
     csvsqldb::BlockPtr block3 = blockManager.getBlock(block->getBlockNumber());
     CHECK(block3);
+    CHECK(2 == blockManager.getActiveBlocks());
     CHECK(block->getBlockNumber() == block3->getBlockNumber());
 
     block3 = blockManager.getBlock(block2->getBlockNumber());
@@ -107,8 +115,12 @@ TEST_CASE("BlockManager Test", "[block]")
 
     size_t blockNumber = block2->getBlockNumber();
     blockManager.release(block2);
+    CHECK(1 == blockManager.getActiveBlocks());
     CHECK_THROWS_AS(block3 = blockManager.getBlock(blockNumber), csvsqldb::Exception);
 
     blockManager.release(block);
+    CHECK(0 == blockManager.getActiveBlocks());
+    CHECK(2 == blockManager.getTotalBlocks());
+    CHECK(2 == blockManager.getMaxUsedBlocks());
   }
 }

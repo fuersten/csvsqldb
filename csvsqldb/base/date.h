@@ -114,7 +114,7 @@ namespace csvsqldb
     /** Constructs a date from the given julian day.
      *  @param julianDay The julian day of the date.
      */
-    Date(uint32_t julianDay);
+    explicit Date(uint32_t julianDay);
 
     Date(const Date&) = default;
     Date& operator=(const Date&) = default;

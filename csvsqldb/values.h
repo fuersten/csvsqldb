@@ -684,7 +684,7 @@ namespace csvsqldb
 
   template<>
   struct ValueCreator<bool> {
-    static Value* createValue(const bool& val)
+    static ValBool* createValue(const bool& val)
     {
       return new ValBool(val);
     }
@@ -692,7 +692,7 @@ namespace csvsqldb
 
   template<>
   struct ValueCreator<int64_t> {
-    static Value* createValue(const int64_t& val)
+    static ValInt* createValue(const int64_t& val)
     {
       return new ValInt(val);
     }
@@ -700,7 +700,7 @@ namespace csvsqldb
 
   template<>
   struct ValueCreator<double> {
-    static Value* createValue(const double& val)
+    static ValDouble* createValue(const double& val)
     {
       return new ValDouble(val);
     }
@@ -708,7 +708,7 @@ namespace csvsqldb
 
   template<>
   struct ValueCreator<csvsqldb::Date> {
-    static Value* createValue(const csvsqldb::Date& val)
+    static ValDate* createValue(const csvsqldb::Date& val)
     {
       return new ValDate(val);
     }
@@ -716,7 +716,7 @@ namespace csvsqldb
 
   template<>
   struct ValueCreator<csvsqldb::Time> {
-    static Value* createValue(const csvsqldb::Time& val)
+    static ValTime* createValue(const csvsqldb::Time& val)
     {
       return new ValTime(val);
     }
@@ -724,7 +724,7 @@ namespace csvsqldb
 
   template<>
   struct ValueCreator<csvsqldb::Timestamp> {
-    static Value* createValue(const csvsqldb::Timestamp& val)
+    static ValTimestamp* createValue(const csvsqldb::Timestamp& val)
     {
       return new ValTimestamp(val);
     }
@@ -732,7 +732,7 @@ namespace csvsqldb
 
   template<>
   struct ValueCreator<std::string> {
-    static Value* createValue(const std::string& val)
+    static ValString* createValue(const std::string& val)
     {
       char* c = new char[val.length() + 1];
       std::size_t length = val.copy(&c[0], val.length());
@@ -743,7 +743,7 @@ namespace csvsqldb
 
   template<>
   struct ValueCreator<StringType> {
-    static Value* createValue(const StringType& val)
+    static ValString* createValue(const StringType& val)
     {
       return new ValString(val);
     }

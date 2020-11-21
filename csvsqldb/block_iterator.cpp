@@ -89,7 +89,7 @@ namespace csvsqldb
 
     size_t index = 0;
     for (const auto& type : _types) {
-      Value* val = getNextValue();
+      const Value* val = getNextValue();
       if (!val) {
         CSVSQLDB_THROW(csvsqldb::Exception, "expected more values to fill the row (" << typeToString(type) << ")");
       }
@@ -99,7 +99,7 @@ namespace csvsqldb
     return &_row;
   }
 
-  Value* BlockIterator::getNextValue()
+  const Value* BlockIterator::getNextValue()
   {
     if (_offset == _endOffset) {
       CSVSQLDB_THROW(csvsqldb::Exception, "expected more values, but already at end of block");
@@ -122,19 +122,10 @@ namespace csvsqldb
 
     Value* val = nullptr;
     eType type = *_typeOffset;
-    switch (type) {
-      case STRING:
-      case DATE:
-      case TIME:
-      case TIMESTAMP:
-      case BOOLEAN:
-      case INT:
-      case REAL:
-        val = reinterpret_cast<Value*>(_block->getRawBuffer(_offset));
-        break;
-      case NONE:
-        CSVSQLDB_THROW(csvsqldb::Exception, "type not allowed " << typeToString(type));
+    if (type == NONE) {
+      CSVSQLDB_THROW(csvsqldb::Exception, "type not allowed " << typeToString(type));
     }
+    val = reinterpret_cast<Value*>(_block->getRawBuffer(_offset));
     _offset += val->size();
     ++_typeOffset;
     return val;
@@ -233,19 +224,10 @@ namespace csvsqldb
 
     Value* val = nullptr;
     eType type = *_typeOffset;
-    switch (type) {
-      case STRING:
-      case DATE:
-      case TIME:
-      case TIMESTAMP:
-      case BOOLEAN:
-      case INT:
-      case REAL:
-        val = reinterpret_cast<Value*>(_blocks[_currentBlock]->getRawBuffer(_offset));
-        break;
-      case NONE:
-        CSVSQLDB_THROW(csvsqldb::Exception, "type not allowed " << typeToString(type));
+    if (type == NONE) {
+      CSVSQLDB_THROW(csvsqldb::Exception, "type not allowed " << typeToString(type));
     }
+    val = reinterpret_cast<Value*>(_blocks[_currentBlock]->getRawBuffer(_offset));
     _offset += val->size();
     ++_typeOffset;
     return val;
@@ -307,7 +289,7 @@ namespace csvsqldb
       _typeOffset = _types.begin();
 
       for (size_t n = 0, count = 0; count < _types.size(); ++count) {
-        Value* val = getNextValue();
+        const Value* val = getNextValue();
         for (const auto& order : _sortOrders) {
           if (order._index == count) {
             _rightCompare[n] = val;
@@ -366,19 +348,10 @@ namespace csvsqldb
 
       Value* val = nullptr;
       eType type = *_typeOffset;
-      switch (type) {
-        case STRING:
-        case DATE:
-        case TIME:
-        case TIMESTAMP:
-        case BOOLEAN:
-        case INT:
-        case REAL:
-          val = reinterpret_cast<Value*>(_blocks[_currentBlock]->getRawBuffer(_offset));
-          break;
-        case NONE:
-          CSVSQLDB_THROW(csvsqldb::Exception, "type not allowed " << typeToString(type));
+      if (NONE) {
+        CSVSQLDB_THROW(csvsqldb::Exception, "type not allowed " << typeToString(type));
       }
+      val = reinterpret_cast<Value*>(_blocks[_currentBlock]->getRawBuffer(_offset));
       _offset += val->size();
       ++_typeOffset;
       return val;
@@ -508,19 +481,10 @@ namespace csvsqldb
 
     Value* val = nullptr;
     eType type = *_typeOffset;
-    switch (type) {
-      case STRING:
-      case DATE:
-      case TIME:
-      case TIMESTAMP:
-      case BOOLEAN:
-      case INT:
-      case REAL:
-        val = reinterpret_cast<Value*>(_blocks[_currentBlock]->getRawBuffer(_offset));
-        break;
-      case NONE:
-        CSVSQLDB_THROW(csvsqldb::Exception, "type not allowed " << typeToString(type));
+    if (type == NONE) {
+      CSVSQLDB_THROW(csvsqldb::Exception, "type not allowed " << typeToString(type));
     }
+    val = reinterpret_cast<Value*>(_blocks[_currentBlock]->getRawBuffer(_offset));
     _offset += val->size();
     ++_typeOffset;
     return val;
@@ -733,19 +697,10 @@ namespace csvsqldb
 
     Value* val = nullptr;
     eType type = *_typeOffset;
-    switch (type) {
-      case STRING:
-      case DATE:
-      case TIME:
-      case TIMESTAMP:
-      case BOOLEAN:
-      case INT:
-      case REAL:
-        val = reinterpret_cast<Value*>(_blocks[_currentBlock]->getRawBuffer(_offset));
-        break;
-      case NONE:
-        CSVSQLDB_THROW(csvsqldb::Exception, "type not allowed " << typeToString(type));
+    if (type == NONE) {
+      CSVSQLDB_THROW(csvsqldb::Exception, "type not allowed " << typeToString(type));
     }
+    val = reinterpret_cast<Value*>(_blocks[_currentBlock]->getRawBuffer(_offset));
     _offset += val->size();
     ++_typeOffset;
     return val;
@@ -810,7 +765,7 @@ namespace csvsqldb
 
       size_t index = 0;
       for (const auto& type : _types) {
-        Value* val = getNextValue();
+        const Value* val = getNextValue();
         if (!val) {
           CSVSQLDB_THROW(csvsqldb::Exception, "expected more values to fill the row (" << typeToString(type) << ")");
         }
@@ -875,7 +830,7 @@ namespace csvsqldb
 
       size_t index = 0;
       for (const auto& type : _types) {
-        Value* val = getNextValue();
+        const Value* val = getNextValue();
         if (!val) {
           CSVSQLDB_THROW(csvsqldb::Exception, "expected more values to fill the row");
         }
@@ -890,7 +845,7 @@ namespace csvsqldb
     return row;
   }
 
-  Value* HashingBlockIterator::getNextValue()
+  const Value* HashingBlockIterator::getNextValue()
   {
     if (_offset == _endOffset) {
       CSVSQLDB_THROW(csvsqldb::Exception, "expected more values, but already at end of block");
@@ -909,19 +864,10 @@ namespace csvsqldb
 
     Value* val = nullptr;
     eType type = *_typeOffset;
-    switch (type) {
-      case STRING:
-      case DATE:
-      case TIME:
-      case TIMESTAMP:
-      case BOOLEAN:
-      case INT:
-      case REAL:
-        val = reinterpret_cast<Value*>(_blocks[_currentBlock]->getRawBuffer(_offset));
-        break;
-      case NONE:
-        CSVSQLDB_THROW(csvsqldb::Exception, "type not allowed " << typeToString(type));
+    if (type == NONE) {
+      CSVSQLDB_THROW(csvsqldb::Exception, "type not allowed " << typeToString(type));
     }
+    val = reinterpret_cast<Value*>(_blocks[_currentBlock]->getRawBuffer(_offset));
     _offset += val->size();
     ++_typeOffset;
     return val;
