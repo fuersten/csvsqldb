@@ -322,6 +322,36 @@ TEST_CASE("Block Test", "[block]")
     block.markNextBlock();
     CHECK(block.isBlock((sizeof(csvsqldb::ValInt) + 1) * 10) + 1);
   }
+  SECTION("allocate")
+  {
+    struct Test {
+      Test()
+      {
+      }
+
+      Test(int32_t i)
+      : _i{i}
+      {
+      }
+
+      int32_t _i{4711};
+    };
+
+    auto* t = block.allocate<Test>();
+    CHECK(t);
+    REQUIRE(dynamic_cast<Test*>(t));
+    CHECK(4711 == dynamic_cast<Test*>(t)->_i);
+
+    t = block.allocate<Test>(42);
+    CHECK(t);
+    REQUIRE(dynamic_cast<Test*>(t));
+    CHECK(42 == dynamic_cast<Test*>(t)->_i);
+  }
+  SECTION("allocate too much")
+  {
+    csvsqldb::Block block1{4711, 5};
+    CHECK_FALSE(block1.allocate<int64_t>());
+  }
   SECTION("add value error")
   {
     CHECK_THROWS_AS(block.addValue(csvsqldb::Variant()), csvsqldb::Exception);
