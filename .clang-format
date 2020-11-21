@@ -64,7 +64,7 @@ IncludeBlocks:   Regroup
 IncludeCategories: 
   - Regex:           '<[[:alnum:].]+>'
     Priority:        9
-  - Regex:           '^("libcsvsqldb/)'
+  - Regex:           '^("csvsqldb/)'
     Priority:        2
   - Regex:           '^(<catch2/)'
     Priority:        8

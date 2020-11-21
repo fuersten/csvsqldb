@@ -197,7 +197,7 @@ TEST_CASE("Aggreagation Functions Test", "[engine]")
 
     auto res = avg.finalize();
     REQUIRE(res.getType() == csvsqldb::INT);
-    CHECK(res.asInt() == csvsqldb::Variant(5568/3).asInt());
+    CHECK(res.asInt() == csvsqldb::Variant(5568 / 3).asInt());
   }
   SECTION("avg with no step")
   {
