@@ -224,7 +224,7 @@ private:
       _showHeaderLine = csvsqldb::toupper_copy(showHeader) == "ON";
     }
 
-    fs::path path(_databasePath);
+    csvsqldb::fs::path path(_databasePath);
     if (app.count("--datbase-path")) {
       path = _databasePath;
       if (path.filename() != ".csvdb") {
@@ -232,7 +232,7 @@ private:
       }
     }
     std::error_code ec;
-    _databasePath = fs::canonical(fs::absolute(path, ec), ec).string();
+    _databasePath = csvsqldb::fs::canonical(csvsqldb::fs::absolute(path, ec), ec).string();
     if (ec) {
       _databasePath = ".csvdb";
     }

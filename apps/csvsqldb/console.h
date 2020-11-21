@@ -40,11 +40,11 @@
 #include <map>
 #include <memory>
 
-namespace fs = std::filesystem;
-
 
 namespace csvsqldb
 {
+  namespace fs = std::filesystem;
+
   /**
    * A console class to support interactive shells. The implementation is based on the linenoise library.
    */

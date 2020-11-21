@@ -41,11 +41,11 @@
 #include <filesystem>
 #include <map>
 
-namespace fs = std::filesystem;
-
 
 namespace csvsqldb
 {
+  namespace fs = std::filesystem;
+
   CSVSQLDB_DECLARE_EXCEPTION(MappingException, csvsqldb::Exception);
 
 

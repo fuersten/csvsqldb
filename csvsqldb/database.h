@@ -40,11 +40,11 @@
 
 #include <filesystem>
 
-namespace fs = std::filesystem;
-
 
 namespace csvsqldb
 {
+  namespace fs = std::filesystem;
+
   class CSVSQLDB_EXPORT Database
   {
   public:

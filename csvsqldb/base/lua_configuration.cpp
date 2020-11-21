@@ -38,11 +38,11 @@
 
 #include <filesystem>
 
-namespace fs = std::filesystem;
-
 
 namespace csvsqldb
 {
+  namespace fs = std::filesystem;
+
   struct LuaConfiguration::Private {
     Private(const std::string& configFile)
     {
