@@ -63,19 +63,19 @@ namespace csvsqldb
       _endOffset = _block->_offset;
     }
     if (_offset != 0) {
-      if (*(&(_block->_store)[0] + _offset) != static_cast<char>(0xBB)) {
+      if (*(&(_block->_store)[0] + _offset) != sRowMarker) {
         CSVSQLDB_THROW(csvsqldb::Exception, "should be at row delimiter");
       }
       ++_offset;
       _typeOffset = _types.begin();
     }
-    if (*(&(_block->_store)[0] + _offset) == static_cast<char>(0xDD)) {
+    if (*(&(_block->_store)[0] + _offset) == sEndMarker) {
       // no more rows left
       return nullptr;
     }
 
     // look for next block marker
-    if (*(&(_block->_store)[0] + _offset) == static_cast<char>(0xCC)) {
+    if (*(&(_block->_store)[0] + _offset) == sBlockMarker) {
       _blockManager.release(_previousBlock);
       _previousBlock = _block;
       _block = _blockProvider.getNextBlock();
@@ -106,7 +106,7 @@ namespace csvsqldb
     }
 
     // look for next block marker
-    if (*(&(_block->_store)[0] + _offset) == static_cast<char>(0xCC)) {
+    if (*(&(_block->_store)[0] + _offset) == sBlockMarker) {
       _blockManager.release(_previousBlock);
       _previousBlock = _block;
       _block = _blockProvider.getNextBlock();
@@ -115,7 +115,7 @@ namespace csvsqldb
     }
 
     // look for next value marker
-    if (*(&(_block->_store)[0] + _offset) != static_cast<char>(0xAA)) {
+    if (*(&(_block->_store)[0] + _offset) != sValueMarker) {
       CSVSQLDB_THROW(csvsqldb::Exception, "missing value separator");
     }
     ++_offset;
@@ -180,19 +180,19 @@ namespace csvsqldb
       }
     } else {
       if (_offset != 0) {
-        if (*(&(_blocks[_currentBlock]->_store)[0] + _offset) != static_cast<char>(0xBB)) {
+        if (*(&(_blocks[_currentBlock]->_store)[0] + _offset) != sRowMarker) {
           CSVSQLDB_THROW(csvsqldb::Exception, "should be at row delimiter");
         }
         ++_offset;
         _typeOffset = _types.begin();
       }
-      if (*(&(_blocks[_currentBlock]->_store)[0] + _offset) == static_cast<char>(0xDD)) {
+      if (*(&(_blocks[_currentBlock]->_store)[0] + _offset) == sEndMarker) {
         // no more rows left
         return nullptr;
       }
 
       // look for next block marker
-      if (*(&(_blocks[_currentBlock]->_store)[0] + _offset) == static_cast<char>(0xCC)) {
+      if (*(&(_blocks[_currentBlock]->_store)[0] + _offset) == sBlockMarker) {
         getNextBlock();
       }
 
@@ -221,12 +221,12 @@ namespace csvsqldb
     }
 
     // look for next block marker
-    if (*(&(_blocks[_currentBlock]->_store)[0] + _offset) == static_cast<char>(0xCC)) {
+    if (*(&(_blocks[_currentBlock]->_store)[0] + _offset) == sBlockMarker) {
       getNextBlock();
     }
 
     // look for next value marker
-    if (*(&(_blocks[_currentBlock]->_store)[0] + _offset) != static_cast<char>(0xAA)) {
+    if (*(&(_blocks[_currentBlock]->_store)[0] + _offset) != sValueMarker) {
       CSVSQLDB_THROW(csvsqldb::Exception, "missing value separator");
     }
     ++_offset;
@@ -354,12 +354,12 @@ namespace csvsqldb
       }
 
       // look for next block marker
-      if (*(&(_blocks[_currentBlock]->_store)[0] + _offset) == static_cast<char>(0xCC)) {
+      if (*(&(_blocks[_currentBlock]->_store)[0] + _offset) == sBlockMarker) {
         getNextBlock();
       }
 
       // look for next value marker
-      if (*(&(_blocks[_currentBlock]->_store)[0] + _offset) != static_cast<char>(0xAA)) {
+      if (*(&(_blocks[_currentBlock]->_store)[0] + _offset) != sValueMarker) {
         CSVSQLDB_THROW(csvsqldb::Exception, "missing value separator");
       }
       ++_offset;
@@ -469,7 +469,7 @@ namespace csvsqldb
     _offset = _rowIter->_offset;
     _typeOffset = _types.begin();
 
-    if (*(&(_blocks[_currentBlock]->_store)[0] + _offset) == static_cast<char>(0xDD)) {
+    if (*(&(_blocks[_currentBlock]->_store)[0] + _offset) == sEndMarker) {
       // no more rows left
       return nullptr;
     }
@@ -496,12 +496,12 @@ namespace csvsqldb
     }
 
     // look for next block marker
-    if (*(&(_blocks[_currentBlock]->_store)[0] + _offset) == static_cast<char>(0xCC)) {
+    if (*(&(_blocks[_currentBlock]->_store)[0] + _offset) == sBlockMarker) {
       getNextBlock();
     }
 
     // look for next value marker
-    if (*(&(_blocks[_currentBlock]->_store)[0] + _offset) != static_cast<char>(0xAA)) {
+    if (*(&(_blocks[_currentBlock]->_store)[0] + _offset) != sValueMarker) {
       CSVSQLDB_THROW(csvsqldb::Exception, "missing value separator");
     }
     ++_offset;
@@ -678,19 +678,19 @@ namespace csvsqldb
     }
     _typeOffset = _types.begin();
     if (_offset != 0) {
-      if (*(&(_blocks[_currentBlock]->_store)[0] + _offset) != static_cast<char>(0xBB)) {
+      if (*(&(_blocks[_currentBlock]->_store)[0] + _offset) != sRowMarker) {
         CSVSQLDB_THROW(csvsqldb::Exception, "should be at row delimiter");
       }
       ++_offset;
       _typeOffset = _types.begin();
     }
-    if (*(&(_blocks[_currentBlock]->_store)[0] + _offset) == static_cast<char>(0xDD)) {
+    if (*(&(_blocks[_currentBlock]->_store)[0] + _offset) == sEndMarker) {
       // no more rows left
       return nullptr;
     }
 
     // look for next block marker
-    if (*(&(_blocks[_currentBlock]->_store)[0] + _offset) == static_cast<char>(0xCC)) {
+    if (*(&(_blocks[_currentBlock]->_store)[0] + _offset) == sBlockMarker) {
       getNextBlock();
     }
 
@@ -721,12 +721,12 @@ namespace csvsqldb
     }
 
     // look for next block marker
-    if (*(&(_blocks[_currentBlock]->_store)[0] + _offset) == static_cast<char>(0xCC)) {
+    if (*(&(_blocks[_currentBlock]->_store)[0] + _offset) == sBlockMarker) {
       getNextBlock();
     }
 
     // look for next value marker
-    if (*(&(_blocks[_currentBlock]->_store)[0] + _offset) != static_cast<char>(0xAA)) {
+    if (*(&(_blocks[_currentBlock]->_store)[0] + _offset) != sValueMarker) {
       CSVSQLDB_THROW(csvsqldb::Exception, "missing value separator");
     }
     ++_offset;
@@ -853,19 +853,19 @@ namespace csvsqldb
       }
     } else {
       if (_offset != 0) {
-        if (*(&(_blocks[_currentBlock]->_store)[0] + _offset) != static_cast<char>(0xBB)) {
+        if (*(&(_blocks[_currentBlock]->_store)[0] + _offset) != sRowMarker) {
           CSVSQLDB_THROW(csvsqldb::Exception, "should be at row delimiter");
         }
         ++_offset;
         _typeOffset = _types.begin();
       }
-      if (*(&(_blocks[_currentBlock]->_store)[0] + _offset) == static_cast<char>(0xDD)) {
+      if (*(&(_blocks[_currentBlock]->_store)[0] + _offset) == sEndMarker) {
         // no more rows left
         return nullptr;
       }
 
       // look for next block marker
-      if (*(&(_blocks[_currentBlock]->_store)[0] + _offset) == static_cast<char>(0xCC)) {
+      if (*(&(_blocks[_currentBlock]->_store)[0] + _offset) == sBlockMarker) {
         getNextBlock();
       }
 
@@ -897,12 +897,12 @@ namespace csvsqldb
     }
 
     // look for next block marker
-    if (*(&(_blocks[_currentBlock]->_store)[0] + _offset) == static_cast<char>(0xCC)) {
+    if (*(&(_blocks[_currentBlock]->_store)[0] + _offset) == sBlockMarker) {
       getNextBlock();
     }
 
     // look for next value marker
-    if (*(&(_blocks[_currentBlock]->_store)[0] + _offset) != static_cast<char>(0xAA)) {
+    if (*(&(_blocks[_currentBlock]->_store)[0] + _offset) != sValueMarker) {
       CSVSQLDB_THROW(csvsqldb::Exception, "missing value separator");
     }
     ++_offset;

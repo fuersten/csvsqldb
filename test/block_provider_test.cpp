@@ -44,51 +44,44 @@
 
 namespace
 {
-class MyBlockProvider : public csvsqldb::BlockProvider
-{
-public:
-  MyBlockProvider(csvsqldb::BlockPtr block, csvsqldb::BlockManager& manager)
-  : _block(block)
-  , _manager(manager)
+  class MyBlockProvider : public csvsqldb::BlockProvider
   {
-  }
+  public:
+    MyBlockProvider(csvsqldb::BlockManager& manager)
+    : _manager(manager)
+    {
+      setupBlock();
+    }
 
-  virtual csvsqldb::BlockPtr getNextBlock()
-  {
-    return _block;
-  }
+    csvsqldb::BlockPtr getNextBlock() override
+    {
+      return _block;
+    }
 
-  virtual csvsqldb::BlockManager& getBlockManager()
-  {
-    return _manager;
-  }
+  private:
+    void setupBlock()
+    {
+      _block = _manager.createBlock();
+      _block->addValue(csvsqldb::Variant(4711));
+      _block->addValue(csvsqldb::Variant(csvsqldb::Date(1970, csvsqldb::Date::September, 23)));
+      _block->addValue(csvsqldb::Variant("Lars"));
+      _block->addValue(csvsqldb::Variant("Fürstenberg"));
+      _block->addValue(csvsqldb::Variant("M"));
+      _block->addValue(csvsqldb::Variant(csvsqldb::Date(2012, csvsqldb::Date::February, 1)));
+      _block->nextRow();
+      _block->addValue(csvsqldb::Variant(815));
+      _block->addValue(csvsqldb::Variant(csvsqldb::Date(1969, csvsqldb::Date::May, 17)));
+      _block->addValue(csvsqldb::Variant("Mark"));
+      _block->addValue(csvsqldb::Variant("Fürstenberg"));
+      _block->addValue(csvsqldb::Variant("M"));
+      _block->addValue(csvsqldb::Variant(csvsqldb::Date(2003, csvsqldb::Date::April, 15)));
+      _block->nextRow();
+      _block->endBlocks();
+    }
 
-private:
-  csvsqldb::BlockPtr _block;
-  csvsqldb::BlockManager& _manager;
-};
-
-  csvsqldb::BlockPtr setupBlock(csvsqldb::BlockManager& blockManager)
-  {
-    csvsqldb::BlockPtr block = blockManager.createBlock();
-    block->addValue(csvsqldb::Variant(4711));
-    block->addValue(csvsqldb::Variant(csvsqldb::Date(1970, csvsqldb::Date::September, 23)));
-    block->addValue(csvsqldb::Variant("Lars"));
-    block->addValue(csvsqldb::Variant("Fürstenberg"));
-    block->addValue(csvsqldb::Variant("M"));
-    block->addValue(csvsqldb::Variant(csvsqldb::Date(2012, csvsqldb::Date::February, 1)));
-    block->nextRow();
-    block->addValue(csvsqldb::Variant(815));
-    block->addValue(csvsqldb::Variant(csvsqldb::Date(1969, csvsqldb::Date::May, 17)));
-    block->addValue(csvsqldb::Variant("Mark"));
-    block->addValue(csvsqldb::Variant("Fürstenberg"));
-    block->addValue(csvsqldb::Variant("M"));
-    block->addValue(csvsqldb::Variant(csvsqldb::Date(2003, csvsqldb::Date::April, 15)));
-    block->nextRow();
-    block->endBlocks();
-
-    return block;
-  }
+    csvsqldb::BlockPtr _block{nullptr};
+    csvsqldb::BlockManager& _manager;
+  };
 }
 
 TEST_CASE("Block Provider Test", "[block]")
@@ -116,8 +109,7 @@ TEST_CASE("Block Provider Test", "[block]")
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
 
-      csvsqldb::BlockPtr block = setupBlock(blockManager);
-      MyBlockProvider blockProvider(block, blockManager);
+      MyBlockProvider blockProvider(blockManager);
       csvsqldb::BlockIteratorPtr iterator = std::make_shared<csvsqldb::BlockIterator>(types, blockProvider, blockManager);
 
       {
@@ -172,8 +164,7 @@ TEST_CASE("Block Provider Test", "[block]")
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
 
-      csvsqldb::BlockPtr block = setupBlock(blockManager);
-      MyBlockProvider blockProvider(block, blockManager);
+      MyBlockProvider blockProvider(blockManager);
       csvsqldb::BlockIteratorPtr iterator = std::make_shared<csvsqldb::BlockIterator>(types, blockProvider, blockManager);
 
       const csvsqldb::Values* row = nullptr;

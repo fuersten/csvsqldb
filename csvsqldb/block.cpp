@@ -86,15 +86,6 @@ namespace csvsqldb
     }
   }
 
-  void BlockManager::cache(const BlockPtr block)
-  {
-    if (block) {
-      // TODO LCF: here we should mark the block as cachable and cache it later
-      //           in the file system, if resources are low
-      //           if the block is retrieved again, the cachable flag has to be removed
-    }
-  }
-
   size_t BlockManager::getActiveBlocks() const
   {
     return _activeBlocks;
@@ -125,13 +116,8 @@ namespace csvsqldb
   : _capacity(capacity)
   , _offset(0)
   , _blockNumber(blockNumber)
+  , _store{new StoreType[capacity]}
   {
-    _store = new char[capacity];
-  }
-
-  Block::~Block()
-  {
-    delete[] _store;
   }
 
   bool Block::hasSizeFor(size_t size) const
@@ -407,25 +393,25 @@ namespace csvsqldb
 
   void Block::nextRow()
   {
-    *(&_store[0] + _offset) = static_cast<char>(0xBB);
+    *(&_store[0] + _offset) = sRowMarker;
     ++_offset;
   }
 
   void Block::markValue()
   {
-    *(&_store[0] + _offset) = static_cast<char>(0xAA);
+    *(&_store[0] + _offset) = sValueMarker;
     ++_offset;
   }
 
   void Block::markNextBlock()
   {
-    *(&_store[0] + _offset) = static_cast<char>(0xCC);
+    *(&_store[0] + _offset) = sBlockMarker;
     ++_offset;
   }
 
   void Block::endBlocks()
   {
-    *(&_store[0] + _offset) = static_cast<char>(0xDD);
+    *(&_store[0] + _offset) = sEndMarker;
     ++_offset;
   }
 }

@@ -45,11 +45,11 @@
 
 namespace csvsqldb
 {
-  using StoreType = char*;
+  using StoreType = char;
 
   class Block;
-  typedef Block* BlockPtr;
-  typedef std::vector<BlockPtr> Blocks;
+  using BlockPtr = Block*;
+  using Blocks = std::vector<BlockPtr>;
 
   class BlockProvider;
   using BlockProviderPtr = std::shared_ptr<BlockProvider>;
@@ -57,11 +57,19 @@ namespace csvsqldb
   class RowProvider;
   using RowProviderPtr = std::shared_ptr<RowProvider>;
 
+  static constexpr size_t sDefaultMaxActiveBlocks = 100;
+  static constexpr size_t sDefaultBlockCapacity = 1 * 1024 * 1024;
+
+  static constexpr StoreType sValueMarker = static_cast<char>(0xAA);
+  static constexpr StoreType sRowMarker = static_cast<char>(0xBB);
+  static constexpr StoreType sBlockMarker = static_cast<char>(0xCC);
+  static constexpr StoreType sEndMarker = static_cast<char>(0xDD);
+
 
   class CSVSQLDB_EXPORT BlockManager
   {
   public:
-    BlockManager(size_t maxActiveBlocks = 100, size_t blockCapacity = 1 * 1024 * 1024);
+    BlockManager(size_t maxActiveBlocks = sDefaultMaxActiveBlocks, size_t blockCapacity = sDefaultBlockCapacity);
 
     BlockManager(const BlockManager&) = delete;
     BlockManager& operator=(const BlockManager&) = delete;
@@ -72,7 +80,6 @@ namespace csvsqldb
     BlockPtr getBlock(size_t blockNumber) const;
 
     void release(BlockPtr& block);
-    void cache(const BlockPtr block);
 
     size_t getActiveBlocks() const;
     size_t getMaxActiveBlocks() const;
@@ -111,7 +118,7 @@ namespace csvsqldb
   public:
     Block(size_t blockNumber, size_t capacity);
 
-    ~Block();
+    ~Block() = default;
 
     Block(const Block&) = delete;
     Block& operator=(const Block&) = delete;
@@ -140,7 +147,7 @@ namespace csvsqldb
       return _blockNumber;
     }
 
-    size_t offset() const
+    inline size_t offset() const
     {
       return _offset;
     }
@@ -150,7 +157,7 @@ namespace csvsqldb
       _offset += add;
     }
 
-    StoreType getRawBuffer()
+    inline StoreType* getRawBuffer()
     {
       return &_store[_offset];
     }
@@ -160,10 +167,10 @@ namespace csvsqldb
   private:
     void markValue();
 
-    size_t _capacity;
-    StoreType _store;
+    size_t _capacity{0};
     size_t _offset{0};
-    size_t _blockNumber;
+    size_t _blockNumber{0};
+    std::unique_ptr<StoreType[]> _store;
 
     friend class BlockIterator;
     friend class CachingBlockIterator;
