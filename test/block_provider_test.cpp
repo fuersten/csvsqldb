@@ -42,6 +42,8 @@
 #include <catch2/catch.hpp>
 
 
+namespace
+{
 class MyBlockProvider : public csvsqldb::BlockProvider
 {
 public:
@@ -66,8 +68,6 @@ private:
   csvsqldb::BlockManager& _manager;
 };
 
-namespace
-{
   csvsqldb::BlockPtr setupBlock(csvsqldb::BlockManager& blockManager)
   {
     csvsqldb::BlockPtr block = blockManager.createBlock();
@@ -91,7 +91,7 @@ namespace
   }
 }
 
-TEST_CASE("Block Test", "[block]")
+TEST_CASE("Block Provider Test", "[block]")
 {
   SECTION("row")
   {
