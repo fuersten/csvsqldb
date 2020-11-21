@@ -45,6 +45,7 @@ namespace csvsqldb
    *  the hour, minute and second. The hour is represented on a 24 hour per day
    *  base.
    */
+  #pragma pack(push,1)
   class CSVSQLDB_EXPORT Time
   {
   public:
@@ -252,5 +253,6 @@ namespace csvsqldb
 
   private:
     int32_t _time{0};
-  } __attribute__((__packed__));
+  };
+  #pragma pack(pop)
 }

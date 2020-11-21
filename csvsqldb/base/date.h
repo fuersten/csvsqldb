@@ -52,6 +52,7 @@ namespace csvsqldb
    *  Beware that most of the methods will throw a DateException, if illegal or infinite
    *  dates are used.
    */
+  #pragma pack(push, 1)
   class CSVSQLDB_EXPORT Date
   {
   public:
@@ -258,5 +259,6 @@ namespace csvsqldb
 
   private:
     uint32_t _julianDay{0};
-  } __attribute__((__packed__));
+  };
+#pragma pack(pop)
 }

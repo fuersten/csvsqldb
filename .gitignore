@@ -30,10 +30,11 @@
 # temporary files
 *.swp
 *.swo
+*~
 tags
 
 # build directory
-build
+*build*/
 
 # test artifacts
 test/std*.txt

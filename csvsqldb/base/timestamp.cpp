@@ -31,6 +31,8 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
+#include "compat/time_api.h"
+
 #include "timestamp.h"
 
 #include "exception.h"

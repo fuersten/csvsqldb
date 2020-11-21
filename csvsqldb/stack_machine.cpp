@@ -241,7 +241,7 @@ namespace csvsqldb
           Variant& to = getTopValue();
 
           Variant result(BOOLEAN);
-          if (not(lhs.isNull() || from.isNull() || to.isNull())) {
+          if (!(lhs.isNull() || from.isNull() || to.isNull())) {
             if (binaryOperation(OP_GE, to, from).asBool()) {
               result = binaryOperation(OP_GE, lhs, from);
               if (result.asBool()) {

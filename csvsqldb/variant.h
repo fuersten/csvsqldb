@@ -77,6 +77,7 @@ namespace csvsqldb
   };
 
 
+  #pragma pack(push, 1)
   class CSVSQLDB_EXPORT Variant
   {
   public:
@@ -169,8 +170,8 @@ namespace csvsqldb
     RefCount* _refCount{nullptr};
     eType _type{NONE};
     bool _isNull{true};
-  } __attribute__((__packed__));
-
+  };
+  #pragma pack(pop)
 
   using Variants = std::vector<Variant>;
 

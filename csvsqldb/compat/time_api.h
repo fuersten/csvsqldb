@@ -1,9 +1,9 @@
 //
-//  console.h
-//  csvdb
+//  put_time.h
+//  csvsqldb
 //
 //  BSD 3-Clause License
-//  Copyright (c) 2015-2020 Lars-Christian FÃ¼rstenberg
+//  Copyright (c) 2015-2020 Lars-Christian Fürstenberg
 //  All rights reserved.
 //
 //  Redistribution and use in source and binary forms, with or without modification, are permitted
@@ -33,52 +33,27 @@
 
 #pragma once
 
-#include <csvsqldb/inc.h>
-#include <csvsqldb/types.h>
+#include <ctime>
+#if defined _MSC_VER
+  // make available a timegm function for Windows builds
+  #define timegm _mkgmtime
+#endif
 
-#include <filesystem>
-#include <functional>
-#include <map>
-#include <memory>
-
-
-namespace csvsqldb
+  namespace csvsqldb
 {
-  namespace fs = std::filesystem;
-
-  /**
-   * A console class to support interactive shells. The implementation is based on the linenoise library.
-   */
-  class CSVSQLDB_EXPORT Console
+#if defined _MSC_VER
+  inline struct tm* localtime_r(const time_t* clock, struct tm* result)
   {
-  public:
-    using CommandFunction = std::function<bool(const csvsqldb::StringVector&)>;
-    using DefaultCommandFunction = std::function<bool(const std::string&)>;
+    struct tm* p = localtime(clock);
+    *(result) = *p;
+    return result;
+  }
 
-    Console(const std::string& prompt, const fs::path& historyPath, uint16_t historyLength = 128);
-
-    Console(const Console&) = delete;
-    Console(Console&&) = delete;
-    Console& operator=(const Console&) = delete;
-    Console& operator=(Console&&) = delete;
-
-    ~Console();
-
-    void run();
-    void stop();
-
-    void addCommand(const std::string& command, CommandFunction function);
-    void addDefault(DefaultCommandFunction function);
-
-    void clearHistory();
-
-  private:
-    using Commands = std::map<std::string, CommandFunction>;
-
-    fs::path _historyPath;
-    Commands _commands;
-    DefaultCommandFunction _defaultCommand;
-    std::string _prompt;
-    bool _stop;
-  };
+  inline struct tm* gmtime_r(const time_t* clock, struct tm* result)
+  {
+    struct tm* p = gmtime(clock);
+    *(result) = *p;
+    return result;
+  }
+#endif
 }

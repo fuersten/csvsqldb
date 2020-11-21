@@ -67,7 +67,7 @@ namespace csvsqldb
     {
         std::string s;
         is >> s;
-        if(not::strptime(s.c_str(), h.fmt.c_str(), h.tmb)) {
+        if(!::strptime(s.c_str(), h.fmt.c_str(), h.tmb)) {
             throw std::ios_base::failure("failure to parse data on stream ('" + s + "') with format string ('" + h.fmt + "')");
         }
         return is;

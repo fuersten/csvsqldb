@@ -50,6 +50,7 @@ namespace csvsqldb
    *  Beware that most of the methods will throw a TimestampException, if illegal or infinite
    *  dates are used.
    */
+  #pragma pack(push, 1)
   class CSVSQLDB_EXPORT Timestamp
   {
   public:
@@ -316,5 +317,6 @@ namespace csvsqldb
     static void calcFromJulDay(int64_t time, uint16_t& year, uint16_t& month, uint16_t& day, uint16_t& hour, uint16_t& minute,
                                uint16_t& second, uint16_t& millisecond);
     int64_t _time{0};
-  } __attribute__((__packed__));
+  };
+  #pragma pack(pop)
 }

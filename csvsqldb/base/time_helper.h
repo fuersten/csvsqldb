@@ -41,10 +41,6 @@
 #include <csvsqldb/base/types.h>
 
 
-#if defined _MSC_VER
-  // make available a timegm function for Windows builds
-  #define timegm _mkgmtime
-#endif
 
 namespace csvsqldb
 {
