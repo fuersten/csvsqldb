@@ -35,6 +35,22 @@
 
 #include <catch2/catch.hpp>
 
+namespace
+{
+  struct Test {
+    Test()
+    {
+    }
+
+    Test(int32_t i)
+    : _i{i}
+    {
+    }
+
+    int32_t _i{4711};
+  };
+}
+
 
 TEST_CASE("Block Test", "[block]")
 {
@@ -304,7 +320,9 @@ TEST_CASE("Block Test", "[block]")
 
     for (auto n = 0; n < 3; ++n) {
       for (auto m = 0; m < 10; ++m) {
+        auto* raw = block1.getRawBuffer();
         CHECK(block1.addInt(m, false));
+        CHECK(*raw == csvsqldb::sValueMarker);
       }
       block1.nextRow();
     }
@@ -324,19 +342,6 @@ TEST_CASE("Block Test", "[block]")
   }
   SECTION("allocate")
   {
-    struct Test {
-      Test()
-      {
-      }
-
-      Test(int32_t i)
-      : _i{i}
-      {
-      }
-
-      int32_t _i{4711};
-    };
-
     auto* t = block.allocate<Test>();
     CHECK(t);
     REQUIRE(dynamic_cast<Test*>(t));
@@ -351,6 +356,7 @@ TEST_CASE("Block Test", "[block]")
   {
     csvsqldb::Block block1{4711, 5};
     CHECK_FALSE(block1.allocate<int64_t>());
+    CHECK_FALSE(block1.allocate<Test>(42));
   }
   SECTION("add value error")
   {
