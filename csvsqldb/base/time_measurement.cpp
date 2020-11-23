@@ -33,6 +33,13 @@
 
 #include "time_measurement.h"
 
+#ifndef _MSC_VER
+  #include <sys/resource.h>
+  #include <sys/times.h>
+
+  #include <unistd.h>
+#endif
+
 
 namespace std
 {
@@ -50,7 +57,7 @@ namespace csvsqldb
     ProcessTimeDuration operator-(const ProcessTimePoint& lhs, const ProcessTimePoint& rhs)
     {
       ProcessTimeDuration duration;
-      duration._real = lhs._real - rhs._real;
+      duration._real = std::chrono::duration_cast<std::chrono::milliseconds>(lhs._real - rhs._real).count();
       duration._user = lhs._user - rhs._user;
       duration._system = lhs._system - rhs._system;
       return duration;
@@ -59,23 +66,15 @@ namespace csvsqldb
     ProcessTimePoint ProcessTimeClock::now()
     {
       ProcessTimePoint timePoint;
+      timePoint._real = std::chrono::steady_clock::now();
 
-#ifndef _MSC_VER  // TODO LCF: find an adequat implementation for Windows
-      tms tm;
-      clock_t clock_ticks = ::times(&tm);
-      if (clock_ticks == static_cast<clock_t>(-1)) {
-        CSVSQLDB_THROW(ChronoException, "chrono internal error");
-      }
-      long factor = tickFactor();
-      if (factor == -1) {
-        CSVSQLDB_THROW(ChronoException, "chrono internal error");
-      }
+#ifndef _MSC_VER
+      struct rusage usage;
+      ::getrusage(RUSAGE_SELF, &usage);
 
-      timePoint._real = static_cast<long>(clock_ticks) * factor;
-      timePoint._user = static_cast<long>(tm.tms_utime + tm.tms_cutime) * factor;
-      timePoint._system = static_cast<long>(tm.tms_stime + tm.tms_cstime) * factor;
+      timePoint._user = ((usage.ru_utime.tv_sec * 1000000) + usage.ru_utime.tv_usec) / 1000;
+      timePoint._system = ((usage.ru_stime.tv_sec * 1000000) + usage.ru_stime.tv_usec) / 1000;
 #else
-      timePoint._real = 0;
       timePoint._system = 0;
       timePoint._user = 0;
 #endif

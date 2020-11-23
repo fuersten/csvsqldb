@@ -1,6 +1,5 @@
 //
-//  time_measurement.h
-//  csvsqldb
+//  csvsqldb test
 //
 //  BSD 3-Clause License
 //  Copyright (c) 2015-2020 Lars-Christian Fürstenberg
@@ -31,56 +30,51 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-#pragma once
 
-#include "csvsqldb/inc.h"
+#include "data_test_framework.h"
 
-#include "exception.h"
-
-#include <chrono>
-#include <ostream>
+#include <catch2/catch.hpp>
 
 
-namespace csvsqldb
+TEST_CASE("Execution Engine Test", "[engine]")
 {
-  /**
-   * Time measurement handling stuff
-   */
-  namespace chrono
+  SECTION("simple sql")
   {
-    struct CSVSQLDB_EXPORT ProcessTimeDuration {
-      int64_t _real{0};
-      int64_t _user{0};
-      int64_t _system{0};
-    };
+    DatabaseTestWrapper dbWrapper;
+    dbWrapper.addTable(TableInitializer("test", {{"id", csvsqldb::INT}, {"name", csvsqldb::STRING}}));
 
-    struct CSVSQLDB_EXPORT ProcessTimePoint {
-      std::chrono::steady_clock::time_point _real;
-      int64_t _user{0};
-      int64_t _system{0};
+    csvsqldb::ExecutionContext context(dbWrapper.getDatabase());
+    csvsqldb::ExecutionEngine<TestOperatorNodeFactory> engine(context);
 
-      friend CSVSQLDB_EXPORT ProcessTimeDuration operator-(const ProcessTimePoint& lhs, const ProcessTimePoint& rhs);
-    };
+    TestRowProvider::setRows("test", {{815, "Mark"}, {4711, "Lars"}});
 
-    CSVSQLDB_EXPORT ProcessTimeDuration operator-(const ProcessTimePoint& lhs, const ProcessTimePoint& rhs);
+    csvsqldb::ExecutionStatistics statistics;
+    std::stringstream ss;
+    int64_t rowCount = engine.execute("SELECT * FROM test", statistics, ss);
+    CHECK(2 == rowCount);
+    std::string expected =
+      R"(#TEST.ID,TEST.NAME
+815,'Mark'
+4711,'Lars'
+)";
+    CHECK(expected == ss.str());
 
-    /**
-     * A clock for the retrieval of real, user and system time. Can be used to measure runtimes.
-     */
-    class CSVSQLDB_EXPORT ProcessTimeClock
-    {
-    public:
-      ProcessTimeClock(const ProcessTimeClock&) = delete;
-      ProcessTimeClock& operator=(const ProcessTimeClock&) = delete;
-      ProcessTimeClock(ProcessTimeClock&&) = delete;
-      ProcessTimeClock& operator=(ProcessTimeClock&&) = delete;
-
-      static ProcessTimePoint now();
-    };
+    CHECK(-1 == engine.execute(statistics, ss));
   }
-}
+  SECTION("simple function")
+  {
+    DatabaseTestWrapper dbWrapper;
+    csvsqldb::ExecutionContext context(dbWrapper.getDatabase());
+    csvsqldb::ExecutionEngine<TestOperatorNodeFactory> engine(context);
 
-namespace std
-{
-  CSVSQLDB_EXPORT std::ostream& operator<<(std::ostream& out, const csvsqldb::chrono::ProcessTimeDuration& duration);
+    csvsqldb::ExecutionStatistics statistics;
+    std::stringstream ss;
+    int64_t rowCount = engine.execute("SELECT 3+4 FROM SYSTEM_DUAL", statistics, ss);
+    CHECK(1 == rowCount);
+    std::string expected =
+      R"(#$alias_1
+7
+)";
+    CHECK(expected == ss.str());
+  }
 }

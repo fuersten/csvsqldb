@@ -68,6 +68,7 @@ namespace csvsqldb
     size_t _maxUsedCapacity{0};
   };
 
+
   template<typename OperatorNodeFactory>
   class ExecutionEngine
   {
