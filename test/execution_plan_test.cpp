@@ -36,7 +36,7 @@
 #include "csvsqldb/sql_parser.h"
 #include "csvsqldb/validation_visitor.h"
 
-#include "temporary_directory.h"
+#include "data_test_framework.h"
 
 #include <catch2/catch.hpp>
 
@@ -48,83 +48,45 @@ namespace fs = std::filesystem;
 
 TEST_CASE("Execution Plan Test", "[engine]")
 {
-  SECTION("plan")
+  DatabaseTestWrapper dbWrapper;
+  dbWrapper.addTable(TableInitializer("test", {{"id", csvsqldb::INT}, {"name", csvsqldb::STRING}}));
+
+  TestRowProvider::setRows("test", {{815, "Mark"}, {4711, "Lars"}});
+
+  csvsqldb::FunctionRegistry functions;
+  csvsqldb::BlockManager manager;
+  std::stringstream output;
+  csvsqldb::OperatorContext context(dbWrapper.getDatabase(), functions, manager, {});
+  csvsqldb::ASTValidationVisitor validationVisitor(dbWrapper.getDatabase());
+
+  csvsqldb::SQLParser parser(functions);
+  csvsqldb::ASTNodePtr node = parser.parse("SELECT * FROM test");
+  REQUIRE(node);
+  node->accept(validationVisitor);
+  csvsqldb::ExecutionPlan execPlan;
+  csvsqldb::ExecutionPlanVisitor<TestOperatorNodeFactory> execVisitor(context, execPlan, output);
+  node->accept(execVisitor);
+
+  SECTION("plan execute")
   {
-    csvsqldb::FunctionRegistry functions;
-    csvsqldb::SQLParser parser(functions);
+    CHECK(2 == execPlan.execute());
 
-    TemporaryDirectoryGuard tmpDir;
-    auto path = tmpDir.temporaryDirectoryPath();
-
-    csvsqldb::ASTNodePtr node = parser.parse(
-      "CREATE TABLE employees(emp_no INTEGER,birth_date DATE NOT NULL,first_name VARCHAR(25) NOT NULL,last_name VARCHAR(50) "
-      "NOT NULL,gender CHAR,hire_date DATE,PRIMARY KEY(emp_no))");
-    REQUIRE(node);
-    REQUIRE(std::dynamic_pointer_cast<csvsqldb::ASTCreateTableNode>(node));
-    csvsqldb::ASTCreateTableNodePtr createNode = std::dynamic_pointer_cast<csvsqldb::ASTCreateTableNode>(node);
-
-    csvsqldb::TableData tabledata = csvsqldb::TableData::fromCreateAST(createNode);
-    csvsqldb::StringVector files;
-    files.push_back((path / "employees.csv").string());
-    csvsqldb::FileMapping::Mappings mappings;
-    mappings.push_back({"employees.csv->employees", ',', false});
-    csvsqldb::FileMapping mapping;
-    mapping.initialize(mappings);
-
-    csvsqldb::Database database(path, mapping);
-    database.addTable(std::move(tabledata), false);
-
-    node = parser.parse(
-      "SELECT emp_no,CAST((emp_no * 2) as real) as double_emp,emp.first_name as firstname,emp.last_name,birth_date,hire_date "
-      "FROM employees AS emp WHERE birth_date between DATE'1960-01-01' and  DATE'1970-12-31' and gender IS NOT NULL;");
-    REQUIRE(node);
-
-    csvsqldb::SymbolTablePtr symbolTable = node->symbolTable();
-    //        symbolTable->dump();
-    //        std::cout << std::endl;
-
-    node->typeSymbolTable(database);
-
-    //        symbolTable->dump();
-    //        std::cout << std::endl;
-
-    std::fstream dataFile((path / "employees.csv").string(), std::ios_base::trunc | std::ios_base::out);
-    CHECK(dataFile);
-
-    dataFile << (R"(emp_no,birth_date,first_name,last_name,gender,hire_date
-47291,1960-09-09,Ulf,Flexer,M,2000-01-12
-60134,1964-04-21,Seshu,Rathonyi,F,2000-01-02
-72329,1953-02-09,Randi,Luit,F,2000-01-02
-108201,1955-04-14,Mariangiola,Boreale,M,2000-01-01
-205048,1960-09-12,Ennio,Alblas,F,2000-01-06
-222965,1959-08-07,Volkmar,Perko,F,2000-01-13
-226633,1958-06-10,Xuejun,Benzmuller,F,2000-01-04
-227544,1954-11-17,Shahab,Demeyer,M,2000-01-08
-422990,1953-04-09,Jaana,Verspoor,F,2000-01-11
-424445,1953-04-27,Jeong,Boreale,M,2000-01-03
-428377,1957-05-09,Yucai,Gerlach,M,2000-01-23
-463807,1964-06-12,Bikash,Covnot,,2000-01-28
-499553,1954-05-06,Hideyuki,Delgrande,F,2000-01-22
-)");
-    dataFile.close();
-
-    csvsqldb::BlockManager manager;
-    std::stringstream output;
-    csvsqldb::OperatorContext context(database, functions, manager, files);
-    csvsqldb::ASTValidationVisitor validationVisitor(database);
-    node->accept(validationVisitor);
-    csvsqldb::ExecutionPlan execPlan;
-    csvsqldb::ExecutionPlanVisitor<csvsqldb::OperatorNodeFactory> execVisitor(context, execPlan, output);
-    node->accept(execVisitor);
-
-    CHECK(3 == execPlan.execute());
-
-    std::string expected = R"(#EMP_NO,DOUBLE_EMP,FIRSTNAME,EMP.LAST_NAME,BIRTH_DATE,HIRE_DATE
-47291,94582.000000,'Ulf','Flexer',1960-09-09,2000-01-12
-60134,120268.000000,'Seshu','Rathonyi',1964-04-21,2000-01-02
-205048,410096.000000,'Ennio','Alblas',1960-09-12,2000-01-06
+    std::string expected =
+      R"(#TEST.ID,TEST.NAME
+815,'Mark'
+4711,'Lars'
 )";
+    CHECK(expected == output.str());
+  }
+  SECTION("plan dump")
+  {
+    execPlan.dump(output);
 
+    std::string expected =
+      R"(OutputRowOperator (TEST.ID,TEST.NAME)
+-->ExtendedProjectionOperator (TEST.ID,TEST.NAME)
+-->TestScanOperatorNode
+)";
     CHECK(expected == output.str());
   }
 }

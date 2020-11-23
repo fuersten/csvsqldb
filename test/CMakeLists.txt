@@ -19,6 +19,7 @@ add_executable(csvsqldbtest
     csv_parser_test.cpp
     csv_string_parser_test.cpp
     data_framework_test.cpp
+    database_system_test.cpp
     database_test.cpp
     date_test.cpp
     duration_test.cpp
