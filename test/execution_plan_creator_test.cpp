@@ -34,59 +34,64 @@
 #include "csvsqldb/execution_plan_creator.h"
 #include "csvsqldb/operatornode_factory.h"
 #include "csvsqldb/sql_parser.h"
-#include "csvsqldb/validation_visitor.h"
 
 #include "data_test_framework.h"
 
 #include <catch2/catch.hpp>
 
-#include <filesystem>
-#include <fstream>
 
-namespace fs = std::filesystem;
-
-
-TEST_CASE("Execution Plan Test", "[engine]")
+TEST_CASE("Execution Plan Creator Test", "[engine]")
 {
   DatabaseTestWrapper dbWrapper;
   dbWrapper.addTable(TableInitializer("test", {{"id", csvsqldb::INT}, {"name", csvsqldb::STRING}}));
-
-  TestRowProvider::setRows("test", {{815, "Mark"}, {4711, "Lars"}});
-
   csvsqldb::FunctionRegistry functions;
-  csvsqldb::BlockManager blockManager;
-  std::stringstream output;
-  csvsqldb::OperatorContext context(dbWrapper.getDatabase(), functions, blockManager, {});
-  csvsqldb::ASTValidationVisitor validationVisitor(dbWrapper.getDatabase());
-
   csvsqldb::SQLParser parser(functions);
-  csvsqldb::ASTNodePtr node = parser.parse("SELECT * FROM test");
-  REQUIRE(node);
-  node->accept(validationVisitor);
+  csvsqldb::BlockManager blockManager;
+  csvsqldb::OperatorContext context(dbWrapper.getDatabase(), functions, blockManager, {});
   csvsqldb::ExecutionPlan execPlan;
-  csvsqldb::ExecutionPlanVisitor<TestOperatorNodeFactory> execVisitor(context, execPlan, output);
-  node->accept(execVisitor);
+  std::stringstream output;
+  csvsqldb::ExecutionPlanVisitor<TestOperatorNodeFactory> execPlanVisitor(context, execPlan, output);
 
-  SECTION("plan execute")
+  SECTION("create table")
   {
-    CHECK(2 == execPlan.execute());
-
-    std::string expected =
-      R"(#TEST.ID,TEST.NAME
-815,'Mark'
-4711,'Lars'
-)";
-    CHECK(expected == output.str());
+    csvsqldb::ASTNodePtr node = parser.parse("CREATE TABLE employees(emp_no INTEGER,first_name VARCHAR(25) NOT NULL)");
+    REQUIRE(node);
+    node->accept(execPlanVisitor);
   }
-  SECTION("plan dump")
+  SECTION("drop table")
   {
-    execPlan.dump(output);
-
-    std::string expected =
-      R"(OutputRowOperator (TEST.ID,TEST.NAME)
--->ExtendedProjectionOperator (TEST.ID,TEST.NAME)
--->TestScanOperatorNode
-)";
-    CHECK(expected == output.str());
+    csvsqldb::ASTNodePtr node = parser.parse("DROP TABLE employees");
+    REQUIRE(node);
+    node->accept(execPlanVisitor);
+  }
+  SECTION("create mapping")
+  {
+    csvsqldb::ASTNodePtr node = parser.parse("CREATE MAPPING airport('airports\\d*.csv',',',true)");
+    REQUIRE(node);
+    node->accept(execPlanVisitor);
+  }
+  SECTION("create mapping")
+  {
+    csvsqldb::ASTNodePtr node = parser.parse("DROP MAPPING airport");
+    REQUIRE(node);
+    node->accept(execPlanVisitor);
+  }
+  SECTION("explain ast")
+  {
+    csvsqldb::ASTNodePtr node = parser.parse("EXPLAIN AST SELECT * FROM employees");
+    REQUIRE(node);
+    node->accept(execPlanVisitor);
+  }
+  SECTION("explain exec")
+  {
+    csvsqldb::ASTNodePtr node = parser.parse("EXPLAIN EXEC SELECT * FROM employees");
+    REQUIRE(node);
+    node->accept(execPlanVisitor);
+  }
+  SECTION("select")
+  {
+    csvsqldb::ASTNodePtr node = parser.parse("SELECT * FROM test");
+    REQUIRE(node);
+    node->accept(execPlanVisitor);
   }
 }

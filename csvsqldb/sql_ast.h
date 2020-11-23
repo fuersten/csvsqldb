@@ -51,8 +51,8 @@ namespace csvsqldb
   class ASTMappingNode;
   class ASTDropMappingNode;
   class ASTAlterTableNode;
-  class ASTAlterTableAddNode;
-  class ASTAlterTableDropNode;
+  class ASTAlterTableAddColumnNode;
+  class ASTAlterTableDropColumnNode;
   class ASTDropTableNode;
   class ASTQueryNode;
   class ASTQueryExpressionNode;
@@ -197,8 +197,8 @@ namespace csvsqldb
     virtual void visit(ASTCreateTableNode& node) = 0;
     virtual void visit(ASTMappingNode& node) = 0;
     virtual void visit(ASTDropMappingNode& node) = 0;
-    virtual void visit(ASTAlterTableAddNode& node) = 0;
-    virtual void visit(ASTAlterTableDropNode& node) = 0;
+    virtual void visit(ASTAlterTableAddColumnNode& node) = 0;
+    virtual void visit(ASTAlterTableDropColumnNode& node) = 0;
     virtual void visit(ASTDropTableNode& node) = 0;
     virtual void visit(ASTUnionNode& node) = 0;
     virtual void visit(ASTExplainNode& node) = 0;
@@ -286,11 +286,11 @@ namespace csvsqldb
     {
       CSVSQLDB_THROW(SqlParserException, "Visting non expression node");
     }
-    void visit(ASTAlterTableAddNode& node) override
+    void visit(ASTAlterTableAddColumnNode& node) override
     {
       CSVSQLDB_THROW(SqlParserException, "Visting non expression node");
     }
-    void visit(ASTAlterTableDropNode& node) override
+    void visit(ASTAlterTableDropColumnNode& node) override
     {
       CSVSQLDB_THROW(SqlParserException, "Visting non expression node");
     }
@@ -1285,10 +1285,10 @@ namespace csvsqldb
   };
 
 
-  class CSVSQLDB_EXPORT ASTAlterTableAddNode : public ASTAlterTableNode
+  class CSVSQLDB_EXPORT ASTAlterTableAddColumnNode : public ASTAlterTableNode
   {
   public:
-    ASTAlterTableAddNode(const SymbolTablePtr& symbolTable, const ColumnDefinition& definition)
+    ASTAlterTableAddColumnNode(const SymbolTablePtr& symbolTable, const ColumnDefinition& definition)
     : ASTAlterTableNode(symbolTable)
     , _definition(definition)
     {
@@ -1303,10 +1303,10 @@ namespace csvsqldb
   };
 
 
-  class CSVSQLDB_EXPORT ASTAlterTableDropNode : public ASTAlterTableNode
+  class CSVSQLDB_EXPORT ASTAlterTableDropColumnNode : public ASTAlterTableNode
   {
   public:
-    ASTAlterTableDropNode(const SymbolTablePtr& symbolTable, const std::string& columnName)
+    ASTAlterTableDropColumnNode(const SymbolTablePtr& symbolTable, const std::string& columnName)
     : ASTAlterTableNode(symbolTable)
     , _columnName(columnName)
     {

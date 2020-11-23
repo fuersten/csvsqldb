@@ -636,12 +636,12 @@ TEST_CASE("SQL Parser Test", "[parser]")
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     csvsqldb::ASTNodePtr node = parser.parse("ALTER TABLE Test ADD COLUMN test INT NOT NULL");
     REQUIRE(node);
-    CHECK(std::dynamic_pointer_cast<csvsqldb::ASTAlterTableAddNode>(node));
+    CHECK(std::dynamic_pointer_cast<csvsqldb::ASTAlterTableAddColumnNode>(node));
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     node = parser.parse("ALTER TABLE Test DROP COLUMN test");
     REQUIRE(node);
-    CHECK(std::dynamic_pointer_cast<csvsqldb::ASTAlterTableDropNode>(node));
+    CHECK(std::dynamic_pointer_cast<csvsqldb::ASTAlterTableDropColumnNode>(node));
   }
 
   SECTION("parse alter table fail")

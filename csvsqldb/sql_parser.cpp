@@ -439,10 +439,10 @@ namespace csvsqldb
     expect(TOK_IDENTIFIER);
     if (canExpect(TOK_ADD_KEYWORD)) {
       canExpect(TOK_COLUMN);
-      alterNode = std::make_shared<ASTAlterTableAddNode>(SymbolTable::createSymbolTable(), parseColumnDefinition());
+      alterNode = std::make_shared<ASTAlterTableAddColumnNode>(SymbolTable::createSymbolTable(), parseColumnDefinition());
     } else if (canExpect(TOK_DROP)) {
       canExpect(TOK_COLUMN);
-      alterNode = std::make_shared<ASTAlterTableDropNode>(SymbolTable::createSymbolTable(), expect(TOK_IDENTIFIER));
+      alterNode = std::make_shared<ASTAlterTableDropColumnNode>(SymbolTable::createSymbolTable(), expect(TOK_IDENTIFIER));
     } else {
       CSVSQLDB_THROW(SqlParserException, "expected add or drop but found '"
                                            << tokenToString(eToken(_currentToken._token)) << "' (" << _currentToken._value

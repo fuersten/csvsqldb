@@ -65,7 +65,8 @@ namespace csvsqldb
   class CSVSQLDB_EXPORT ExplainExecutionNode : public ExecutionNode
   {
   public:
-    ExplainExecutionNode(OperatorContext& context, eDescriptionType descType, const ASTQueryNodePtr& query);
+    ExplainExecutionNode(OperatorContext& context, std::ostream& outputStream, eDescriptionType descType,
+                         const ASTQueryNodePtr& query);
 
     int64_t execute() override;
 
@@ -73,6 +74,7 @@ namespace csvsqldb
 
   private:
     OperatorContext& _context;
+    std::ostream& _outputStream;
     eDescriptionType _descType;
     ASTQueryNodePtr _query;
   };
@@ -108,11 +110,11 @@ namespace csvsqldb
       _executionPlan.addExecutionNode(execNode);
     }
 
-    void visit(ASTAlterTableAddNode& node) override
+    void visit(ASTAlterTableAddColumnNode& node) override
     {
     }
 
-    void visit(ASTAlterTableDropNode& node) override
+    void visit(ASTAlterTableDropColumnNode& node) override
     {
     }
 
@@ -124,7 +126,7 @@ namespace csvsqldb
 
     void visit(ASTExplainNode& node) override
     {
-      ExecutionNode::UniquePtr execNode(new ExplainExecutionNode(_context, node._descType, node._query));
+      ExecutionNode::UniquePtr execNode(new ExplainExecutionNode(_context, _outputStream, node._descType, node._query));
       _executionPlan.addExecutionNode(execNode);
     }
 

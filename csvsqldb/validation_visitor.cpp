@@ -53,11 +53,11 @@ namespace csvsqldb
   {
   }
 
-  void ASTValidationVisitor::visit(ASTAlterTableAddNode& node)
+  void ASTValidationVisitor::visit(ASTAlterTableAddColumnNode& node)
   {
   }
 
-  void ASTValidationVisitor::visit(ASTAlterTableDropNode& node)
+  void ASTValidationVisitor::visit(ASTAlterTableDropColumnNode& node)
   {
   }
 

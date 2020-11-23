@@ -37,8 +37,8 @@
 
 #include "sql_ast.h"
 
-#include <iostream>
 #include <memory>
+#include <ostream>
 #include <vector>
 
 
@@ -47,130 +47,131 @@ namespace csvsqldb
   class CSVSQLDB_EXPORT ASTNodeDumpVisitor : public ASTNodeVisitor
   {
   public:
-    ASTNodeDumpVisitor()
+    ASTNodeDumpVisitor(std::ostream& out)
     : _indent(0)
+    , _out{out}
     {
     }
 
     void visit(ASTCreateTableNode& node) override
     {
-      std::cout << "ASTCreateTable" << std::endl;
+      _out << "ASTCreateTable" << std::endl;
       _indent += 2;
       indent();
-      std::cout << node._tableName << " -> " << (node._createIfNotExists ? "create if not exists" : "") << std::endl;
+      _out << node._tableName << " -> " << (node._createIfNotExists ? "create if not exists" : "") << std::endl;
       _indent += 2;
       for (const auto& definition : node._columnDefinitions) {
         indent();
-        std::cout << definition._name << " -> " << typeToString(definition._type) << " ";
-        std::cout << (definition._length ? "length " + std::to_string(definition._length) + " " : "");
-        std::cout << (definition._primaryKey ? "Primary Key " : "");
-        std::cout << (definition._notNull ? "Not Null " : "");
-        std::cout << (definition._unique ? "Unique " : "");
+        _out << definition._name << " -> " << typeToString(definition._type) << " ";
+        _out << (definition._length ? "length " + std::to_string(definition._length) + " " : "");
+        _out << (definition._primaryKey ? "Primary Key " : "");
+        _out << (definition._notNull ? "Not Null " : "");
+        _out << (definition._unique ? "Unique " : "");
         if (definition._defaultValue.has_value()) {
-          std::cout << printType(definition._type, definition._defaultValue);
+          _out << printType(definition._type, definition._defaultValue);
         }
         if (definition._check) {
-          std::cout << std::endl;
+          _out << std::endl;
           indent();
-          std::cout << "check" << std::endl;
+          _out << "check" << std::endl;
           _indent += 2;
           indent();
           definition._check->accept(*this);
           _indent -= 2;
         }
-        std::cout << std::endl;
+        _out << std::endl;
       }
       for (const auto& constraint : node._tableConstraints) {
         if (!constraint._name.empty()) {
           indent();
-          std::cout << constraint._name << std::endl;
+          _out << constraint._name << std::endl;
         }
         if (!constraint._primaryKeys.empty()) {
           indent();
-          std::cout << "primary keys [ ";
+          _out << "primary keys [ ";
           for (const auto& pk : constraint._primaryKeys) {
-            std::cout << pk << " ";
+            _out << pk << " ";
           }
-          std::cout << " ]" << std::endl;
+          _out << " ]" << std::endl;
         }
         if (!constraint._uniqueKeys.empty()) {
           indent();
-          std::cout << "unique keys [ ";
+          _out << "unique keys [ ";
           for (const auto& uk : constraint._uniqueKeys) {
-            std::cout << uk << " ";
+            _out << uk << " ";
           }
-          std::cout << " ]" << std::endl;
+          _out << " ]" << std::endl;
         }
         if (constraint._check) {
           indent();
-          std::cout << "check" << std::endl;
+          _out << "check" << std::endl;
           _indent += 2;
           indent();
           constraint._check->accept(*this);
           _indent -= 2;
         }
-        std::cout << std::endl;
+        _out << std::endl;
       }
       _indent -= 4;
     }
 
     void visit(ASTMappingNode& node) override
     {
-      std::cout << "ASTMappingNode" << std::endl;
+      _out << "ASTMappingNode" << std::endl;
     }
 
     void visit(ASTDropMappingNode& node) override
     {
-      std::cout << "ASTDropMappingNode" << std::endl;
+      _out << "ASTDropMappingNode" << std::endl;
     }
 
-    void visit(ASTAlterTableAddNode& node) override
+    void visit(ASTAlterTableAddColumnNode& node) override
     {
-      std::cout << "ASTAlterTableAdd" << std::endl;
+      _out << "ASTAlterTableAdd" << std::endl;
       _indent += 2;
       indent();
-      std::cout << node._definition._name << " -> " << typeToString(node._definition._type) << " ";
-      std::cout << (node._definition._primaryKey ? "Primary Key" : "");
-      std::cout << (node._definition._notNull ? "Not Null" : "");
-      std::cout << (node._definition._unique ? "Unique" : "");
+      _out << node._definition._name << " -> " << typeToString(node._definition._type) << " ";
+      _out << (node._definition._primaryKey ? "Primary Key" : "");
+      _out << (node._definition._notNull ? "Not Null" : "");
+      _out << (node._definition._unique ? "Unique" : "");
       if (node._definition._defaultValue.has_value()) {
-        std::cout << printType(node._definition._type, node._definition._defaultValue);
+        _out << printType(node._definition._type, node._definition._defaultValue);
       }
-      std::cout << std::endl;
+      _out << std::endl;
       _indent -= 2;
     }
 
-    void visit(ASTAlterTableDropNode& node) override
+    void visit(ASTAlterTableDropColumnNode& node) override
     {
-      std::cout << "ASTAlterTableDrop" << std::endl;
+      _out << "ASTAlterTableDrop" << std::endl;
       _indent += 2;
       indent();
-      std::cout << "drop column " << node._columnName << std::endl;
+      _out << "drop column " << node._columnName << std::endl;
       _indent -= 2;
     }
 
     void visit(ASTDropTableNode& node) override
     {
-      std::cout << "ASTDropTable" << std::endl;
+      _out << "ASTDropTable" << std::endl;
       _indent += 2;
       indent();
-      std::cout << "drop table " << node._tableName << std::endl;
+      _out << "drop table " << node._tableName << std::endl;
       _indent -= 2;
     }
 
     void visit(ASTExplainNode& node) override
     {
-      std::cout << "ASTExplainNode" << std::endl;
+      _out << "ASTExplainNode" << std::endl;
     }
 
     void visit(ASTUnionNode& node) override
     {
-      std::cout << "ASTUnion" << std::endl;
+      _out << "ASTUnion" << std::endl;
       _indent += 2;
       switch (node._quantifier) {
         case DISTINCT:
           indent();
-          std::cout << "DISTINCT" << std::endl;
+          _out << "DISTINCT" << std::endl;
         case ALL:
           break;
       }
@@ -188,12 +189,12 @@ namespace csvsqldb
 
     void visit(ASTQuerySpecificationNode& select) override
     {
-      std::cout << "ASTQuerySpecification" << std::endl;
+      _out << "ASTQuerySpecification" << std::endl;
       _indent += 2;
       switch (select._quantifier) {
         case DISTINCT:
           indent();
-          std::cout << "DISTINCT" << std::endl;
+          _out << "DISTINCT" << std::endl;
         case ALL:
           break;
       }
@@ -210,7 +211,7 @@ namespace csvsqldb
     void visit(ASTTableExpressionNode& node) override
     {
       indent();
-      std::cout << "ASTTableExpression" << std::endl;
+      _out << "ASTTableExpression" << std::endl;
       _indent += 2;
       indent();
       node._from->accept(*this);
@@ -236,12 +237,12 @@ namespace csvsqldb
 
     void visit(ASTBinaryNode& node) override
     {
-      std::cout << "ASTBinary" << std::endl;
+      _out << "ASTBinary" << std::endl;
 
       _indent += 2;
       indent();
-      std::cout << operationTypeToString(node._op);
-      std::cout << std::endl;
+      _out << operationTypeToString(node._op);
+      _out << std::endl;
       _indent += 2;
       indent();
       node._lhs->accept(*this);
@@ -250,68 +251,68 @@ namespace csvsqldb
       _indent -= 2;
       if (!node._symbolName.empty()) {
         indent();
-        std::cout << "-> " << node._symbolName;
+        _out << "-> " << node._symbolName;
         const SymbolInfoPtr& info = node.symbolTable()->findSymbol(node._symbolName);
         if (!info->_alias.empty()) {
-          std::cout << " alias: " << info->_alias;
+          _out << " alias: " << info->_alias;
         }
-        std::cout << std::endl;
+        _out << std::endl;
       }
       _indent -= 2;
     }
 
     void visit(ASTUnaryNode& node) override
     {
-      std::cout << "ASTUnary" << std::endl;
+      _out << "ASTUnary" << std::endl;
       _indent += 2;
       indent();
-      std::cout << operationTypeToString(node._op);
-      std::cout << std::endl;
+      _out << operationTypeToString(node._op);
+      _out << std::endl;
       _indent += 2;
       indent();
       node._rhs->accept(*this);
       if (node._op == OP_CAST) {
         indent();
-        std::cout << "AS " << typeToString(node._castType) << std::endl;
+        _out << "AS " << typeToString(node._castType) << std::endl;
       }
       _indent -= 4;
     }
 
     void visit(ASTValueNode& node) override
     {
-      std::cout << "ASTValue -> ";
-      std::cout << typeToString(node._value._type) << " ";
-      std::cout << printType(node._value);
-      std::cout << std::endl;
+      _out << "ASTValue -> ";
+      _out << typeToString(node._value._type) << " ";
+      _out << printType(node._value);
+      _out << std::endl;
     }
 
     void visit(ASTLikeNode& node) override
     {
-      std::cout << "ASTLike" << std::endl;
+      _out << "ASTLike" << std::endl;
 
       _indent += 2;
       indent();
       node._lhs->accept(*this);
       indent();
-      std::cout << "'" << node._like << "'" << std::endl;
+      _out << "'" << node._like << "'" << std::endl;
       _indent -= 2;
     }
 
     void visit(ASTBetweenNode& node) override
     {
-      std::cout << "ASTBetween" << std::endl;
+      _out << "ASTBetween" << std::endl;
 
       _indent += 2;
       indent();
       node._lhs->accept(*this);
       indent();
-      std::cout << "between" << std::endl;
+      _out << "between" << std::endl;
       _indent += 2;
       indent();
       node._from->accept(*this);
       _indent -= 2;
       indent();
-      std::cout << "and" << std::endl;
+      _out << "and" << std::endl;
       _indent += 2;
       indent();
       node._to->accept(*this);
@@ -320,13 +321,13 @@ namespace csvsqldb
 
     void visit(ASTInNode& node) override
     {
-      std::cout << "ASTIn" << std::endl;
+      _out << "ASTIn" << std::endl;
 
       _indent += 2;
       indent();
       node._lhs->accept(*this);
       indent();
-      std::cout << "in" << std::endl;
+      _out << "in" << std::endl;
       _indent += 2;
       for (const auto& exp : node._expressions) {
         indent();
@@ -337,10 +338,10 @@ namespace csvsqldb
 
     void visit(ASTFunctionNode& node) override
     {
-      std::cout << "ASTFunction" << std::endl;
+      _out << "ASTFunction" << std::endl;
       _indent += 2;
       indent();
-      std::cout << node._function->getName() << "(" << std::endl;
+      _out << node._function->getName() << "(" << std::endl;
       _indent += 2;
       for (const auto& param : node._parameters) {
         indent();
@@ -348,25 +349,25 @@ namespace csvsqldb
       }
       _indent -= 2;
       indent();
-      std::cout << ")" << std::endl;
+      _out << ")" << std::endl;
       _indent -= 2;
     }
 
     void visit(ASTAggregateFunctionNode& node) override
     {
-      std::cout << "ASTAggregateFunction" << std::endl;
+      _out << "ASTAggregateFunction" << std::endl;
       _indent += 2;
       indent();
-      std::cout << aggregateFunctionToString(node._aggregateFunction) << "(" << std::endl;
+      _out << aggregateFunctionToString(node._aggregateFunction) << "(" << std::endl;
       _indent += 2;
       if (node._aggregateFunction == COUNT_STAR) {
         indent();
-        std::cout << "*" << std::endl;
+        _out << "*" << std::endl;
       }
       switch (node._quantifier) {
         case DISTINCT:
           indent();
-          std::cout << "DISTINCT ";
+          _out << "DISTINCT ";
         case ALL:
           break;
       }
@@ -375,27 +376,27 @@ namespace csvsqldb
       }
       _indent -= 2;
       indent();
-      std::cout << ")" << std::endl;
+      _out << ")" << std::endl;
       _indent -= 2;
     }
 
     void visit(ASTIdentifier& node) override
     {
-      std::cout << "ASTIdentifier -> " << node.getQualifiedIdentifier();
+      _out << "ASTIdentifier -> " << node.getQualifiedIdentifier();
       if (!node._info->_alias.empty()) {
-        std::cout << " alias: " << node._info->_alias;
+        _out << " alias: " << node._info->_alias;
       }
-      std::cout << std::endl;
+      _out << std::endl;
     }
 
     void visit(ASTQualifiedAsterisk& node) override
     {
-      std::cout << "ASTQualifiedAsterisk -> " << node.getQualifiedIdentifier() << std::endl;
+      _out << "ASTQualifiedAsterisk -> " << node.getQualifiedIdentifier() << std::endl;
     }
 
     void visit(ASTFromNode& node) override
     {
-      std::cout << "ASTFrom" << std::endl;
+      _out << "ASTFrom" << std::endl;
 
       _indent += 2;
       for (const auto& reference : node._tableReferences) {
@@ -407,21 +408,21 @@ namespace csvsqldb
 
     void visit(ASTTableIdentifierNode& node) override
     {
-      std::cout << "ASTTableIdentifier" << std::endl;
+      _out << "ASTTableIdentifier" << std::endl;
 
       _indent += 2;
       indent();
-      std::cout << node._factor->getQualifiedIdentifier();
+      _out << node._factor->getQualifiedIdentifier();
       if (!node._factor->_info->_alias.empty()) {
-        std::cout << " alias: " << node._factor->_info->_alias;
+        _out << " alias: " << node._factor->_info->_alias;
       }
       _indent -= 2;
-      std::cout << std::endl;
+      _out << std::endl;
     }
 
     void visit(ASTTableSubqueryNode& node) override
     {
-      std::cout << "ASTTableSubquery" << std::endl;
+      _out << "ASTTableSubquery" << std::endl;
 
       _indent += 2;
       indent();
@@ -431,32 +432,32 @@ namespace csvsqldb
 
     void visit(ASTCrossJoinNode& node) override
     {
-      std::cout << "ASTCrossJoin" << std::endl;
+      _out << "ASTCrossJoin" << std::endl;
 
       _indent += 2;
       indent();
       node._tableReference->accept(*this);
       indent();
-      std::cout << "JOIN" << std::endl;
+      _out << "JOIN" << std::endl;
       indent();
       node._factor->accept(*this);
       _indent -= 2;
-      std::cout << std::endl;
+      _out << std::endl;
     }
 
     void visit(ASTNaturalJoinNode& node) override
     {
-      std::cout << "ASTNaturalJoin" << std::endl;
+      _out << "ASTNaturalJoin" << std::endl;
 
       _indent += 2;
       indent();
       node._tableReference->accept(*this);
       indent();
-      std::cout << "JOIN" << std::endl;
+      _out << "JOIN" << std::endl;
       indent();
       node._factor->accept(*this);
       _indent -= 2;
-      std::cout << std::endl;
+      _out << std::endl;
     }
 
     void printJoin(ASTJoinWithCondition& node)
@@ -465,49 +466,49 @@ namespace csvsqldb
       indent();
       node._tableReference->accept(*this);
       indent();
-      std::cout << "JOIN" << std::endl;
+      _out << "JOIN" << std::endl;
       indent();
       node._factor->accept(*this);
       indent();
-      std::cout << "ON" << std::endl;
+      _out << "ON" << std::endl;
       _indent += 2;
       indent();
       node._expression->accept(*this);
       _indent -= 4;
-      std::cout << std::endl;
+      _out << std::endl;
     }
 
     void visit(ASTInnerJoinNode& node) override
     {
-      std::cout << "ASTInnerJoin" << std::endl;
+      _out << "ASTInnerJoin" << std::endl;
 
       printJoin(node);
     }
 
     void visit(ASTLeftJoinNode& node) override
     {
-      std::cout << "ASTLeftJoin" << std::endl;
+      _out << "ASTLeftJoin" << std::endl;
 
       printJoin(node);
     }
 
     void visit(ASTRightJoinNode& node) override
     {
-      std::cout << "ASTRightJoin" << std::endl;
+      _out << "ASTRightJoin" << std::endl;
 
       printJoin(node);
     }
 
     void visit(ASTFullJoinNode& node) override
     {
-      std::cout << "ASTFullJoin" << std::endl;
+      _out << "ASTFullJoin" << std::endl;
 
       printJoin(node);
     }
 
     void visit(ASTWhereNode& node) override
     {
-      std::cout << "ASTWhere" << std::endl;
+      _out << "ASTWhere" << std::endl;
 
       _indent += 2;
       indent();
@@ -517,12 +518,12 @@ namespace csvsqldb
 
     void visit(ASTGroupByNode& group) override
     {
-      std::cout << "ASTGroupBy" << std::endl;
+      _out << "ASTGroupBy" << std::endl;
       _indent += 2;
       switch (group._quantifier) {
         case DISTINCT:
           indent();
-          std::cout << "DISTINCT" << std::endl;
+          _out << "DISTINCT" << std::endl;
         case ALL:
           break;
       }
@@ -535,7 +536,7 @@ namespace csvsqldb
 
     void visit(ASTHavingNode& node) override
     {
-      std::cout << "ASTHaving" << std::endl;
+      _out << "ASTHaving" << std::endl;
       _indent += 2;
       node._exp->accept(*this);
       _indent -= 2;
@@ -543,11 +544,11 @@ namespace csvsqldb
 
     void visit(ASTOrderByNode& node) override
     {
-      std::cout << "ASTOrderBy" << std::endl;
+      _out << "ASTOrderBy" << std::endl;
       _indent += 2;
       for (const auto& order : node._orderExpressions) {
         indent();
-        std::cout << orderToString(order.second) << std::endl;
+        _out << orderToString(order.second) << std::endl;
         indent();
         order.first->accept(*this);
       }
@@ -556,7 +557,7 @@ namespace csvsqldb
 
     void visit(ASTLimitNode& node) override
     {
-      std::cout << "ASTLimit" << std::endl;
+      _out << "ASTLimit" << std::endl;
       _indent += 2;
       indent();
       node._limit->accept(*this);
@@ -570,10 +571,11 @@ namespace csvsqldb
   protected:
     void indent()
     {
-      std::cout << std::string(_indent, ' ');
+      _out << std::string(_indent, ' ');
     }
 
     size_t _indent;
+    std::ostream& _out;
   };
 
 
@@ -631,11 +633,11 @@ namespace csvsqldb
     {
     }
 
-    void visit(ASTAlterTableAddNode& node) override
+    void visit(ASTAlterTableAddColumnNode& node) override
     {
     }
 
-    void visit(ASTAlterTableDropNode& node) override
+    void visit(ASTAlterTableDropColumnNode& node) override
     {
     }
 

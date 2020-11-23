@@ -65,8 +65,10 @@ namespace csvsqldb
   }
 
 
-  ExplainExecutionNode::ExplainExecutionNode(OperatorContext& context, eDescriptionType descType, const ASTQueryNodePtr& query)
+  ExplainExecutionNode::ExplainExecutionNode(OperatorContext& context, std::ostream& outputStream, eDescriptionType descType,
+                                             const ASTQueryNodePtr& query)
   : _context(context)
+  , _outputStream{outputStream}
   , _descType(descType)
   , _query(query)
   {
@@ -76,9 +78,9 @@ namespace csvsqldb
   {
     switch (_descType) {
       case AST: {
-        ASTNodeDumpVisitor visitor;
+        ASTNodeDumpVisitor visitor{_outputStream};
         _query->accept(visitor);
-        std::cout << std::endl;
+        _outputStream << std::endl;
         break;
       }
       case EXEC: {
@@ -88,7 +90,7 @@ namespace csvsqldb
         _query->accept(validationVisitor);
         ExecutionPlanVisitor<OperatorNodeFactory> execVisitor(_context, execPlan, ss);
         _query->accept(execVisitor);
-        execPlan.dump(std::cout);
+        execPlan.dump(_outputStream);
         break;
       }
     }

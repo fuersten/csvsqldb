@@ -52,9 +52,9 @@ namespace csvsqldb
 
     void visit(ASTDropMappingNode& node) override;
 
-    void visit(ASTAlterTableAddNode& node) override;
+    void visit(ASTAlterTableAddColumnNode& node) override;
 
-    void visit(ASTAlterTableDropNode& node) override;
+    void visit(ASTAlterTableDropColumnNode& node) override;
 
     void visit(ASTDropTableNode& node) override;
 

@@ -25,6 +25,7 @@ add_executable(csvsqldbtest
     duration_test.cpp
     exception_test.cpp
     execution_engine_test.cpp
+    execution_plan_creator_test.cpp
     execution_plan_test.cpp
     file_mapping_test.cpp
     groupby_test.cpp
