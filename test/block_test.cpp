@@ -356,4 +356,31 @@ TEST_CASE("Block Test", "[block]")
   {
     CHECK_THROWS_AS(block.addValue(csvsqldb::Variant()), csvsqldb::Exception);
   }
+  SECTION("out of range offset")
+  {
+    CHECK_THROWS_WITH(block.getRawBuffer(256), "block offset out of range");
+    CHECK_THROWS_WITH(block.getRawBuffer(257), "block offset out of range");
+    CHECK_THROWS_WITH(block.getRawBuffer(1024), "block offset out of range");
+    CHECK_THROWS_WITH(block.getRawBuffer(std::numeric_limits<size_t>::max()), "block offset out of range");
+
+    CHECK_THROWS_WITH(block.isValue(256), "block offset out of range");
+    CHECK_THROWS_WITH(block.isValue(257), "block offset out of range");
+    CHECK_THROWS_WITH(block.isValue(1024), "block offset out of range");
+    CHECK_THROWS_WITH(block.isValue(std::numeric_limits<size_t>::max()), "block offset out of range");
+
+    CHECK_THROWS_WITH(block.isRow(256), "block offset out of range");
+    CHECK_THROWS_WITH(block.isRow(257), "block offset out of range");
+    CHECK_THROWS_WITH(block.isRow(1024), "block offset out of range");
+    CHECK_THROWS_WITH(block.isRow(std::numeric_limits<size_t>::max()), "block offset out of range");
+
+    CHECK_THROWS_WITH(block.isBlock(256), "block offset out of range");
+    CHECK_THROWS_WITH(block.isBlock(257), "block offset out of range");
+    CHECK_THROWS_WITH(block.isBlock(1024), "block offset out of range");
+    CHECK_THROWS_WITH(block.isBlock(std::numeric_limits<size_t>::max()), "block offset out of range");
+
+    CHECK_THROWS_WITH(block.isEnd(256), "block offset out of range");
+    CHECK_THROWS_WITH(block.isEnd(257), "block offset out of range");
+    CHECK_THROWS_WITH(block.isEnd(1024), "block offset out of range");
+    CHECK_THROWS_WITH(block.isEnd(std::numeric_limits<size_t>::max()), "block offset out of range");
+  }
 }

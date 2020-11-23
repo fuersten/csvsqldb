@@ -77,10 +77,6 @@ namespace csvsqldb
     // look for next block marker
     checkNextBlock();
 
-    if (_offset == _endOffset) {
-      CSVSQLDB_THROW(csvsqldb::Exception, "should have found the end marker in the first place");
-    }
-
     size_t index = 0;
     for (const auto& type : _types) {
       const Value* val = getNextValue();
