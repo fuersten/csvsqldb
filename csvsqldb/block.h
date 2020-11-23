@@ -71,6 +71,8 @@ namespace csvsqldb
   public:
     BlockManager(size_t maxActiveBlocks = sDefaultMaxActiveBlocks, size_t blockCapacity = sDefaultBlockCapacity);
 
+    ~BlockManager();
+
     BlockManager(const BlockManager&) = delete;
     BlockManager& operator=(const BlockManager&) = delete;
     BlockManager(BlockManager&&) = delete;

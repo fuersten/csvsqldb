@@ -3,7 +3,7 @@ mkdir build_coverage
 cd build_coverage
 find . -name "*.gcda" -exec rm \{} \;
 rm -rf html || true
-cmake -DCMAKE_BUILD_TYPE=Debug -DCOVERAGE=ON ..
+cmake -GNinja -DCMAKE_BUILD_TYPE=Debug -DCOVERAGE=ON ..
 cmake --build . --config Debug
 ctest
 

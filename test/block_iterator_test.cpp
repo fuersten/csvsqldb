@@ -54,6 +54,13 @@ namespace
   private:
     std::function<csvsqldb::BlockPtr()> _provider;
   };
+
+  static csvsqldb::BlockPtr createBlock(csvsqldb::BlockManager& manager)
+  {
+    auto block = manager.createBlock();
+    std::fill(block->getRawBuffer(), block->getRawBuffer() + csvsqldb::sDefaultBlockCapacity, 0);
+    return block;
+  }
 }
 
 
@@ -65,7 +72,7 @@ TEST_CASE("Block Iterator Test", "[block]")
   SECTION("next row")
   {
     MockBlockProvider provider{[&manager]() {
-      static csvsqldb::BlockPtr block{manager.createBlock()};
+      static csvsqldb::BlockPtr block{createBlock(manager)};
       static uint16_t count{0};
 
       switch (count) {
@@ -83,7 +90,7 @@ TEST_CASE("Block Iterator Test", "[block]")
           ++count;
           break;
         case 1:
-          block = manager.createBlock();
+          block = createBlock(manager);
           block->addInt(815, false);
           block->addBool(false, false);
           block->addDate(csvsqldb::Date{1970, csvsqldb::Date::May, 17}, false);
@@ -127,7 +134,7 @@ TEST_CASE("Block Iterator Test", "[block]")
   SECTION("missing row delimiter")
   {
     MockBlockProvider provider{[&manager]() {
-      static csvsqldb::BlockPtr block{manager.createBlock()};
+      static csvsqldb::BlockPtr block{createBlock(manager)};
 
       block->addInt(4711, false);
       block->addBool(true, false);
@@ -142,6 +149,104 @@ TEST_CASE("Block Iterator Test", "[block]")
     const auto* values = iter.getNextRow();
     REQUIRE(values);
     REQUIRE(3 == values->size());
-    CHECK_THROWS_AS(iter.getNextRow(), csvsqldb::Exception);
+    CHECK_THROWS_WITH(iter.getNextRow(), "should be at row delimiter");
+  }
+  SECTION("missing end delimiter")
+  {
+    MockBlockProvider provider{[&manager]() {
+      static csvsqldb::BlockPtr block{createBlock(manager)};
+
+      block->addInt(4711, false);
+      block->addBool(true, false);
+      block->addDate(csvsqldb::Date{2020, csvsqldb::Date::November, 21}, false);
+      block->nextRow();
+
+      return block;
+    }};
+
+    csvsqldb::BlockIterator iter{types, provider, manager};
+
+    const auto* values = iter.getNextRow();
+    REQUIRE(values);
+    REQUIRE(3 == values->size());
+    CHECK_THROWS_WITH(iter.getNextRow(), "should have found the end marker in the first place");
+  }
+  SECTION("not enough values")
+  {
+    MockBlockProvider provider{[&manager]() {
+      static csvsqldb::BlockPtr block{createBlock(manager)};
+
+      block->addInt(4711, false);
+      block->addBool(true, false);
+
+      return block;
+    }};
+
+    csvsqldb::BlockIterator iter{types, provider, manager};
+
+    CHECK_THROWS_WITH(iter.getNextRow(), "expected more values, but already at end of block");
+  }
+  SECTION("missing value separator")
+  {
+    MockBlockProvider provider{[&manager]() {
+      static csvsqldb::BlockPtr block{createBlock(manager)};
+
+      block->addInt(4711, false);
+      auto* blockPos = block->getRawBuffer(block->offset());
+      block->addBool(true, false);
+      *blockPos = 0;
+
+      return block;
+    }};
+
+    csvsqldb::BlockIterator iter{types, provider, manager};
+
+    CHECK_THROWS_WITH(iter.getNextRow(), "missing value separator");
+  }
+  SECTION("wrong type")
+  {
+    csvsqldb::Types wrongTypes{csvsqldb::INT, csvsqldb::NONE, csvsqldb::DATE};
+
+    MockBlockProvider provider{[&manager]() {
+      static csvsqldb::BlockPtr block{createBlock(manager)};
+
+      block->addInt(4711, false);
+      block->addBool(true, false);
+      block->addDate(csvsqldb::Date{2020, csvsqldb::Date::November, 21}, false);
+      block->nextRow();
+
+      return block;
+    }};
+
+    csvsqldb::BlockIterator iter{wrongTypes, provider, manager};
+
+    CHECK_THROWS_WITH(iter.getNextRow(), "type not allowed none");
+  }
+  SECTION("missing next block")
+  {
+    MockBlockProvider provider{[&manager]() {
+      static csvsqldb::BlockPtr block{createBlock(manager)};
+      static bool first{true};
+
+      if (first) {
+        block->addInt(4711, false);
+        block->addBool(true, false);
+        block->addDate(csvsqldb::Date{2020, csvsqldb::Date::November, 21}, false);
+        block->nextRow();
+        *block->getRawBuffer(block->offset()) = csvsqldb::sBlockMarker;
+        first = false;
+      } else {
+        block = nullptr;
+      }
+
+      return block;
+    }};
+
+    csvsqldb::BlockIterator iter{types, provider, manager};
+
+    const auto* values = iter.getNextRow();
+    REQUIRE(values);
+    REQUIRE(3 == values->size());
+    CHECK_THROWS_WITH(iter.getNextRow(), "next block is missing");
   }
 }

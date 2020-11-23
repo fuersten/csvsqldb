@@ -47,6 +47,13 @@ namespace csvsqldb
   {
   }
 
+  BlockManager::~BlockManager()
+  {
+    for (auto* block : _blocks) {
+      release(block);
+    }
+  }
+
   BlockPtr BlockManager::createBlock()
   {
     auto maxCountActiveBlocks = std::max(_activeBlocks + 1, _maxCountActiveBlocks);
@@ -77,7 +84,9 @@ namespace csvsqldb
     if (block) {
       --_activeBlocks;
       if (_blocks.size()) {
-        csvsqldb::remove(_blocks, block);
+        _blocks.erase(std::remove_if(_blocks.begin(), _blocks.end(),
+                                     [&block](const auto& b) { return block->getBlockNumber() == b->getBlockNumber(); }),
+                      _blocks.end());
       }
 
       delete block;
