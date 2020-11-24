@@ -51,47 +51,90 @@ TEST_CASE("Execution Plan Creator Test", "[engine]")
   csvsqldb::ExecutionPlan execPlan;
   std::stringstream output;
   csvsqldb::ExecutionPlanVisitor<TestOperatorNodeFactory> execPlanVisitor(context, execPlan, output);
+  csvsqldb::ASTValidationVisitor validationVisitor(dbWrapper.getDatabase());
 
   SECTION("create table")
   {
     csvsqldb::ASTNodePtr node = parser.parse("CREATE TABLE employees(emp_no INTEGER,first_name VARCHAR(25) NOT NULL)");
     REQUIRE(node);
     node->accept(execPlanVisitor);
+    execPlan.dump(output);
+    std::string expected = R"(CreateTableExecution (EMPLOYEES -> EMP_NO: INTEGER, FIRST_NAME: VARCHAR))";
+    CHECK(expected == output.str());
   }
   SECTION("drop table")
   {
     csvsqldb::ASTNodePtr node = parser.parse("DROP TABLE employees");
     REQUIRE(node);
     node->accept(execPlanVisitor);
+    execPlan.dump(output);
+    std::string expected = R"(DropTableExecution (EMPLOYEES))";
+    CHECK(expected == output.str());
   }
   SECTION("create mapping")
   {
     csvsqldb::ASTNodePtr node = parser.parse("CREATE MAPPING airport('airports\\d*.csv',',',true)");
     REQUIRE(node);
     node->accept(execPlanVisitor);
+    execPlan.dump(output);
+    std::string expected = R"(CreateMappingExecution (airports\d*.csv -> AIRPORT))";
+    CHECK(expected == output.str());
   }
-  SECTION("create mapping")
+  SECTION("drop mapping")
   {
     csvsqldb::ASTNodePtr node = parser.parse("DROP MAPPING airport");
     REQUIRE(node);
     node->accept(execPlanVisitor);
+    execPlan.dump(output);
+    std::string expected = R"(DropMappingExecution (AIRPORT))";
+    CHECK(expected == output.str());
   }
   SECTION("explain ast")
   {
     csvsqldb::ASTNodePtr node = parser.parse("EXPLAIN AST SELECT * FROM employees");
     REQUIRE(node);
     node->accept(execPlanVisitor);
+    execPlan.dump(output);
+    std::string expected = R"(ExplainExecution (AST) --> ASTQuerySpecification
+    ASTQualifiedAsterisk -> *
+  ASTTableExpression
+    ASTFrom
+      ASTTableIdentifier
+        EMPLOYEES
+
+)";
+    CHECK(expected == output.str());
   }
   SECTION("explain exec")
   {
     csvsqldb::ASTNodePtr node = parser.parse("EXPLAIN EXEC SELECT * FROM employees");
     REQUIRE(node);
     node->accept(execPlanVisitor);
+    execPlan.dump(output);
+    std::string expected = R"(ExplainExecution (EXEC) --> ASTQuerySpecification
+    ASTQualifiedAsterisk -> *
+  ASTTableExpression
+    ASTFrom
+      ASTTableIdentifier
+        EMPLOYEES
+
+)";
+    CHECK(expected == output.str());
   }
   SECTION("select")
   {
-    csvsqldb::ASTNodePtr node = parser.parse("SELECT * FROM test");
+    csvsqldb::ASTNodePtr node = parser.parse("SELECT id,name FROM test WHERE id > 4711 order by id LIMIT 10");
     REQUIRE(node);
+    node->accept(validationVisitor);
     node->accept(execPlanVisitor);
+    execPlan.dump(output);
+    std::string expected = R"(OutputRowOperator (ID,NAME)
+-->LimitOperator (0 -> 10)
+-->SortOperator (ID ASC)
+-->ExtendedProjectionOperator (ID,NAME)
+-->SelectOperator
+-->TestScanOperatorNode
+)";
+    CHECK(expected == output.str());
   }
 }

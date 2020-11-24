@@ -79,6 +79,18 @@ namespace csvsqldb
 
   void CreateTableExecutionNode::dump(std::ostream& stream) const
   {
+    stream << "CreateTableExecution (" << _tableName << "";
+    stream << (_createIfNotExists ? "create" : "") << " -> ";
+    bool first{true};
+    for (const auto& definition : _columnDefinitions) {
+      if (!first) {
+        stream << ", ";
+      } else {
+        first = false;
+      }
+      stream << definition._name << ": " << csvsqldb::typeToString(definition._type);
+    }
+    stream << ")";
   }
 
 
@@ -96,6 +108,7 @@ namespace csvsqldb
 
   void DropTableExecutionNode::dump(std::ostream& stream) const
   {
+    stream << "DropTableExecution (" << _tableName << ")";
   }
 
 
@@ -123,6 +136,17 @@ namespace csvsqldb
 
   void CreateMappingExecutionNode::dump(std::ostream& stream) const
   {
+    stream << "CreateMappingExecution (";
+    bool first{true};
+    for (const auto& mapping : _mappings) {
+      if (!first) {
+        stream << ", ";
+      } else {
+        first = false;
+      }
+      stream << mapping._mapping + " -> " + _tableName;
+    }
+    stream << ")";
   }
 
 
@@ -141,5 +165,6 @@ namespace csvsqldb
 
   void DropMappingExecutionNode::dump(std::ostream& stream) const
   {
+    stream << "DropMappingExecution (" << _tableName << ")";
   }
 }

@@ -46,6 +46,22 @@
 namespace fs = std::filesystem;
 
 
+namespace
+{
+  csvsqldb::ASTNodePtr createExecutionPlan(csvsqldb::ExecutionPlan& execPlan, const std::string& sql,
+                                           csvsqldb::OperatorContext& context, std::ostream& output)
+  {
+    csvsqldb::ASTValidationVisitor validationVisitor(context._database);
+    csvsqldb::SQLParser parser(context._functions);
+    csvsqldb::ASTNodePtr node = parser.parse(sql);
+    REQUIRE(node);
+    node->accept(validationVisitor);
+    csvsqldb::ExecutionPlanVisitor<TestOperatorNodeFactory> execVisitor(context, execPlan, output);
+    node->accept(execVisitor);
+    return node;
+  }
+}
+
 TEST_CASE("Execution Plan Test", "[engine]")
 {
   DatabaseTestWrapper dbWrapper;
@@ -57,18 +73,11 @@ TEST_CASE("Execution Plan Test", "[engine]")
   csvsqldb::BlockManager blockManager;
   std::stringstream output;
   csvsqldb::OperatorContext context(dbWrapper.getDatabase(), functions, blockManager, {});
-  csvsqldb::ASTValidationVisitor validationVisitor(dbWrapper.getDatabase());
-
-  csvsqldb::SQLParser parser(functions);
-  csvsqldb::ASTNodePtr node = parser.parse("SELECT * FROM test");
-  REQUIRE(node);
-  node->accept(validationVisitor);
   csvsqldb::ExecutionPlan execPlan;
-  csvsqldb::ExecutionPlanVisitor<TestOperatorNodeFactory> execVisitor(context, execPlan, output);
-  node->accept(execVisitor);
 
   SECTION("plan execute")
   {
+    auto node = createExecutionPlan(execPlan, "SELECT * FROM test", context, output);
     CHECK(2 == execPlan.execute());
 
     std::string expected =
@@ -80,12 +89,41 @@ TEST_CASE("Execution Plan Test", "[engine]")
   }
   SECTION("plan dump")
   {
+    auto node = createExecutionPlan(execPlan, "SELECT * FROM test", context, output);
     execPlan.dump(output);
 
     std::string expected =
       R"(OutputRowOperator (TEST.ID,TEST.NAME)
 -->ExtendedProjectionOperator (TEST.ID,TEST.NAME)
 -->TestScanOperatorNode
+)";
+    CHECK(expected == output.str());
+  }
+  SECTION("plan explain ast")
+  {
+    auto node = createExecutionPlan(execPlan, "EXPLAIN AST SELECT * FROM test", context, output);
+    CHECK(0 == execPlan.execute());
+
+    std::string expected =
+      R"(ASTQuerySpecification
+    ASTQualifiedAsterisk -> *
+  ASTTableExpression
+    ASTFrom
+      ASTTableIdentifier
+        TEST
+
+)";
+    CHECK(expected == output.str());
+  }
+  SECTION("plan explain exec")
+  {
+    auto node = createExecutionPlan(execPlan, "EXPLAIN EXEC SELECT * FROM test", context, output);
+    CHECK(0 == execPlan.execute());
+
+    std::string expected =
+      R"(OutputRowOperator (TEST.ID,TEST.NAME)
+-->ExtendedProjectionOperator (TEST.ID,TEST.NAME)
+-->TableScanOperator (TEST)
 )";
     CHECK(expected == output.str());
   }

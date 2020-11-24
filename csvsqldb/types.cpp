@@ -44,6 +44,17 @@ namespace csvsqldb
   CSVSQLDB_IMPLEMENT_EXCEPTION(SqlParserException, SqlException);
 
 
+  std::string descriptionTypeToString(eDescriptionType type)
+  {
+    switch (type) {
+      case AST:
+        return "AST";
+      case EXEC:
+        return "EXEC";
+    }
+    throw std::runtime_error("just to make VC2013 happy");
+  }
+
   std::string orderToString(eOrder order)
   {
     switch (order) {

@@ -55,6 +55,8 @@ namespace csvsqldb
 
   enum eDescriptionType { AST, EXEC };
 
+  CSVSQLDB_EXPORT std::string descriptionTypeToString(eDescriptionType type);
+
   enum eOrder { ASC, DESC };
 
   enum eQuantifier { DISTINCT, ALL };

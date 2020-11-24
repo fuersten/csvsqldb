@@ -71,4 +71,16 @@ TEST_CASE("Types Test", "[types]")
     CHECK(csvsqldb::stringToBool("1"));
     CHECK_FALSE(csvsqldb::stringToBool("0"));
   }
+  SECTION("description type to string")
+  {
+    CHECK("AST" == csvsqldb::descriptionTypeToString(csvsqldb::AST));
+    CHECK("EXEC" == csvsqldb::descriptionTypeToString(csvsqldb::EXEC));
+    CHECK_THROWS_AS(csvsqldb::descriptionTypeToString(static_cast<csvsqldb::eDescriptionType>(42)), std::runtime_error);
+  }
+  SECTION("order to string")
+  {
+    CHECK("ASC" == csvsqldb::orderToString(csvsqldb::ASC));
+    CHECK("DESC" == csvsqldb::orderToString(csvsqldb::DESC));
+    CHECK_THROWS_AS(csvsqldb::orderToString(static_cast<csvsqldb::eOrder>(42)), std::runtime_error);
+  }
 }

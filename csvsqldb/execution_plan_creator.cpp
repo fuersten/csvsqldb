@@ -100,5 +100,9 @@ namespace csvsqldb
 
   void ExplainExecutionNode::dump(std::ostream& stream) const
   {
+    stream << "ExplainExecution (" << csvsqldb::descriptionTypeToString(_descType) << ") --> ";
+    ASTNodeDumpVisitor visitor{stream};
+    _query->accept(visitor);
+    stream << std::endl;
   }
 }
