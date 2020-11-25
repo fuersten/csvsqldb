@@ -67,7 +67,7 @@ namespace csvsqldb
   Variant& StackMachine::getTopValue()
   {
     if (_valueStack.empty()) {
-      CSVSQLDB_THROW(StackMachineException, "Cannot get next value, no more elements on stack");
+      CSVSQLDB_THROW(StackMachineException, "Cannot get next value, no more elements on top of stack");
     }
     return _valueStack.top();
   }
@@ -154,7 +154,7 @@ namespace csvsqldb
           stream << "BETWEEN" << std::endl;
           break;
         case FUNC:
-          stream << "FUNC" << std::endl;
+          stream << "FUNC '" << element._value.asString() << "'" << std::endl;
           break;
         case CAST:
           stream << "CAST " << typeToString(element._value.getType()) << std::endl;
@@ -163,7 +163,7 @@ namespace csvsqldb
           stream << "CONCAT" << std::endl;
           break;
         case IN:
-          stream << "IN" << std::endl;
+          stream << "IN " << element._value.toString() << std::endl;
           break;
         case IS:
           stream << "IS" << std::endl;
@@ -259,7 +259,7 @@ namespace csvsqldb
         }
         case FUNC: {
           if (instruction._value.getType() != STRING) {
-            CSVSQLDB_THROW(StackMachineException, "expected a string as variable name");
+            CSVSQLDB_THROW(StackMachineException, "expected a string as function name");
           }
 
           std::string funcname = instruction._value.asString();
@@ -268,7 +268,6 @@ namespace csvsqldb
             CSVSQLDB_THROW(StackMachineException, "function '" << funcname << "' not found");
           }
           Variants parameter;
-          size_t count = func->getParameterTypes().size();
           for (const auto& param : func->getParameterTypes()) {
             Variant v = getNextValue();
             if (param != v.getType()) {
@@ -279,10 +278,6 @@ namespace csvsqldb
               }
             }
             parameter.emplace(parameter.end(), v);
-            --count;
-          }
-          if (count) {
-            CSVSQLDB_THROW(StackMachineException, "too much parameters for function '" << funcname << "'");
           }
           _valueStack.emplace(func->call(parameter));
           break;
@@ -321,7 +316,6 @@ namespace csvsqldb
           }
           Variant lhs = getNextValue();
           if (lhs.getType() != STRING) {
-            lhs = unaryOperation(OP_CAST, STRING, lhs);
             CSVSQLDB_THROW(StackMachineException, "can only do like operations on strings");
           }
           if (instruction._r->match(lhs.asString())) {

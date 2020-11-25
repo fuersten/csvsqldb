@@ -62,10 +62,14 @@ namespace
 
 TEST_CASE("Stackmachine Test", "[stackmachine]")
 {
+  csvsqldb::FunctionRegistry functions;
+  initBuildInFunctions(functions);
+  csvsqldb::SQLParser parser(functions);
+  csvsqldb::VariableStore store;
+
+
   SECTION("evaluate exp")
   {
-    csvsqldb::VariableStore store;
-    csvsqldb::FunctionRegistry functions;
     csvsqldb::StackMachine sm;
 
     csvsqldb::Variant i1(42);
@@ -81,10 +85,6 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
 
   SECTION("expression")
   {
-    csvsqldb::FunctionRegistry functions;
-    csvsqldb::SQLParser parser(functions);
-    csvsqldb::VariableStore store;
-
     {
       csvsqldb::ASTExprNodePtr exp = parser.parseExpression("(37 * 5) / 3");
       csvsqldb::StackMachine::VariableMapping mapping;
@@ -190,10 +190,6 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
-
-      //            std::cout << std::endl;
-      //            sm.dump(std::cout);
-
       CHECK(sm.evaluate(store, functions).asBool());
     }
 
@@ -203,7 +199,6 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
-
       CHECK(sm.evaluate(store, functions).asBool());
     }
 
@@ -381,10 +376,6 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
 
   SECTION("in")
   {
-    csvsqldb::FunctionRegistry functions;
-    csvsqldb::SQLParser parser(functions);
-    csvsqldb::VariableStore store;
-
     {
       csvsqldb::ASTExprNodePtr exp = parser.parseExpression("8 IN(1,2,3,4,5,6,7,8,9,10)");
       csvsqldb::StackMachine::VariableMapping mapping;
@@ -416,11 +407,7 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
 
   SECTION("expression with variable")
   {
-    csvsqldb::FunctionRegistry functions;
-    csvsqldb::SQLParser parser(functions);
-
     {
-      csvsqldb::VariableStore store;
       csvsqldb::Variant aVar(100);
       store.addVariable(0, aVar);
       csvsqldb::ASTExprNodePtr exp = parser.parseExpression("a + (37 * 5) / 3");
@@ -428,10 +415,6 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
-
-      // std::cout << std::endl;
-      // sm.dump(std::cout);
-
       CHECK(161 == sm.evaluate(store, functions).asInt());
     }
 
@@ -441,14 +424,12 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
-      csvsqldb::VariableStore store;
 
       {
         csvsqldb::Variant aVar(100);
         csvsqldb::Variant bVar(10);
         store.addVariable(0, aVar);
         store.addVariable(1, bVar);
-
         CHECK(10100 == sm.evaluate(store, functions).asInt());
       }
       {
@@ -456,7 +437,6 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
         csvsqldb::Variant bVar(7);
         store.addVariable(0, aVar);
         store.addVariable(1, bVar);
-
         CHECK(74 == sm.evaluate(store, functions).asInt());
       }
       {
@@ -465,7 +445,6 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
         csvsqldb::Variant bVar(7);
         mixedStore.addVariable(0, aVar);
         mixedStore.addVariable(1, bVar);
-
         CHECK(74.0 == Approx(sm.evaluate(mixedStore, functions).asDouble()));
       }
     }
@@ -476,26 +455,20 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
-      csvsqldb::VariableStore store;
 
-      {
-        csvsqldb::Variant aVar(100);
-        store.addVariable(0, aVar);
+      csvsqldb::Variant aVar(100);
+      store.addVariable(0, aVar);
 
-        CHECK(100l == sm.evaluate(store, functions).asInt());
-      }
+      CHECK(100l == sm.evaluate(store, functions).asInt());
     }
   }
 
   SECTION("expression with function")
   {
-    csvsqldb::FunctionRegistry functions;
-    csvsqldb::SQLParser parser(functions);
     csvsqldb::Function::Ptr func = std::make_shared<csvsqldb::PowerFunction>();
     functions.registerFunction(func);
     func = std::make_shared<MyCurrentDateFunction>();
     functions.registerFunction(func);
-    csvsqldb::VariableStore store;
 
     {
       csvsqldb::Variant bVar(4);
@@ -520,11 +493,6 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
 
   SECTION("build in functions")
   {
-    csvsqldb::FunctionRegistry functions;
-    initBuildInFunctions(functions);
-    csvsqldb::SQLParser parser(functions);
-    csvsqldb::VariableStore store;
-
     {
       csvsqldb::ASTExprNodePtr exp = parser.parseExpression("CURRENT_DATE");
       csvsqldb::StackMachine::VariableMapping mapping;
@@ -635,11 +603,6 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
 
   SECTION("exclude middle")
   {
-    csvsqldb::FunctionRegistry functions;
-    initBuildInFunctions(functions);
-    csvsqldb::SQLParser parser(functions);
-    csvsqldb::VariableStore store;
-
     csvsqldb::Variant b_true(true);
     csvsqldb::Variant b_false(false);
     csvsqldb::Variant null(csvsqldb::BOOLEAN);
@@ -677,11 +640,6 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
 
   SECTION("null functions")
   {
-    csvsqldb::FunctionRegistry functions;
-    initBuildInFunctions(functions);
-    csvsqldb::SQLParser parser(functions);
-    csvsqldb::VariableStore store;
-
     csvsqldb::Variant b_true(true);
     csvsqldb::Variant b_false(false);
     csvsqldb::Variant null(csvsqldb::BOOLEAN);
@@ -713,9 +671,6 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
-      //           std::cout << std::endl;
-      //           sm.dump(std::cout);
-
       CHECK(sm.evaluate(store, functions).asBool());
     }
 
@@ -726,19 +681,12 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
-      //           std::cout << std::endl;
-      //           sm.dump(std::cout);
       CHECK_FALSE(sm.evaluate(store, functions).asBool());
     }
   }
 
   SECTION("null operations")
   {
-    csvsqldb::FunctionRegistry functions;
-    initBuildInFunctions(functions);
-    csvsqldb::SQLParser parser(functions);
-    csvsqldb::VariableStore store;
-
     {
       csvsqldb::ASTExprNodePtr exp = parser.parseExpression("cast(null as boolean)");
       csvsqldb::StackMachine::VariableMapping mapping;
@@ -841,24 +789,23 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
 
   SECTION("nop")
   {
-    csvsqldb::FunctionRegistry functions;
-    initBuildInFunctions(functions);
-    csvsqldb::VariableStore store;
+    {
+      csvsqldb::StackMachine sm;
+      sm.addInstruction(csvsqldb::StackMachine::Instruction(csvsqldb::StackMachine::NOP));
+      sm.addInstruction(csvsqldb::StackMachine::Instruction(csvsqldb::StackMachine::PUSH, csvsqldb::Variant(csvsqldb::BOOLEAN)));
+      CHECK(sm.evaluate(store, functions).isNull());
+    }
 
-    csvsqldb::StackMachine::VariableMapping mapping;
-    csvsqldb::StackMachine sm;
-    sm.addInstruction(csvsqldb::StackMachine::Instruction(csvsqldb::StackMachine::NOP));
-    sm.addInstruction(csvsqldb::StackMachine::Instruction(csvsqldb::StackMachine::PUSH, csvsqldb::Variant(csvsqldb::BOOLEAN)));
-    CHECK(sm.evaluate(store, functions).isNull());
+    {
+      csvsqldb::StackMachine sm;
+      sm.addInstruction(csvsqldb::StackMachine::Instruction(csvsqldb::StackMachine::PUSH, 42));
+      sm.addInstruction(csvsqldb::StackMachine::Instruction(csvsqldb::StackMachine::PLUS, nullptr));
+      CHECK(42 == sm.evaluate(store, functions).asInt());
+    }
   }
 
   SECTION("like")
   {
-    csvsqldb::FunctionRegistry functions;
-    initBuildInFunctions(functions);
-    csvsqldb::SQLParser parser(functions);
-    csvsqldb::VariableStore store;
-
     {
       csvsqldb::ASTExprNodePtr exp = parser.parseExpression("'Han Solo' like '%an So%'");
       csvsqldb::StackMachine::VariableMapping mapping;
@@ -885,5 +832,154 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
       exp->accept(visitor);
       CHECK(sm.evaluate(store, functions).asBool());
     }
+  }
+}
+
+TEST_CASE("Stackmachine Dump Test", "[stackmachine]")
+{
+  csvsqldb::StackMachine sm;
+  std::ostringstream os;
+  os << std::endl;
+
+  SECTION("push operations")
+  {
+    sm.addInstruction(csvsqldb::StackMachine::Instruction(csvsqldb::StackMachine::PUSH, 42));
+    sm.addInstruction(csvsqldb::StackMachine::Instruction(csvsqldb::StackMachine::PUSHVAR, 815));
+
+    sm.dump(os);
+    std::string expected = R"(
+PUSH 42
+PUSHVAR 815
+)";
+    CHECK(expected == os.str());
+  }
+
+  SECTION("dump arithmetic operations")
+  {
+    sm.addInstruction(csvsqldb::StackMachine::Instruction(csvsqldb::StackMachine::ADD));
+    sm.addInstruction(csvsqldb::StackMachine::Instruction(csvsqldb::StackMachine::DIV));
+    sm.addInstruction(csvsqldb::StackMachine::Instruction(csvsqldb::StackMachine::MINUS));
+    sm.addInstruction(csvsqldb::StackMachine::Instruction(csvsqldb::StackMachine::MOD));
+    sm.addInstruction(csvsqldb::StackMachine::Instruction(csvsqldb::StackMachine::MUL));
+    sm.addInstruction(csvsqldb::StackMachine::Instruction(csvsqldb::StackMachine::PLUS));
+    sm.addInstruction(csvsqldb::StackMachine::Instruction(csvsqldb::StackMachine::SUB));
+
+    sm.dump(os);
+    std::string expected = R"(
+ADD
+DIV
+MINUS
+MOD
+MUL
+PLUS
+SUB
+)";
+    CHECK(expected == os.str());
+  }
+
+  SECTION("dump bool and compare operations")
+  {
+    sm.addInstruction(csvsqldb::StackMachine::Instruction(csvsqldb::StackMachine::AND));
+    sm.addInstruction(csvsqldb::StackMachine::Instruction(csvsqldb::StackMachine::EQ));
+    sm.addInstruction(csvsqldb::StackMachine::Instruction(csvsqldb::StackMachine::GE));
+    sm.addInstruction(csvsqldb::StackMachine::Instruction(csvsqldb::StackMachine::GT));
+    sm.addInstruction(csvsqldb::StackMachine::Instruction(csvsqldb::StackMachine::LE));
+    sm.addInstruction(csvsqldb::StackMachine::Instruction(csvsqldb::StackMachine::LT));
+    sm.addInstruction(csvsqldb::StackMachine::Instruction(csvsqldb::StackMachine::NEQ));
+    sm.addInstruction(csvsqldb::StackMachine::Instruction(csvsqldb::StackMachine::NOT));
+    sm.addInstruction(csvsqldb::StackMachine::Instruction(csvsqldb::StackMachine::OR));
+
+    sm.dump(os);
+    std::string expected = R"(
+AND
+EQ
+GE
+GT
+LE
+LT
+NEQ
+NOT
+OR
+)";
+    CHECK(expected == os.str());
+  }
+
+  SECTION("dump sql operations")
+  {
+    sm.addInstruction(csvsqldb::StackMachine::Instruction(csvsqldb::StackMachine::BETWEEN));
+    sm.addInstruction(csvsqldb::StackMachine::Instruction(csvsqldb::StackMachine::CAST, csvsqldb::Variant{csvsqldb::REAL}));
+    sm.addInstruction(csvsqldb::StackMachine::Instruction(csvsqldb::StackMachine::CONCAT));
+    sm.addInstruction(csvsqldb::StackMachine::Instruction(csvsqldb::StackMachine::FUNC, "UPPER"));
+    sm.addInstruction(csvsqldb::StackMachine::Instruction(csvsqldb::StackMachine::IN, 7));
+    sm.addInstruction(csvsqldb::StackMachine::Instruction(csvsqldb::StackMachine::IS));
+    sm.addInstruction(csvsqldb::StackMachine::Instruction(csvsqldb::StackMachine::ISNOT));
+    sm.addInstruction(csvsqldb::StackMachine::Instruction(csvsqldb::StackMachine::LIKE, new csvsqldb::RegExp("test")));
+    sm.addInstruction(csvsqldb::StackMachine::Instruction(csvsqldb::StackMachine::NOP));
+
+    sm.dump(os);
+    std::string expected = R"(
+BETWEEN
+CAST REAL
+CONCAT
+FUNC 'UPPER'
+IN 7
+IS
+IS NOT
+LIKE
+NOP
+)";
+    CHECK(expected == os.str());
+  }
+}
+
+TEST_CASE("Stackmachine Error Test", "[stackmachine]")
+{
+  csvsqldb::FunctionRegistry functions;
+  initBuildInFunctions(functions);
+  csvsqldb::VariableStore store;
+  csvsqldb::StackMachine sm;
+
+  SECTION("PUSHVAR not of int type")
+  {
+    sm.addInstruction(csvsqldb::StackMachine::Instruction(csvsqldb::StackMachine::PUSHVAR, "Test"));
+    CHECK_THROWS_WITH(sm.evaluate(store, functions), "expected an INT as variable index");
+  }
+  SECTION("FUNC name not of string type")
+  {
+    sm.addInstruction(csvsqldb::StackMachine::Instruction(csvsqldb::StackMachine::FUNC, 4711));
+    CHECK_THROWS_WITH(sm.evaluate(store, functions), "expected a string as function name");
+  }
+  SECTION("Unkown FUNC")
+  {
+    sm.addInstruction(csvsqldb::StackMachine::Instruction(csvsqldb::StackMachine::FUNC, "check4711"));
+    CHECK_THROWS_WITH(sm.evaluate(store, functions), "function 'check4711' not found");
+  }
+  SECTION("Wrong FUNC parameter")
+  {
+    sm.addInstruction(csvsqldb::StackMachine::Instruction(csvsqldb::StackMachine::PUSH, 4711));
+    sm.addInstruction(csvsqldb::StackMachine::Instruction(csvsqldb::StackMachine::FUNC, "UPPER"));
+    CHECK_THROWS_WITH(sm.evaluate(store, functions), "calling function 'UPPER' with wrong parameter");
+  }
+  SECTION("LIKE without regexp")
+  {
+    sm.addInstruction(csvsqldb::StackMachine::Instruction(csvsqldb::StackMachine::LIKE, nullptr));
+    CHECK_THROWS_WITH(sm.evaluate(store, functions), "expected a regexp in LIKE expression");
+  }
+  SECTION("LIKE without regexp")
+  {
+    sm.addInstruction(csvsqldb::StackMachine::Instruction(csvsqldb::StackMachine::PUSH, 4711));
+    sm.addInstruction(csvsqldb::StackMachine::Instruction(csvsqldb::StackMachine::LIKE, new csvsqldb::RegExp("test")));
+    CHECK_THROWS_WITH(sm.evaluate(store, functions), "can only do like operations on strings");
+  }
+  SECTION("Empty stack")
+  {
+    sm.addInstruction(csvsqldb::StackMachine::Instruction(csvsqldb::StackMachine::ADD, nullptr));
+    CHECK_THROWS_WITH(sm.evaluate(store, functions), "Cannot get next value, no more elements on stack");
+  }
+  SECTION("Empty top of stack")
+  {
+    sm.addInstruction(csvsqldb::StackMachine::Instruction(csvsqldb::StackMachine::PUSH, 4711));
+    sm.addInstruction(csvsqldb::StackMachine::Instruction(csvsqldb::StackMachine::ADD, nullptr));
+    CHECK_THROWS_WITH(sm.evaluate(store, functions), "Cannot get next value, no more elements on top of stack");
   }
 }
