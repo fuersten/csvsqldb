@@ -55,7 +55,7 @@ namespace csvsqldb
 
     switch (token) {
       case TOK_NONE:
-        return "TOK_NONE";
+        return "none";
       case TOK_IDENTIFIER:
         return "identifier";
       case TOK_QUOTED_IDENTIFIER:

@@ -39,6 +39,7 @@ add_executable(csvsqldbtest
     regexp_test.cpp
     row_processing_test.cpp
     sort_operation_test.cpp
+    sql_lexer_test.cpp
     sql_parser_test.cpp
     stackmachine_test.cpp
     stringutil_test.cpp
