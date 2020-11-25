@@ -36,9 +36,9 @@
 
 #pragma once
 
-#include "csvsqldb/inc.h"
+#include <csvsqldb/inc.h>
 
-#include "duration.h"
+#include <csvsqldb/base/duration.h>
 
 #include <cstdint>
 #include <ctime>

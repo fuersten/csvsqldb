@@ -34,9 +34,9 @@
 
 #pragma once
 
-#include "csvsqldb/inc.h"
+#include <csvsqldb/inc.h>
 
-#include "detail/types_detail.h"
+#include <csvsqldb/base/detail/types_detail.h>
 
 #include <algorithm>
 #include <chrono>

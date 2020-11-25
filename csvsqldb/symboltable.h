@@ -33,10 +33,10 @@
 
 #pragma once
 
-#include "csvsqldb/inc.h"
+#include <csvsqldb/inc.h>
 
-#include "database.h"
-#include "types.h"
+#include <csvsqldb/database.h>
+#include <csvsqldb/types.h>
 
 #include <memory.h>
 #include <vector>

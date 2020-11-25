@@ -33,10 +33,10 @@
 
 #pragma once
 
-#include "csvsqldb/inc.h"
+#include <csvsqldb/inc.h>
 
-#include "base/tribool.h"
-#include "base/types.h"
+#include <csvsqldb/base/tribool.h>
+#include <csvsqldb/base/types.h>
 
 #include <memory>
 #include <vector>

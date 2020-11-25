@@ -33,9 +33,9 @@
 
 #pragma once
 
-#include "csvsqldb/inc.h"
+#include <csvsqldb/inc.h>
 
-#include "sql_ast.h"
+#include <csvsqldb/sql_ast.h>
 
 #include <memory>
 #include <ostream>

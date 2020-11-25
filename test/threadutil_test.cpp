@@ -31,7 +31,7 @@
 //
 
 
-#include "csvsqldb/base/thread_helper.h"
+#include <csvsqldb/base/thread_helper.h>
 
 #include <catch2/catch.hpp>
 

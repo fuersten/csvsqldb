@@ -31,7 +31,7 @@
 //
 
 
-#include "csvsqldb/block_iterator.h"
+#include <csvsqldb/block_iterator.h>
 
 #include <catch2/catch.hpp>
 

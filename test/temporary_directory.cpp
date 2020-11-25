@@ -36,10 +36,9 @@
   #define WIN32_LEAN_AND_MEAN
   #include <windows.h>
 #else
+  #include <limits.h>
   #include <sys/stat.h>
   #include <sys/types.h>
-
-  #include <limits.h>
   #include <unistd.h>
 #endif
 

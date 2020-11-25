@@ -31,8 +31,8 @@
 //
 
 
-#include "csvsqldb/base/string_helper.h"
-#include "csvsqldb/file_mapping.h"
+#include <csvsqldb/base/string_helper.h>
+#include <csvsqldb/file_mapping.h>
 
 #include <catch2/catch.hpp>
 

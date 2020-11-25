@@ -31,12 +31,11 @@
 //
 
 
-#include "csvsqldb/base/signalhandler.h"
-
-#include <condition_variable>
+#include <csvsqldb/base/signalhandler.h>
 
 #include <catch2/catch.hpp>
 
+#include <condition_variable>
 #include <mutex>
 #include <signal.h>
 #include <thread>

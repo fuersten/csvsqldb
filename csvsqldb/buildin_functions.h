@@ -33,9 +33,9 @@
 
 #pragma once
 
-#include "csvsqldb/inc.h"
+#include <csvsqldb/inc.h>
 
-#include "function_registry.h"
+#include <csvsqldb/function_registry.h>
 
 
 namespace csvsqldb

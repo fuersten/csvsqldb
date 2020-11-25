@@ -33,10 +33,11 @@
 
 #pragma once
 
-#include "csvsqldb/inc.h"
+#include <csvsqldb/inc.h>
 
-#include "aggregation_functions.h"
-#include "block.h"
+#include <csvsqldb/aggregation_functions.h>
+#include <csvsqldb/block.h>
+
 #include <unordered_map>
 
 

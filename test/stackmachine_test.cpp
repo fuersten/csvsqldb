@@ -31,12 +31,12 @@
 //
 
 
-#include "csvsqldb/base/float_helper.h"
-#include "csvsqldb/buildin_functions.h"
-#include "csvsqldb/sql_astdump.h"
-#include "csvsqldb/sql_parser.h"
-#include "csvsqldb/stack_machine.h"
-#include "csvsqldb/visitor.h"
+#include <csvsqldb/base/float_helper.h>
+#include <csvsqldb/buildin_functions.h>
+#include <csvsqldb/sql_astdump.h>
+#include <csvsqldb/sql_parser.h>
+#include <csvsqldb/stack_machine.h>
+#include <csvsqldb/visitor.h>
 
 #include <catch2/catch.hpp>
 

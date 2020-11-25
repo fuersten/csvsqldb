@@ -31,7 +31,7 @@
 //
 
 
-#include "csvsqldb/base/regexp.h"
+#include <csvsqldb/base/regexp.h>
 
 #include <catch2/catch.hpp>
 

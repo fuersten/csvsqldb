@@ -32,13 +32,13 @@
 
 #pragma once
 
-#include "csvsqldb/base/string_helper.h"
-#include "csvsqldb/execution_engine.h"
+#include <csvsqldb/base/string_helper.h>
+#include <csvsqldb/execution_engine.h>
 
 #include "temporary_directory.h"
-#include <initializer_list>
 
 #include <algorithm>
+#include <initializer_list>
 
 
 struct TableElement {

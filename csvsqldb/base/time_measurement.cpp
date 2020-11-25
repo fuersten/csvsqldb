@@ -36,7 +36,6 @@
 #ifndef _MSC_VER
   #include <sys/resource.h>
   #include <sys/times.h>
-
   #include <unistd.h>
 #endif
 

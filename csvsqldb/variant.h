@@ -33,12 +33,12 @@
 
 #pragma once
 
-#include "csvsqldb/inc.h"
+#include <csvsqldb/inc.h>
 
-#include "base/exception.h"
-#include "base/hash_helper.h"
-#include "types.h"
-#include "values.h"
+#include <csvsqldb/base/exception.h>
+#include <csvsqldb/base/hash_helper.h>
+#include <csvsqldb/types.h>
+#include <csvsqldb/values.h>
 
 namespace csvsqldb
 {

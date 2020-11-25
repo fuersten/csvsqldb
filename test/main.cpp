@@ -32,10 +32,10 @@
 
 
 #define CATCH_CONFIG_RUNNER
-#include "csvsqldb/base/default_configuration.h"
-#include "csvsqldb/base/global_configuration.h"
-#include "csvsqldb/base/logging.h"
-#include "csvsqldb/typeoperations.h"
+#include <csvsqldb/base/default_configuration.h>
+#include <csvsqldb/base/global_configuration.h>
+#include <csvsqldb/base/logging.h>
+#include <csvsqldb/typeoperations.h>
 
 #include <catch2/catch.hpp>
 

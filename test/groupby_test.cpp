@@ -31,12 +31,13 @@
 //
 
 
-#include "csvsqldb/block.h"
+#include <csvsqldb/block.h>
 
 #include "data_test_framework.h"
-#include <unordered_set>
 
 #include <catch2/catch.hpp>
+
+#include <unordered_set>
 
 
 TEST_CASE("Group By Test", "[engine]")

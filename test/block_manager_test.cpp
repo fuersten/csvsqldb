@@ -31,7 +31,7 @@
 //
 
 
-#include "csvsqldb/block.h"
+#include <csvsqldb/block.h>
 
 #include <catch2/catch.hpp>
 

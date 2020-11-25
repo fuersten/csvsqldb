@@ -33,10 +33,10 @@
 
 #pragma once
 
-#include "csvsqldb/inc.h"
+#include <csvsqldb/inc.h>
 
-#include "duration.h"
-#include "exception.h"
+#include <csvsqldb/base/duration.h>
+#include <csvsqldb/base/exception.h>
 
 
 namespace csvsqldb

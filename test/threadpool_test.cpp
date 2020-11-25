@@ -31,14 +31,13 @@
 //
 
 
-#include "csvsqldb/base/exception.h"
-#include "csvsqldb/base/thread_pool.h"
-
-#include <condition_variable>
+#include <csvsqldb/base/exception.h>
+#include <csvsqldb/base/thread_pool.h>
 
 #include <catch2/catch.hpp>
 
 #include <atomic>
+#include <condition_variable>
 #include <mutex>
 #include <random>
 

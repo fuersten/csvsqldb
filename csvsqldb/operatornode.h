@@ -33,19 +33,19 @@
 
 #pragma once
 
-#include "csvsqldb/inc.h"
+#include <csvsqldb/inc.h>
 
-#include "base/csv_parser.h"
-#include "base/tribool.h"
-#include "base/types.h"
-#include "block.h"
-#include "block_iterator.h"
-#include "file_mapping.h"
-#include "stack_machine.h"
-#include "visitor.h"
-#include <condition_variable>
+#include <csvsqldb/base/csv_parser.h>
+#include <csvsqldb/base/tribool.h>
+#include <csvsqldb/base/types.h>
+#include <csvsqldb/block.h>
+#include <csvsqldb/block_iterator.h>
+#include <csvsqldb/file_mapping.h>
+#include <csvsqldb/stack_machine.h>
+#include <csvsqldb/visitor.h>
 
 #include <algorithm>
+#include <condition_variable>
 #include <istream>
 #include <mutex>
 #include <queue>

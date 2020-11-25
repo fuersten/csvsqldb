@@ -33,9 +33,9 @@
 
 #pragma once
 
-#include "csvsqldb/inc.h"
+#include <csvsqldb/inc.h>
 
-#include "configuration.h"
+#include <csvsqldb/base/configuration.h>
 
 #include <map>
 

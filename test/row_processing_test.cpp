@@ -31,9 +31,9 @@
 //
 
 
-#include "csvsqldb/operatornode.h"
-#include "csvsqldb/sql_astdump.h"
-#include "csvsqldb/sql_parser.h"
+#include <csvsqldb/operatornode.h>
+#include <csvsqldb/sql_astdump.h>
+#include <csvsqldb/sql_parser.h>
 
 #include "temporary_directory.h"
 

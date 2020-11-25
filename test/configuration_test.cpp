@@ -31,10 +31,10 @@
 //
 
 
-#include "csvsqldb/base/default_configuration.h"
-#include "csvsqldb/base/exception.h"
-#include "csvsqldb/base/global_configuration.h"
-#include "csvsqldb/base/lua_configuration.h"
+#include <csvsqldb/base/default_configuration.h>
+#include <csvsqldb/base/exception.h>
+#include <csvsqldb/base/global_configuration.h>
+#include <csvsqldb/base/lua_configuration.h>
 
 #include "test/test_util.h"
 

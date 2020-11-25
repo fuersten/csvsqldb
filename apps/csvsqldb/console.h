@@ -33,8 +33,8 @@
 
 #pragma once
 
-#include "csvsqldb/inc.h"
-#include "csvsqldb/types.h"
+#include <csvsqldb/inc.h>
+#include <csvsqldb/types.h>
 
 #include <filesystem>
 #include <map>

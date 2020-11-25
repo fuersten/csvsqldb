@@ -33,11 +33,11 @@
 
 #pragma once
 
-#include "csvsqldb/compat/put_time.h"
-#include "csvsqldb/inc.h"
+#include <csvsqldb/inc.h>
 
-#include "exception.h"
-#include "types.h"
+#include <csvsqldb/base/exception.h>
+#include <csvsqldb/base/types.h>
+#include <csvsqldb/compat/put_time.h>
 
 #include <algorithm>
 #include <cctype>

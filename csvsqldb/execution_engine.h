@@ -33,16 +33,16 @@
 
 #pragma once
 
-#include "csvsqldb/inc.h"
+#include <csvsqldb/inc.h>
 
-#include "base/time_measurement.h"
-#include "buildin_functions.h"
-#include "database.h"
-#include "execution_plan_creator.h"
-#include "operatornode.h"
-#include "operatornode_factory.h"
-#include "sql_parser.h"
-#include "validation_visitor.h"
+#include <csvsqldb/base/time_measurement.h>
+#include <csvsqldb/buildin_functions.h>
+#include <csvsqldb/database.h>
+#include <csvsqldb/execution_plan_creator.h>
+#include <csvsqldb/operatornode.h>
+#include <csvsqldb/operatornode_factory.h>
+#include <csvsqldb/sql_parser.h>
+#include <csvsqldb/validation_visitor.h>
 
 
 namespace csvsqldb

@@ -33,11 +33,10 @@
 
 #pragma once
 
-#include "csvsqldb/inc.h"
-
-#include <condition_variable>
+#include <csvsqldb/inc.h>
 
 #include <atomic>
+#include <condition_variable>
 #include <functional>
 #include <mutex>
 #include <queue>

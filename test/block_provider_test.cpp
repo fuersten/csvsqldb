@@ -31,13 +31,13 @@
 //
 
 
-#include "csvsqldb/base/tribool.h"
-#include "csvsqldb/block.h"
-#include "csvsqldb/block_iterator.h"
-#include "csvsqldb/sql_astdump.h"
-#include "csvsqldb/sql_parser.h"
-#include "csvsqldb/stack_machine.h"
-#include "csvsqldb/visitor.h"
+#include <csvsqldb/base/tribool.h>
+#include <csvsqldb/block.h>
+#include <csvsqldb/block_iterator.h>
+#include <csvsqldb/sql_astdump.h>
+#include <csvsqldb/sql_parser.h>
+#include <csvsqldb/stack_machine.h>
+#include <csvsqldb/visitor.h>
 
 #include <catch2/catch.hpp>
 

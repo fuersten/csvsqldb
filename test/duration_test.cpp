@@ -31,7 +31,7 @@
 //
 
 
-#include "csvsqldb/base/duration.h"
+#include <csvsqldb/base/duration.h>
 
 #include <catch2/catch.hpp>
 

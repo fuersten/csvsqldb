@@ -33,11 +33,11 @@
 
 #pragma once
 
-#include "csvsqldb/inc.h"
+#include <csvsqldb/inc.h>
 
-#include "function_registry.h"
-#include "symboltable.h"
-#include "typeoperations.h"
+#include <csvsqldb/function_registry.h>
+#include <csvsqldb/symboltable.h>
+#include <csvsqldb/typeoperations.h>
 
 #include <memory>
 #include <vector>

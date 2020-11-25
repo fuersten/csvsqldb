@@ -33,7 +33,7 @@
 
 #include "buildin_functions.h"
 
-#include "csvsqldb/version.h"
+#include <csvsqldb/version.h>
 
 #include "base/string_helper.h"
 

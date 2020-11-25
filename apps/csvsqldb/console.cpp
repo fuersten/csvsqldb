@@ -33,8 +33,8 @@
 
 #include "console.h"
 
-#include "csvsqldb/base/exception.h"
-#include "csvsqldb/base/string_helper.h"
+#include <csvsqldb/base/exception.h>
+#include <csvsqldb/base/string_helper.h>
 
 #include <iostream>
 #include <linenoise.h>

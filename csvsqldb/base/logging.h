@@ -33,10 +33,9 @@
 
 #pragma once
 
-#include "csvsqldb/inc.h"
+#include <csvsqldb/inc.h>
 
-#include "global_configuration.h"
-#include "types.h"
+#include <csvsqldb/base/global_configuration.h>
 
 #include <mutex>
 #include <sstream>

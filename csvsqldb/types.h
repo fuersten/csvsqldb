@@ -34,13 +34,13 @@
 
 #pragma once
 
-#include "csvsqldb/inc.h"
+#include <csvsqldb/inc.h>
 
-#include "base/date.h"
-#include "base/exception.h"
-#include "base/time.h"
-#include "base/timestamp.h"
-#include "base/types.h"
+#include <csvsqldb/base/date.h>
+#include <csvsqldb/base/exception.h>
+#include <csvsqldb/base/time.h>
+#include <csvsqldb/base/timestamp.h>
+#include <csvsqldb/base/types.h>
 
 #include <any>
 #include <string>

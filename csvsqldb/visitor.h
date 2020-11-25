@@ -33,10 +33,10 @@
 
 #pragma once
 
-#include "csvsqldb/inc.h"
+#include <csvsqldb/inc.h>
 
-#include "sql_ast.h"
-#include "stack_machine.h"
+#include <csvsqldb/sql_ast.h>
+#include <csvsqldb/stack_machine.h>
 
 #include <algorithm>
 

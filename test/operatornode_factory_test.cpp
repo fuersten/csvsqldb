@@ -32,10 +32,11 @@
 
 
 #include <csvsqldb/operatornode_factory.h>
-#include <test/data_test_framework.h>
-#include <test/test_util.h>
 
 #include <catch2/catch.hpp>
+
+#include <test/data_test_framework.h>
+#include <test/test_util.h>
 
 
 TEST_CASE("Operatornode Factory Test", "[engine]")

@@ -62,14 +62,16 @@ ExperimentalAutoDetectBinPacking: false
 FixNamespaceComments: false
 IncludeBlocks:   Regroup
 IncludeCategories: 
-  - Regex:           '<[[:alnum:].]+>'
-    Priority:        9
-  - Regex:           '^("csvsqldb/)'
+  - Regex:           '<csvsqldb/inc.h>'
+    Priority:        1
+  - Regex:           '<csvsqldb/.+>'
     Priority:        2
+  - Regex:           '^(".+")'
+    Priority:        6
   - Regex:           '^(<catch2/)'
     Priority:        8
-  - Regex:           '.*'
-    Priority:        5
+  - Regex:           '<[[:alnum:_].]+>'
+    Priority:        9
 IncludeIsMainRegex: '(Test)?$'
 IndentCaseLabels: true
 IndentPPDirectives: BeforeHash

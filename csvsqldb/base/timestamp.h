@@ -33,10 +33,10 @@
 
 #pragma once
 
-#include "csvsqldb/inc.h"
+#include <csvsqldb/inc.h>
 
-#include "date.h"
-#include "time.h"
+#include <csvsqldb/base/date.h>
+#include <csvsqldb/base/time.h>
 
 #include <cstdint>
 #include <ctime>

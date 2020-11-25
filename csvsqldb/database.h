@@ -33,10 +33,10 @@
 
 #pragma once
 
-#include "csvsqldb/inc.h"
+#include <csvsqldb/inc.h>
 
-#include "file_mapping.h"
-#include "tabledata.h"
+#include <csvsqldb/file_mapping.h>
+#include <csvsqldb/tabledata.h>
 
 #include <filesystem>
 

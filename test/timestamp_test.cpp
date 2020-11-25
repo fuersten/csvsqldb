@@ -31,7 +31,7 @@
 //
 
 
-#include "csvsqldb/base/timestamp.h"
+#include <csvsqldb/base/timestamp.h>
 
 #include <catch2/catch.hpp>
 

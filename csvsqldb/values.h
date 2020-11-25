@@ -33,11 +33,11 @@
 
 #pragma once
 
-#include "csvsqldb/inc.h"
+#include <csvsqldb/inc.h>
 
-#include "base/float_helper.h"
-#include "base/hash_helper.h"
-#include "types.h"
+#include <csvsqldb/base/float_helper.h>
+#include <csvsqldb/base/hash_helper.h>
+#include <csvsqldb/types.h>
 
 #include <cstring>
 #include <iomanip>

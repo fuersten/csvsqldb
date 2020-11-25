@@ -33,12 +33,12 @@
 
 #pragma once
 
-#include "csvsqldb/inc.h"
+#include <csvsqldb/inc.h>
 
-#include "date.h"
-#include "time.h"
-#include "timestamp.h"
-#include "types.h"
+#include <csvsqldb/base/date.h>
+#include <csvsqldb/base/time.h>
+#include <csvsqldb/base/timestamp.h>
+#include <csvsqldb/base/types.h>
 
 
 #if defined _MSC_VER

@@ -33,12 +33,12 @@
 
 #pragma once
 
-#include "csvsqldb/inc.h"
+#include <csvsqldb/inc.h>
 
-#include "base/exception.h"
-#include "base/regexp.h"
-#include "function_registry.h"
-#include "variant.h"
+#include <csvsqldb/base/exception.h>
+#include <csvsqldb/base/regexp.h>
+#include <csvsqldb/function_registry.h>
+#include <csvsqldb/variant.h>
 
 #include <stack>
 #include <vector>

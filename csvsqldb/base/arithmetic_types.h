@@ -1,8 +1,7 @@
 
+#include <iostream>
 #include <mpfcore/inc.h>
 #include <mpfcore/types.h>
-
-#include <iostream>
 
 
 /******************************************************************************
