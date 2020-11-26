@@ -53,6 +53,8 @@ namespace csvsqldb
     void dump(std::ostream& stream) const override;
 
   private:
+    TableData createTableData() const;
+
     Database& _database;
     std::string _tableName;
     ColumnDefinitions _columnDefinitions;

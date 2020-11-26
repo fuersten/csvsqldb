@@ -139,23 +139,20 @@ namespace csvsqldb
   using IdentifierSet = std::set<ASTIdentifier>;
 
   struct CSVSQLDB_EXPORT ColumnDefinition {
-    ColumnDefinition(const std::string& name)
+    ColumnDefinition(const std::string& name, eType type)
     : _name(name)
-    , _primaryKey(false)
-    , _unique(false)
-    , _notNull(false)
-    , _length(0)
+    , _type{type}
     {
     }
 
     std::string _name;
-    eType _type;
-    bool _primaryKey;
-    bool _unique;
-    bool _notNull;
+    eType _type{NONE};
+    bool _primaryKey{false};
+    bool _unique{false};
+    bool _notNull{false};
     std::any _defaultValue;
     ASTExprNodePtr _check;
-    uint32_t _length;
+    uint32_t _length{0};
   };
 
   using ColumnDefinitions = std::vector<ColumnDefinition>;

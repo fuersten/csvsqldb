@@ -38,10 +38,6 @@
 
 namespace csvsqldb
 {
-  CSVSQLDB_DECLARE_EXCEPTION(CreateTableException, SqlException);
-  CSVSQLDB_IMPLEMENT_EXCEPTION(CreateTableException, SqlException);
-
-
   CreateTableExecutionNode::CreateTableExecutionNode(Database& database, const std::string& tableName,
                                                      const ColumnDefinitions& columnDefinitions,
                                                      const TableConstraints& constraints, bool createIfNotExists)
@@ -59,10 +55,17 @@ namespace csvsqldb
       if (_createIfNotExists) {
         return 0;
       } else {
-        CSVSQLDB_THROW(CreateTableException, "table '" << _tableName << "' does already exist");
+        CSVSQLDB_THROW(Exception, "table '" << _tableName << "' does already exist");
       }
     }
 
+    _database.addTable(createTableData());
+
+    return 0;
+  }
+
+  TableData CreateTableExecutionNode::createTableData() const
+  {
     TableData tabledata(_tableName);
     for (const auto& definition : _columnDefinitions) {
       tabledata.addColumn(definition._name, definition._type, definition._primaryKey, definition._unique, definition._notNull,
@@ -72,15 +75,13 @@ namespace csvsqldb
       tabledata.addConstraint(constraint._primaryKeys, constraint._uniqueKeys, constraint._check);
     }
 
-    _database.addTable(std::move(tabledata));
-
-    return 0;
+    return tabledata;
   }
 
   void CreateTableExecutionNode::dump(std::ostream& stream) const
   {
     stream << "CreateTableExecution (" << _tableName << "";
-    stream << (_createIfNotExists ? "create" : "") << " -> ";
+    stream << (_createIfNotExists ? " [create]" : "") << " -> ";
     bool first{true};
     for (const auto& definition : _columnDefinitions) {
       if (!first) {

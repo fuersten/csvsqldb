@@ -296,58 +296,64 @@ namespace csvsqldb
 
   ColumnDefinition SQLParser::parseColumnDefinition()
   {
-    ColumnDefinition definition(_currentToken._value);
+    std::string columnName = _currentToken._value;
+    eType columnType{NONE};
+    uint32_t columnLength{0};
+
     expect(TOK_IDENTIFIER);
 
     switch (_currentToken._token) {
       case TOK_BOOL:
         expect(TOK_BOOL);
-        definition._type = BOOLEAN;
+        columnType = BOOLEAN;
         break;
       case TOK_INT:
         expect(TOK_INT);
-        definition._type = INT;
+        columnType = INT;
         break;
       case TOK_REAL:
         expect(TOK_REAL);
-        definition._type = REAL;
+        columnType = REAL;
         break;
       case TOK_STRING:
         expect(TOK_STRING);
         expect(TOK_LEFT_PAREN);
-        definition._length = static_cast<uint32_t>(std::stol(expect(TOK_CONST_INTEGER)));
+        columnLength = static_cast<uint32_t>(std::stol(expect(TOK_CONST_INTEGER)));
         expect(TOK_RIGHT_PAREN);
-        definition._type = STRING;
+        columnType = STRING;
         break;
       case TOK_CHAR:
         expect(TOK_CHAR);
         if (canExpect(TOK_LEFT_PAREN)) {
-          definition._length = static_cast<uint32_t>(std::stol(expect(TOK_CONST_INTEGER)));
+          columnLength = static_cast<uint32_t>(std::stol(expect(TOK_CONST_INTEGER)));
           expect(TOK_RIGHT_PAREN);
         } else if (canExpect(TOK_VARYING)) {
           expect(TOK_LEFT_PAREN);
-          definition._length = static_cast<uint32_t>(std::stol(expect(TOK_CONST_INTEGER)));
+          columnLength = static_cast<uint32_t>(std::stol(expect(TOK_CONST_INTEGER)));
           expect(TOK_RIGHT_PAREN);
         }
-        definition._type = STRING;
+        columnType = STRING;
         break;
       case TOK_DATE:
         expect(TOK_DATE);
-        definition._type = DATE;
+        columnType = DATE;
         break;
       case TOK_TIME:
         expect(TOK_TIME);
-        definition._type = TIME;
+        columnType = TIME;
         break;
       case TOK_TIMESTAMP:
         expect(TOK_TIMESTAMP);
-        definition._type = TIMESTAMP;
+        columnType = TIMESTAMP;
         break;
       default:
         CSVSQLDB_THROW(SqlParserException, "expected a type but found '"
                                              << tokenToString(eToken(_currentToken._token)) << "' (" << _currentToken._value
                                              << ") at line " << _currentToken._lineCount << ":" << _currentToken._charCount);
     }
+    ColumnDefinition definition(columnName, columnType);
+    definition._length = columnLength;
+
     if (_currentToken._token == TOK_DEFAULT) {
       expect(TOK_DEFAULT);
 
