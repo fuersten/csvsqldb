@@ -67,72 +67,31 @@ namespace csvsqldb
     return SymbolTablePtr(new SymbolTable(parent));
   }
 
-  void SymbolTable::addSymbolsFrom(const SymbolTablePtr& symbolTable, const std::string& prefix)
-  {
-    bool hasPrefix = !prefix.empty();
-    for (const auto& info : symbolTable->_symbols) {
-      if (info->_symbolType == TABLE) {
-        SymbolInfoPtr newInfo = info->clone();
-        if (hasPrefix) {
-          newInfo->_alias = prefix;
-          newInfo->_name = prefix;
-        }
-        addSymbol(newInfo->_name, newInfo);
-      } else {
-        if (hasPrefix) {
-          SymbolInfoPtr newInfo = info->clone();
-          if (newInfo->_qualifiedIdentifier.empty()) {
-            newInfo->_qualifiedIdentifier = prefix + "." + info->_name;
-          } else {
-            newInfo->_qualifiedIdentifier = prefix + "." + info->_qualifiedIdentifier;
-          }
-          newInfo->_alias = prefix;
-          addSymbol(info->_qualifiedIdentifier, newInfo);
-        } else {
-          SymbolInfoPtr oldSymbol = internFindSymbol(info->_name);
-          if (oldSymbol) {
-            oldSymbol->_expressionNode = info->_expressionNode;
-            oldSymbol->_symbolType = info->_symbolType;
-            replaceSymbol(oldSymbol->_name, oldSymbol->_name, oldSymbol);
-          } else {
-            addSymbol(info->_qualifiedIdentifier, info->clone());
-          }
-        }
-      }
-    }
-  }
-
   const SymbolInfoPtr& SymbolTable::findSymbol(const std::string& name) const
   {
-    auto iter =
-      std::find_if(_symbols.begin(), _symbols.end(), [&](const SymbolInfoPtr& symbol) { return symbol->_name == name; });
-    if (iter != _symbols.end()) {
-      return *iter;
+    const auto& symbol = internFindSymbol(name);
+    if (!symbol) {
+      throw std::runtime_error("symbol '" + name + "' not found in scope");
     }
 
-    throw std::runtime_error("symbol '" + name + "' not found in scope");
+    return symbol;
   }
 
-  SymbolInfoPtr SymbolTable::internFindSymbol(const std::string& name)
+  const SymbolInfoPtr& SymbolTable::internFindSymbol(const std::string& name) const
   {
+    static SymbolInfoPtr emptySymbol;
     auto iter =
       std::find_if(_symbols.begin(), _symbols.end(), [&](const SymbolInfoPtr& symbol) { return symbol->_name == name; });
     if (iter != _symbols.end()) {
       return *iter;
     }
 
-    return SymbolInfoPtr();
+    return emptySymbol;
   }
 
   bool SymbolTable::hasSymbol(const std::string& name) const
   {
-    auto iter =
-      std::find_if(_symbols.begin(), _symbols.end(), [&](const SymbolInfoPtr& symbol) { return symbol->_name == name; });
-    if (iter != _symbols.end()) {
-      return true;
-    }
-
-    return false;
+    return internFindSymbol(name).get() != nullptr;
   }
 
   bool SymbolTable::addSymbol(const std::string& name, const SymbolInfoPtr& info)
@@ -163,86 +122,87 @@ namespace csvsqldb
   SymbolInfos SymbolTable::getTables() const
   {
     SymbolInfos tables;
-    for (const auto& info : _symbols) {
-      if (info->_symbolType == TABLE) {
-        tables.push_back(info);
-      }
-    }
+    std::copy_if(_symbols.begin(), _symbols.end(), std::back_inserter(tables),
+                 [](const auto& symbol) { return symbol->_symbolType == TABLE; });
+
     return tables;
   }
 
   SymbolInfos SymbolTable::getSubqueries() const
   {
     SymbolInfos subqueries;
-    for (const auto& info : _symbols) {
-      if (info->_symbolType == SUBQUERY) {
-        subqueries.push_back(info);
-      }
-    }
+    std::copy_if(_symbols.begin(), _symbols.end(), std::back_inserter(subqueries),
+                 [](const auto& symbol) { return symbol->_symbolType == SUBQUERY; });
+
     return subqueries;
   }
 
   bool SymbolTable::hasTableSymbol(const std::string& tableNameOrAlias) const
   {
-    for (const auto& info : _symbols) {
-      if (info->_symbolType == TABLE &&
-          (info->_name == tableNameOrAlias || info->_identifier == tableNameOrAlias || info->_alias == tableNameOrAlias)) {
-        return true;
-      }
+    try {
+      findTableSymbol(tableNameOrAlias);
+    } catch (const std::exception&) {
+      return false;
     }
-    return false;
+
+    return true;
   }
 
   const SymbolInfoPtr& SymbolTable::findTableSymbol(const std::string& tableNameOrAlias) const
   {
-    for (const auto& info : _symbols) {
-      if (info->_symbolType == TABLE &&
-          (info->_name == tableNameOrAlias || info->_identifier == tableNameOrAlias || info->_alias == tableNameOrAlias)) {
-        return info;
-      }
+    auto it = std::find_if(_symbols.begin(), _symbols.end(), [&tableNameOrAlias](const auto& symbol) {
+      return symbol->_symbolType == TABLE &&
+             (symbol->_name == tableNameOrAlias || symbol->_identifier == tableNameOrAlias || symbol->_alias == tableNameOrAlias);
+    });
+
+    if (it == _symbols.end()) {
+      throw std::runtime_error("symbol '" + tableNameOrAlias + "' not found in scope");
     }
-    throw std::runtime_error("symbol '" + tableNameOrAlias + "' not found in scope");
+
+    return *it;
   }
 
   bool SymbolTable::hasSymbolNameForTable(const std::string& tableName, const std::string& columnName) const
   {
-    for (const auto& info : _symbols) {
-      if (info->_symbolType == PLAIN && (info->_relation == tableName && info->_identifier == columnName)) {
-        return true;
-      }
+    try {
+      findSymbolNameForTable(tableName, columnName);
+    } catch (const std::exception&) {
+      return false;
     }
-    return false;
+
+    return true;
   }
 
-  const SymbolInfoPtr& SymbolTable::findSymbolNameForTable(const std::string& tableName, const std::string& columnName) const
+  const SymbolInfoPtr SymbolTable::findSymbolNameForTable(const std::string& tableName, const std::string& columnName) const
   {
-    for (const auto& info : _symbols) {
-      if (info->_symbolType == PLAIN && (info->_relation == tableName && info->_identifier == columnName)) {
-        return info;
-      }
+    auto it = std::find_if(_symbols.begin(), _symbols.end(), [&tableName, &columnName](const auto& symbol) {
+      return symbol->_symbolType == PLAIN && (symbol->_relation == tableName && symbol->_identifier == columnName);
+    });
+
+    if (it == _symbols.end()) {
+      throw std::runtime_error("symbol '" + tableName + "." + columnName + "' not found in scope");
     }
-    throw std::runtime_error("symbol '" + tableName + "." + columnName + "' not found in scope");
+
+    return *it;
   }
 
   const SymbolInfoPtr& SymbolTable::findAliasedSymbol(const std::string& alias) const
   {
-    for (const auto& info : _symbols) {
-      if (info->_alias == alias) {
-        return info;
-      }
+    auto it = std::find_if(_symbols.begin(), _symbols.end(), [&alias](const auto& symbol) { return symbol->_alias == alias; });
+    if (it == _symbols.end()) {
+      throw std::runtime_error("alias symbol '" + alias + "' not found in scope");
     }
-    throw std::runtime_error("alias symbol '" + alias + "' not found in scope");
+
+    return *it;
   }
 
   SymbolInfos SymbolTable::findAllSymbolsForTable(const std::string& tableName) const
   {
     SymbolInfos symbols;
 
-    for (const auto& info : _symbols) {
-      if (info->_symbolType == PLAIN && info->_relation == tableName) {
-        symbols.push_back(info);
-      }
-    }
+    std::copy_if(_symbols.begin(), _symbols.end(), std::back_inserter(symbols),
+                 [&tableName](const auto& symbol) { return symbol->_symbolType == PLAIN && symbol->_relation == tableName; });
+
     return symbols;
   }
 
@@ -275,12 +235,10 @@ namespace csvsqldb
       // this could be some kind of alias, search for alias name of table
       table.clear();
       for (const auto& tableInfo : tables) {
-        if (tableInfo->_symbolType == TABLE) {
-          if (tableInfo->_alias == info->_prefix) {
-            table = tableInfo->_identifier;
-            relation = tableInfo->_name;
-            break;
-          }
+        if (tableInfo->_symbolType == TABLE && tableInfo->_alias == info->_prefix) {
+          table = tableInfo->_identifier;
+          relation = tableInfo->_name;
+          break;
         }
       }
       if (table.empty()) {
@@ -365,11 +323,11 @@ namespace csvsqldb
   void SymbolTable::typeSymbolTable(const Database& database)
   {
     // first resolve child symbol tables
-    for (auto& info : _symbols) {
-      if (info->_symbolType == SUBQUERY) {
-        info->_subquery->typeSymbolTable(database);
+    std::for_each(_symbols.begin(), _symbols.end(), [&database](const auto& symbol) {
+      if (symbol->_symbolType == SUBQUERY) {
+        symbol->_subquery->typeSymbolTable(database);
       }
-    }
+    });
 
     SymbolInfos tables = getTables();
     fillWithTableData(database, tables);
@@ -377,44 +335,40 @@ namespace csvsqldb
     for (const auto& info : _symbols) {
       if (info->_symbolType == PLAIN && info->_qualifiedIdentifier.empty()) {
         if (!info->_prefix.empty()) {
-          if (!fillInfoFromTablePrefix(database, tables, info)) {
-            if (!fillInfoFromSubquery(database, getSubqueries(), info)) {
-              CSVSQLDB_THROW(SqlException, "symbol '" << (!info->_prefix.empty() ? info->_prefix + "." : "") << info->_identifier
-                                                      << "' not found in any table");
-            }
+          if (!fillInfoFromTablePrefix(database, tables, info) && !fillInfoFromSubquery(database, getSubqueries(), info)) {
+            CSVSQLDB_THROW(SqlException, "symbol '" << (!info->_prefix.empty() ? info->_prefix + "." : "") << info->_identifier
+                                                    << "' not found in any table");
           }
         } else {
-          if (!fillInfoFromTable(database, tables, info)) {
-            if (!fillInfoFromSubquery(database, getSubqueries(), info)) {
-              CSVSQLDB_THROW(SqlException, "symbol '" << (!info->_prefix.empty() ? info->_prefix + "." : "") << info->_identifier
-                                                      << "' not found in any table");
-            }
+          if (!fillInfoFromTable(database, tables, info) && !fillInfoFromSubquery(database, getSubqueries(), info)) {
+            CSVSQLDB_THROW(SqlException, "symbol '" << (!info->_prefix.empty() ? info->_prefix + "." : "") << info->_identifier
+                                                    << "' not found in any table");
           }
         }
       }
     }
-    for (auto& info : _symbols) {
-      if (info->_symbolType == CALC && info->_expressionNode) {
-        info->_type = info->_expressionNode->type();
+    std::for_each(_symbols.begin(), _symbols.end(), [](const auto& symbol) {
+      if (symbol->_symbolType == CALC && symbol->_expressionNode) {
+        symbol->_type = symbol->_expressionNode->type();
       }
-    }
+    });
   }
 
-  void SymbolTable::dump(size_t indent) const
+  void SymbolTable::dump(std::ostream& stream, size_t indent) const
   {
-    std::string s(indent, ' ');
+    std::string space(indent, ' ');
 
-    std::cout << s;
-    std::cout << "Dumping symbol table:" << std::endl;
-    for (auto symbol : _symbols) {
-      std::cout << s;
-      std::cout << symbol->_name << " symbol type: " << symbolTypeToString(symbol->_symbolType)
-                << " type: " << typeToString(symbol->_type) << " identifier: " << symbol->_identifier
-                << " prefix: " << symbol->_prefix << " name: " << symbol->_name << " alias: " << symbol->_alias
-                << " relation: " << symbol->_relation << " qualified: " << symbol->_qualifiedIdentifier << std::endl;
+    stream << space;
+    stream << "Dumping symbol table:" << std::endl;
+    for (const auto& symbol : _symbols) {
+      stream << space;
+      stream << symbol->_name << " symbol type: " << symbolTypeToString(symbol->_symbolType)
+             << " type: " << typeToString(symbol->_type) << " identifier: " << symbol->_identifier
+             << " prefix: " << symbol->_prefix << " name: " << symbol->_name << " alias: " << symbol->_alias
+             << " relation: " << symbol->_relation << " qualified: " << symbol->_qualifiedIdentifier << "," << std::endl;
 
       if (symbol->_symbolType == SUBQUERY) {
-        symbol->_subquery->dump(indent + 2);
+        symbol->_subquery->dump(stream, indent + 2);
       }
     }
   }

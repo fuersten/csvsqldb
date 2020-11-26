@@ -156,18 +156,8 @@ TEST_CASE("Row Processing Test", "[engine]")
       "SELECT emp.emp_no as id,(first_name || ' ' || last_name) as name,birth_date birthday, 7 * 5 / 4 as calc FROM employees "
       "emp WHERE \"emp_no\" BETWEEN 100 AND 9999 AND emp.birth_date > DATE'1960-01-01'");
 
-    //        ASTNodeDumpVisitor visitor;
-    //        std::cout << std::endl;
-    //        node->accept(visitor);
-
     csvsqldb::SymbolTablePtr symbolTable = node->symbolTable();
-    //        symbolTable->dump();
-    //        std::cout << std::endl;
-
     symbolTable->typeSymbolTable(database);
-
-    //        symbolTable->dump();
-    //        std::cout << std::endl;
 
     csvsqldb::ASTQueryNodePtr query = std::dynamic_pointer_cast<csvsqldb::ASTQueryNode>(node);
     csvsqldb::ASTExprNodePtr exp =

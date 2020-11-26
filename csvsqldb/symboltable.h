@@ -48,16 +48,15 @@ namespace csvsqldb
 
   CSVSQLDB_EXPORT std::string symbolTypeToString(eSymbolType symbolType);
 
-
   struct SymbolInfo;
-  typedef std::shared_ptr<SymbolInfo> SymbolInfoPtr;
-  typedef std::vector<SymbolInfoPtr> SymbolInfos;
+  using SymbolInfoPtr = std::shared_ptr<SymbolInfo>;
+  using SymbolInfos = std::vector<SymbolInfoPtr>;
 
   class SymbolTable;
-  typedef std::shared_ptr<SymbolTable> SymbolTablePtr;
+  using SymbolTablePtr = std::shared_ptr<SymbolTable>;
 
   struct CSVSQLDB_EXPORT SymbolInfo {
-    typedef std::shared_ptr<ASTExprNode> ASTExprNodePtr;
+    using ASTExprNodePtr = std::shared_ptr<ASTExprNode>;
 
     SymbolInfo() = default;
 
@@ -104,8 +103,7 @@ namespace csvsqldb
     SymbolTable(SymbolTable&&) = delete;
     SymbolTable& operator=(SymbolTable&&) = delete;
 
-    void addSymbolsFrom(const SymbolTablePtr& symbolTable, const std::string& prefix);
-    const SymbolInfoPtr& findSymbolNameForTable(const std::string& tableName, const std::string& columnName) const;
+    const SymbolInfoPtr findSymbolNameForTable(const std::string& tableName, const std::string& columnName) const;
     bool hasSymbolNameForTable(const std::string& tableName, const std::string& columnName) const;
     const SymbolInfoPtr& findSymbol(const std::string& name) const;
     bool hasTableSymbol(const std::string& tableNameOrAlias) const;
@@ -117,7 +115,7 @@ namespace csvsqldb
     bool addSymbol(const std::string& name, const SymbolInfoPtr& info);
     void replaceSymbol(const std::string& toreplace, const std::string& name, SymbolInfoPtr& info);
 
-    void dump(size_t indent = 0) const;
+    void dump(std::ostream& stream, size_t indent = 0) const;
 
     SymbolInfos getTables() const;
 
@@ -140,7 +138,7 @@ namespace csvsqldb
     SymbolInfos getSubqueries() const;
     void fillWithTableData(const Database& database, const SymbolInfos& tables);
 
-    SymbolInfoPtr internFindSymbol(const std::string& name);
+    const SymbolInfoPtr& internFindSymbol(const std::string& name) const;
 
     std::vector<SymbolInfoPtr> _symbols;
     uint32_t _aliasCount;

@@ -1439,7 +1439,7 @@ namespace csvsqldb
       } else {
         expect(TOK_IDENTIFIER);
       }
-      SymbolInfoPtr info = symboltable->findSymbol(symbolName);
+      SymbolInfoPtr info = symboltable->findSymbol(symbolName)->clone();
       info->_name = csvsqldb::toupper(value);
       info->_alias = info->_name;
       if (exp) {

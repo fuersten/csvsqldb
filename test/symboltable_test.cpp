@@ -42,80 +42,252 @@
 #include <catch2/catch.hpp>
 
 
-TEST_CASE("Symbol Table Test", "[engine]")
+TEST_CASE("Symbol Table Utils Test", "[symbols]")
 {
-  TemporaryDirectoryGuard tmpDir;
-  auto path = tmpDir.temporaryDirectoryPath();
+  SECTION("symbol type to string")
+  {
+    CHECK("CALC" == csvsqldb::symbolTypeToString(csvsqldb::CALC));
+    CHECK("FUNCTION" == csvsqldb::symbolTypeToString(csvsqldb::FUNCTION));
+    CHECK("NOSYM" == csvsqldb::symbolTypeToString(csvsqldb::NOSYM));
+    CHECK("PLAIN" == csvsqldb::symbolTypeToString(csvsqldb::PLAIN));
+    CHECK("SUBQUERY" == csvsqldb::symbolTypeToString(csvsqldb::SUBQUERY));
+    CHECK("TABLE" == csvsqldb::symbolTypeToString(csvsqldb::TABLE));
+
+    CHECK_THROWS(csvsqldb::symbolTypeToString(static_cast<csvsqldb::eSymbolType>(4711)));
+  }
+}
+
+TEST_CASE("Simple Symbol Table Test", "[symbols]")
+{
+  csvsqldb::SymbolTablePtr symbolTable = csvsqldb::SymbolTable::createSymbolTable();
+
+  SECTION("nested table")
+  {
+    auto table = csvsqldb::SymbolTable::createSymbolTable(symbolTable);
+    REQUIRE(table);
+    REQUIRE(table->getParent());
+    CHECK(table->getParent().get() == symbolTable.get());
+  }
 
   SECTION("add symbol")
   {
-    csvsqldb::SymbolTablePtr st = csvsqldb::SymbolTable::createSymbolTable();
+    CHECK_FALSE(symbolTable->hasSymbol("emp"));
 
     {
-      csvsqldb::SymbolInfoPtr info = std::make_shared<csvsqldb::SymbolInfo>();
+      auto info = std::make_shared<csvsqldb::SymbolInfo>();
       info->_name = "emp";
       info->_alias = "emp";
       info->_identifier = "emp_no";
       info->_symbolType = csvsqldb::PLAIN;
       info->_type = csvsqldb::INT;
       info->_prefix = "employees";
-      st->addSymbol("emp", info);
+      info->_relation = "emps";
+      symbolTable->addSymbol("emp", info);
     }
 
-    CHECK(!st->hasSymbol("emp_no"));
-    CHECK(st->hasSymbol("emp"));
+    CHECK_FALSE(symbolTable->hasSymbol("emp_no"));
+    CHECK(symbolTable->hasSymbol("emp"));
 
     {
-      const csvsqldb::SymbolInfoPtr& info = st->findSymbol("emp");
+      const auto& info = symbolTable->findSymbol("emp");
       CHECK("emp" == info->_alias);
       CHECK(csvsqldb::PLAIN == info->_symbolType);
       CHECK(csvsqldb::INT == info->_type);
       CHECK("employees" == info->_prefix);
       CHECK("emp_no" == info->_identifier);
+      CHECK("emps" == info->_relation);
     }
   }
 
-  SECTION("update symbol")
+  SECTION("replace symbol")
   {
-    csvsqldb::SymbolTablePtr st = csvsqldb::SymbolTable::createSymbolTable();
-
     {
-      csvsqldb::SymbolInfoPtr info = std::make_shared<csvsqldb::SymbolInfo>();
+      auto info = std::make_shared<csvsqldb::SymbolInfo>();
       info->_name = "emp";
       info->_alias = "emp";
       info->_identifier = "emp_no";
       info->_symbolType = csvsqldb::PLAIN;
       info->_type = csvsqldb::INT;
       info->_prefix = "employees";
-      st->addSymbol("emp", info);
+      symbolTable->addSymbol("emp", info);
     }
 
     {
-      csvsqldb::SymbolInfoPtr info = st->findSymbol("emp");
+      auto info = symbolTable->findSymbol("emp")->clone();
       info->_symbolType = csvsqldb::FUNCTION;
       info->_name = "function";
       info->_type = csvsqldb::REAL;
       info->_prefix = "";
-      st->replaceSymbol("emp", "function", info);
+      symbolTable->replaceSymbol("emp", "function", info);
     }
 
     {
-      CHECK(!st->hasSymbol("emp"));
-      const csvsqldb::SymbolInfoPtr& info = st->findSymbol("function");
+      CHECK_FALSE(symbolTable->hasSymbol("emp"));
+      const auto& info = symbolTable->findSymbol("function");
       CHECK("emp" == info->_alias);
       CHECK(csvsqldb::FUNCTION == info->_symbolType);
       CHECK(csvsqldb::REAL == info->_type);
       CHECK("" == info->_prefix);
       CHECK("function" == info->_name);
     }
+
+    {
+      CHECK_FALSE(symbolTable->hasSymbol("non-existent"));
+      auto info = std::make_shared<csvsqldb::SymbolInfo>();
+      info->_symbolType = csvsqldb::PLAIN;
+      info->_name = "check";
+      info->_type = csvsqldb::BOOLEAN;
+      info->_prefix = "";
+      symbolTable->replaceSymbol("non-existent", "check", info);
+    }
+
+    CHECK_FALSE(symbolTable->hasSymbol("non-existent"));
+    CHECK(symbolTable->hasSymbol("check"));
   }
 
   SECTION("next symbol")
   {
-    csvsqldb::SymbolTablePtr st = csvsqldb::SymbolTable::createSymbolTable();
+    CHECK("$alias_1" == symbolTable->getNextAlias());
+    CHECK("$alias_2" == symbolTable->getNextAlias());
+    CHECK("$alias_3" == symbolTable->getNextAlias());
+    CHECK("$alias_4" == symbolTable->getNextAlias());
 
-    CHECK("$alias_1" == st->getNextAlias());
+    csvsqldb::SymbolTablePtr otherSymbolTable = csvsqldb::SymbolTable::createSymbolTable();
+    CHECK("$alias_1" == otherSymbolTable->getNextAlias());
+    CHECK("$alias_2" == otherSymbolTable->getNextAlias());
+    CHECK("$alias_3" == otherSymbolTable->getNextAlias());
+    CHECK("$alias_4" == otherSymbolTable->getNextAlias());
   }
+
+  SECTION("find error")
+  {
+    CHECK_THROWS_WITH(symbolTable->findSymbol("emp"), "symbol 'emp' not found in scope");
+  }
+}
+
+TEST_CASE("Table Symbol Table Test", "[symbols]")
+{
+  csvsqldb::SymbolTablePtr symbolTable = csvsqldb::SymbolTable::createSymbolTable();
+
+  {
+    auto info = std::make_shared<csvsqldb::SymbolInfo>();
+    info->_name = "empId";
+    info->_alias = "id";
+    info->_identifier = "empId";
+    info->_symbolType = csvsqldb::PLAIN;
+    info->_relation = "employees";
+    symbolTable->addSymbol("empId", info);
+  }
+
+  {
+    auto info = std::make_shared<csvsqldb::SymbolInfo>();
+    info->_name = "name";
+    info->_identifier = "name";
+    info->_symbolType = csvsqldb::PLAIN;
+    info->_relation = "employees";
+    symbolTable->addSymbol("name", info);
+  }
+
+  {
+    auto info = std::make_shared<csvsqldb::SymbolInfo>();
+    info->_name = "age";
+    info->_identifier = "age";
+    info->_symbolType = csvsqldb::PLAIN;
+    info->_relation = "employees";
+    symbolTable->addSymbol("age", info);
+  }
+
+  {
+    auto info = std::make_shared<csvsqldb::SymbolInfo>();
+    info->_name = "test";
+    info->_symbolType = csvsqldb::FUNCTION;
+    symbolTable->addSymbol("test", info);
+  }
+
+  {
+    auto info = std::make_shared<csvsqldb::SymbolInfo>();
+    info->_name = "employees";
+    info->_alias = "emps";
+    info->_symbolType = csvsqldb::TABLE;
+    symbolTable->addSymbol("employees", info);
+  }
+
+  {
+    auto info = std::make_shared<csvsqldb::SymbolInfo>();
+    info->_name = "salaries";
+    info->_symbolType = csvsqldb::TABLE;
+    symbolTable->addSymbol("salaries", info);
+  }
+
+  SECTION("get tables")
+  {
+    CHECK(2 == symbolTable->getTables().size());
+    auto tables = symbolTable->getTables();
+    std::for_each(tables.begin(), tables.end(), [](const auto& symbol) { CHECK(csvsqldb::TABLE == symbol->_symbolType); });
+  }
+
+  SECTION("find table symbols")
+  {
+    CHECK(symbolTable->hasTableSymbol("employees"));
+    CHECK(symbolTable->hasTableSymbol("emps"));
+    CHECK(symbolTable->hasTableSymbol("salaries"));
+    CHECK_FALSE(symbolTable->hasTableSymbol("non-existent"));
+
+    CHECK(symbolTable->findTableSymbol("employees"));
+    CHECK(symbolTable->findTableSymbol("emps"));
+    CHECK(symbolTable->findTableSymbol("salaries"));
+    CHECK_THROWS_WITH(symbolTable->findTableSymbol("non-existent"), "symbol 'non-existent' not found in scope");
+  }
+
+  SECTION("find symbols for table")
+  {
+    CHECK(symbolTable->hasSymbolNameForTable("employees", "empId"));
+    CHECK_FALSE(symbolTable->hasSymbolNameForTable("employees", "gender"));
+    CHECK_FALSE(symbolTable->hasSymbolNameForTable("salaries", "empId"));
+
+    CHECK(symbolTable->findSymbolNameForTable("employees", "empId"));
+    CHECK_THROWS_WITH(symbolTable->findSymbolNameForTable("employees", "gender"), "symbol 'employees.gender' not found in scope");
+    CHECK_THROWS_WITH(symbolTable->findSymbolNameForTable("salaries", "empId"), "symbol 'salaries.empId' not found in scope");
+  }
+
+  SECTION("find aliased symbols for table")
+  {
+    CHECK(symbolTable->findAliasedSymbol("id"));
+    CHECK_THROWS_WITH(symbolTable->findAliasedSymbol("no-symbol"), "alias symbol 'no-symbol' not found in scope");
+  }
+
+  SECTION("find all symbols for table")
+  {
+    CHECK(3 == symbolTable->findAllSymbolsForTable("employees").size());
+    CHECK(0 == symbolTable->findAllSymbolsForTable("salaries").size());
+    CHECK(0 == symbolTable->findAllSymbolsForTable("non-existent").size());
+  }
+
+  SECTION("dump")
+  {
+    std::ostringstream os;
+    os << std::endl;
+    symbolTable->dump(os);
+
+    std::string expected = R"(
+Dumping symbol table:
+empId symbol type: PLAIN type: none identifier: empId prefix:  name: empId alias: id relation: employees qualified: ,
+name symbol type: PLAIN type: none identifier: name prefix:  name: name alias:  relation: employees qualified: ,
+age symbol type: PLAIN type: none identifier: age prefix:  name: age alias:  relation: employees qualified: ,
+test symbol type: FUNCTION type: none identifier:  prefix:  name: test alias:  relation:  qualified: ,
+employees symbol type: TABLE type: none identifier:  prefix:  name: employees alias: emps relation:  qualified: ,
+salaries symbol type: TABLE type: none identifier:  prefix:  name: salaries alias:  relation:  qualified: ,
+)";
+    CHECK(expected == os.str());
+  }
+}
+
+TEST_CASE("Database Symbol Table Test", "[engine]")
+{
+  TemporaryDirectoryGuard tmpDir;
+  auto path = tmpDir.temporaryDirectoryPath();
+  csvsqldb::SymbolTablePtr symbolTable = csvsqldb::SymbolTable::createSymbolTable();
+
 
   SECTION("nested symbol table")
   {
@@ -132,9 +304,8 @@ TEST_CASE("Symbol Table Test", "[engine]")
     // simulating a symbol table for this query:
     // select first_name,last_name as name from (select first_name,last_name from employees)
 
-    csvsqldb::SymbolTablePtr st = csvsqldb::SymbolTable::createSymbolTable();
     {
-      csvsqldb::SymbolInfoPtr info = std::make_shared<csvsqldb::SymbolInfo>();
+      auto info = std::make_shared<csvsqldb::SymbolInfo>();
       info->_name = "first_name";
       info->_alias = "";
       info->_identifier = "first_name";
@@ -142,10 +313,10 @@ TEST_CASE("Symbol Table Test", "[engine]")
       info->_type = csvsqldb::NONE;
       info->_prefix = "";
       info->_relation = "";
-      st->addSymbol(info->_name, info);
+      symbolTable->addSymbol(info->_name, info);
     }
     {
-      csvsqldb::SymbolInfoPtr info = std::make_shared<csvsqldb::SymbolInfo>();
+      auto info = std::make_shared<csvsqldb::SymbolInfo>();
       info->_name = "name";
       info->_alias = "name";
       info->_identifier = "last_name";
@@ -153,11 +324,11 @@ TEST_CASE("Symbol Table Test", "[engine]")
       info->_type = csvsqldb::NONE;
       info->_prefix = "";
       info->_relation = "";
-      st->addSymbol(info->_name, info);
+      symbolTable->addSymbol(info->_name, info);
     }
-    csvsqldb::SymbolTablePtr nestedSt = csvsqldb::SymbolTable::createSymbolTable(st);
+    csvsqldb::SymbolTablePtr nestedSymbolTable = csvsqldb::SymbolTable::createSymbolTable(symbolTable);
     {
-      csvsqldb::SymbolInfoPtr info = std::make_shared<csvsqldb::SymbolInfo>();
+      auto info = std::make_shared<csvsqldb::SymbolInfo>();
       info->_name = "first_name";
       info->_alias = "";
       info->_identifier = "first_name";
@@ -165,10 +336,10 @@ TEST_CASE("Symbol Table Test", "[engine]")
       info->_type = csvsqldb::NONE;
       info->_prefix = "";
       info->_relation = "";
-      nestedSt->addSymbol(info->_name, info);
+      nestedSymbolTable->addSymbol(info->_name, info);
     }
     {
-      csvsqldb::SymbolInfoPtr info = std::make_shared<csvsqldb::SymbolInfo>();
+      auto info = std::make_shared<csvsqldb::SymbolInfo>();
       info->_name = "last_name";
       info->_alias = "";
       info->_identifier = "last_name";
@@ -176,30 +347,30 @@ TEST_CASE("Symbol Table Test", "[engine]")
       info->_type = csvsqldb::NONE;
       info->_prefix = "";
       info->_relation = "";
-      nestedSt->addSymbol(info->_name, info);
+      nestedSymbolTable->addSymbol(info->_name, info);
     }
     {
-      csvsqldb::SymbolInfoPtr info = std::make_shared<csvsqldb::SymbolInfo>();
+      auto info = std::make_shared<csvsqldb::SymbolInfo>();
       info->_identifier = "employees";
       info->_symbolType = csvsqldb::TABLE;
       info->_type = csvsqldb::NONE;
       info->_alias = "";
       info->_name = "";
-      nestedSt->addSymbol(info->_name, info);
+      nestedSymbolTable->addSymbol(info->_name, info);
     }
     {
-      csvsqldb::SymbolInfoPtr info = std::make_shared<csvsqldb::SymbolInfo>();
+      auto info = std::make_shared<csvsqldb::SymbolInfo>();
       info->_name = "";
       info->_symbolType = csvsqldb::SUBQUERY;
-      info->_subquery = nestedSt;
-      nestedSt->getParent()->addSymbol(info->_name, info);
+      info->_subquery = nestedSymbolTable;
+      nestedSymbolTable->getParent()->addSymbol(info->_name, info);
     }
 
-    st->typeSymbolTable(database);
+    symbolTable->typeSymbolTable(database);
 
     {
-      CHECK(st->hasSymbol("first_name"));
-      const csvsqldb::SymbolInfoPtr& info = st->findSymbol("first_name");
+      CHECK(symbolTable->hasSymbol("first_name"));
+      const auto& info = symbolTable->findSymbol("first_name");
       CHECK("" == info->_alias);
       CHECK(csvsqldb::PLAIN == info->_symbolType);
       CHECK(csvsqldb::STRING == info->_type);
@@ -207,8 +378,8 @@ TEST_CASE("Symbol Table Test", "[engine]")
       CHECK("first_name" == info->_identifier);
     }
     {
-      CHECK(st->hasSymbol("name"));
-      const csvsqldb::SymbolInfoPtr& info = st->findSymbol("name");
+      CHECK(symbolTable->hasSymbol("name"));
+      const auto& info = symbolTable->findSymbol("name");
       CHECK("name" == info->_alias);
       CHECK(csvsqldb::PLAIN == info->_symbolType);
       CHECK(csvsqldb::STRING == info->_type);
@@ -232,9 +403,8 @@ TEST_CASE("Symbol Table Test", "[engine]")
     // simulating a symbol table for this query:
     // select emp.first_name,emp.last_name as name from (select first_name,last_name from employees) as emp
 
-    csvsqldb::SymbolTablePtr st = csvsqldb::SymbolTable::createSymbolTable();
     {
-      csvsqldb::SymbolInfoPtr info = std::make_shared<csvsqldb::SymbolInfo>();
+      auto info = std::make_shared<csvsqldb::SymbolInfo>();
       info->_name = "emp.first_name";
       info->_alias = "";
       info->_identifier = "first_name";
@@ -242,10 +412,10 @@ TEST_CASE("Symbol Table Test", "[engine]")
       info->_type = csvsqldb::NONE;
       info->_prefix = "emp";
       info->_relation = "";
-      st->addSymbol(info->_name, info);
+      symbolTable->addSymbol(info->_name, info);
     }
     {
-      csvsqldb::SymbolInfoPtr info = std::make_shared<csvsqldb::SymbolInfo>();
+      auto info = std::make_shared<csvsqldb::SymbolInfo>();
       info->_name = "name";
       info->_alias = "name";
       info->_identifier = "last_name";
@@ -253,11 +423,11 @@ TEST_CASE("Symbol Table Test", "[engine]")
       info->_type = csvsqldb::NONE;
       info->_prefix = "emp";
       info->_relation = "";
-      st->addSymbol(info->_name, info);
+      symbolTable->addSymbol(info->_name, info);
     }
-    csvsqldb::SymbolTablePtr nestedSt = csvsqldb::SymbolTable::createSymbolTable(st);
+    csvsqldb::SymbolTablePtr nestedSymbolTable = csvsqldb::SymbolTable::createSymbolTable(symbolTable);
     {
-      csvsqldb::SymbolInfoPtr info = std::make_shared<csvsqldb::SymbolInfo>();
+      auto info = std::make_shared<csvsqldb::SymbolInfo>();
       info->_name = "first_name";
       info->_alias = "";
       info->_identifier = "first_name";
@@ -265,10 +435,10 @@ TEST_CASE("Symbol Table Test", "[engine]")
       info->_type = csvsqldb::NONE;
       info->_prefix = "";
       info->_relation = "";
-      nestedSt->addSymbol(info->_name, info);
+      nestedSymbolTable->addSymbol(info->_name, info);
     }
     {
-      csvsqldb::SymbolInfoPtr info = std::make_shared<csvsqldb::SymbolInfo>();
+      auto info = std::make_shared<csvsqldb::SymbolInfo>();
       info->_name = "last_name";
       info->_alias = "";
       info->_identifier = "last_name";
@@ -276,30 +446,30 @@ TEST_CASE("Symbol Table Test", "[engine]")
       info->_type = csvsqldb::NONE;
       info->_prefix = "";
       info->_relation = "";
-      nestedSt->addSymbol(info->_name, info);
+      nestedSymbolTable->addSymbol(info->_name, info);
     }
     {
-      csvsqldb::SymbolInfoPtr info = std::make_shared<csvsqldb::SymbolInfo>();
+      auto info = std::make_shared<csvsqldb::SymbolInfo>();
       info->_identifier = "employees";
       info->_symbolType = csvsqldb::TABLE;
       info->_type = csvsqldb::NONE;
       info->_alias = "";
       info->_name = "";
-      nestedSt->addSymbol(info->_name, info);
+      nestedSymbolTable->addSymbol(info->_name, info);
     }
     {
-      csvsqldb::SymbolInfoPtr info = std::make_shared<csvsqldb::SymbolInfo>();
+      auto info = std::make_shared<csvsqldb::SymbolInfo>();
       info->_name = "emp";
       info->_symbolType = csvsqldb::SUBQUERY;
-      info->_subquery = nestedSt;
-      nestedSt->getParent()->addSymbol("emp", info);
+      info->_subquery = nestedSymbolTable;
+      nestedSymbolTable->getParent()->addSymbol("emp", info);
     }
 
-    st->typeSymbolTable(database);
+    symbolTable->typeSymbolTable(database);
 
     {
-      CHECK(st->hasSymbol("emp.first_name"));
-      const csvsqldb::SymbolInfoPtr& info = st->findSymbol("emp.first_name");
+      CHECK(symbolTable->hasSymbol("emp.first_name"));
+      const auto& info = symbolTable->findSymbol("emp.first_name");
       CHECK("" == info->_alias);
       CHECK(csvsqldb::PLAIN == info->_symbolType);
       CHECK(csvsqldb::STRING == info->_type);
@@ -307,8 +477,8 @@ TEST_CASE("Symbol Table Test", "[engine]")
       CHECK("first_name" == info->_identifier);
     }
     {
-      CHECK(st->hasSymbol("name"));
-      const csvsqldb::SymbolInfoPtr& info = st->findSymbol("name");
+      CHECK(symbolTable->hasSymbol("name"));
+      const auto& info = symbolTable->findSymbol("name");
       CHECK("name" == info->_alias);
       CHECK(csvsqldb::PLAIN == info->_symbolType);
       CHECK(csvsqldb::STRING == info->_type);
@@ -340,7 +510,6 @@ TEST_CASE("Symbol Table Test", "[engine]")
                    "DATE'2014-01-01'");
     REQUIRE(node);
 
-    csvsqldb::SymbolTablePtr symbolTable = node->symbolTable();
     symbolTable->typeSymbolTable(database);
 
     node = parser.parse("select emp_no no,emp_no as id from employees where last_name = 'Schmiedel' and emp_no > 490000");
@@ -382,8 +551,7 @@ TEST_CASE("Symbol Table Test", "[engine]")
     node = parser.parse("SELECT * FROM employees e, salaries s WHERE e.emp_no = s.emp_no and s.salary > 20000");
     REQUIRE(node);
 
-    csvsqldb::SymbolTablePtr symbolTable = node->symbolTable();
-
+    CHECK(node->symbolTable());
     CHECK_THROWS_AS(node->accept(validationVisitor), csvsqldb::SqlParserException);
   }
 }
