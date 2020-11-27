@@ -73,11 +73,45 @@ TEST_CASE("Timehelper Test", "[utils]")
     CHECK(tp == ltp);
   }
 
-  SECTION("date conversion")
+  SECTION("time from string")
   {
-    csvsqldb::Date d1 = csvsqldb::dateFromString("2014-12-30");
-    CHECK(30 == d1.day());
-    CHECK(12 == d1.month());
-    CHECK(2014 == d1.year());
+    csvsqldb::Time t = csvsqldb::timeFromString("11:46:53");
+    CHECK(11 == t.hour());
+    CHECK(46 == t.minute());
+    CHECK(53 == t.second());
   }
+
+  SECTION("time from string error")
+  {
+    CHECK_THROWS_WITH(csvsqldb::timeFromString("114653"), "not a time");
+  }
+
+  SECTION("timestamp from string")
+  {
+    csvsqldb::Timestamp t = csvsqldb::timestampFromString("1970-09-23T07:08:05");
+    CHECK(1970 == t.year());
+    CHECK(csvsqldb::Date::September == t.month());
+    CHECK(23 == t.day());
+    CHECK(7 == t.hour());
+    CHECK(8 == t.minute());
+    CHECK(5 == t.second());
+  }
+
+  SECTION("timestamp from string error")
+  {
+    CHECK_THROWS_WITH(csvsqldb::timestampFromString("114653"), "not a timestamp");
+  }
+
+  SECTION("date from string")
+  {
+    csvsqldb::Date d = csvsqldb::dateFromString("2014-12-30");
+    CHECK(30 == d.day());
+    CHECK(12 == d.month());
+    CHECK(2014 == d.year());
+  }
+
+  SECTION("date from string error")
+  {
+    CHECK_THROWS_WITH(csvsqldb::dateFromString("201420-12-30"), "not a date");
+ }
 }

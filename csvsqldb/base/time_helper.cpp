@@ -78,6 +78,9 @@ namespace csvsqldb
 
   Date dateFromString(const std::string& date)
   {
+    if (date.length() != 10) {
+      CSVSQLDB_THROW(Exception, "not a date");
+    }
     uint16_t year = static_cast<uint16_t>(std::stoi(date.substr(0, 4)));
     Date::eMonth month = static_cast<Date::eMonth>(std::stoi(date.substr(5, 2)));
     uint16_t day = static_cast<uint16_t>(std::stoi(date.substr(8, 2)));
@@ -86,6 +89,9 @@ namespace csvsqldb
 
   Time timeFromString(const std::string& time)
   {
+    if (time.length() != 8) {
+      CSVSQLDB_THROW(Exception, "not a time");
+    }
     uint16_t hour = static_cast<uint16_t>(std::stoi(time.substr(0, 2)));
     uint16_t minute = static_cast<uint16_t>(std::stoi(time.substr(3, 2)));
     uint16_t second = static_cast<uint16_t>(std::stoi(time.substr(6, 2)));
@@ -94,6 +100,9 @@ namespace csvsqldb
 
   Timestamp timestampFromString(const std::string& timestamp)
   {
+    if (timestamp.length() != 19) {
+      CSVSQLDB_THROW(Exception, "not a timestamp");
+    }
     uint16_t year = static_cast<uint16_t>(std::stoi(timestamp.substr(0, 4)));
     Date::eMonth month = static_cast<Date::eMonth>(std::stoi(timestamp.substr(5, 2)));
     uint16_t day = static_cast<uint16_t>(std::stoi(timestamp.substr(8, 2)));
