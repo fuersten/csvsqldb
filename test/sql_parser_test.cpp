@@ -42,7 +42,7 @@
 #include <catch2/catch.hpp>
 
 
-TEST_CASE("SQL Parser Test", "[parser]")
+TEST_CASE("SQL Parser Test", "[sql parser]")
 {
   SECTION("parse select")
   {
@@ -94,7 +94,7 @@ TEST_CASE("SQL Parser Test", "[parser]")
 
     visitor.reset();
     node->accept(visitor);
-    CHECK("SELECT COUNT(*),A,B AS D,C FROM TEST WHERE ((A > B) AND (C <= A)) GROUP BY A,B,C" == visitor.toString());
+    CHECK("SELECT COUNT(*),A,B AS D,C FROM TEST WHERE ((A > B) AND (C < A)) GROUP BY A,B,C" == visitor.toString());
 
     node = parser.parse(visitor.toString());
     REQUIRE(node);
@@ -107,7 +107,7 @@ TEST_CASE("SQL Parser Test", "[parser]")
 
     visitor.reset();
     node->accept(visitor);
-    CHECK("SELECT A,CAST(B AS VARCHAR) AS BS,C FROM TEST WHERE ((A > B) AND (C <= A)) GROUP BY A,BS,C" == visitor.toString());
+    CHECK("SELECT A,CAST(B AS VARCHAR) AS BS,C FROM TEST WHERE ((A > B) AND (C < A)) GROUP BY A,BS,C" == visitor.toString());
 
     node = parser.parse(visitor.toString());
     REQUIRE(node);
@@ -124,7 +124,7 @@ TEST_CASE("SQL Parser Test", "[parser]")
 
     visitor.reset();
     node->accept(visitor);
-    CHECK("SELECT COUNT(*),A,B,C FROM TEST WHERE (((A > B) AND (C <= A)) OR (B IS NOT TRUE)) GROUP BY A,B,C" ==
+    CHECK("SELECT COUNT(*),A,B,C FROM TEST WHERE (((A > B) AND (C < A)) OR (B IS NOT TRUE)) GROUP BY A,B,C" ==
           visitor.toString());
 
     node = parser.parse(visitor.toString());
@@ -132,7 +132,7 @@ TEST_CASE("SQL Parser Test", "[parser]")
     REQUIRE(std::dynamic_pointer_cast<csvsqldb::ASTQueryNode>(node));
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    node = parser.parse("SELECT ALL count(*),a ff,b,c FROM Test where a > b and c < a group by a,b,c");
+    node = parser.parse("SELECT ALL count(*),a ff,b,c FROM Test where a > b and c <= a group by a,b,c");
     REQUIRE(node);
     REQUIRE(std::dynamic_pointer_cast<csvsqldb::ASTQueryNode>(node));
 
@@ -145,7 +145,7 @@ TEST_CASE("SQL Parser Test", "[parser]")
     REQUIRE(std::dynamic_pointer_cast<csvsqldb::ASTQueryNode>(node));
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    node = parser.parse("SELECT ALL sum(DISTINCT b),a ff,b,c FROM Test where a > b and c < a group by a,b,c");
+    node = parser.parse("SELECT ALL sum(DISTINCT b),a ff,b,c FROM Test where a > b and c <= a group by a,b,c");
     REQUIRE(node);
     REQUIRE(std::dynamic_pointer_cast<csvsqldb::ASTQueryNode>(node));
 
@@ -158,13 +158,13 @@ TEST_CASE("SQL Parser Test", "[parser]")
     REQUIRE(std::dynamic_pointer_cast<csvsqldb::ASTQueryNode>(node));
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    node = parser.parse("SELECT ALL count(DISTINCT b),a ff,b,c FROM Test where a > b and c < a group by a,b,c");
+    node = parser.parse("SELECT ALL count(DISTINCT b),a ff,b,c FROM Test where a >= b and c < a group by a,b,c");
     REQUIRE(node);
     REQUIRE(std::dynamic_pointer_cast<csvsqldb::ASTQueryNode>(node));
 
     visitor.reset();
     node->accept(visitor);
-    CHECK("SELECT COUNT(DISTINCT B),A AS FF,B,C FROM TEST WHERE ((A > B) AND (C <= A)) GROUP BY A,B,C" == visitor.toString());
+    CHECK("SELECT COUNT(DISTINCT B),A AS FF,B,C FROM TEST WHERE ((A >= B) AND (C < A)) GROUP BY A,B,C" == visitor.toString());
 
     node = parser.parse(visitor.toString());
     REQUIRE(node);
@@ -179,7 +179,7 @@ TEST_CASE("SQL Parser Test", "[parser]")
 
     visitor.reset();
     node->accept(visitor);
-    CHECK("SELECT *,TEST.*,\"A IS COOL\" AS FF,TEST.B,C FROM TEST WHERE ((\"A IS COOL\" > B) AND (C <= \"A IS COOL\")) GROUP BY "
+    CHECK("SELECT *,TEST.*,\"A IS COOL\" AS FF,TEST.B,C FROM TEST WHERE ((\"A IS COOL\" > B) AND (C < \"A IS COOL\")) GROUP BY "
           "\"A IS COOL\",B,C" == visitor.toString());
 
     node = parser.parse(visitor.toString());
@@ -267,7 +267,7 @@ TEST_CASE("SQL Parser Test", "[parser]")
 
     visitor.reset();
     node->accept(visitor);
-    CHECK("SELECT A,B,C FROM TEST WHERE (B = DATE'1970-09-23') UNION (SELECT A,B,C FROM TEST WHERE (((A > B) AND (C <= A)) OR (B "
+    CHECK("SELECT A,B,C FROM TEST WHERE (B = DATE'1970-09-23') UNION (SELECT A,B,C FROM TEST WHERE (((A > B) AND (C < A)) OR (B "
           "IS NOT TRUE)) GROUP BY A,B,C) UNION (SELECT A,B,C FROM TEST WHERE ((A > B) AND C in (2,3,4,5,6)))" ==
           visitor.toString());
 
@@ -817,5 +817,32 @@ TEST_CASE("SQL Parser Test", "[parser]")
     csvsqldb::ASTNodePtr node = parser.parse("drop mapping test");
     REQUIRE(node);
     REQUIRE(std::dynamic_pointer_cast<csvsqldb::ASTDropMappingNode>(node));
+  }
+}
+
+TEST_CASE("SQL AST Test", "[sql parser]")
+{
+  SECTION("identifiers")
+  {
+    csvsqldb::IdentifierSet identifiers;
+
+    csvsqldb::SymbolTablePtr symbolTable = csvsqldb::SymbolTable::createSymbolTable();
+    csvsqldb::SymbolInfoPtr info = std::make_shared<csvsqldb::SymbolInfo>();
+    info->_name = "BIRTHDATE";
+
+    csvsqldb::ASTIdentifier bd(symbolTable, info, "", "BIRTHDATE", false);
+
+    identifiers.insert(bd);
+    CHECK(identifiers.size() == 1);
+
+    csvsqldb::ASTIdentifier id(symbolTable, info, "", "ID", false);
+    identifiers.insert(id);
+    CHECK(identifiers.size() == 2);
+    identifiers.insert(id);
+    CHECK(identifiers.size() == 2);
+
+    csvsqldb::ASTIdentifier prefix_bd(symbolTable, info, "EMPLOYEES", "BIRTHDATE", false);
+    identifiers.insert(prefix_bd);
+    CHECK(identifiers.size() == 3);
   }
 }

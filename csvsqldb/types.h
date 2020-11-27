@@ -59,15 +59,14 @@ namespace csvsqldb
 
   enum eOrder { ASC, DESC };
 
-  enum eQuantifier { DISTINCT, ALL };
-
   CSVSQLDB_EXPORT std::string orderToString(eOrder order);
+
+  enum eQuantifier { DISTINCT, ALL };
 
   enum eType { NONE, BOOLEAN, INT, REAL, STRING, DATE, TIME, TIMESTAMP };
 
   CSVSQLDB_EXPORT std::string typeToString(eType type);
   CSVSQLDB_EXPORT eType stringToType(const std::string& s);
-  CSVSQLDB_EXPORT std::string printType(eType type, const std::any& value);
 
   using Types = std::vector<eType>;
 
@@ -94,10 +93,7 @@ namespace csvsqldb
   CSVSQLDB_EXPORT std::string naturalJoinToString(eNaturalJoinType joinType);
 
   struct CSVSQLDB_EXPORT TypedValue {
-    TypedValue()
-    : _type(NONE)
-    {
-    }
+    TypedValue() = default;
 
     TypedValue(eType type, const std::any& value)
     : _type(type)
@@ -105,21 +101,48 @@ namespace csvsqldb
     {
     }
 
-    TypedValue(const TypedValue& rhs)
-    : _type(rhs._type)
-    , _value(rhs._value)
-    {
-    }
+    TypedValue(const TypedValue& rhs) = default;
+    TypedValue& operator=(const TypedValue& rhs) = default;
+    TypedValue(TypedValue&& rhs) = default;
+    TypedValue& operator=(TypedValue&& rhs) = default;
 
     static TypedValue createValue(eType type, const std::string& value);
 
-    eType _type;
+    eType _type{NONE};
     std::any _value;
   };
 
-  CSVSQLDB_EXPORT std::string printType(const TypedValue& value);
-
   using TypedValues = std::vector<TypedValue>;
+
+  CSVSQLDB_EXPORT std::string typedValueToString(const TypedValue& typedValue);
+
+  enum eOperationType {
+    OP_CONCAT,
+    OP_ADD,
+    OP_SUB,
+    OP_MUL,
+    OP_DIV,
+    OP_MOD,
+    OP_GT,
+    OP_GE,
+    OP_LT,
+    OP_LE,
+    OP_EQ,
+    OP_NEQ,
+    OP_AND,
+    OP_OR,
+    OP_NOT,
+    OP_MINUS,
+    OP_PLUS,
+    OP_CAST,
+    OP_LIKE,
+    OP_BETWEEN,
+    OP_IN,
+    OP_IS,
+    OP_ISNOT
+  };
+
+  CSVSQLDB_EXPORT std::string operationTypeToString(eOperationType type);
 
   using NoneType = int2type<NONE>;
 
@@ -188,32 +211,4 @@ namespace csvsqldb
   {
     return TIMESTAMP;
   }
-
-  enum eOperationType {
-    OP_CONCAT,
-    OP_ADD,
-    OP_SUB,
-    OP_MUL,
-    OP_DIV,
-    OP_MOD,
-    OP_GT,
-    OP_GE,
-    OP_LT,
-    OP_LE,
-    OP_EQ,
-    OP_NEQ,
-    OP_AND,
-    OP_OR,
-    OP_NOT,
-    OP_MINUS,
-    OP_PLUS,
-    OP_CAST,
-    OP_LIKE,
-    OP_BETWEEN,
-    OP_IN,
-    OP_IS,
-    OP_ISNOT
-  };
-
-  CSVSQLDB_EXPORT std::string operationTypeToString(eOperationType type);
 }

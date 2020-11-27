@@ -110,7 +110,7 @@ namespace csvsqldb
                  {"not null", column._notNull}, {"unique", column._unique},           {"length", column._length}};
 
       if (column._defaultValue.has_value()) {
-        entry.push_back({"default", printType(column._type, column._defaultValue)});
+        entry.push_back({"default", typedValueToString(TypedValue(column._type, column._defaultValue))});
       } else {
         entry.push_back({"default", ""});
       }

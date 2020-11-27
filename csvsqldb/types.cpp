@@ -110,41 +110,36 @@ namespace csvsqldb
     }
   }
 
-  std::string printType(eType type, const std::any& value)
+  std::string typedValueToString(const TypedValue& typedValue)
   {
-    std::stringstream ss;
-    switch (type) {
+    std::ostringstream ss;
+    switch (typedValue._type) {
       case NONE:
         ss << "NULL";
         break;
       case BOOLEAN:
-        ss << (std::any_cast<bool>(value) ? "TRUE" : "FALSE");
+        ss << (std::any_cast<bool>(typedValue._value) ? "TRUE" : "FALSE");
         break;
       case REAL:
-        ss << std::fixed << std::showpoint << std::any_cast<double>(value);
+        ss << std::fixed << std::showpoint << std::any_cast<double>(typedValue._value);
         break;
       case INT:
-        ss << std::any_cast<int64_t>(value);
+        ss << std::any_cast<int64_t>(typedValue._value);
         break;
       case STRING:
-        ss << std::any_cast<std::string>(value);
+        ss << std::any_cast<std::string>(typedValue._value);
         break;
       case DATE:
-        ss << "DATE'" << std::any_cast<csvsqldb::Date>(value).format("%Y-%m-%d") << "'";
+        ss << "DATE'" << std::any_cast<csvsqldb::Date>(typedValue._value).format("%Y-%m-%d") << "'";
         break;
       case TIME:
-        ss << "TIME'" << std::any_cast<csvsqldb::Time>(value).format("%H:%M:%S") << "'";
+        ss << "TIME'" << std::any_cast<csvsqldb::Time>(typedValue._value).format("%H:%M:%S") << "'";
         break;
       case TIMESTAMP:
-        ss << "TIMESTAMP'" << std::any_cast<csvsqldb::Timestamp>(value).format("%Y-%m-%dT%H:%M:%S") << "'";
+        ss << "TIMESTAMP'" << std::any_cast<csvsqldb::Timestamp>(typedValue._value).format("%Y-%m-%dT%H:%M:%S") << "'";
         break;
     }
     return ss.str();
-  }
-
-  std::string printType(const TypedValue& value)
-  {
-    return printType(value._type, value._value);
   }
 
   TypedValue TypedValue::createValue(eType type, const std::string& value)
@@ -163,6 +158,7 @@ namespace csvsqldb
         any = std::stod(value);
         break;
       case INT:
+        // TODO(LCF): we should use stoll, but that does not work on linux
         any = static_cast<int64_t>(std::stol(value));
         break;
       case STRING:
@@ -238,9 +234,9 @@ namespace csvsqldb
       case OP_GE:
         return ">=";
       case OP_LT:
-        return "<=";
-      case OP_LE:
         return "<";
+      case OP_LE:
+        return "<=";
       case OP_EQ:
         return "=";
       case OP_NEQ:

@@ -113,5 +113,5 @@ TEST_CASE("Timehelper Test", "[utils]")
   SECTION("date from string error")
   {
     CHECK_THROWS_WITH(csvsqldb::dateFromString("201420-12-30"), "not a date");
- }
+  }
 }

@@ -100,7 +100,7 @@ namespace csvsqldb
       if (node._value._type == STRING) {
         _ss << "'";
       }
-      _ss << printType(node._value._type, node._value._value);
+      _ss << typedValueToString(node._value);
       if (node._value._type == STRING) {
         _ss << "'";
       }

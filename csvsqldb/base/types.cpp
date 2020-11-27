@@ -78,12 +78,19 @@ namespace csvsqldb
 
   bool stringToBool(const std::string& value)
   {
-    if (toupper_copy(value) == "TRUE") {
+    auto s = toupper_copy(value);
+    if (s == "TRUE") {
       return true;
-    } else if (toupper_copy(value) == "FALSE") {
+    } else if (s == "FALSE") {
       return false;
-    } else if (std::stoi(value) != 0) {
-      return true;
+    } else {
+      try {
+        if (std::stoi(value) != 0) {
+          return true;
+        }
+      } catch (const std::invalid_argument&) {
+        CSVSQLDB_THROW(Exception, "Not a boolean value");
+      }
     }
     return false;
   }

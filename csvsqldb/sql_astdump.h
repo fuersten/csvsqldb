@@ -68,7 +68,7 @@ namespace csvsqldb
         _out << (definition._notNull ? "Not Null " : "");
         _out << (definition._unique ? "Unique " : "");
         if (definition._defaultValue.has_value()) {
-          _out << printType(definition._type, definition._defaultValue);
+          _out << typedValueToString(TypedValue(definition._type, definition._defaultValue));
         }
         if (definition._check) {
           _out << std::endl;
@@ -135,7 +135,7 @@ namespace csvsqldb
       _out << (node._definition._notNull ? "Not Null" : "");
       _out << (node._definition._unique ? "Unique" : "");
       if (node._definition._defaultValue.has_value()) {
-        _out << printType(node._definition._type, node._definition._defaultValue);
+        _out << typedValueToString(TypedValue(node._definition._type, node._definition._defaultValue));
       }
       _out << std::endl;
       _indent -= 2;
@@ -282,7 +282,7 @@ namespace csvsqldb
     {
       _out << "ASTValue -> ";
       _out << typeToString(node._value._type) << " ";
-      _out << printType(node._value);
+      _out << typedValueToString(node._value);
       _out << std::endl;
     }
 
@@ -873,7 +873,7 @@ namespace csvsqldb
       if (node._value._type == STRING) {
         _ss << "'";
       }
-      _ss << printType(node._value._type, node._value._value);
+      _ss << typedValueToString(node._value);
       if (node._value._type == STRING) {
         _ss << "'";
       }
