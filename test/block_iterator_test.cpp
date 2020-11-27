@@ -213,7 +213,7 @@ TEST_CASE("Block Iterator Test", "[block]")
 
     csvsqldb::BlockIterator iter{wrongTypes, provider, manager};
 
-    CHECK_THROWS_WITH(iter.getNextRow(), "type not allowed none");
+    CHECK_THROWS_WITH(iter.getNextRow(), "NONE type not allowed");
   }
   SECTION("missing next block")
   {

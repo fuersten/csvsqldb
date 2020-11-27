@@ -70,7 +70,7 @@ namespace csvsqldb
   {
     switch (type) {
       case NONE:
-        return "none";
+        return "NONE";
       case BOOLEAN:
         return "BOOLEAN";
       case INT:

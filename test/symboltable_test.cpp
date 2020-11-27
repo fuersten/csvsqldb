@@ -271,12 +271,12 @@ TEST_CASE("Table Symbol Table Test", "[symbols]")
 
     std::string expected = R"(
 Dumping symbol table:
-empId symbol type: PLAIN type: none identifier: empId prefix:  name: empId alias: id relation: employees qualified: ,
-name symbol type: PLAIN type: none identifier: name prefix:  name: name alias:  relation: employees qualified: ,
-age symbol type: PLAIN type: none identifier: age prefix:  name: age alias:  relation: employees qualified: ,
-test symbol type: FUNCTION type: none identifier:  prefix:  name: test alias:  relation:  qualified: ,
-employees symbol type: TABLE type: none identifier:  prefix:  name: employees alias: emps relation:  qualified: ,
-salaries symbol type: TABLE type: none identifier:  prefix:  name: salaries alias:  relation:  qualified: ,
+empId symbol type: PLAIN type: NONE identifier: empId prefix:  name: empId alias: id relation: employees qualified: ,
+name symbol type: PLAIN type: NONE identifier: name prefix:  name: name alias:  relation: employees qualified: ,
+age symbol type: PLAIN type: NONE identifier: age prefix:  name: age alias:  relation: employees qualified: ,
+test symbol type: FUNCTION type: NONE identifier:  prefix:  name: test alias:  relation:  qualified: ,
+employees symbol type: TABLE type: NONE identifier:  prefix:  name: employees alias: emps relation:  qualified: ,
+salaries symbol type: TABLE type: NONE identifier:  prefix:  name: salaries alias:  relation:  qualified: ,
 )";
     CHECK(expected == os.str());
   }
