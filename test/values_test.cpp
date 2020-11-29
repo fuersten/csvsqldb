@@ -99,25 +99,25 @@ TEST_CASE("Values Test", "[values]")
 
   SECTION("store")
   {
-    typedef std::array<char, 4096> StoreType;
+    using StoreType = std::array<char, 4096>;
 
     StoreType store;
     size_t offset = 0;
 
     {
       csvsqldb::ValInt* pi = new (&store[0]) csvsqldb::ValInt(4711l);
-      offset = pi->size();
+      offset = pi->getSize();
       csvsqldb::ValDouble* pd = new (&store[0] + offset) csvsqldb::ValDouble(47.11);
-      offset += pd->size();
+      offset += pd->getSize();
       csvsqldb::ValBool* pb = new (&store[0] + offset) csvsqldb::ValBool(true);
-      offset += pb->size();
+      offset += pb->getSize();
       csvsqldb::ValDate* pdt = new (&store[0] + offset) csvsqldb::ValDate(csvsqldb::Date(1970, csvsqldb::Date::September, 23));
-      offset += pdt->size();
+      offset += pdt->getSize();
       csvsqldb::ValTime* pt = new (&store[0] + offset) csvsqldb::ValTime(csvsqldb::Time(8, 9, 11));
-      offset += pt->size();
+      offset += pt->getSize();
       csvsqldb::ValTimestamp* pts =
         new (&store[0] + offset) csvsqldb::ValTimestamp(csvsqldb::Timestamp(1970, csvsqldb::Date::September, 23, 8, 9, 11));
-      offset += pts->size();
+      offset += pts->getSize();
       char* psd = &store[0] + offset + sizeof(csvsqldb::ValString);
       ::strcpy(psd, "Lars Fürstenberg");
       csvsqldb::ValString* ps = new (&store[0] + offset) csvsqldb::ValString(psd);

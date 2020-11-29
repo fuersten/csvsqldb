@@ -110,7 +110,7 @@ namespace csvsqldb
       CSVSQLDB_THROW(csvsqldb::Exception, typeToString(type) << " type not allowed");
     }
     val = reinterpret_cast<Value*>(_block->getRawBuffer(_offset));
-    _offset += val->size();
+    _offset += val->getSize();
     ++_typeOffset;
     return val;
   }
@@ -226,7 +226,7 @@ namespace csvsqldb
       CSVSQLDB_THROW(csvsqldb::Exception, typeToString(type) << " type not allowed");
     }
     val = reinterpret_cast<Value*>(_blocks[_currentBlock]->getRawBuffer(_offset));
-    _offset += val->size();
+    _offset += val->getSize();
     ++_typeOffset;
     return val;
   }
@@ -350,7 +350,7 @@ namespace csvsqldb
         CSVSQLDB_THROW(csvsqldb::Exception, typeToString(type) << " type not allowed");
       }
       val = reinterpret_cast<Value*>(_blocks[_currentBlock]->getRawBuffer(_offset));
-      _offset += val->size();
+      _offset += val->getSize();
       ++_typeOffset;
       return val;
     }
@@ -483,7 +483,7 @@ namespace csvsqldb
       CSVSQLDB_THROW(csvsqldb::Exception, typeToString(type) << " type not allowed");
     }
     val = reinterpret_cast<Value*>(_blocks[_currentBlock]->getRawBuffer(_offset));
-    _offset += val->size();
+    _offset += val->getSize();
     ++_typeOffset;
     return val;
   }
@@ -699,7 +699,7 @@ namespace csvsqldb
       CSVSQLDB_THROW(csvsqldb::Exception, typeToString(type) << " type not allowed");
     }
     val = reinterpret_cast<Value*>(_blocks[_currentBlock]->getRawBuffer(_offset));
-    _offset += val->size();
+    _offset += val->getSize();
     ++_typeOffset;
     return val;
   }
@@ -866,7 +866,7 @@ namespace csvsqldb
       CSVSQLDB_THROW(csvsqldb::Exception, typeToString(type) << " type not allowed");
     }
     val = reinterpret_cast<Value*>(_blocks[_currentBlock]->getRawBuffer(_offset));
-    _offset += val->size();
+    _offset += val->getSize();
     ++_typeOffset;
     return val;
   }

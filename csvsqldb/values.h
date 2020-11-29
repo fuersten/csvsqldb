@@ -63,7 +63,7 @@ namespace csvsqldb
 
     virtual bool isNull() const = 0;
 
-    virtual size_t size() const = 0;
+    virtual size_t getSize() const = 0;
 
     virtual eType getType() const = 0;
 
@@ -120,12 +120,12 @@ namespace csvsqldb
       return std::to_string(_val);
     }
 
-    static size_t baseSize()
+    static size_t getBaseSize()
     {
       return sizeof(ValInt);
     }
 
-    size_t size() const override
+    size_t getSize() const override
     {
       return sizeof(ValInt);
     }
@@ -207,12 +207,12 @@ namespace csvsqldb
       return std::to_string(_val);
     }
 
-    static size_t baseSize()
+    static size_t getBaseSize()
     {
       return sizeof(ValDouble);
     }
 
-    size_t size() const override
+    size_t getSize() const override
     {
       return sizeof(ValDouble);
     }
@@ -294,12 +294,12 @@ namespace csvsqldb
       return std::to_string(_val);
     }
 
-    static size_t baseSize()
+    static size_t getBaseSize()
     {
       return sizeof(ValBool);
     }
 
-    size_t size() const override
+    size_t getSize() const override
     {
       return sizeof(ValBool);
     }
@@ -374,12 +374,12 @@ namespace csvsqldb
       return _val.format("%F");
     }
 
-    static size_t baseSize()
+    static size_t getBaseSize()
     {
       return sizeof(ValDate);
     }
 
-    size_t size() const override
+    size_t getSize() const override
     {
       return sizeof(ValDate);
     }
@@ -454,12 +454,12 @@ namespace csvsqldb
       return _val.format("%H:%M:%S");
     }
 
-    static size_t baseSize()
+    static size_t getBaseSize()
     {
       return sizeof(ValTime);
     }
 
-    size_t size() const override
+    size_t getSize() const override
     {
       return sizeof(ValTime);
     }
@@ -534,12 +534,12 @@ namespace csvsqldb
       return _val.format("%Y-%m-%dT%H:%M:%S");
     }
 
-    static size_t baseSize()
+    static size_t getBaseSize()
     {
       return sizeof(ValTimestamp);
     }
 
-    size_t size() const override
+    size_t getSize() const override
     {
       return sizeof(ValTimestamp);
     }
@@ -626,12 +626,12 @@ namespace csvsqldb
       return _val;
     }
 
-    static size_t baseSize()
+    static size_t getBaseSize()
     {
       return sizeof(ValString);
     }
 
-    size_t size() const override
+    size_t getSize() const override
     {
       return sizeof(ValString) + _length + 1;
     }
