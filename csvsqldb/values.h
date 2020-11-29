@@ -90,12 +90,6 @@ namespace csvsqldb
     {
     }
 
-    ValInt(const ValInt& rhs)
-    : _val(rhs._val)
-    , _isNull(rhs._isNull)
-    {
-    }
-
     bool isNull() const override
     {
       return _isNull;
@@ -117,6 +111,12 @@ namespace csvsqldb
 
     std::string toString() const override
     {
+      static std::string sNull{"NULL"};
+
+      if (_isNull) {
+        return sNull;
+      }
+
       return std::to_string(_val);
     }
 

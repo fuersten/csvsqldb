@@ -40,7 +40,7 @@ namespace csvsqldb
   {
     switch (type) {
       case NONE:
-        throw std::runtime_error("none not allowed as type here");
+        throw std::runtime_error("none not allowed as type");
       case STRING:
         if (value.has_value()) {
           return ValueCreator<std::string>::createValue(std::any_cast<std::string>(value));
