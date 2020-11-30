@@ -204,6 +204,12 @@ namespace csvsqldb
 
     std::string toString() const override
     {
+      static std::string sNull{"NULL"};
+
+      if (_isNull) {
+        return sNull;
+      }
+
       return std::to_string(_val);
     }
 
