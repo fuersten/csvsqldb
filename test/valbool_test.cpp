@@ -46,7 +46,7 @@ TEST_CASE("ValBool Test", "[values]")
     CHECK_FALSE(b.asBool());
   }
 
-  SECTION("construct from int")
+  SECTION("construct from bool")
   {
     csvsqldb::ValBool bTrue{true};
     CHECK(csvsqldb::BOOLEAN == bTrue.getType());

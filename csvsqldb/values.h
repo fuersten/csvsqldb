@@ -72,6 +72,9 @@ namespace csvsqldb
     virtual bool operator==(const Value& rhs) const = 0;
 
     virtual size_t getHash() const = 0;
+
+  protected:
+    inline static std::string sNull{"NULL"};
   };
 
 
@@ -102,17 +105,11 @@ namespace csvsqldb
 
     void toStream(std::ostream& stream) const override
     {
-      if (!_isNull) {
-        stream << _val;
-      } else {
-        stream << "NULL";
-      }
+      stream << toString();
     }
 
     std::string toString() const override
     {
-      static std::string sNull{"NULL"};
-
       if (_isNull) {
         return sNull;
       }
@@ -195,17 +192,11 @@ namespace csvsqldb
 
     void toStream(std::ostream& stream) const override
     {
-      if (!_isNull) {
-        stream << std::fixed << std::showpoint << std::setprecision(6) << _val;
-      } else {
-        stream << "NULL";
-      }
+      stream << toString();
     }
 
     std::string toString() const override
     {
-      static std::string sNull{"NULL"};
-
       if (_isNull) {
         return sNull;
       }
@@ -288,17 +279,11 @@ namespace csvsqldb
 
     void toStream(std::ostream& stream) const override
     {
-      if (!_isNull) {
-        stream << _val;
-      } else {
-        stream << "NULL";
-      }
+      stream << toString();
     }
 
     std::string toString() const override
     {
-      static std::string sNull{"NULL"};
-
       if (_isNull) {
         return sNull;
       }
@@ -352,19 +337,17 @@ namespace csvsqldb
   {
   public:
     ValDate()
-    : _isNull(true)
     {
     }
 
     ValDate(const csvsqldb::Date& val)
     : _val(val)
-    , _isNull(false)
     {
     }
 
     bool isNull() const override
     {
-      return _isNull;
+      return _val.isInfinite();
     }
 
     const csvsqldb::Date& asDate() const
@@ -374,15 +357,15 @@ namespace csvsqldb
 
     void toStream(std::ostream& stream) const override
     {
-      if (!_isNull) {
-        stream << _val.format("%F");
-      } else {
-        stream << "NULL";
-      }
+      stream << toString();
     }
 
     std::string toString() const override
     {
+      if (isNull()) {
+        return sNull;
+      }
+
       return _val.format("%F");
     }
 
@@ -424,7 +407,6 @@ namespace csvsqldb
 
   private:
     csvsqldb::Date _val;
-    bool _isNull;
   } __attribute__((__packed__));
 
 
@@ -454,15 +436,15 @@ namespace csvsqldb
 
     void toStream(std::ostream& stream) const override
     {
-      if (!_isNull) {
-        stream << _val.format("%H:%M:%S");
-      } else {
-        stream << "NULL";
-      }
+      stream << toString();
     }
 
     std::string toString() const override
     {
+      if (_isNull) {
+        return sNull;
+      }
+
       return _val.format("%H:%M:%S");
     }
 
@@ -534,15 +516,15 @@ namespace csvsqldb
 
     void toStream(std::ostream& stream) const override
     {
-      if (!_isNull) {
-        stream << _val.format("%Y-%m-%dT%H:%M:%S");
-      } else {
-        stream << "NULL";
-      }
+      stream << toString();
     }
 
     std::string toString() const override
     {
+      if (_isNull) {
+        return sNull;
+      }
+
       return _val.format("%Y-%m-%dT%H:%M:%S");
     }
 
@@ -626,15 +608,15 @@ namespace csvsqldb
 
     void toStream(std::ostream& stream) const override
     {
-      if (_val) {
-        stream << _val;
-      } else {
-        stream << "NULL";
-      }
+      stream << toString();
     }
 
     std::string toString() const override
     {
+      if (!_val) {
+        return sNull;
+      }
+
       return _val;
     }
 
