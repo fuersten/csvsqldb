@@ -260,5 +260,7 @@ TEST_CASE("ValInt Test", "[values]")
     CHECK(csvsqldb::ValInt{}.getHash() != csvsqldb::ValInt{-42}.getHash());
     CHECK(csvsqldb::ValInt{-4711}.getHash() != csvsqldb::ValInt{-42}.getHash());
     CHECK(csvsqldb::ValInt{-4711}.getHash() == csvsqldb::ValInt{-4711}.getHash());
+
+    CHECK(csvsqldb::ValInt{4711}.getHash() == std::hash<csvsqldb::Value>()(csvsqldb::ValInt{4711}));
   }
 }
