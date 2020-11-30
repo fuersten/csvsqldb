@@ -57,6 +57,7 @@ add_executable(csvsqldbtest
     types_test.cpp
     union_test.cpp
     utils_test.cpp
+    valbool_test.cpp
     valdouble_test.cpp
     valint_test.cpp
     values_test.cpp

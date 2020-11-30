@@ -84,7 +84,7 @@ namespace csvsqldb
     {
     }
 
-    ValInt(int64_t val)
+    explicit ValInt(int64_t val)
     : _val(val)
     , _isNull(false)
     {
@@ -171,7 +171,7 @@ namespace csvsqldb
     {
     }
 
-    ValDouble(double val)
+    explicit ValDouble(double val)
     : _val(val)
     , _isNull(false)
     {
@@ -264,7 +264,7 @@ namespace csvsqldb
     {
     }
 
-    ValBool(bool val)
+    explicit ValBool(bool val)
     : _val(val)
     , _isNull(false)
     {
@@ -297,6 +297,12 @@ namespace csvsqldb
 
     std::string toString() const override
     {
+      static std::string sNull{"NULL"};
+
+      if (_isNull) {
+        return sNull;
+      }
+
       return std::to_string(_val);
     }
 
