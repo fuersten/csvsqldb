@@ -168,7 +168,7 @@ namespace csvsqldb
     Storage _storage;
     RefCount* _refCount{nullptr};
     eType _type{NONE};
-    bool _isNull{false};
+    bool _isNull{true};
   } __attribute__((__packed__));
 
 

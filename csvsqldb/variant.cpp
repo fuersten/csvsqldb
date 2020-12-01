@@ -191,11 +191,9 @@ namespace csvsqldb
 
   Variant& Variant::operator=(const Variant& rhs)
   {
-    if (_refCount) {
-      if (_refCount->dec() == 0) {
-        delete[] _storage._string;
-        delete _refCount;
-      }
+    if (_refCount && _refCount->dec() == 0) {
+      delete[] _storage._string;
+      delete _refCount;
     }
 
     _type = rhs._type;
@@ -237,7 +235,7 @@ namespace csvsqldb
   {
     if (_type != rhs._type) {
       CSVSQLDB_THROW(VariantException,
-                     "comparing Variants with different types (" << typeToString(_type) << ":" << typeToString(rhs._type));
+                     "comparing Variants with different types (" << typeToString(_type) << ":" << typeToString(rhs._type) << ")");
     }
     if (_isNull || rhs._isNull) {
       return false;
@@ -274,7 +272,7 @@ namespace csvsqldb
   {
     if (_type != rhs._type) {
       CSVSQLDB_THROW(VariantException,
-                     "comparing Variants with different types (" << typeToString(_type) << ":" << typeToString(rhs._type));
+                     "comparing Variants with different types (" << typeToString(_type) << ":" << typeToString(rhs._type) << ")");
     }
     if (_isNull || rhs._isNull) {
       return false;
@@ -311,7 +309,7 @@ namespace csvsqldb
   {
     if (_type != rhs._type) {
       CSVSQLDB_THROW(VariantException,
-                     "comparing Variants with different types (" << typeToString(_type) << ":" << typeToString(rhs._type));
+                     "comparing Variants with different types (" << typeToString(_type) << ":" << typeToString(rhs._type) << ")");
     }
     if (_isNull || rhs._isNull) {
       return false;
@@ -346,12 +344,12 @@ namespace csvsqldb
 
   Variant& Variant::operator+=(const Variant& rhs)
   {
+    if ((_type != INT && _type != REAL) || (rhs._type != INT && rhs._type != REAL)) {
+      CSVSQLDB_THROW(VariantException, "cannot add to non numeric types");
+    }
     if (_type != rhs._type) {
       CSVSQLDB_THROW(VariantException,
-                     "adding Variants with different types (" << typeToString(_type) << ":" << typeToString(rhs._type));
-    }
-    if (_type != INT && _type != REAL) {
-      CSVSQLDB_THROW(VariantException, "cannot add to non numeric types");
+                     "adding Variants with different types (" << typeToString(_type) << ":" << typeToString(rhs._type) << ")");
     }
     if (_isNull || rhs._isNull) {
       CSVSQLDB_THROW(VariantException, "cannot add to null");
@@ -420,17 +418,29 @@ namespace csvsqldb
     if (_isNull || rhs._isNull) {
       CSVSQLDB_THROW(VariantException, "cannot devide with null");
     }
-    // TODO LCF: test for devide through 0
+
     if (_type == INT) {
       if (rhs._type == INT) {
+        if (rhs._storage._int == 0) {
+          CSVSQLDB_THROW(VariantException, "cannot devide by null");
+        }
         _storage._int /= rhs._storage._int;
       } else {
+        if (static_cast<int64_t>(rhs._storage._real) == 0) {
+          CSVSQLDB_THROW(VariantException, "cannot devide by null");
+        }
         _storage._int /= static_cast<int64_t>(rhs._storage._real);
       }
     } else if (_type == REAL) {
       if (rhs._type == INT) {
+        if (rhs._storage._int == 0) {
+          CSVSQLDB_THROW(VariantException, "cannot devide by null");
+        }
         _storage._real /= rhs._storage._int;
       } else {
+        if (Approx(rhs._storage._real) == 0.0) {
+          CSVSQLDB_THROW(VariantException, "cannot devide by null");
+        }
         _storage._real /= rhs._storage._real;
       }
     }
@@ -514,7 +524,7 @@ namespace csvsqldb
       case INT:
         return _storage._int != 0;
       case REAL:
-        return csvsqldb::Approx(_storage._real) == 0.0;
+        return csvsqldb::Approx(_storage._real) != 0.0;
       case STRING:
         return _storage._string;
       case DATE:
@@ -542,12 +552,12 @@ namespace csvsqldb
 
   std::string Variant::toString() const
   {
-    if (_isNull) {
+    if (_isNull && _type != NONE) {
       return "NULL";
     }
     switch (_type) {
       case NONE:
-        return "NONE";
+        CSVSQLDB_THROW(VariantException, "Variant NONE not allowed");
       case INT:
         return std::to_string(_storage._int);
       case STRING:
