@@ -61,6 +61,7 @@ add_executable(csvsqldbtest
     valdate_test.cpp
     valdouble_test.cpp
     valint_test.cpp
+    valtime_test.cpp
     values_test.cpp
     variant_test.cpp
 
