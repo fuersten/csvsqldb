@@ -105,7 +105,11 @@ namespace csvsqldb
 
     void toStream(std::ostream& stream) const override
     {
-      stream << toString();
+      if (_isNull) {
+        stream << sNull;
+      } else {
+        stream << _val;
+      }
     }
 
     std::string toString() const override
@@ -192,7 +196,11 @@ namespace csvsqldb
 
     void toStream(std::ostream& stream) const override
     {
-      stream << toString();
+      if (_isNull) {
+        stream << sNull;
+      } else {
+        stream << std::fixed << std::showpoint << std::setprecision(6) << _val;
+      }
     }
 
     std::string toString() const override
@@ -279,7 +287,11 @@ namespace csvsqldb
 
     void toStream(std::ostream& stream) const override
     {
-      stream << toString();
+      if (_isNull) {
+        stream << sNull;
+      } else {
+        stream << _val;
+      }
     }
 
     std::string toString() const override
@@ -573,20 +585,10 @@ namespace csvsqldb
   class CSVSQLDB_EXPORT ValString : public Value
   {
   public:
-    ValString()
-    : _length(0)
-    , _val(nullptr)
-    {
-    }
+    ValString() = default;
 
-    ValString(const char* val)
-    : _length(::strlen(val))
-    , _val(val)
-    {
-    }
-
-    ValString(const char* val, size_t len)
-    : _length(len)
+    explicit ValString(const char* val)
+    : _length(val ? ::strlen(val) : 0)
     , _val(val)
     {
     }
@@ -596,11 +598,6 @@ namespace csvsqldb
       return _val == nullptr;
     }
 
-    ~ValString() override
-    {
-      delete[] _val;
-    }
-
     const char* asString() const
     {
       return _val;
@@ -608,7 +605,11 @@ namespace csvsqldb
 
     void toStream(std::ostream& stream) const override
     {
-      stream << toString();
+      if (!_val) {
+        stream << sNull;
+      } else {
+        stream << _val;
+      }
     }
 
     std::string toString() const override
@@ -635,7 +636,7 @@ namespace csvsqldb
       return STRING;
     }
 
-    size_t length() const
+    size_t getLength() const
     {
       return _length;
     }
@@ -658,12 +659,15 @@ namespace csvsqldb
 
     size_t getHash() const override
     {
+      if (!_val) {
+        return 0;
+      }
       return std::hash<const char*>()(_val);
     }
 
   private:
-    size_t _length;
-    const char* _val;
+    size_t _length{0};
+    const char* _val{nullptr};
   } __attribute__((__packed__));
 
 

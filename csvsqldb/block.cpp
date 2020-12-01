@@ -169,7 +169,8 @@ namespace csvsqldb
       if (!isNull) {
         char* psd = &_store[0] + _offset + sizeof(ValString);
         ::memcpy(psd, s, len + 1);
-        val = new (&_store[0] + _offset) ValString(psd, len);
+        psd[len] = 0;
+        val = new (&_store[0] + _offset) ValString(psd);
       } else {
         val = new (&_store[0] + _offset) ValString();
       }
@@ -376,7 +377,7 @@ namespace csvsqldb
           markValue();
           if (!value.isNull()) {
             char* psd = &_store[0] + _offset + sizeof(ValString);
-            size_t len = static_cast<const ValString&>(value).length();
+            size_t len = static_cast<const ValString&>(value).getLength();
             ::memcpy(psd, static_cast<const ValString&>(value).asString(), len + 1);
             val = new (&_store[0] + _offset) ValString(psd);
           } else {

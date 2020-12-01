@@ -137,31 +137,31 @@ TEST_CASE("Block Test", "[block]")
     auto* val = block.addString("Hello world!", 12, false);
     CHECK(dynamic_cast<csvsqldb::ValString*>(val));
     CHECK(*s1 == *val);
-    CHECK(block.offset() == sizeof(csvsqldb::ValString) + s1->length() + 2);
+    CHECK(block.offset() == sizeof(csvsqldb::ValString) + s1->getLength() + 2);
     CHECK(block.isValue(0));
 
     csvsqldb::Variant s2("Hutzli");
     val = block.addString("Hutzli", 6, false);
     CHECK(dynamic_cast<csvsqldb::ValString*>(val));
     CHECK(s2.asString() == val->toString());
-    CHECK(block.offset() == sizeof(csvsqldb::ValString) + s1->length() + 2 + sizeof(csvsqldb::ValString) + 6 + 2);
-    CHECK(block.isValue(sizeof(csvsqldb::ValString) + s1->length() + 2));
+    CHECK(block.offset() == sizeof(csvsqldb::ValString) + s1->getLength() + 2 + sizeof(csvsqldb::ValString) + 6 + 2);
+    CHECK(block.isValue(sizeof(csvsqldb::ValString) + s1->getLength() + 2));
 
     const auto* s3 = csvsqldb::ValueCreator<std::string>::createValue(std::string("Schnucki"));
     val = block.addValue(csvsqldb::Variant{"Schnucki"});
     CHECK(dynamic_cast<csvsqldb::ValString*>(val));
     CHECK(*s3 == *val);
-    CHECK(block.offset() == sizeof(csvsqldb::ValString) + s1->length() + 2 + sizeof(csvsqldb::ValString) + 6 + 2 +
-                              sizeof(csvsqldb::ValString) + s3->length() + 2);
-    CHECK(block.isValue(sizeof(csvsqldb::ValString) + s1->length() + 2 + sizeof(csvsqldb::ValString) + 6 + 2));
+    CHECK(block.offset() == sizeof(csvsqldb::ValString) + s1->getLength() + 2 + sizeof(csvsqldb::ValString) + 6 + 2 +
+                              sizeof(csvsqldb::ValString) + s3->getLength() + 2);
+    CHECK(block.isValue(sizeof(csvsqldb::ValString) + s1->getLength() + 2 + sizeof(csvsqldb::ValString) + 6 + 2));
 
     val = block.addString(nullptr, 0, true);
     CHECK(dynamic_cast<csvsqldb::ValString*>(val));
     CHECK(val->isNull());
-    CHECK(block.offset() == sizeof(csvsqldb::ValString) + s1->length() + 2 + sizeof(csvsqldb::ValString) + 6 + 2 +
-                              sizeof(csvsqldb::ValString) + s3->length() + 2 + sizeof(csvsqldb::ValString) + 2);
-    CHECK(block.isValue(sizeof(csvsqldb::ValString) + s1->length() + 2 + sizeof(csvsqldb::ValString) + 6 + 2 +
-                        sizeof(csvsqldb::ValString) + s3->length() + 2));
+    CHECK(block.offset() == sizeof(csvsqldb::ValString) + s1->getLength() + 2 + sizeof(csvsqldb::ValString) + 6 + 2 +
+                              sizeof(csvsqldb::ValString) + s3->getLength() + 2 + sizeof(csvsqldb::ValString) + 2);
+    CHECK(block.isValue(sizeof(csvsqldb::ValString) + s1->getLength() + 2 + sizeof(csvsqldb::ValString) + 6 + 2 +
+                        sizeof(csvsqldb::ValString) + s3->getLength() + 2));
   }
   SECTION("add bool")
   {

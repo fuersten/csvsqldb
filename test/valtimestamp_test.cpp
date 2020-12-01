@@ -116,7 +116,8 @@ TEST_CASE("ValTimestamp Test", "[values]")
 
   SECTION("to string")
   {
-    CHECK("1983-05-05T08:35:55" == csvsqldb::ValTimestamp{csvsqldb::Timestamp(1983, csvsqldb::Date::May, 5, 8, 35, 55)}.toString());
+    CHECK("1983-05-05T08:35:55" ==
+          csvsqldb::ValTimestamp{csvsqldb::Timestamp(1983, csvsqldb::Date::May, 5, 8, 35, 55)}.toString());
     CHECK("NULL" == csvsqldb::ValTimestamp{}.toString());
   }
 
