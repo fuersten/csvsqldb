@@ -96,6 +96,45 @@ TEST_CASE("Values Test", "[values]")
     delete v1;
   }
 
+  SECTION("create value")
+  {
+    std::unique_ptr<csvsqldb::Value> p{csvsqldb::createValue(csvsqldb::INT, static_cast<int64_t>(4711))};
+    REQUIRE(p);
+    p.reset(csvsqldb::createValue(csvsqldb::REAL, 47.11));
+    REQUIRE(p);
+    p.reset(csvsqldb::createValue(csvsqldb::BOOLEAN, true));
+    REQUIRE(p);
+    p.reset(csvsqldb::createValue(csvsqldb::DATE, csvsqldb::Date{2020, csvsqldb::Date::December, 1}));
+    REQUIRE(p);
+    p.reset(csvsqldb::createValue(csvsqldb::TIME, csvsqldb::Time{10, 16, 45}));
+    REQUIRE(p);
+    p.reset(csvsqldb::createValue(csvsqldb::TIMESTAMP, csvsqldb::Timestamp{2020, csvsqldb::Date::December, 1, 10, 16, 45}));
+    REQUIRE(p);
+    p.reset(csvsqldb::createValue(csvsqldb::STRING, std::string("Test")));
+    REQUIRE(p);
+
+    CHECK_THROWS(csvsqldb::createValue(csvsqldb::NONE, {}));
+    CHECK_THROWS(csvsqldb::createValue(static_cast<csvsqldb::eType>(4711), {}));
+  }
+
+  SECTION("create empty value")
+  {
+    std::unique_ptr<csvsqldb::Value> p{csvsqldb::createValue(csvsqldb::INT, {})};
+    REQUIRE(p);
+    p.reset(csvsqldb::createValue(csvsqldb::REAL, {}));
+    REQUIRE(p);
+    p.reset(csvsqldb::createValue(csvsqldb::BOOLEAN, {}));
+    REQUIRE(p);
+    p.reset(csvsqldb::createValue(csvsqldb::DATE, {}));
+    REQUIRE(p);
+    p.reset(csvsqldb::createValue(csvsqldb::TIME, {}));
+    REQUIRE(p);
+    p.reset(csvsqldb::createValue(csvsqldb::TIMESTAMP, {}));
+    REQUIRE(p);
+    p.reset(csvsqldb::createValue(csvsqldb::STRING, {}));
+    REQUIRE(p);
+  }
+
   SECTION("store")
   {
     using StoreType = std::array<char, 4096>;
