@@ -46,7 +46,7 @@ TEST_CASE("ValTime Test", "[values]")
     CHECK(csvsqldb::Time{} == d.asTime());
   }
 
-  SECTION("construct from date")
+  SECTION("construct from time")
   {
     csvsqldb::ValTime d{csvsqldb::Time(20, 11, 30)};
     CHECK(csvsqldb::TIME == d.getType());
