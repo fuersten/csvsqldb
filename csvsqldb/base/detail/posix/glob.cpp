@@ -40,11 +40,29 @@
 
 namespace csvsqldb
 {
+  std::string getError(int no)
+  {
+    switch (no) {
+      case WRDE_BADCHAR:
+        return "Illegal char in pattern";
+      case WRDE_BADVAL:
+        return "Undefined variable reference";
+      case WRDE_CMDSUB:
+        return "Command substitution occurred";
+      case WRDE_NOSPACE:
+        return "Out of memory";
+      case WRDE_SYNTAX:
+        return "Shell syntax error";
+    }
+    return "Undefined error";
+  }
+
   size_t expand(const std::string& pattern, StringVector& files)
   {
     wordexp_t p;
-    if (wordexp(pattern.c_str(), &p, 0) != 0) {
-      CSVSQLDB_THROW(csvsqldb::Exception, "could not expand word: " << csvsqldb::errnoText());
+    auto res = wordexp(pattern.c_str(), &p, WRDE_UNDEF | WRDE_NOCMD);
+    if (res != 0) {
+      CSVSQLDB_THROW(csvsqldb::Exception, "could not expand word: " << getError(res));
     }
     for (size_t i = 0; i < p.we_wordc; ++i) {
       files.push_back(p.we_wordv[i]);
