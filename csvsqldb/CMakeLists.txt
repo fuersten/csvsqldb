@@ -115,6 +115,7 @@ set(LIB_CSVSQLDB_BASE_HEADERS
 set(LIB_CSVSQLDB_COMPAT_HEADERS
     compat/get_time.h
     compat/put_time.h
+    compat/time_api.h
 )
 
 if(NOT APPLE AND UNIX)

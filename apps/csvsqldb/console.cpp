@@ -49,12 +49,12 @@ namespace csvsqldb
   , _stop(false)
   {
     linenoiseHistorySetMaxLen(historyLength);
-    linenoiseHistoryLoad(_historyPath.c_str());
+    linenoiseHistoryLoad(_historyPath.string().c_str());
   }
 
   Console::~Console()
   {
-    linenoiseHistorySave(_historyPath.c_str());
+    linenoiseHistorySave(_historyPath.string().c_str());
     linenoiseHistoryFree();
   }
 

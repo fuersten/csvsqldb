@@ -35,6 +35,7 @@
 
 #include "compat/get_time.h"
 #include "compat/put_time.h"
+#include "compat/time_api.h"
 
 #include <iomanip>
 #include <sstream>

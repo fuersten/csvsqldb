@@ -38,6 +38,7 @@
 #include <csvsqldb/base/exception.h>
 #include <csvsqldb/base/types.h>
 #include <csvsqldb/compat/put_time.h>
+#include <csvsqldb/compat/time_api.h>
 
 #include <algorithm>
 #include <cctype>
