@@ -75,7 +75,8 @@ namespace csvsqldb
     return lhs % rhs;
   }
 
-  static double op_mod(const double& lhs, const double& rhs)
+  template<>
+  double op_mod(const double& lhs, const double& rhs)
   {
     return std::fmod(lhs, rhs);
   }

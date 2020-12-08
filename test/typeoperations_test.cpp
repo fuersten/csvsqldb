@@ -36,32 +36,161 @@
 
 #include <catch2/catch.hpp>
 
+namespace
+{
+  struct Expected
+  {
+    bool _first{true};
+    bool _second{false};
+  };
+
+  void executeOperation(const std::vector<csvsqldb::Variant>& values, csvsqldb::eOperationType op, Expected expected)
+  {
+    csvsqldb::Variant result;
+    csvsqldb::Variant lhs;
+    csvsqldb::Variant rhs;
+
+    auto iter = values.begin();
+    while (iter != values.end()) {
+      lhs = *iter++;
+      rhs = *iter++;
+      result = binaryOperation(op, lhs, rhs);
+      CHECK(csvsqldb::BOOLEAN == result.getType());
+      if (expected._first) {
+        CHECK(result.asBool());
+      } else {
+        CHECK_FALSE(result.asBool());
+      }
+
+      if (iter == values.end()) {
+        break;
+      }
+
+      lhs = *iter++;
+      rhs = *iter++;
+      result = binaryOperation(op, lhs, rhs);
+      CHECK(csvsqldb::BOOLEAN == result.getType());
+      if (expected._second) {
+        CHECK(result.asBool());
+      } else {
+        CHECK_FALSE(result.asBool());
+      }
+    }
+  }
+}
+
 
 TEST_CASE("Type operations Test", "[operations]")
 {
-  SECTION("operations")
+  SECTION("add operations")
   {
-    csvsqldb::Variant lhs(4711);
-    csvsqldb::Variant rhs(815);
-
-    csvsqldb::Variant result = binaryOperation(csvsqldb::OP_ADD, lhs, rhs);
+    csvsqldb::Variant result = binaryOperation(csvsqldb::OP_ADD, csvsqldb::Variant{4711}, csvsqldb::Variant{815});
     CHECK(csvsqldb::INT == result.getType());
     CHECK(5526 == result.asInt());
 
-    csvsqldb::Variant lhs1(4711.0);
-    csvsqldb::Variant rhs1(815.0);
+    result = binaryOperation(csvsqldb::OP_ADD, csvsqldb::Variant{4711.0}, csvsqldb::Variant{815.0});
+    CHECK(csvsqldb::REAL == result.getType());
+    CHECK(5526.0 == Approx(result.asDouble()));
 
-    csvsqldb::Variant result1 = binaryOperation(csvsqldb::OP_ADD, lhs1, rhs1);
-    CHECK(csvsqldb::REAL == result1.getType());
-    CHECK(5526.0 == Approx(result1.asDouble()));
+    result = binaryOperation(csvsqldb::OP_ADD, csvsqldb::Variant{4711.0}, csvsqldb::Variant{815});
+    CHECK(csvsqldb::REAL == result.getType());
+    CHECK(5526.0 == Approx(result.asDouble()));
 
-    result1 = binaryOperation(csvsqldb::OP_ADD, lhs1, rhs);
-    CHECK(csvsqldb::REAL == result1.getType());
-    CHECK(5526.0 == Approx(result1.asDouble()));
+    result = binaryOperation(csvsqldb::OP_ADD, csvsqldb::Variant{815}, csvsqldb::Variant{4711.0});
+    CHECK(csvsqldb::REAL == result.getType());
+    CHECK(5526.0 == Approx(result.asDouble()));
+  }
 
-    result1 = binaryOperation(csvsqldb::OP_ADD, lhs, rhs1);
-    CHECK(csvsqldb::REAL == result1.getType());
-    CHECK(5526.0 == Approx(result1.asDouble()));
+  SECTION("sub operations")
+  {
+    csvsqldb::Variant result = binaryOperation(csvsqldb::OP_SUB, csvsqldb::Variant{4711}, csvsqldb::Variant{815});
+    CHECK(csvsqldb::INT == result.getType());
+    CHECK(3896 == result.asInt());
+
+    result = binaryOperation(csvsqldb::OP_SUB, csvsqldb::Variant{4711.0}, csvsqldb::Variant{815.0});
+    CHECK(csvsqldb::REAL == result.getType());
+    CHECK(3896.0 == Approx(result.asDouble()));
+
+    result = binaryOperation(csvsqldb::OP_SUB, csvsqldb::Variant{4711.0}, csvsqldb::Variant{815});
+    CHECK(csvsqldb::REAL == result.getType());
+    CHECK(3896.0 == Approx(result.asDouble()));
+
+    result = binaryOperation(csvsqldb::OP_SUB, csvsqldb::Variant{815}, csvsqldb::Variant{4711.0});
+    CHECK(csvsqldb::REAL == result.getType());
+    CHECK(-3896.0 == Approx(result.asDouble()));
+
+    result = binaryOperation(csvsqldb::OP_SUB, csvsqldb::Variant{csvsqldb::Date{2020, csvsqldb::Date::December, 2}},
+                             csvsqldb::Variant{csvsqldb::Date{2020, csvsqldb::Date::November, 20}});
+    CHECK(csvsqldb::INT == result.getType());
+    CHECK(12 == result.asInt());
+
+    result =
+      binaryOperation(csvsqldb::OP_SUB, csvsqldb::Variant{csvsqldb::Time{20, 0, 0}}, csvsqldb::Variant{csvsqldb::Time{10, 0, 0}});
+    CHECK(csvsqldb::INT == result.getType());
+    CHECK(36000000 == result.asInt());
+
+    result =
+      binaryOperation(csvsqldb::OP_SUB, csvsqldb::Variant{csvsqldb::Timestamp{2020, csvsqldb::Date::December, 2, 20, 0, 0}},
+                      csvsqldb::Variant{csvsqldb::Timestamp{2020, csvsqldb::Date::November, 20, 10, 0, 0}});
+    CHECK(csvsqldb::INT == result.getType());
+    CHECK(1072800 == result.asInt());
+  }
+
+  SECTION("mul operations")
+  {
+    csvsqldb::Variant result = binaryOperation(csvsqldb::OP_MUL, csvsqldb::Variant{4711}, csvsqldb::Variant{10});
+    CHECK(csvsqldb::INT == result.getType());
+    CHECK(47110 == result.asInt());
+
+    result = binaryOperation(csvsqldb::OP_MUL, csvsqldb::Variant{4711.0}, csvsqldb::Variant{10.0});
+    CHECK(csvsqldb::REAL == result.getType());
+    CHECK(47110.0 == Approx(result.asDouble()));
+
+    result = binaryOperation(csvsqldb::OP_MUL, csvsqldb::Variant{4711.0}, csvsqldb::Variant{10});
+    CHECK(csvsqldb::REAL == result.getType());
+    CHECK(47110.0 == Approx(result.asDouble()));
+
+    result = binaryOperation(csvsqldb::OP_MUL, csvsqldb::Variant{4711}, csvsqldb::Variant{10.0});
+    CHECK(csvsqldb::REAL == result.getType());
+    CHECK(47110.0 == Approx(result.asDouble()));
+  }
+
+  SECTION("div operations")
+  {
+    csvsqldb::Variant result = binaryOperation(csvsqldb::OP_DIV, csvsqldb::Variant{4711}, csvsqldb::Variant{10});
+    CHECK(csvsqldb::INT == result.getType());
+    CHECK(471 == result.asInt());
+
+    result = binaryOperation(csvsqldb::OP_DIV, csvsqldb::Variant{4711.0}, csvsqldb::Variant{10.0});
+    CHECK(csvsqldb::REAL == result.getType());
+    CHECK(471.1 == Approx(result.asDouble()));
+
+    result = binaryOperation(csvsqldb::OP_DIV, csvsqldb::Variant{4711.0}, csvsqldb::Variant{10});
+    CHECK(csvsqldb::REAL == result.getType());
+    CHECK(471.1 == Approx(result.asDouble()));
+
+    result = binaryOperation(csvsqldb::OP_DIV, csvsqldb::Variant{4711}, csvsqldb::Variant{10.0});
+    CHECK(csvsqldb::REAL == result.getType());
+    CHECK(471.1 == Approx(result.asDouble()));
+  }
+
+  SECTION("mod operations")
+  {
+    csvsqldb::Variant result = binaryOperation(csvsqldb::OP_MOD, csvsqldb::Variant{4711}, csvsqldb::Variant{9});
+    CHECK(csvsqldb::INT == result.getType());
+    CHECK(4 == result.asInt());
+
+    result = binaryOperation(csvsqldb::OP_MOD, csvsqldb::Variant{4711.0}, csvsqldb::Variant{9.0});
+    CHECK(csvsqldb::REAL == result.getType());
+    CHECK(4.0 == Approx(result.asDouble()));
+
+    result = binaryOperation(csvsqldb::OP_MOD, csvsqldb::Variant{4711.0}, csvsqldb::Variant{9});
+    CHECK(csvsqldb::REAL == result.getType());
+    CHECK(4.0 == Approx(result.asDouble()));
+
+    result = binaryOperation(csvsqldb::OP_MOD, csvsqldb::Variant{4711}, csvsqldb::Variant{9.0});
+    CHECK(csvsqldb::REAL == result.getType());
+    CHECK(4.0 == Approx(result.asDouble()));
   }
 
   SECTION("value concat")
@@ -69,17 +198,17 @@ TEST_CASE("Type operations Test", "[operations]")
     csvsqldb::Variant i(4711);
     csvsqldb::Variant d(47.11);
 
-    csvsqldb::Variant ret = binaryOperation(csvsqldb::OP_ADD, i, d);
-    CHECK("4758.110000" == ret.toString());
+    csvsqldb::Variant result = binaryOperation(csvsqldb::OP_ADD, i, d);
+    CHECK("4758.110000" == result.toString());
 
     csvsqldb::Variant s1(std::string("Lars "));
     csvsqldb::Variant s2(std::string("Fürstenberg"));
 
-    csvsqldb::Variant result = binaryOperation(csvsqldb::OP_CONCAT, s1, s2);
+    result = binaryOperation(csvsqldb::OP_CONCAT, s1, s2);
     CHECK("Lars Fürstenberg" == result.toString());
 
-    csvsqldb::Variant ret2 = binaryOperation(csvsqldb::OP_CONCAT, d, result);
-    CHECK("Lars Fürstenberg47.110000" == ret2.toString());
+    result = binaryOperation(csvsqldb::OP_CONCAT, d, result);
+    CHECK("Lars Fürstenberg47.110000" == result.toString());
 
     csvsqldb::Variant t(csvsqldb::Time(8, 9, 11));
     s1 = "The time is ";
@@ -181,25 +310,100 @@ TEST_CASE("Type operations Test", "[operations]")
     CHECK(csvsqldb::BOOLEAN == result.getType());
     CHECK(result.isNull());
   }
+}
 
-  SECTION("compare operations")
+TEST_CASE("Type compare operations Test", "[operations]")
+{
+  // clang-format off
+  std::vector<csvsqldb::Variant> values{
+    4711, 9,
+    9, 4711,
+    4711.0, 9.0,
+    9.0, 4711.0,
+    4711.0, 9,
+    9.0, 4711,
+    4711, 9.0,
+    9, 4711.0,
+    "Test", "Check",
+    "Check", "Test",
+    csvsqldb::Date{2020, csvsqldb::Date::December, 3}, csvsqldb::Date{2020, csvsqldb::Date::November, 3},
+    csvsqldb::Date{2020, csvsqldb::Date::November, 3}, csvsqldb::Date{2020, csvsqldb::Date::December, 3},
+    csvsqldb::Date{2020, csvsqldb::Date::December, 3}, "2020-11-03",
+    "2020-11-03", csvsqldb::Date{2020, csvsqldb::Date::December, 3},
+    csvsqldb::Time{18, 56, 13}, csvsqldb::Time{9, 46, 5},
+    csvsqldb::Time{9, 46, 5}, csvsqldb::Time{18, 56, 13},
+    csvsqldb::Time{18, 56, 13}, "09:46:05",
+    "09:46:05", csvsqldb::Time{18, 56, 13},
+    csvsqldb::Timestamp{2020, csvsqldb::Date::December, 3, 18, 56, 13}, csvsqldb::Timestamp{2020, csvsqldb::Date::November, 3, 18, 56, 13},
+    csvsqldb::Timestamp{2020, csvsqldb::Date::November, 3, 18, 56, 13}, csvsqldb::Timestamp{2020, csvsqldb::Date::December, 3, 18, 56, 13},
+    "2020-12-03T18:56:13", csvsqldb::Timestamp{2020, csvsqldb::Date::November, 3, 18, 56, 13},
+    csvsqldb::Timestamp{2020, csvsqldb::Date::November, 3, 18, 56, 13}, "2020-12-03T18:56:13"};
+  // clang-format on
+
+  // clang-format off
+  std::vector<csvsqldb::Variant> eq_values{
+    true, true,
+    true, false,
+    false, false,
+    false, true,
+    true, 4711,
+    false, 4711,
+    false, 0,
+    true, 0,
+    4711, true,
+    4711, false,
+    0, false,
+    0, true,
+    true, 47.11,
+    false, 47.11,
+    false, 0.0,
+    true, 0.0,
+    47.11, true,
+    47.11, false,
+    0.0, false,
+    0.0, true,
+    4711, 4711,
+    9, 4711,
+    4711, 4711.0,
+    9, 47.11,
+    4711, 4711.0,
+    9.0, 4711,
+    47.11, 47.11,
+    9.0, 47.11,
+    "Check", "Check",
+    "Check", "Test",
+    "", "",
+    "", "Test",
+    csvsqldb::Date{2020, csvsqldb::Date::December, 3}, csvsqldb::Date{2020, csvsqldb::Date::December, 3},
+    csvsqldb::Date{2020, csvsqldb::Date::November, 3}, csvsqldb::Date{2020, csvsqldb::Date::December, 3},
+    csvsqldb::Date{2020, csvsqldb::Date::December, 3}, "2020-12-03",
+    csvsqldb::Date{2020, csvsqldb::Date::December, 3}, "2020-11-03",
+    "2020-12-03", csvsqldb::Date{2020, csvsqldb::Date::December, 3},
+    "2020-11-03", csvsqldb::Date{2020, csvsqldb::Date::December, 3},
+  };
+  // clang-format on
+
+  SECTION("gt operations")
   {
-    csvsqldb::Variant lhs(csvsqldb::Time(8, 9, 11));
-    csvsqldb::Variant lhs2("08:09:11");
-    csvsqldb::Variant rhs(csvsqldb::Time(12, 0, 0));
-    csvsqldb::Variant rhs2("12:00:00");
+    Expected expected{true, false};
+    executeOperation(values, csvsqldb::OP_GT, expected);
+  }
 
-    csvsqldb::Variant result = binaryOperation(csvsqldb::OP_GT, lhs, rhs);
-    CHECK_FALSE(result.asBool());
-    result = binaryOperation(csvsqldb::OP_GT, rhs, lhs);
-    CHECK(result.asBool());
-    result = binaryOperation(csvsqldb::OP_GT, rhs2, lhs);
-    CHECK(result.asBool());
-    result = binaryOperation(csvsqldb::OP_LT, lhs, rhs);
-    CHECK(result.asBool());
-    result = binaryOperation(csvsqldb::OP_EQ, lhs, lhs);
-    CHECK(result.asBool());
-    result = binaryOperation(csvsqldb::OP_EQ, lhs, lhs2);
-    CHECK(result.asBool());
+  SECTION("lt operations")
+  {
+    Expected expected{false, true};
+    executeOperation(values, csvsqldb::OP_LT, expected);
+  }
+
+  SECTION("eq operations")
+  {
+    Expected expected{true, false};
+    executeOperation(eq_values, csvsqldb::OP_EQ, expected);
+  }
+
+  SECTION("neq operations")
+  {
+    Expected expected{false, true};
+    executeOperation(eq_values, csvsqldb::OP_NEQ, expected);
   }
 }
