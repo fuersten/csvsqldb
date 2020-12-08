@@ -41,7 +41,6 @@
 #include <csvsqldb/base/types.h>
 
 
-
 namespace csvsqldb
 {
   /**

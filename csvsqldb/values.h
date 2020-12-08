@@ -78,7 +78,7 @@ namespace csvsqldb
   };
 
 
-  #pragma pack(push,1)
+#pragma pack(push, 1)
   class CSVSQLDB_EXPORT ValInt : public Value
   {
   public:
@@ -162,10 +162,10 @@ namespace csvsqldb
     int64_t _val;
     bool _isNull;
   };
-  #pragma pack(pop)
+#pragma pack(pop)
 
 
-  #pragma pack(push, 1)
+#pragma pack(push, 1)
   class CSVSQLDB_EXPORT ValDouble : public Value
   {
   public:
@@ -255,10 +255,10 @@ namespace csvsqldb
     double _val;
     bool _isNull;
   };
-  #pragma pack(pop)
+#pragma pack(pop)
 
 
-  #pragma pack(push, 1)
+#pragma pack(push, 1)
   class CSVSQLDB_EXPORT ValBool : public Value
   {
   public:
@@ -348,10 +348,10 @@ namespace csvsqldb
     bool _val;
     bool _isNull;
   };
-  #pragma pack(pop)
+#pragma pack(pop)
 
 
-  #pragma pack(push, 1)
+#pragma pack(push, 1)
   class CSVSQLDB_EXPORT ValDate : public Value
   {
   public:
@@ -427,10 +427,10 @@ namespace csvsqldb
   private:
     csvsqldb::Date _val;
   };
-  #pragma pack(pop)
+#pragma pack(pop)
 
 
-  #pragma pack(push, 1)
+#pragma pack(push, 1)
   class CSVSQLDB_EXPORT ValTime : public Value
   {
   public:
@@ -509,10 +509,10 @@ namespace csvsqldb
     csvsqldb::Time _val;
     bool _isNull;
   };
-  #pragma pack(pop)
+#pragma pack(pop)
 
 
-  #pragma pack(push, 1)
+#pragma pack(push, 1)
   class CSVSQLDB_EXPORT ValTimestamp : public Value
   {
   public:
@@ -591,10 +591,10 @@ namespace csvsqldb
     csvsqldb::Timestamp _val;
     bool _isNull;
   };
-  #pragma pack(pop)
+#pragma pack(pop)
 
 
-  #pragma pack(push, 1)
+#pragma pack(push, 1)
   class CSVSQLDB_EXPORT ValString : public Value
   {
   public:
@@ -682,7 +682,7 @@ namespace csvsqldb
     size_t _length{0};
     const char* _val{nullptr};
   };
-  #pragma pack(pop)
+#pragma pack(pop)
 
 
   CSVSQLDB_EXPORT Value* createValue(eType type, const std::any& value);

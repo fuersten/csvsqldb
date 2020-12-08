@@ -41,11 +41,11 @@
 
 namespace csvsqldb
 {
-  /** This class represents a specific daytime. The time is represented by
-   *  the hour, minute and second. The hour is represented on a 24 hour per day
-   *  base.
-   */
-  #pragma pack(push,1)
+/** This class represents a specific daytime. The time is represented by
+ *  the hour, minute and second. The hour is represented on a 24 hour per day
+ *  base.
+ */
+#pragma pack(push, 1)
   class CSVSQLDB_EXPORT Time
   {
   public:
@@ -111,7 +111,7 @@ namespace csvsqldb
 
     /** Returns the milliseconds of the time difference between the two times.
      * @param time The Time to subtract
-     * @return The difference between the this time and the given one in milliseconds
+     * @return The difference between this time and the given one in milliseconds
      */
     int32_t operator-(const Time& time) const;
 
@@ -254,5 +254,5 @@ namespace csvsqldb
   private:
     int32_t _time{0};
   };
-  #pragma pack(pop)
+#pragma pack(pop)
 }

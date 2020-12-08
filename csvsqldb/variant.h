@@ -77,7 +77,7 @@ namespace csvsqldb
   };
 
 
-  #pragma pack(push, 1)
+#pragma pack(push, 1)
   class CSVSQLDB_EXPORT Variant
   {
   public:
@@ -171,7 +171,7 @@ namespace csvsqldb
     eType _type{NONE};
     bool _isNull{true};
   };
-  #pragma pack(pop)
+#pragma pack(pop)
 
   using Variants = std::vector<Variant>;
 

@@ -31,10 +31,9 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-#include "compat/time_api.h"
-
 #include "time.h"
 
+#include "compat/time_api.h"
 #include "types.h"
 
 #include <iomanip>

@@ -47,12 +47,12 @@
 
 namespace csvsqldb
 {
-  /** This class represents a specific date. The date is represented by
-   *  the year, month and day. The date is based on the gregorian calendar.
-   *  Beware that most of the methods will throw a DateException, if illegal or infinite
-   *  dates are used.
-   */
-  #pragma pack(push, 1)
+/** This class represents a specific date. The date is represented by
+ *  the year, month and day. The date is based on the gregorian calendar.
+ *  Beware that most of the methods will throw a DateException, if illegal or infinite
+ *  dates are used.
+ */
+#pragma pack(push, 1)
   class CSVSQLDB_EXPORT Date
   {
   public:

@@ -31,9 +31,8 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-#include <base/signalhandler.h>
-
 #include <algorithm>
+#include <base/signalhandler.h>
 #include <map>
 #include <mutex>
 #include <thread>

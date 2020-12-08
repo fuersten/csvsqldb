@@ -45,12 +45,12 @@
 
 namespace csvsqldb
 {
-  /** This class represents a specific timestamp. The timestamp is represented by
-   *  the year, month, day, hour, minute, second and milliseconds. The timestamps date is based on the gregorian calendar.
-   *  Beware that most of the methods will throw a TimestampException, if illegal or infinite
-   *  dates are used.
-   */
-  #pragma pack(push, 1)
+/** This class represents a specific timestamp. The timestamp is represented by
+ *  the year, month, day, hour, minute, second and milliseconds. The timestamps date is based on the gregorian calendar.
+ *  Beware that most of the methods will throw a TimestampException, if illegal or infinite
+ *  dates are used.
+ */
+#pragma pack(push, 1)
   class CSVSQLDB_EXPORT Timestamp
   {
   public:
@@ -144,7 +144,7 @@ namespace csvsqldb
 
     /** Returns the seconds of the time difference between the two timestamps.
      * @param timestamp The timestamp to subtract
-     * @return The difference between the this timestamp and the given one in seconds
+     * @return The difference between this timestamp and the given one in seconds
      */
     int64_t operator-(const Timestamp& timestamp) const;
 
@@ -318,5 +318,5 @@ namespace csvsqldb
                                uint16_t& second, uint16_t& millisecond);
     int64_t _time{0};
   };
-  #pragma pack(pop)
+#pragma pack(pop)
 }
