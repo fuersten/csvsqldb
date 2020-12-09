@@ -389,7 +389,19 @@ TEST_CASE("Type compare operations Test", "[operations]")
     executeOperation(values, csvsqldb::OP_GT, expected);
   }
 
+  SECTION("ge operations")
+  {
+    Expected expected{true, false};
+    executeOperation(values, csvsqldb::OP_GE, expected);
+  }
+
   SECTION("lt operations")
+  {
+    Expected expected{false, true};
+    executeOperation(values, csvsqldb::OP_LT, expected);
+  }
+
+  SECTION("le operations")
   {
     Expected expected{false, true};
     executeOperation(values, csvsqldb::OP_LT, expected);
