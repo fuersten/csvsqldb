@@ -36,7 +36,23 @@ jobs:
       - name: build
         run: cmake --build build
       - name: test
-        run: cd build && ctest
+        run: |
+          cd build
+          ctest
+          files=`find . -name "*.gcda" | xargs`
+          gcov -f -b $files
+
+      - name: lcov-action
+        uses: danielealbano/lcov-action@v1
+        with:
+          remove_patterns: /usr/include,test,_deps
+          output_lcov_info: ./coverage.info
+
+      - name: Coveralls
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path-to-lcov: ./coverage.info
 
   build-macos:
     runs-on: macOS-latest
