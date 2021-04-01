@@ -45,7 +45,7 @@ jobs:
       - name: lcov-action
         uses: danielealbano/lcov-action@v1
         with:
-          remove_patterns: /usr/include,test,_deps
+          remove_patterns: /usr/include,test,thirdparty
           output_lcov_info: ./coverage.info
 
       - name: Coveralls
