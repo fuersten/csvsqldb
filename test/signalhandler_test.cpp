@@ -44,18 +44,17 @@
 
 namespace
 {
-  static std::mutex _test_mutex;
   static std::condition_variable _test_condition;
 
-  class HandlerTester : public csvsqldb::SignalEventHandler
+  class TestHandler : public csvsqldb::SignalEventHandler
   {
   public:
-    HandlerTester()
+    TestHandler()
     : _signalSet(false)
     {
     }
 
-    virtual int onSignal(int signum)
+    int onSignal(int signum) override
     {
       if (signum == SIGINT) {
         _signalSet = true;
@@ -66,22 +65,90 @@ namespace
 
     bool _signalSet;
   };
+
+  class CountHandler : public csvsqldb::SignalEventHandler
+  {
+  public:
+    CountHandler(int ret)
+    : _ret{ret}
+    {}
+
+    int onSignal(int signum) override
+    {
+      _counter++;
+      _test_condition.notify_one();
+      return _ret;
+    }
+
+    int _counter{0};
+    int _ret;
+  };
 }
 
 
 TEST_CASE("Signalhandler Test", "[utils]")
 {
-  SECTION("signal handler")
+  csvsqldb::SignalHandler sighandler;
+  std::mutex test_mutex;
+
+  SECTION("add and get handler")
   {
-    csvsqldb::SignalHandler sighandler;
-    HandlerTester tester;
+    CountHandler handler{0};
+    TestHandler testHandler;
+
+    sighandler.addHandler(SIGINT, &handler);
+    sighandler.addHandler(SIGTERM, &testHandler);
+    CHECK(sighandler.handler(SIGINT).size() == 1);
+    CHECK(sighandler.handler(SIGTERM).size() == 1);
+    sighandler.addHandler(SIGTERM, &handler);
+    CHECK(sighandler.handler(SIGTERM).size() == 2);
+    CHECK(sighandler.handler(SIGALRM).empty());
+
+    sighandler.removeHandler(SIGINT, &handler);
+    CHECK(sighandler.handler(SIGINT).empty());
+    
+    CHECK(sighandler.handler(SIGQUIT).empty());
+  }
+  SECTION("simple signal handler")
+  {
+    TestHandler tester;
     csvsqldb::SetUpSignalEventHandler guard(SIGINT, &sighandler, &tester);
 
     ::kill(getpid(), SIGINT);
 
-    std::unique_lock condition_guard(_test_mutex);
+    std::unique_lock condition_guard(test_mutex);
     _test_condition.wait_for(condition_guard, std::chrono::milliseconds(150), [&] { return tester._signalSet == true; });
 
     CHECK(tester._signalSet);
+  }
+  SECTION("add multiple handler and execute")
+  {
+    CountHandler handler1{0};
+    CountHandler handler2{0};
+
+    sighandler.addHandler(SIGINT, &handler1);
+    sighandler.addHandler(SIGINT, &handler2);
+
+    ::kill(getpid(), SIGINT);
+
+    std::unique_lock condition_guard(test_mutex);
+    _test_condition.wait_for(condition_guard, std::chrono::milliseconds(150), [&] { return handler1._counter > 0 && handler2._counter > 0; });
+
+    CHECK((handler1._counter > 0 && handler2._counter > 0));
+  }
+  SECTION("add multiple handler and execute one")
+  {
+    CountHandler handler1{-1};
+    CountHandler handler2{0};
+
+    sighandler.addHandler(SIGINT, &handler1);
+    sighandler.addHandler(SIGINT, &handler2);
+
+    ::kill(getpid(), SIGINT);
+
+    std::unique_lock condition_guard(test_mutex);
+    _test_condition.wait_for(condition_guard, std::chrono::milliseconds(150), [&] { return handler1._counter > 0; });
+
+    CHECK((handler1._counter > 0 && handler2._counter == 0));
   }
 }

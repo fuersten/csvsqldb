@@ -184,6 +184,38 @@ TEST_CASE("Duration Test", "[duration]")
     CHECK(d3 > d2);
     CHECK(d1 > d3);
     CHECK(d1 == d1);
+
+    CHECK(csvsqldb::Duration(3, 2, 90, 17, 6, 45) > csvsqldb::Duration(3, 2, 90, 17, 6, 45, csvsqldb::Duration::Negative));
+    CHECK_FALSE(csvsqldb::Duration(3, 2, 90, 17, 6, 45, csvsqldb::Duration::Negative) > csvsqldb::Duration(3, 2, 90, 17, 6, 45));
+
+    CHECK(csvsqldb::Duration(3, 2, 90, 17, 6, 45) > csvsqldb::Duration(2, 2, 90, 17, 6, 45));
+    CHECK_FALSE(csvsqldb::Duration(2, 2, 90, 17, 6, 45) > csvsqldb::Duration(3, 2, 90, 17, 6, 45));
+    CHECK(csvsqldb::Duration(3, 2, 90, 17, 6, 45) > csvsqldb::Duration(3, 1, 90, 17, 6, 45));
+    CHECK_FALSE(csvsqldb::Duration(3, 1, 90, 17, 6, 45) > csvsqldb::Duration(3, 2, 90, 17, 6, 45));
+    CHECK(csvsqldb::Duration(3, 2, 90, 17, 6, 45) > csvsqldb::Duration(3, 2, 89, 17, 6, 45));
+    CHECK_FALSE(csvsqldb::Duration(3, 2, 89, 17, 6, 45) > csvsqldb::Duration(3, 2, 90, 17, 6, 45));
+    CHECK(csvsqldb::Duration(3, 2, 90, 17, 6, 45) > csvsqldb::Duration(3, 2, 90, 16, 6, 45));
+    CHECK_FALSE(csvsqldb::Duration(3, 2, 90, 16, 6, 45) > csvsqldb::Duration(3, 2, 90, 17, 6, 45));
+    CHECK(csvsqldb::Duration(3, 2, 90, 17, 6, 45) > csvsqldb::Duration(3, 2, 90, 17, 5, 45));
+    CHECK_FALSE(csvsqldb::Duration(3, 2, 90, 17, 5, 45) > csvsqldb::Duration(3, 2, 90, 17, 6, 45));
+    CHECK(csvsqldb::Duration(3, 2, 90, 17, 6, 45) > csvsqldb::Duration(3, 2, 90, 17, 6, 44));
+    CHECK_FALSE(csvsqldb::Duration(3, 2, 90, 17, 6, 44) > csvsqldb::Duration(3, 2, 90, 17, 6, 45));
+
+    CHECK_FALSE(csvsqldb::Duration(3, 2, 90, 17, 6, 45) < csvsqldb::Duration(3, 2, 90, 17, 6, 45, csvsqldb::Duration::Negative));
+    CHECK(csvsqldb::Duration(3, 2, 90, 17, 6, 45, csvsqldb::Duration::Negative) < csvsqldb::Duration(3, 2, 90, 17, 6, 45));
+
+    CHECK_FALSE(csvsqldb::Duration(3, 2, 90, 17, 6, 45) < csvsqldb::Duration(2, 2, 90, 17, 6, 45));
+    CHECK(csvsqldb::Duration(2, 2, 90, 17, 6, 45) < csvsqldb::Duration(3, 2, 90, 17, 6, 45));
+    CHECK_FALSE(csvsqldb::Duration(3, 2, 90, 17, 6, 45) < csvsqldb::Duration(3, 1, 90, 17, 6, 45));
+    CHECK(csvsqldb::Duration(3, 1, 90, 17, 6, 45) < csvsqldb::Duration(3, 2, 90, 17, 6, 45));
+    CHECK_FALSE(csvsqldb::Duration(3, 2, 90, 17, 6, 45) < csvsqldb::Duration(3, 2, 89, 17, 6, 45));
+    CHECK(csvsqldb::Duration(3, 2, 89, 17, 6, 45) < csvsqldb::Duration(3, 2, 90, 17, 6, 45));
+    CHECK_FALSE(csvsqldb::Duration(3, 2, 90, 17, 6, 45) < csvsqldb::Duration(3, 2, 90, 16, 6, 45));
+    CHECK(csvsqldb::Duration(3, 2, 90, 16, 6, 45) < csvsqldb::Duration(3, 2, 90, 17, 6, 45));
+    CHECK_FALSE(csvsqldb::Duration(3, 2, 90, 17, 6, 45) < csvsqldb::Duration(3, 2, 90, 17, 5, 45));
+    CHECK(csvsqldb::Duration(3, 2, 90, 17, 5, 45) < csvsqldb::Duration(3, 2, 90, 17, 6, 45));
+    CHECK_FALSE(csvsqldb::Duration(3, 2, 90, 17, 6, 45) < csvsqldb::Duration(3, 2, 90, 17, 6, 44));
+    CHECK(csvsqldb::Duration(3, 2, 90, 17, 6, 44) < csvsqldb::Duration(3, 2, 90, 17, 6, 45));
   }
 
   SECTION("format")

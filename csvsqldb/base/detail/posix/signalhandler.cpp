@@ -171,7 +171,7 @@ namespace csvsqldb
 
     auto iter = _p->_handlerMap.find(signum);
     if (iter != _p->_handlerMap.end()) {
-      std::remove(iter->second.begin(), iter->second.end(), handler);
+      iter->second.remove(handler);
     }
   }
 
