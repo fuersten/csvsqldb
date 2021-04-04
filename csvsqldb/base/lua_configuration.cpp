@@ -44,7 +44,7 @@ namespace csvsqldb
   namespace fs = std::filesystem;
 
   struct LuaConfiguration::Private {
-    Private(const std::string& configFile)
+    Private(const fs::path& configFile)
     {
       if (fs::exists(configFile)) {
         try {
@@ -60,7 +60,7 @@ namespace csvsqldb
     luaengine::LuaEngine _lua;
   };
 
-  LuaConfiguration::LuaConfiguration(const std::string& configFile)
+  LuaConfiguration::LuaConfiguration(const std::filesystem::path& configFile)
   : _p(new Private(configFile))
   {
   }

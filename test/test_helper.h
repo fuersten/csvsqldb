@@ -49,7 +49,7 @@ public:
   {
     flush();
 
-    _file.open(CSVSQLDB_TEST_PATH / std::filesystem::path{"stdout.txt"}, std::ios::out);
+    _file.open(getTestPath() / std::filesystem::path{"stdout.txt"}, std::ios::out);
 
     if (!_file) {
       csvsqldb::throwSysError("RedirectStdOut");
@@ -82,7 +82,7 @@ public:
   {
     flush();
 
-    _file.open(CSVSQLDB_TEST_PATH / std::filesystem::path{ "stderr.txt" }, std::ios::out);
+    _file.open(getTestPath() / std::filesystem::path{ "stderr.txt" }, std::ios::out);
 
     if (!_file) {
         csvsqldb::throwSysError("RedirectStdErr");

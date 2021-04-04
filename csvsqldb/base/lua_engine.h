@@ -38,6 +38,7 @@
 #include <csvsqldb/base/function_traits.h>
 #include <csvsqldb/base/string_helper.h>
 
+#include <filesystem>
 #include <map>
 #include <typeinfo>
 
@@ -466,9 +467,9 @@ namespace csvsqldb
        * Throws a std::runtime_error if an error occurs.
        * @param script Script to read in and process
        */
-      void doFile(const std::string& script)
+      void doFile(const std::filesystem::path& script)
       {
-        if (luaL_loadfile(_L, script.c_str())) {
+        if (luaL_loadfile(_L, script.string().c_str())) {
           std::string err(lua_tostring(_L, -1));
           lua_pop(_L, 2);
           throw std::runtime_error(err);

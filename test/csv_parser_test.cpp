@@ -143,7 +143,7 @@ namespace
 
   void checkLog(const std::string& message)
   {
-    std::ifstream log((CSVSQLDB_TEST_PATH + std::string("/stderr.txt")));
+    std::ifstream log(getTestPath() / "stderr.txt");
     CHECK(true == log.good());
     std::string line;
     CHECK(std::getline(log, line).good());
@@ -180,7 +180,7 @@ TEST_CASE("CSV Parser Test", "[csv]")
     types.push_back(csvsqldb::csv::LONG);
 
     context._skipFirstLine = false;
-    std::fstream csvfile(CSVSQLDB_TEST_PATH + std::string("/testdata/csv/test.csv"));
+    std::fstream csvfile(getTestPath() / "testdata" / "csv" / "test.csv");
     CHECK(csvfile);
     csvsqldb::csv::CSVParser csvparser(context, csvfile, types, callback);
     parse(csvparser);

@@ -133,7 +133,7 @@ TEST_CASE("Logging Test", "[logging]")
     CSVSQLDB_INFOLOG("Cannot be hidden");
     CSVSQLDB_ERRORLOG("Errors are always printed");
 
-    std::ifstream log((CSVSQLDB_TEST_PATH + std::string("/stderr.txt")));
+    std::ifstream log(getTestPath() / "stderr.txt");
     CHECK(log.good());
     std::string line;
     int line_count(0);
@@ -177,7 +177,7 @@ TEST_CASE("Logging Test", "[logging]")
 
     CSVSQLDB_INFOLOG("This is a multiline\ninfo log.");
 
-    std::ifstream log((CSVSQLDB_TEST_PATH + std::string("/stderr.txt")));
+    std::ifstream log(getTestPath() / "stderr.txt");
     CHECK(log.good());
     std::string line;
     CHECK(std::getline(log, line).good());

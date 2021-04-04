@@ -37,6 +37,8 @@
 
 #include <csvsqldb/base/configuration.h>
 
+#include <filesystem>
+
 
 namespace csvsqldb
 {
@@ -52,7 +54,7 @@ namespace csvsqldb
      * i.e the a lua error occurs while compiling the script. Throws a FilesystemException if the file does not exist.
      * @param configFile The lua script file to use as configuration
      */
-    LuaConfiguration(const std::string& configFile);
+    LuaConfiguration(const std::filesystem::path& configFile);
 
     ~LuaConfiguration() override;
 

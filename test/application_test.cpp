@@ -124,7 +124,7 @@ TEST_CASE("Application Test", "[app]")
     CHECK(true == myapp._didRun);
     CHECK(false == myapp._didTearDown);
 
-    std::ifstream log((CSVSQLDB_TEST_PATH + std::string("/stderr.txt")));
+    std::ifstream log(getTestPath() / "stderr.txt");
     CHECK(log.good());
     std::string line;
 

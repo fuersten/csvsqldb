@@ -88,7 +88,7 @@ TEST_CASE("Lua Engine Test", "[lua]")
     int i = 2;
     int n = 3;
 
-    lua.doFile(CSVSQLDB_TEST_PATH / std::filesystem::path("testdata") / "luaengine" / "test.lua");
+    lua.doFile(getTestPath() / std::filesystem::path("testdata") / "luaengine" / "test.lua");
 
     CHECK(10474 == lua.getGlobal<int>("port"));
     CHECK(std::fabs(47.11 - lua.getGlobal<double>("factor")) < 0.0001);
@@ -106,7 +106,7 @@ TEST_CASE("Lua Engine Test", "[lua]")
       red.flush();
     }
 
-    std::ifstream log((CSVSQLDB_TEST_PATH / std::filesystem::path("stdout.txt")));
+    std::ifstream log((getTestPath() / std::filesystem::path("stdout.txt")));
     CHECK(log.good());
     std::string line;
     int line_count(0);
@@ -149,7 +149,7 @@ TEST_CASE("Lua Engine Test", "[lua]")
   {
     csvsqldb::luaengine::LuaEngine lua;
 
-    lua.doFile(CSVSQLDB_TEST_PATH / std::filesystem::path("testdata") / "luaengine" / "properties.lua");
+    lua.doFile(getTestPath() / std::filesystem::path("testdata") / "luaengine" / "properties.lua");
 
     csvsqldb::StringVector properties;
     lua.getProperties("debug.level", properties);

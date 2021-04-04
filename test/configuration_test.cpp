@@ -63,7 +63,7 @@ TEST_CASE("Configuration Test", "[config]")
   SECTION("config")
   {
     csvsqldb::Configuration::Ptr config(
-      std::make_shared<csvsqldb::LuaConfiguration>(CSVSQLDB_TEST_PATH + std::string("/testdata/luaengine/test.lua")));
+      std::make_shared<csvsqldb::LuaConfiguration>(getTestPath() / "testdata" / "luaengine" / "test.lua"));
 
     CHECK(10474 == config->get("port", 9999));
     CHECK(47.11 == Approx(config->get("factor", 8.15)));
@@ -81,7 +81,7 @@ TEST_CASE("Configuration Test", "[config]")
   SECTION("config check")
   {
     csvsqldb::Configuration::Ptr config(
-      std::make_shared<csvsqldb::LuaConfiguration>(CSVSQLDB_TEST_PATH + std::string("/testdata/luaengine/test.lua")));
+      std::make_shared<csvsqldb::LuaConfiguration>(getTestPath() / "testdata" / "luaengine" / "test.lua"));
 
     CHECK(config->hasProperty("daemonize"));
     CHECK(config->hasProperty("server.api.code"));
@@ -145,7 +145,7 @@ TEST_CASE("Configuration Test", "[config]")
   SECTION("global config")
   {
     csvsqldb::Configuration::Ptr config(
-      std::make_shared<csvsqldb::LuaConfiguration>(CSVSQLDB_TEST_PATH + std::string("/testdata/luaengine/test.lua")));
+      std::make_shared<csvsqldb::LuaConfiguration>(getTestPath() / "testdata" / "luaengine" / "test.lua"));
     csvsqldb::GlobalConfiguration::create<csvsqldb::GlobalConfiguration>();
     csvsqldb::GlobalConfiguration::instance<csvsqldb::GlobalConfiguration>()->configure(config);
 
@@ -167,7 +167,7 @@ TEST_CASE("Configuration Test", "[config]")
   SECTION("custom global config")
   {
     csvsqldb::Configuration::Ptr config(
-      std::make_shared<csvsqldb::LuaConfiguration>(CSVSQLDB_TEST_PATH + std::string("/testdata/luaengine/test.lua")));
+      std::make_shared<csvsqldb::LuaConfiguration>(getTestPath() / "testdata" / "luaengine" / "test.lua"));
     csvsqldb::GlobalConfiguration::create<MyGlobalConfiguration>();
     csvsqldb::GlobalConfiguration::instance<MyGlobalConfiguration>()->configure(config);
 

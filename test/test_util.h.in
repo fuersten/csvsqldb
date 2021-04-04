@@ -30,8 +30,13 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-
 #pragma once
 
-#define CSVSQLDB_TEST_PATH "${CMAKE_CURRENT_SOURCE_DIR}"
+#include <filesystem>
 
+template<dummy = void>
+std::filesystem::path getTestPath()
+{
+  static const std::filesystem::path path{"${CMAKE_CURRENT_SOURCE_DIR}"};
+  return path;
+}
