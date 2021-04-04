@@ -34,7 +34,7 @@
 
 #include <filesystem>
 
-template<dummy = void>
+template<typename T = void>
 std::filesystem::path getTestPath()
 {
   static const std::filesystem::path path{"${CMAKE_CURRENT_SOURCE_DIR}"};
