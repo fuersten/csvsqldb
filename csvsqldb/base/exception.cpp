@@ -69,6 +69,7 @@ namespace csvsqldb
 
   Exception::Exception(const Exception& ex) noexcept
   : std::system_error(ex)
+  , _message(ex._message)
   {
   }
 

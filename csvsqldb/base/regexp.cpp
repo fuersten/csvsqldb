@@ -177,6 +177,10 @@ namespace csvsqldb
     {
       Token token;
 
+      if (_iter == _s.end()) {
+        return token;
+      }
+
       if (*_iter == '*') {
         token._token = STAR;
       } else if (*_iter == '+') {
