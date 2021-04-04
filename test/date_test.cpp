@@ -35,6 +35,10 @@
 
 #include <catch2/catch.hpp>
 
+#ifdef _WIN32
+#define timegm _mkgmtime
+#endif
+
 
 TEST_CASE("Date Test", "[date]")
 {
@@ -56,8 +60,6 @@ TEST_CASE("Date Test", "[date]")
     y2k.tm_mon = 0;
     y2k.tm_mday = 1;
     y2k.tm_isdst = 0;
-    char utc[] = "UTC";
-    y2k.tm_zone = &utc[0];
     time_t time = timegm(&y2k);
 
     csvsqldb::Date d3(time);

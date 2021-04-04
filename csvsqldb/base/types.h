@@ -72,7 +72,7 @@ namespace csvsqldb
    * @param buffer The string to convert
    * @return true if the string is 'true' or not equal to 0, otherwise false
    */
-  bool stringToBool(const std::string& buffer);
+  CSVSQLDB_EXPORT bool stringToBool(const std::string& buffer);
 
   /**
    * Templating helper for the removal of elements in a vector.

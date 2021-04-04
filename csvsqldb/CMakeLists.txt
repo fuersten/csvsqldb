@@ -147,22 +147,22 @@ set(LIB_CSVSQLDB_SOURCES
     ${CMAKE_CURRENT_BINARY_DIR}/version.h
 )
 
-add_library(csvsqldb SHARED ${LIB_CSVSQLDB_SOURCES})
+add_library(libcsvsqldb SHARED ${LIB_CSVSQLDB_SOURCES})
 
-target_include_directories(csvsqldb PRIVATE ${CMAKE_SOURCE_DIR})
-target_include_directories(csvsqldb PRIVATE ${CMAKE_BINARY_DIR})
-target_include_directories(csvsqldb PRIVATE ${CMAKE_SOURCE_DIR}/csvsqldb)
-target_include_directories(csvsqldb PRIVATE ${CMAKE_SOURCE_DIR}/thirdparty/json/single_include/)
-target_include_directories(csvsqldb PRIVATE SYSTEM ${LUA_INCLUDE_DIR})
+target_include_directories(libcsvsqldb PRIVATE ${CMAKE_SOURCE_DIR})
+target_include_directories(libcsvsqldb PRIVATE ${CMAKE_BINARY_DIR})
+target_include_directories(libcsvsqldb PRIVATE ${CMAKE_SOURCE_DIR}/csvsqldb)
+target_include_directories(libcsvsqldb PRIVATE ${CMAKE_SOURCE_DIR}/thirdparty/json/single_include/)
+target_include_directories(libcsvsqldb PRIVATE SYSTEM ${LUA_INCLUDE_DIR})
 
-set_target_properties(csvsqldb PROPERTIES DEFINE_SYMBOL LIBCSVSQLDB VERSION ${CSVSQLDB_VERSION} SOVERSION ${CSVSQLDB_VERSION_SHORT})
-target_link_libraries(csvsqldb PRIVATE ${CSVSQLDB_PLATFORM_LIBS} ${LUA_LIBRARY})
+set_target_properties(libcsvsqldb PROPERTIES DEFINE_SYMBOL LIBCSVSQLDB VERSION ${CSVSQLDB_VERSION} SOVERSION ${CSVSQLDB_VERSION_SHORT})
+target_link_libraries(libcsvsqldb PRIVATE ${CSVSQLDB_PLATFORM_LIBS} ${LUA_LIBRARY})
 
 if(COVERAGE)
-  target_link_libraries(csvsqldb PUBLIC --coverage)
-  target_compile_options(csvsqldb PUBLIC --coverage -g)
+  target_link_libraries(libcsvsqldb PUBLIC --coverage)
+  target_compile_options(libcsvsqldb PUBLIC --coverage -g)
 else()
-  target_compile_options(csvsqldb PRIVATE ${CSVSQLDB_COMPILE_OPTIONS})
+  target_compile_options(libcsvsqldb PRIVATE ${CSVSQLDB_COMPILE_OPTIONS})
 endif()
 
-install(TARGETS csvsqldb LIBRARY DESTINATION lib ARCHIVE DESTINATION lib)
+install(TARGETS libcsvsqldb LIBRARY DESTINATION lib ARCHIVE DESTINATION lib)

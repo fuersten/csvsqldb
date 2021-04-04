@@ -147,7 +147,7 @@ TEST_CASE("Types Test", "[types]")
 
   SECTION("c type to eType")
   {
-    CHECK(csvsqldb::NONE == csvsqldb::ctype2eType<uint>());
+    CHECK(csvsqldb::NONE == csvsqldb::ctype2eType<uint8_t>());
     CHECK(csvsqldb::BOOLEAN == csvsqldb::ctype2eType<bool>());
     CHECK(csvsqldb::INT == csvsqldb::ctype2eType<int64_t>());
     CHECK(csvsqldb::REAL == csvsqldb::ctype2eType<double>());

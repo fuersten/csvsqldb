@@ -86,7 +86,7 @@ target_include_directories(csvsqldbtest PRIVATE ${PROJECT_SOURCE_DIR}/thirdparty
 target_include_directories(csvsqldbtest PRIVATE ${CMAKE_SOURCE_DIR})
 target_include_directories(csvsqldbtest PRIVATE ${CMAKE_BINARY_DIR})
 target_include_directories(csvsqldbtest PRIVATE SYSTEM ${LUA_INCLUDE_DIR})
-target_link_libraries(csvsqldbtest PRIVATE ${CSVSQLDB_PLATFORM_LIBS} csvsqldb ${LUA_LIBRARY})
+target_link_libraries(csvsqldbtest PRIVATE ${CSVSQLDB_PLATFORM_LIBS} libcsvsqldb ${LUA_LIBRARY})
 
 if(COVERAGE)
   target_link_libraries(csvsqldbtest PUBLIC --coverage)

@@ -31,5 +31,5 @@
 - Create a build directory in the source directory of csvsqldb and change to it
 - Now you have to tell cmake, where the lua libraries are
 - `SET LUA_DIR=<path to the Lua root directory>`
-- Call `cmake -DCMAKE_BUILD_TYPE=Release ..`
+- Call `cmake -G "Visual Studio 16 2019" -DCMAKE_BUILD_TYPE=Release ..`
 - Call `make`

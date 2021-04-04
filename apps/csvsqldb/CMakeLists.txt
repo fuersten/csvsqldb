@@ -35,7 +35,7 @@ target_include_directories(csvsqldb-bin PRIVATE ${CMAKE_SOURCE_DIR})
 target_include_directories(csvsqldb-bin PRIVATE ${CMAKE_BINARY_DIR})
 target_include_directories(csvsqldb-bin PRIVATE ${CMAKE_SOURCE_DIR}/thirdparty/linenoise-ng/include/)
 target_include_directories(csvsqldb-bin PRIVATE ${CMAKE_SOURCE_DIR}/thirdparty/CLI11/include/)
-target_link_libraries(csvsqldb-bin PRIVATE ${CSVSQLDB_PROJECT_LIBS} ${CSVSQLDB_PLATFORM_LIBS} csvsqldb)
+target_link_libraries(csvsqldb-bin PRIVATE ${CSVSQLDB_PROJECT_LIBS} ${CSVSQLDB_PLATFORM_LIBS} libcsvsqldb)
 
 if(COVERAGE)
   target_link_libraries(csvsqldb-bin PUBLIC --coverage)

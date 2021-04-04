@@ -78,7 +78,7 @@ namespace csvsqldb
 
   struct SignalHandler::Private {
     SignalToHandlerMap _handlerMap;
-    volatile bool _stopSignalHandling;
+    volatile bool _stopSignalHandling{false};
   };
 
 
@@ -114,7 +114,7 @@ namespace csvsqldb
     SignalToHandlerMap::iterator iter = _p->_handlerMap.find(signum);
     if (iter != _p->_handlerMap.end()) {
       SignalEventHandlerList& list = iter->second;
-      std::remove(list.begin(), list.end(), handler);
+      iter->second.remove(handler);
     }
   }
 

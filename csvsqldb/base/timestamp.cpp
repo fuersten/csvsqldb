@@ -493,14 +493,14 @@ namespace csvsqldb
   int64_t Timestamp::calcJulDay(uint16_t year, uint16_t month, uint16_t day, uint16_t hour, uint16_t minute, uint16_t second,
                                 uint16_t millisecond)
   {
-    return (Date::calcJulDay(year, month, day) * 100000000L) + Time::calcNumberFromTime(hour, minute, second, millisecond);
+    return (Date::calcJulDay(year, month, day)) * 100000000LL + Time::calcNumberFromTime(hour, minute, second, millisecond);
   }
 
   void Timestamp::calcFromJulDay(int64_t time, uint16_t& year, uint16_t& month, uint16_t& day, uint16_t& hour, uint16_t& minute,
                                  uint16_t& second, uint16_t& millisecond)
   {
-    uint32_t julDay = static_cast<uint32_t>(time / 100000000L);
+    uint32_t julDay = static_cast<uint32_t>(time / 100000000LL);
     Date::calcFromJulDay(julDay, year, month, day);
-    Time::calcTimeFromNumber(static_cast<int32_t>(time - (julDay * 100000000L)), hour, minute, second, millisecond);
+    Time::calcTimeFromNumber(static_cast<int32_t>(time - (julDay * 100000000LL)), hour, minute, second, millisecond);
   }
 }

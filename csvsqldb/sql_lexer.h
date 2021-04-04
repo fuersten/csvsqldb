@@ -154,7 +154,7 @@ namespace csvsqldb
     TOK_YEAR
   };
 
-  std::string tokenToString(eToken token);
+  CSVSQLDB_EXPORT std::string tokenToString(eToken token);
 
   class CSVSQLDB_EXPORT SQLLexer
   {

@@ -58,8 +58,6 @@ TEST_CASE("Timehelper Test", "[utils]")
     ts.tm_mon = 8;
     ts.tm_mday = 23;
     ts.tm_isdst = 0;
-    char utc[] = "UTC";
-    ts.tm_zone = &utc[0];
 
     char buffer[20];
     time_t tt = timegm(&ts);

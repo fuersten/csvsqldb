@@ -33,6 +33,8 @@
 
 #pragma once
 
+#include <csvsqldb/inc.h>
+
 #include <memory>
 #include <string>
 
@@ -56,7 +58,7 @@ namespace csvsqldb
    *  - \\d
    *  - \\s
    */
-  class RegExp
+  class CSVSQLDB_EXPORT RegExp
   {
   public:
     /**

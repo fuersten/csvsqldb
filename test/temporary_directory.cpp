@@ -32,7 +32,7 @@
 
 #include "temporary_directory.h"
 
-#ifdef WIN32
+#ifdef _WIN32
   #define WIN32_LEAN_AND_MEAN
   #include <windows.h>
 #else

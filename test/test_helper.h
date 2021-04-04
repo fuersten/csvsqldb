@@ -37,9 +37,9 @@
 
 #include "test/test_util.h"
 
-#include <fcntl.h>
 #include <iostream>
-#include <unistd.h>
+#include <filesystem>
+#include <fstream>
 
 
 class RedirectStdOut
@@ -47,73 +47,62 @@ class RedirectStdOut
 public:
   RedirectStdOut()
   {
-    ::fflush(stdout);
-    _oldstdout = ::dup(::fileno(stdout));
-    if (_oldstdout == -1) {
+    flush();
+
+    _file.open(CSVSQLDB_TEST_PATH / std::filesystem::path{"stdout.txt"}, std::ios::out);
+
+    if (!_file) {
       csvsqldb::throwSysError("RedirectStdOut");
     }
-    _fdo = ::open((CSVSQLDB_TEST_PATH + std::string("/stdout.txt")).c_str(), O_CREAT | O_TRUNC | O_APPEND | O_WRONLY,
-                  S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
-    if (_fdo == -1) {
-      csvsqldb::throwSysError("RedirectStdOut");
-    }
-    _newstdout = ::dup2(_fdo, ::fileno(stdout));
-    if (_newstdout == -1) {
-      csvsqldb::throwSysError("RedirectStdOut");
-    }
+
+    std::cout.rdbuf(_file.rdbuf());
   }
 
   void flush()
   {
-    ::fflush(stdout);
+      std::cout.flush();
   }
 
   ~RedirectStdOut()
   {
-    ::dup2(_oldstdout, _newstdout);
-    ::close(_fdo);
+    flush();
+    std::cout.rdbuf(_coutBuff);
   }
 
 private:
-  int _oldstdout;
-  int _fdo;
-  int _newstdout;
+  std::fstream _file;
+  std::streambuf* _coutBuff{ std::cout.rdbuf() };
 };
+
 
 class RedirectStdErr
 {
 public:
   RedirectStdErr()
   {
-    ::fflush(stderr);
-    _oldstderr = ::dup(::fileno(stderr));
-    if (_oldstderr == -1) {
-      csvsqldb::throwSysError("RedirectStdErr");
+    flush();
+
+    _file.open(CSVSQLDB_TEST_PATH / std::filesystem::path{ "stderr.txt" }, std::ios::out);
+
+    if (!_file) {
+        csvsqldb::throwSysError("RedirectStdErr");
     }
-    _fdo = ::open((CSVSQLDB_TEST_PATH + std::string("/stderr.txt")).c_str(), O_CREAT | O_TRUNC | O_APPEND | O_WRONLY,
-                  S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
-    if (_fdo == -1) {
-      csvsqldb::throwSysError("RedirectStdErr");
-    }
-    _newstderr = ::dup2(_fdo, ::fileno(stderr));
-    if (_newstderr == -1) {
-      csvsqldb::throwSysError("RedirectStdErr");
-    }
+
+    std::cerr.rdbuf(_file.rdbuf());
   }
 
   void flush()
   {
-    ::fflush(stderr);
+    std::cerr.flush();
   }
 
   ~RedirectStdErr()
   {
-    ::dup2(_oldstderr, _newstderr);
-    ::close(_fdo);
+    flush();
+    std::cerr.rdbuf(_cerrBuff);
   }
 
 private:
-  int _oldstderr;
-  int _fdo;
-  int _newstderr;
+  std::fstream _file;
+  std::streambuf* _cerrBuff{ std::cerr.rdbuf() };
 };
