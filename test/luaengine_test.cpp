@@ -45,6 +45,16 @@
 
 namespace
 {
+  static void logs(std::string s)
+  {
+    std::cout << s << std::endl;
+  }
+
+  static void logn(int n)
+  {
+    std::cout << n << std::endl;
+  }
+
   static void doit(int n, double d)
   {
     std::cout << n * d << std::endl;
@@ -71,12 +81,14 @@ TEST_CASE("Lua Engine Test", "[lua]")
     lua.registerFunction(lua, "mul", testit);
     lua.registerFunction(lua, "doit", doit);
     lua.registerFunction(lua, "done", done);
+    lua.registerFunction(lua, "logn", logn);
+    lua.registerFunction(lua, "logs", logs);
 
     std::string text("This is cool!");
     int i = 2;
     int n = 3;
 
-    lua.doFile(CSVSQLDB_TEST_PATH + std::string("/testdata/luaengine/test.lua"));
+    lua.doFile(CSVSQLDB_TEST_PATH / std::filesystem::path("testdata") / "luaengine" / "test.lua");
 
     CHECK(10474 == lua.getGlobal<int>("port"));
     CHECK(std::fabs(47.11 - lua.getGlobal<double>("factor")) < 0.0001);
@@ -94,7 +106,7 @@ TEST_CASE("Lua Engine Test", "[lua]")
       red.flush();
     }
 
-    std::ifstream log((CSVSQLDB_TEST_PATH + std::string("/stdout.txt")));
+    std::ifstream log((CSVSQLDB_TEST_PATH / std::filesystem::path("stdout.txt")));
     CHECK(log.good());
     std::string line;
     int line_count(0);
@@ -137,7 +149,7 @@ TEST_CASE("Lua Engine Test", "[lua]")
   {
     csvsqldb::luaengine::LuaEngine lua;
 
-    lua.doFile(CSVSQLDB_TEST_PATH + std::string("/testdata/luaengine/properties.lua"));
+    lua.doFile(CSVSQLDB_TEST_PATH / std::filesystem::path("testdata") / "luaengine" / "properties.lua");
 
     csvsqldb::StringVector properties;
     lua.getProperties("debug.level", properties);

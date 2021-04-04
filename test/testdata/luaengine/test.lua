@@ -36,7 +36,7 @@ end
 function dosomething()
     doit(2,7.5)
     done()
-    print(mul(2,15))
-    print('hi ho')
+    logn(mul(2,15))
+    logs('hi ho')
 end
 

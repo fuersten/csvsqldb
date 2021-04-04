@@ -165,4 +165,8 @@ else()
   target_compile_options(libcsvsqldb PRIVATE ${CSVSQLDB_COMPILE_OPTIONS})
 endif()
 
+if(NOT WIN32)
+  set_target_properties(libcsvsqldb PROPERTIES OUTPUT_NAME csvsqldb)
+endif()
+
 install(TARGETS libcsvsqldb LIBRARY DESTINATION lib ARCHIVE DESTINATION lib)
