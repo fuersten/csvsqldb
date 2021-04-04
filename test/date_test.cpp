@@ -36,7 +36,7 @@
 #include <catch2/catch.hpp>
 
 #ifdef _WIN32
-#define timegm _mkgmtime
+  #define timegm _mkgmtime
 #endif
 
 

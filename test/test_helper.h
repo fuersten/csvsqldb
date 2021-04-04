@@ -37,9 +37,9 @@
 
 #include "test/test_util.h"
 
-#include <iostream>
 #include <filesystem>
 #include <fstream>
+#include <iostream>
 
 
 class RedirectStdOut
@@ -60,7 +60,7 @@ public:
 
   void flush()
   {
-      std::cout.flush();
+    std::cout.flush();
   }
 
   ~RedirectStdOut()
@@ -71,7 +71,7 @@ public:
 
 private:
   std::fstream _file;
-  std::streambuf* _coutBuff{ std::cout.rdbuf() };
+  std::streambuf* _coutBuff{std::cout.rdbuf()};
 };
 
 
@@ -82,10 +82,10 @@ public:
   {
     flush();
 
-    _file.open(getTestPath() / std::filesystem::path{ "stderr.txt" }, std::ios::out);
+    _file.open(getTestPath() / std::filesystem::path{"stderr.txt"}, std::ios::out);
 
     if (!_file) {
-        csvsqldb::throwSysError("RedirectStdErr");
+      csvsqldb::throwSysError("RedirectStdErr");
     }
 
     std::cerr.rdbuf(_file.rdbuf());
@@ -104,5 +104,5 @@ public:
 
 private:
   std::fstream _file;
-  std::streambuf* _cerrBuff{ std::cerr.rdbuf() };
+  std::streambuf* _cerrBuff{std::cerr.rdbuf()};
 };

@@ -43,24 +43,23 @@ TEST_CASE("Glob Test", "[utils]")
   SECTION("expansion")
   {
     csvsqldb::StringVector files;
-    csvsqldb::expand(CSVSQLDB_TEST_PATH + std::string("/testdata/*"), files);
+    csvsqldb::expand(getTestPath() / "testdata" / "*", files);
     CHECK(2U == files.size());
 
     std::sort(files.begin(), files.end());
-    CHECK(CSVSQLDB_TEST_PATH + std::string("/testdata/csv") == files[0]);
-    CHECK(CSVSQLDB_TEST_PATH + std::string("/testdata/luaengine") == files[1]);
+    CHECK(getTestPath() / "testdata" / "csv" == files[0]);
+    CHECK(getTestPath() / "testdata" / "luaengine" == files[1]);
   }
 
   SECTION("expansion error")
   {
     csvsqldb::StringVector files;
-    CHECK_THROWS_WITH(csvsqldb::expand(CSVSQLDB_TEST_PATH + std::string("/testdata | /test"), files),
+    CHECK_THROWS_WITH(csvsqldb::expand(getTestPath() / "testdata | /test", files),
                       "could not expand word: Illegal char in pattern");
-    CHECK_THROWS_WITH(csvsqldb::expand(CSVSQLDB_TEST_PATH + std::string("/testdata $CHECK"), files),
+    CHECK_THROWS_WITH(csvsqldb::expand(getTestPath() / "testdata $CHECK", files),
                       "could not expand word: Undefined variable reference");
-    CHECK_THROWS_WITH(csvsqldb::expand(CSVSQLDB_TEST_PATH + std::string("/testdata $(la)"), files),
+    CHECK_THROWS_WITH(csvsqldb::expand(getTestPath() / "testdata $(la)", files),
                       "could not expand word: Command substitution occurred");
-    CHECK_THROWS_WITH(csvsqldb::expand(CSVSQLDB_TEST_PATH + std::string("/testdata \"la"), files),
-                      "could not expand word: Shell syntax error");
+    CHECK_THROWS_WITH(csvsqldb::expand(getTestPath() / "testdata \"la", files), "could not expand word: Shell syntax error");
   }
 }

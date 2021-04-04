@@ -38,8 +38,7 @@
 
 namespace
 {
-  struct Expected
-  {
+  struct Expected {
     bool _first{true};
     bool _second{false};
   };

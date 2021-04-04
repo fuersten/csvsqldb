@@ -71,7 +71,8 @@ namespace
   public:
     CountHandler(int ret)
     : _ret{ret}
-    {}
+    {
+    }
 
     int onSignal(int signum) override
     {
@@ -106,7 +107,7 @@ TEST_CASE("Signalhandler Test", "[utils]")
 
     sighandler.removeHandler(SIGINT, &handler);
     CHECK(sighandler.handler(SIGINT).empty());
-    
+
     CHECK(sighandler.handler(SIGQUIT).empty());
   }
   SECTION("simple signal handler")
@@ -132,7 +133,8 @@ TEST_CASE("Signalhandler Test", "[utils]")
     ::kill(getpid(), SIGINT);
 
     std::unique_lock condition_guard(test_mutex);
-    _test_condition.wait_for(condition_guard, std::chrono::milliseconds(150), [&] { return handler1._counter > 0 && handler2._counter > 0; });
+    _test_condition.wait_for(condition_guard, std::chrono::milliseconds(150),
+                             [&] { return handler1._counter > 0 && handler2._counter > 0; });
 
     CHECK((handler1._counter > 0 && handler2._counter > 0));
   }
