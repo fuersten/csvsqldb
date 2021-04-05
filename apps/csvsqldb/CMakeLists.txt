@@ -22,7 +22,7 @@ endif()
 
 source_group("Source Files\\linenoise" FILES ${LINENOISE_SOURCES})
 
-add_executable(csvsqldb-bin 
+add_executable(csvsqldb 
     main.cpp
 
     console.cpp
@@ -31,18 +31,16 @@ add_executable(csvsqldb-bin
     ${LINENOISE_SOURCES}
 )
 
-target_include_directories(csvsqldb-bin PRIVATE ${CMAKE_SOURCE_DIR})
-target_include_directories(csvsqldb-bin PRIVATE ${CMAKE_BINARY_DIR})
-target_include_directories(csvsqldb-bin PRIVATE ${CMAKE_SOURCE_DIR}/thirdparty/linenoise-ng/include/)
-target_include_directories(csvsqldb-bin PRIVATE ${CMAKE_SOURCE_DIR}/thirdparty/CLI11/include/)
-target_link_libraries(csvsqldb-bin PRIVATE ${CSVSQLDB_PROJECT_LIBS} ${CSVSQLDB_PLATFORM_LIBS} libcsvsqldb)
+target_include_directories(csvsqldb PRIVATE ${CMAKE_SOURCE_DIR})
+target_include_directories(csvsqldb PRIVATE ${CMAKE_BINARY_DIR})
+target_include_directories(csvsqldb PRIVATE ${CMAKE_SOURCE_DIR}/thirdparty/linenoise-ng/include/)
+target_include_directories(csvsqldb PRIVATE ${CMAKE_SOURCE_DIR}/thirdparty/CLI11/include/)
+target_link_libraries(csvsqldb PRIVATE ${CSVSQLDB_PROJECT_LIBS} ${CSVSQLDB_PLATFORM_LIBS} libcsvsqldb)
 
 if(COVERAGE)
-  target_link_libraries(csvsqldb-bin PUBLIC --coverage)
-  target_compile_options(csvsqldb-bin PUBLIC --coverage -g)
+  target_link_libraries(csvsqldb PUBLIC --coverage)
+  target_compile_options(csvsqldb PUBLIC --coverage -g)
 else()
-  target_compile_options(csvsqldb-bin PRIVATE ${CSVSQLDB_COMPILE_OPTIONS})
+  target_compile_options(csvsqldb PRIVATE ${CSVSQLDB_COMPILE_OPTIONS})
 endif()
-
-set_target_properties(csvsqldb-bin PROPERTIES OUTPUT_NAME csvsqldb)
 
