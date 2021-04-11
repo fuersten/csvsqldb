@@ -103,13 +103,13 @@ TEST_CASE("Group By Test", "[engine]")
     std::stringstream ss;
     int64_t rowCount =
       engine.execute("SELECT count(*) as \"count\",last_name,max(birth_date) as \"max birthdate\",min(hire_date) as \"min hire\" \
-                                          FROM employees group by employees.last_name",
+                                          FROM employees group by employees.last_name order by last_name",
                      statistics, ss);
     CHECK(2 == rowCount);
 
     std::string expected = R"(#COUNT,LAST_NAME,MAX BIRTHDATE,MIN HIRE
-1,'Tello de Fürstenberg',1963-03-06,2003-06-15
 2,'Fürstenberg',1970-09-23,2003-04-15
+1,'Tello de Fürstenberg',1963-03-06,2003-06-15
 )";
     CHECK(expected == ss.str());
   }
@@ -138,7 +138,7 @@ TEST_CASE("Group By Test", "[engine]")
     std::stringstream ss;
     int64_t rowCount = engine.execute(
       "SELECT count(id) as \"count\",last_name,max(birth_date) as \"max birthdate\",min(hire_date) as \"min hire\" \
-                                          FROM employees group by last_name",
+                                          FROM employees group by last_name order by last_name",
       statistics, ss);
     CHECK(2 == rowCount);
 
@@ -173,7 +173,7 @@ TEST_CASE("Group By Test", "[engine]")
     std::stringstream ss;
     int64_t rowCount =
       engine.execute("SELECT count(*) as \"count\",max(birth_date) as \"max birthdate\",min(hire_date) as \"min hire\" \
-                                          FROM employees group by last_name",
+                                          FROM employees group by last_name order by birth_date",
                      statistics, ss);
     CHECK(2 == rowCount);
 
