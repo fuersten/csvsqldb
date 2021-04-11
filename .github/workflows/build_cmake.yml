@@ -30,7 +30,7 @@ jobs:
             COMMAND chmod +x ${cmake_dir}/cmake
           )
       - name: install
-        run: sudo apt-get -y install liblua5.3-dev 
+        run: sudo apt-get -y install liblua5.3-dev
       - name: configure
         run: mkdir build && cd build && cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_COMPILER="g++-9" -DCMAKE_C_COMPILER="gcc-9" -DCOVERAGE=ON ..
       - name: build

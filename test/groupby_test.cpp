@@ -2,7 +2,7 @@
 //  csvsqldb test
 //
 //  BSD 3-Clause License
-//  Copyright (c) 2015-2020 Lars-Christian Fürstenberg
+//  Copyright (c) 2015-2020 Lars-Christian Fuerstenberg
 //  All rights reserved.
 //
 //  Redistribution and use in source and binary forms, with or without modification, are permitted
@@ -46,11 +46,11 @@ TEST_CASE("Group By Test", "[engine]")
   {
     csvsqldb::Variants first;
     first.push_back(csvsqldb::Variant(4711));
-    first.push_back(csvsqldb::Variant("Fürstenberg"));
+    first.push_back(csvsqldb::Variant("Fuerstenberg"));
 
     csvsqldb::Variants second;
     second.push_back(csvsqldb::Variant(815));
-    second.push_back(csvsqldb::Variant("Fürstenberg"));
+    second.push_back(csvsqldb::Variant("Fuerstenberg"));
 
     csvsqldb::GroupingElement elementLeft(first);
     csvsqldb::GroupingElement elementRight(second);
@@ -72,7 +72,7 @@ TEST_CASE("Group By Test", "[engine]")
 
     csvsqldb::Variants third;
     third.push_back(csvsqldb::Variant(815));
-    third.push_back(csvsqldb::Variant("Fürstenberg"));
+    third.push_back(csvsqldb::Variant("Fuerstenberg"));
     csvsqldb::GroupingElement compareElement(third);
 
     found = hashSet.find(compareElement);
@@ -92,11 +92,11 @@ TEST_CASE("Group By Test", "[engine]")
     csvsqldb::ExecutionEngine<TestOperatorNodeFactory> engine(context);
 
     TestRowProvider::setRows(
-      "employees", {{815, "Mark", "Fürstenberg", csvsqldb::Date(1969, csvsqldb::Date::May, 17),
+      "employees", {{815, "Mark", "Fuerstenberg", csvsqldb::Date(1969, csvsqldb::Date::May, 17),
                      csvsqldb::Date(2003, csvsqldb::Date::April, 15)},
-                    {csvsqldb::Variant(csvsqldb::INT), "Lars", "Fürstenberg", csvsqldb::Date(1970, csvsqldb::Date::September, 23),
+                    {csvsqldb::Variant(csvsqldb::INT), "Lars", "Fuerstenberg", csvsqldb::Date(1970, csvsqldb::Date::September, 23),
                      csvsqldb::Date(2010, csvsqldb::Date::February, 1)},
-                    {9227, "Angelica", "Tello de Fürstenberg", csvsqldb::Date(1963, csvsqldb::Date::March, 6),
+                    {9227, "Angelica", "Tello de Fuerstenberg", csvsqldb::Date(1963, csvsqldb::Date::March, 6),
                      csvsqldb::Date(2003, csvsqldb::Date::June, 15)}});
 
     csvsqldb::ExecutionStatistics statistics;
@@ -108,8 +108,8 @@ TEST_CASE("Group By Test", "[engine]")
     CHECK(2 == rowCount);
 
     std::string expected = R"(#COUNT,LAST_NAME,MAX BIRTHDATE,MIN HIRE
-2,'Fürstenberg',1970-09-23,2003-04-15
-1,'Tello de Fürstenberg',1963-03-06,2003-06-15
+2,'Fuerstenberg',1970-09-23,2003-04-15
+1,'Tello de Fuerstenberg',1963-03-06,2003-06-15
 )";
     CHECK(expected == ss.str());
   }
@@ -127,11 +127,11 @@ TEST_CASE("Group By Test", "[engine]")
     csvsqldb::ExecutionEngine<TestOperatorNodeFactory> engine(context);
 
     TestRowProvider::setRows(
-      "employees", {{815, "Mark", "Fürstenberg", csvsqldb::Date(1969, csvsqldb::Date::May, 17),
+      "employees", {{815, "Mark", "Fuerstenberg", csvsqldb::Date(1969, csvsqldb::Date::May, 17),
                      csvsqldb::Date(2003, csvsqldb::Date::April, 15)},
-                    {csvsqldb::Variant(csvsqldb::INT), "Lars", "Fürstenberg", csvsqldb::Date(1970, csvsqldb::Date::September, 23),
+                    {csvsqldb::Variant(csvsqldb::INT), "Lars", "Fuerstenberg", csvsqldb::Date(1970, csvsqldb::Date::September, 23),
                      csvsqldb::Date(2010, csvsqldb::Date::February, 1)},
-                    {9227, "Angelica", "Tello de Fürstenberg", csvsqldb::Date(1963, csvsqldb::Date::March, 6),
+                    {9227, "Angelica", "Tello de Fuerstenberg", csvsqldb::Date(1963, csvsqldb::Date::March, 6),
                      csvsqldb::Date(2003, csvsqldb::Date::June, 15)}});
 
     csvsqldb::ExecutionStatistics statistics;
@@ -143,8 +143,8 @@ TEST_CASE("Group By Test", "[engine]")
     CHECK(2 == rowCount);
 
     std::string expected = R"(#COUNT,LAST_NAME,MAX BIRTHDATE,MIN HIRE
-1,'Tello de Fürstenberg',1963-03-06,2003-06-15
-1,'Fürstenberg',1970-09-23,2003-04-15
+1,'Fuerstenberg',1970-09-23,2003-04-15
+1,'Tello de Fuerstenberg',1963-03-06,2003-06-15
 )";
     CHECK(expected == ss.str());
   }
@@ -162,18 +162,18 @@ TEST_CASE("Group By Test", "[engine]")
     csvsqldb::ExecutionEngine<TestOperatorNodeFactory> engine(context);
 
     TestRowProvider::setRows(
-      "employees", {{815, "Mark", "Fürstenberg", csvsqldb::Date(1969, csvsqldb::Date::May, 17),
+      "employees", {{815, "Mark", "Fuerstenberg", csvsqldb::Date(1969, csvsqldb::Date::May, 17),
                      csvsqldb::Date(2003, csvsqldb::Date::April, 15)},
-                    {csvsqldb::Variant(csvsqldb::INT), "Lars", "Fürstenberg", csvsqldb::Date(1970, csvsqldb::Date::September, 23),
+                    {csvsqldb::Variant(csvsqldb::INT), "Lars", "Fuerstenberg", csvsqldb::Date(1970, csvsqldb::Date::September, 23),
                      csvsqldb::Date(2010, csvsqldb::Date::February, 1)},
-                    {9227, "Angelica", "Tello de Fürstenberg", csvsqldb::Date(1963, csvsqldb::Date::March, 6),
+                    {9227, "Angelica", "Tello de Fuerstenberg", csvsqldb::Date(1963, csvsqldb::Date::March, 6),
                      csvsqldb::Date(2003, csvsqldb::Date::June, 15)}});
 
     csvsqldb::ExecutionStatistics statistics;
     std::stringstream ss;
     int64_t rowCount =
       engine.execute("SELECT count(*) as \"count\",max(birth_date) as \"max birthdate\",min(hire_date) as \"min hire\" \
-                                          FROM employees group by last_name order by birth_date",
+                                          FROM employees group by last_name",
                      statistics, ss);
     CHECK(2 == rowCount);
 

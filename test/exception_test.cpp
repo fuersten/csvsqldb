@@ -90,7 +90,7 @@ TEST_CASE("Exception Test", "[exception]")
   {
     errno = EWOULDBLOCK;
     std::string txt = csvsqldb::errnoText();
-    std::regex r{ "[Oo]peration would block" };
+    std::regex r{ "operation would block|Resource temporarily unavailable" };
     std::cmatch m;
     CHECK(std::regex_match(txt.c_str(), m, r));
   }
