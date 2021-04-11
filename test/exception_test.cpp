@@ -39,6 +39,7 @@
 
 #include <cstring>
 #include <iostream>
+#include <regex>
 
 
 TEST_CASE("Exception Test", "[exception]")
@@ -47,11 +48,14 @@ TEST_CASE("Exception Test", "[exception]")
   {
     auto ex = csvsqldb::Exception(ENOENT, "Filesystem");
     CHECK(ex.code().value() == ENOENT);
-    CHECK(std::string("Filesystem: No such file or directory") == ex.what());
+    std::regex r{ "Filesystem: [Nn]o such file or directory" };
+    std::cmatch m;
+    CHECK(std::regex_match(ex.what(), m, r));
 
     auto ex1 = csvsqldb::Exception(std::errc::invalid_argument, "Parameter");
     CHECK(ex1.code().value() == EINVAL);
-    CHECK(std::string("Parameter: Invalid argument") == ex1.what());
+    std::regex r1{ "Parameter: [Ii]nvalid argument" };
+    CHECK(std::regex_match(ex1.what(), m, r1));
 
     auto ex2 = csvsqldb::Exception("check");
     CHECK(ex2.code().value() == 0);
@@ -59,7 +63,7 @@ TEST_CASE("Exception Test", "[exception]")
 
     auto ex3 = csvsqldb::Exception(std::make_error_code(std::errc::invalid_argument), "Parameter");
     CHECK(ex3.code().value() == EINVAL);
-    CHECK(std::string("Parameter: Invalid argument") == ex3.what());
+    CHECK(std::regex_match(ex3.what(), m, r1));
   }
 
   SECTION("copy")
@@ -68,7 +72,9 @@ TEST_CASE("Exception Test", "[exception]")
     auto ex1{ex};
 
     CHECK(ex1.code().value() == ENOENT);
-    CHECK(std::string("Filesystem: No such file or directory") == ex1.what());
+    std::regex r{ "Filesystem: [Nn]o such file or directory" };
+    std::cmatch m;
+    CHECK(std::regex_match(ex1.what(), m, r));
   }
 
   SECTION("exception")
@@ -84,7 +90,9 @@ TEST_CASE("Exception Test", "[exception]")
   {
     errno = EWOULDBLOCK;
     std::string txt = csvsqldb::errnoText();
-    CHECK(strerror(EWOULDBLOCK) == txt);
+    std::regex r{ "[Oo]peration would block" };
+    std::cmatch m;
+    CHECK(std::regex_match(txt.c_str(), m, r));
   }
 
   SECTION("sys exception")
