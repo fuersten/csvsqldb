@@ -7,6 +7,8 @@ endif()
 
 enable_testing()
 
+include(FetchContent)
+
 set(CSVSQLDB_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
 set(CSVSQLDB_VERSION_MINOR ${PROJECT_VERSION_MINOR})
 set(CSVSQLDB_VERSION_PATCH ${PROJECT_VERSION_PATCH})
@@ -42,12 +44,9 @@ endif()
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake)
 
-find_package(Lua REQUIRED)
-find_package(Threads REQUIRED)
+include(cmake/fetch_lua.cmake)
 
-if(NOT LUA_FOUND)
-    message(FATAL_ERROR "Could not find LUA")
-endif()
+find_package(Threads REQUIRED)
 
 if(CMAKE_BUILD_TYPE MATCHES "Debug")
     add_definitions(-DDEBUG)
@@ -100,4 +99,5 @@ endif()
 
 add_subdirectory(apps)
 add_subdirectory(csvsqldb)
+add_subdirectory(thirdparty/lua)
 add_subdirectory(test)

@@ -153,10 +153,10 @@ target_include_directories(libcsvsqldb PRIVATE ${CMAKE_SOURCE_DIR})
 target_include_directories(libcsvsqldb PRIVATE ${CMAKE_BINARY_DIR})
 target_include_directories(libcsvsqldb PRIVATE ${CMAKE_SOURCE_DIR}/csvsqldb)
 target_include_directories(libcsvsqldb PRIVATE ${CMAKE_SOURCE_DIR}/thirdparty/json/single_include/)
-target_include_directories(libcsvsqldb PRIVATE SYSTEM ${LUA_INCLUDE_DIR})
+target_include_directories(libcsvsqldb PRIVATE SYSTEM ${lua_SOURCE_DIR})
 
-set_target_properties(libcsvsqldb PROPERTIES DEFINE_SYMBOL LIBCSVSQLDB VERSION ${CSVSQLDB_VERSION} SOVERSION ${CSVSQLDB_VERSION_SHORT})
-target_link_libraries(libcsvsqldb PRIVATE ${CSVSQLDB_PLATFORM_LIBS} ${LUA_LIBRARY})
+#set_target_properties(libcsvsqldb PROPERTIES DEFINE_SYMBOL LIBCSVSQLDB VERSION ${CSVSQLDB_VERSION} SOVERSION ${CSVSQLDB_VERSION_SHORT})
+target_link_libraries(libcsvsqldb PRIVATE ${CSVSQLDB_PLATFORM_LIBS} lua)
 
 if(COVERAGE)
   target_link_libraries(libcsvsqldb PUBLIC --coverage)
