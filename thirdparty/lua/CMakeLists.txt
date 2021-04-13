@@ -48,6 +48,7 @@ set_property(TARGET lua PROPERTY C_STANDARD 99)
 
 target_include_directories(lua SYSTEM PRIVATE ${lua_SOURCE_DIR})
 if(NOT WIN32)
+  target_compile_options(lua PUBLIC "-fPIC")
   target_link_libraries(lua m)
 endif()
 
