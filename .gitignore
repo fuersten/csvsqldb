@@ -36,6 +36,9 @@ tags
 # build directory
 *build*/
 
+# JetBrains IDE folder
+.idea
+
 # test artifacts
 test/std*.txt
 examples
