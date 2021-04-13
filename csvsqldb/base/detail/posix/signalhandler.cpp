@@ -36,7 +36,6 @@
 #include "base/exception.h"
 #include "base/logging.h"
 
-#include <functional>
 #include <map>
 #include <mutex>
 #include <pthread.h>
@@ -117,7 +116,9 @@ namespace csvsqldb
 
     void start()
     {
-      _handlerThread = std::thread(std::bind(&SignalHandlerThreadObject::run, &_threadObject));
+      _handlerThread = std::thread([&](){
+        _threadObject.run();
+      });
     }
 
     std::map<int, SignalHandler::SignalEventHandlerList> _handlerMap;
