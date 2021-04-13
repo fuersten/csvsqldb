@@ -1,4 +1,4 @@
-[![CMake Build Matrix](https://github.com/fuersten/csvsqldb/workflows/CMake%20Build%20Matrix/badge.svg?branch=modernize)](https://github.com/fuersten/csvsqldb/actions)
+[![CMake Build Matrix](https://github.com/fuersten/csvsqldb/workflows/CMake%20Build%20Matrix/badge.svg?branch=master)](https://github.com/fuersten/csvsqldb/actions)
 
 # csvsqldb
 A read only sql database that gets its data from supplied csv files.
