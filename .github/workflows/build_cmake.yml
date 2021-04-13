@@ -65,7 +65,7 @@ jobs:
       - name: build
         run: cmake --build build
       - name: test
-        run: cd build & test
+        run: cd build && ctest
 
   build-macos:
     runs-on: macOS-latest
