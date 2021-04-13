@@ -1,7 +1,7 @@
 ![Supported Platforms](https://img.shields.io/badge/platform-macOS%20%7C%20Linux%20%7C%20Windows-blue.svg)
 ![License: BSD-3](https://img.shields.io/badge/License-BSD3-blue.svg)
 [![CMake Build Matrix](https://github.com/fuersten/csvsqldb/workflows/CMake%20Build%20Matrix/badge.svg?branch=modernize)](https://github.com/fuersten/csvsqldb/actions)
-[![Coverage Status](https://coveralls.io/repos/github/fuersten/csvsqldb/badge.svg?branch=main)](https://coveralls.io/github/fuersten/csvsqldb?branch=modernize)
+[![Coverage Status](https://coveralls.io/repos/github/fuersten/csvsqldb/badge.svg?branch=modernize)](https://coveralls.io/github/fuersten/csvsqldb?branch=modernize)
 
 # csvsqldb
 A read only sql database that gets its data from supplied csv files.
