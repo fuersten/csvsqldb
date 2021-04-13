@@ -1,7 +1,7 @@
-![Supported Platforms](https://img.shields.io/badge/platform-macOS%20%7C%20Linux%20%7C-blue.svg)
+![Supported Platforms](https://img.shields.io/badge/platform-macOS%20%7C%20Linux%20%7C%20Windows-blue.svg)
 ![License: BSD-3](https://img.shields.io/badge/License-BSD3-blue.svg)
 [![CMake Build Matrix](https://github.com/fuersten/csvsqldb/workflows/CMake%20Build%20Matrix/badge.svg?branch=modernize)](https://github.com/fuersten/csvsqldb/actions)
-[![Coverage Status](https://coveralls.io/repos/github/fuersten/csvsqldb/badge.svg?branch=main)](https://coveralls.io/github/fuersten/csvsqldb?branch=main)
+[![Coverage Status](https://coveralls.io/repos/github/fuersten/csvsqldb/badge.svg?branch=main)](https://coveralls.io/github/fuersten/csvsqldb?branch=modernize)
 
 # csvsqldb
 A read only sql database that gets its data from supplied csv files.
@@ -23,7 +23,7 @@ It is much easier to use than the classic grep, awk, sort, cut and sed commands.
 # Supported plattforms
 - Linux
 - Mac OS X
-- Windows (currently not functional)
+- Windows
 
 # Status
 It is not ready yet, but it is definitely usefull.
