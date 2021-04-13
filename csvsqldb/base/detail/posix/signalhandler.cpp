@@ -36,6 +36,7 @@
 #include "base/exception.h"
 #include "base/logging.h"
 
+#include <functional>
 #include <map>
 #include <mutex>
 #include <pthread.h>
