@@ -6,7 +6,7 @@ env:
   CMAKE_VERSION: 3.16.9
 
 jobs:
-  build-ubuntu:
+  build-ubuntu-20:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
@@ -51,6 +51,19 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           path-to-lcov: ./coverage.info
+
+  build-ubuntu-18:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v1
+        with:
+          submodules: true
+      - name: configure
+        run: mkdir build && cd build && cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_COMPILER="g++-7" -DCMAKE_C_COMPILER="gcc-7" ..
+      - name: build
+        run: cmake --build build
+      - name: test
+        run: cd build & test
 
   build-macos:
     runs-on: macOS-latest
