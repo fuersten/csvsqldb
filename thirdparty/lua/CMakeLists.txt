@@ -2,14 +2,11 @@ cmake_minimum_required(VERSION 3.16)
 project(liblua)
 
 if(NOT APPLE AND UNIX)
-  set(LUA_PLATFORM LUA_USE_LINUX)
+  set(CMAKE_C_FLAGS "-DLUA_USE_LINUX")
 elseif(APPLE)
-  set(LUA_PLATFORM LUA_USE_MACOSX)
+  set(CMAKE_C_FLAGS "-DLUA_USE_MACOSX")
 elseif(WIN32)
-  set(LUA_PLATFORM LUA_USE_WINDOWS)
 endif()
-
-set(CMAKE_C_FLAGS "-D${LUA_PLATFORM}")
 
 add_library(lua STATIC 
  ${lua_SOURCE_DIR}/lapi.c
@@ -45,11 +42,12 @@ add_library(lua STATIC
  ${lua_SOURCE_DIR}/lutf8lib.c
  ${lua_SOURCE_DIR}/lvm.c
  ${lua_SOURCE_DIR}/lzio.c
- ${lua_SOURCE_DIR}/onelua.c
 )
 
 set_property(TARGET lua PROPERTY C_STANDARD 99)
 
 target_include_directories(lua SYSTEM PRIVATE ${lua_SOURCE_DIR})
-target_link_libraries(lua m)
+if(NOT WIN32)
+  target_link_libraries(lua m)
+endif()
 
