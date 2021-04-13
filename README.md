@@ -29,7 +29,6 @@ It is much easier to use than the classic grep, awk, sort, cut and sed commands.
 It is not ready yet, but it is definitely usefull.
 
 Most important issues, I am working on:
-- port to Windows
 - extraction of the schema from csv files
 - extended projection step after aggregation operation in order to be able to calculate with aggregation results
 - ORDER BY with expressions
