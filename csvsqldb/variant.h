@@ -47,10 +47,14 @@ namespace csvsqldb
   class CSVSQLDB_EXPORT RefCount
   {
   public:
-    RefCount()
-    : _refCount(1)
-    {
-    }
+    RefCount() = default;
+
+    RefCount(const RefCount&) = delete;
+    RefCount(RefCount&&) = delete;
+    RefCount& operator=(const RefCount&) = delete;
+    RefCount& operator=(RefCount&&) = delete;
+
+    ~RefCount() = default;
 
     uint16_t inc()
     {
@@ -73,7 +77,7 @@ namespace csvsqldb
     }
 
   private:
-    uint16_t _refCount;
+    uint16_t _refCount{1};
   };
 
 

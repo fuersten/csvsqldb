@@ -36,6 +36,19 @@
 #include <catch2/catch.hpp>
 
 
+TEST_CASE("RefCount", "[variant]")
+{
+  SECTION("count")
+  {
+    csvsqldb::RefCount count;
+    CHECK(count.count() == 1);
+    CHECK(count.inc() == 2);
+    CHECK(count.dec() == 1);
+    CHECK(count.dec() == 0);
+    CHECK_THROWS_WITH(count.dec(), "refCount is already 0");
+  }
+}
+
 TEST_CASE("Variant Test", "[variant]")
 {
   SECTION("construction")
@@ -449,5 +462,19 @@ TEST_CASE("Variant Test", "[variant]")
 
     CHECK_THROWS_WITH(v2 /= 0, "cannot devide by null");
     CHECK_THROWS_WITH(v2 /= 0.0, "cannot devide by null");
+  }
+  SECTION("value getter")
+  {
+    CHECK(csvsqldb::ValueGetter<std::string>::getValue("This is cool!") == std::string("This is cool!"));
+    CHECK(csvsqldb::ValueGetter<bool>::getValue(true));
+    CHECK(csvsqldb::ValueGetter<int64_t>::getValue(4711) == 4711);
+    CHECK(csvsqldb::ValueGetter<double>::getValue(47.11) == Approx(47.11));
+    CHECK(csvsqldb::ValueGetter<csvsqldb::Date>::getValue(csvsqldb::Date(1970, csvsqldb::Date::September, 23)).asJulianDay() ==
+          2440853);
+    CHECK(csvsqldb::ValueGetter<csvsqldb::Time>::getValue(csvsqldb::Time(8, 9, 11)).asInteger() == 29351000);
+    CHECK(csvsqldb::ValueGetter<csvsqldb::Timestamp>::getValue(csvsqldb::Timestamp(1970, csvsqldb::Date::September, 23, 8, 9, 11))
+            .asInteger() == 244085329351000);
+    CHECK_THROWS_WITH(csvsqldb::ValueGetter<csvsqldb::NoneType>::getValue(csvsqldb::Variant{}),
+                      "Cannot get a value from a null type");
   }
 }
