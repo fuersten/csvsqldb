@@ -39,6 +39,7 @@
 #include <csvsqldb/block_iterator.h>
 #include <csvsqldb/operatornodes/scan_operatornode.h>
 
+#include <condition_variable>
 #include <queue>
 
 

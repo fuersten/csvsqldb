@@ -267,8 +267,8 @@ namespace csvsqldb
 
     _stream = std::make_unique<std::fstream>(pathToCsvFile.string());
     if (!_stream || _stream->fail()) {
-      std::cerr << csvsqldb::errnoText() << std::endl;
-      CSVSQLDB_THROW(csvsqldb::FilesystemException, "could not open file '" << pathToCsvFile << "'");
+      CSVSQLDB_THROW(csvsqldb::FilesystemException,
+                     "could not open file '" << pathToCsvFile << "' (" << csvsqldb::errnoText() << ")");
     }
 
     _csvContext._skipFirstLine = true;
