@@ -117,7 +117,7 @@ public:
   {
   }
 
-  const csvsqldb::Values* getNextRow()
+  const csvsqldb::Values* getNextRow() override
   {
     if (!_block) {
       prepareBuffer();
@@ -126,7 +126,7 @@ public:
     return _iterator->getNextRow();
   }
 
-  virtual csvsqldb::BlockPtr getNextBlock()
+  csvsqldb::BlockPtr getNextBlock() override
   {
     return _block;
   }
@@ -139,7 +139,7 @@ public:
     _block->nextRow();
   }
 
-  virtual void dump(std::ostream& stream) const
+  void dump(std::ostream& stream) const override
   {
     stream << "TestScanOperatorNode\n";
   }

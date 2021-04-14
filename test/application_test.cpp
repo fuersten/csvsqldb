@@ -54,13 +54,13 @@ public:
   bool _didTearDown{false};
 
 private:
-  virtual bool setUp(int argc, char** argv)
+  bool setUp(int argc, char** argv) override
   {
     _didSetup = true;
     return _setUp;
   }
 
-  virtual int doRun()
+  int doRun() override
   {
     _didRun = true;
 
@@ -71,7 +71,7 @@ private:
     return 0;
   }
 
-  virtual void tearDown()
+  void tearDown() override
   {
     _didTearDown = true;
   }

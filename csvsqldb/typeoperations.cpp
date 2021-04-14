@@ -46,31 +46,31 @@
 namespace csvsqldb
 {
   template<typename RET, typename L, typename R>
-  RET op_add(const L& lhs, const R& rhs)
+  static RET op_add(const L& lhs, const R& rhs)
   {
     return lhs + rhs;
   }
 
   template<typename RET, typename L, typename R>
-  RET op_sub(const L& lhs, const R& rhs)
+  static RET op_sub(const L& lhs, const R& rhs)
   {
     return lhs - rhs;
   }
 
   template<typename RET, typename L, typename R>
-  RET op_mul(const L& lhs, const R& rhs)
+  static RET op_mul(const L& lhs, const R& rhs)
   {
     return lhs * rhs;
   }
 
   template<typename RET, typename L, typename R>
-  RET op_div(const L& lhs, const R& rhs)
+  static RET op_div(const L& lhs, const R& rhs)
   {
     return lhs / rhs;
   }
 
   template<typename L, typename R>
-  L op_mod(const L& lhs, const R& rhs)
+  static L op_mod(const L& lhs, const R& rhs)
   {
     return lhs % rhs;
   }
@@ -84,7 +84,7 @@ namespace csvsqldb
 
   template<typename L, typename R>
   struct GreaterThen {
-    bool operation(const L& lhs, const R& rhs) const
+    static bool operation(const L& lhs, const R& rhs)
     {
       return lhs > rhs;
     }
@@ -92,7 +92,7 @@ namespace csvsqldb
 
   template<>
   struct GreaterThen<StringType, StringType> {
-    bool operation(const StringType& lhs, const StringType& rhs) const
+    static bool operation(const StringType& lhs, const StringType& rhs)
     {
       return ::strcoll(lhs, rhs) > 0;
     }
@@ -100,7 +100,7 @@ namespace csvsqldb
 
   template<>
   struct GreaterThen<csvsqldb::Date, StringType> {
-    bool operation(const csvsqldb::Date& lhs, const StringType& rhs) const
+    static bool operation(const csvsqldb::Date& lhs, const StringType& rhs)
     {
       return lhs > csvsqldb::dateFromString(rhs);
     }
@@ -108,7 +108,7 @@ namespace csvsqldb
 
   template<>
   struct GreaterThen<StringType, csvsqldb::Date> {
-    bool operation(const StringType& lhs, const csvsqldb::Date& rhs) const
+    static bool operation(const StringType& lhs, const csvsqldb::Date& rhs)
     {
       return csvsqldb::dateFromString(lhs) > rhs;
     }
@@ -116,7 +116,7 @@ namespace csvsqldb
 
   template<>
   struct GreaterThen<csvsqldb::Time, StringType> {
-    bool operation(const csvsqldb::Time& lhs, const StringType& rhs) const
+    static bool operation(const csvsqldb::Time& lhs, const StringType& rhs)
     {
       return lhs > csvsqldb::timeFromString(rhs);
     }
@@ -124,7 +124,7 @@ namespace csvsqldb
 
   template<>
   struct GreaterThen<StringType, csvsqldb::Time> {
-    bool operation(const StringType& lhs, const csvsqldb::Time& rhs) const
+    static bool operation(const StringType& lhs, const csvsqldb::Time& rhs)
     {
       return csvsqldb::timeFromString(lhs) > rhs;
     }
@@ -132,7 +132,7 @@ namespace csvsqldb
 
   template<>
   struct GreaterThen<csvsqldb::Timestamp, StringType> {
-    bool operation(const csvsqldb::Timestamp& lhs, const StringType& rhs) const
+    static bool operation(const csvsqldb::Timestamp& lhs, const StringType& rhs)
     {
       return lhs > csvsqldb::timestampFromString(rhs);
     }
@@ -140,7 +140,7 @@ namespace csvsqldb
 
   template<>
   struct GreaterThen<StringType, csvsqldb::Timestamp> {
-    bool operation(const StringType& lhs, const csvsqldb::Timestamp& rhs) const
+    static bool operation(const StringType& lhs, const csvsqldb::Timestamp& rhs)
     {
       return csvsqldb::timestampFromString(lhs) > rhs;
     }
@@ -149,7 +149,7 @@ namespace csvsqldb
 
   template<typename L, typename R>
   struct GreaterEqual {
-    bool operation(const L& lhs, const R& rhs) const
+    static bool operation(const L& lhs, const R& rhs)
     {
       return lhs >= rhs;
     }
@@ -157,7 +157,7 @@ namespace csvsqldb
 
   template<>
   struct GreaterEqual<StringType, StringType> {
-    bool operation(const StringType& lhs, const StringType& rhs) const
+    static bool operation(const StringType& lhs, const StringType& rhs)
     {
       return ::strcoll(lhs, rhs) >= 0;
     }
@@ -165,7 +165,7 @@ namespace csvsqldb
 
   template<>
   struct GreaterEqual<csvsqldb::Date, StringType> {
-    bool operation(const csvsqldb::Date& lhs, const StringType& rhs) const
+    static bool operation(const csvsqldb::Date& lhs, const StringType& rhs)
     {
       return lhs >= csvsqldb::dateFromString(rhs);
     }
@@ -173,7 +173,7 @@ namespace csvsqldb
 
   template<>
   struct GreaterEqual<StringType, csvsqldb::Date> {
-    bool operation(const StringType& lhs, const csvsqldb::Date& rhs) const
+    static bool operation(const StringType& lhs, const csvsqldb::Date& rhs)
     {
       return csvsqldb::dateFromString(lhs) >= rhs;
     }
@@ -181,7 +181,7 @@ namespace csvsqldb
 
   template<>
   struct GreaterEqual<csvsqldb::Time, StringType> {
-    bool operation(const csvsqldb::Time& lhs, const StringType& rhs) const
+    static bool operation(const csvsqldb::Time& lhs, const StringType& rhs)
     {
       return lhs >= csvsqldb::timeFromString(rhs);
     }
@@ -189,7 +189,7 @@ namespace csvsqldb
 
   template<>
   struct GreaterEqual<StringType, csvsqldb::Time> {
-    bool operation(const StringType& lhs, const csvsqldb::Time& rhs) const
+    static bool operation(const StringType& lhs, const csvsqldb::Time& rhs)
     {
       return csvsqldb::timeFromString(lhs) >= rhs;
     }
@@ -197,7 +197,7 @@ namespace csvsqldb
 
   template<>
   struct GreaterEqual<csvsqldb::Timestamp, StringType> {
-    bool operation(const csvsqldb::Timestamp& lhs, const StringType& rhs) const
+    static bool operation(const csvsqldb::Timestamp& lhs, const StringType& rhs)
     {
       return lhs >= csvsqldb::timestampFromString(rhs);
     }
@@ -205,7 +205,7 @@ namespace csvsqldb
 
   template<>
   struct GreaterEqual<StringType, csvsqldb::Timestamp> {
-    bool operation(const StringType& lhs, const csvsqldb::Timestamp& rhs) const
+    static bool operation(const StringType& lhs, const csvsqldb::Timestamp& rhs)
     {
       return csvsqldb::timestampFromString(lhs) >= rhs;
     }
@@ -214,7 +214,7 @@ namespace csvsqldb
 
   template<typename L, typename R>
   struct LessThen {
-    bool operation(const L& lhs, const R& rhs) const
+    static bool operation(const L& lhs, const R& rhs)
     {
       return lhs < rhs;
     }
@@ -222,7 +222,7 @@ namespace csvsqldb
 
   template<>
   struct LessThen<StringType, StringType> {
-    bool operation(const StringType& lhs, const StringType& rhs) const
+    static bool operation(const StringType& lhs, const StringType& rhs)
     {
       return ::strcoll(lhs, rhs) < 0;
     }
@@ -230,7 +230,7 @@ namespace csvsqldb
 
   template<>
   struct LessThen<csvsqldb::Date, StringType> {
-    bool operation(const csvsqldb::Date& lhs, const StringType& rhs) const
+    static bool operation(const csvsqldb::Date& lhs, const StringType& rhs)
     {
       return lhs < csvsqldb::dateFromString(rhs);
     }
@@ -238,7 +238,7 @@ namespace csvsqldb
 
   template<>
   struct LessThen<StringType, csvsqldb::Date> {
-    bool operation(const StringType& lhs, const csvsqldb::Date& rhs) const
+    static bool operation(const StringType& lhs, const csvsqldb::Date& rhs)
     {
       return csvsqldb::dateFromString(lhs) < rhs;
     }
@@ -246,7 +246,7 @@ namespace csvsqldb
 
   template<>
   struct LessThen<csvsqldb::Time, StringType> {
-    bool operation(const csvsqldb::Time& lhs, const StringType& rhs) const
+    static bool operation(const csvsqldb::Time& lhs, const StringType& rhs)
     {
       return lhs < csvsqldb::timeFromString(rhs);
     }
@@ -254,7 +254,7 @@ namespace csvsqldb
 
   template<>
   struct LessThen<StringType, csvsqldb::Time> {
-    bool operation(const StringType& lhs, const csvsqldb::Time& rhs) const
+    static bool operation(const StringType& lhs, const csvsqldb::Time& rhs)
     {
       return csvsqldb::timeFromString(lhs) < rhs;
     }
@@ -262,7 +262,7 @@ namespace csvsqldb
 
   template<>
   struct LessThen<csvsqldb::Timestamp, StringType> {
-    bool operation(const csvsqldb::Timestamp& lhs, const StringType& rhs) const
+    static bool operation(const csvsqldb::Timestamp& lhs, const StringType& rhs)
     {
       return lhs < csvsqldb::timestampFromString(rhs);
     }
@@ -270,7 +270,7 @@ namespace csvsqldb
 
   template<>
   struct LessThen<StringType, csvsqldb::Timestamp> {
-    bool operation(const StringType& lhs, const csvsqldb::Timestamp& rhs) const
+    static bool operation(const StringType& lhs, const csvsqldb::Timestamp& rhs)
     {
       return csvsqldb::timestampFromString(lhs) < rhs;
     }
@@ -279,7 +279,7 @@ namespace csvsqldb
 
   template<typename L, typename R>
   struct LessEqual {
-    bool operation(const L& lhs, const R& rhs) const
+    static bool operation(const L& lhs, const R& rhs)
     {
       return lhs <= rhs;
     }
@@ -287,7 +287,7 @@ namespace csvsqldb
 
   template<>
   struct LessEqual<StringType, StringType> {
-    bool operation(const StringType& lhs, const StringType& rhs) const
+    static bool operation(const StringType& lhs, const StringType& rhs)
     {
       return ::strcoll(lhs, rhs) <= 0;
     }
@@ -295,7 +295,7 @@ namespace csvsqldb
 
   template<>
   struct LessEqual<csvsqldb::Date, StringType> {
-    bool operation(const csvsqldb::Date& lhs, const StringType& rhs) const
+    static bool operation(const csvsqldb::Date& lhs, const StringType& rhs)
     {
       return lhs <= csvsqldb::dateFromString(rhs);
     }
@@ -303,7 +303,7 @@ namespace csvsqldb
 
   template<>
   struct LessEqual<StringType, csvsqldb::Date> {
-    bool operation(const StringType& lhs, const csvsqldb::Date& rhs) const
+    static bool operation(const StringType& lhs, const csvsqldb::Date& rhs)
     {
       return csvsqldb::dateFromString(lhs) <= rhs;
     }
@@ -311,7 +311,7 @@ namespace csvsqldb
 
   template<>
   struct LessEqual<csvsqldb::Time, StringType> {
-    bool operation(const csvsqldb::Time& lhs, const StringType& rhs) const
+    static bool operation(const csvsqldb::Time& lhs, const StringType& rhs)
     {
       return lhs <= csvsqldb::timeFromString(rhs);
     }
@@ -319,7 +319,7 @@ namespace csvsqldb
 
   template<>
   struct LessEqual<StringType, csvsqldb::Time> {
-    bool operation(const StringType& lhs, const csvsqldb::Time& rhs) const
+    static bool operation(const StringType& lhs, const csvsqldb::Time& rhs)
     {
       return csvsqldb::timeFromString(lhs) <= rhs;
     }
@@ -327,7 +327,7 @@ namespace csvsqldb
 
   template<>
   struct LessEqual<csvsqldb::Timestamp, StringType> {
-    bool operation(const csvsqldb::Timestamp& lhs, const StringType& rhs) const
+    static bool operation(const csvsqldb::Timestamp& lhs, const StringType& rhs)
     {
       return lhs <= csvsqldb::timestampFromString(rhs);
     }
@@ -335,7 +335,7 @@ namespace csvsqldb
 
   template<>
   struct LessEqual<StringType, csvsqldb::Timestamp> {
-    bool operation(const StringType& lhs, const csvsqldb::Timestamp& rhs) const
+    static bool operation(const StringType& lhs, const csvsqldb::Timestamp& rhs)
     {
       return csvsqldb::timestampFromString(lhs) <= rhs;
     }
@@ -344,7 +344,7 @@ namespace csvsqldb
 
   template<typename L, typename R>
   struct CompareEqual {
-    bool operation(const L& lhs, const R& rhs) const
+    static bool operation(const L& lhs, const R& rhs)
     {
       return lhs == rhs;
     }
@@ -352,7 +352,7 @@ namespace csvsqldb
 
   template<>
   struct CompareEqual<double, double> {
-    bool operation(const double& lhs, const double& rhs) const
+    static bool operation(const double& lhs, const double& rhs)
     {
       return csvsqldb::Approx(lhs) == rhs;
     }
@@ -360,7 +360,7 @@ namespace csvsqldb
 
   template<>
   struct CompareEqual<StringType, StringType> {
-    bool operation(const StringType& lhs, const StringType& rhs) const
+    static bool operation(const StringType& lhs, const StringType& rhs)
     {
       return ::strcoll(lhs, rhs) == 0;
     }
@@ -368,7 +368,7 @@ namespace csvsqldb
 
   template<>
   struct CompareEqual<csvsqldb::Date, StringType> {
-    bool operation(const csvsqldb::Date& lhs, const StringType& rhs) const
+    static bool operation(const csvsqldb::Date& lhs, const StringType& rhs)
     {
       return lhs == csvsqldb::dateFromString(rhs);
     }
@@ -376,7 +376,7 @@ namespace csvsqldb
 
   template<>
   struct CompareEqual<StringType, csvsqldb::Date> {
-    bool operation(const StringType& lhs, const csvsqldb::Date& rhs) const
+    static bool operation(const StringType& lhs, const csvsqldb::Date& rhs)
     {
       return csvsqldb::dateFromString(lhs) == rhs;
     }
@@ -384,7 +384,7 @@ namespace csvsqldb
 
   template<>
   struct CompareEqual<csvsqldb::Time, StringType> {
-    bool operation(const csvsqldb::Time& lhs, const StringType& rhs) const
+    static bool operation(const csvsqldb::Time& lhs, const StringType& rhs)
     {
       return lhs == csvsqldb::timeFromString(rhs);
     }
@@ -392,7 +392,7 @@ namespace csvsqldb
 
   template<>
   struct CompareEqual<StringType, csvsqldb::Time> {
-    bool operation(const StringType& lhs, const csvsqldb::Time& rhs) const
+    static bool operation(const StringType& lhs, const csvsqldb::Time& rhs)
     {
       return csvsqldb::timeFromString(lhs) == rhs;
     }
@@ -400,7 +400,7 @@ namespace csvsqldb
 
   template<>
   struct CompareEqual<csvsqldb::Timestamp, StringType> {
-    bool operation(const csvsqldb::Timestamp& lhs, const StringType& rhs) const
+    static bool operation(const csvsqldb::Timestamp& lhs, const StringType& rhs)
     {
       return lhs == csvsqldb::timestampFromString(rhs);
     }
@@ -408,7 +408,7 @@ namespace csvsqldb
 
   template<>
   struct CompareEqual<StringType, csvsqldb::Timestamp> {
-    bool operation(const StringType& lhs, const csvsqldb::Timestamp& rhs) const
+    static bool operation(const StringType& lhs, const csvsqldb::Timestamp& rhs)
     {
       return csvsqldb::timestampFromString(lhs) == rhs;
     }
@@ -417,7 +417,7 @@ namespace csvsqldb
 
   template<typename L, typename R>
   struct CompareNotEqual {
-    bool operation(const L& lhs, const R& rhs) const
+    static bool operation(const L& lhs, const R& rhs)
     {
       return lhs != rhs;
     }
@@ -425,7 +425,7 @@ namespace csvsqldb
 
   template<>
   struct CompareNotEqual<double, double> {
-    bool operation(const double& lhs, const double& rhs) const
+    static bool operation(const double& lhs, const double& rhs)
     {
       return csvsqldb::Approx(lhs) != rhs;
     }
@@ -433,7 +433,7 @@ namespace csvsqldb
 
   template<>
   struct CompareNotEqual<StringType, StringType> {
-    bool operation(const StringType& lhs, const StringType& rhs) const
+    static bool operation(const StringType& lhs, const StringType& rhs)
     {
       return ::strcoll(lhs, rhs) != 0;
     }
@@ -441,7 +441,7 @@ namespace csvsqldb
 
   template<>
   struct CompareNotEqual<csvsqldb::Date, StringType> {
-    bool operation(const csvsqldb::Date& lhs, const StringType& rhs) const
+    static bool operation(const csvsqldb::Date& lhs, const StringType& rhs)
     {
       return lhs != csvsqldb::dateFromString(rhs);
     }
@@ -449,7 +449,7 @@ namespace csvsqldb
 
   template<>
   struct CompareNotEqual<StringType, csvsqldb::Date> {
-    bool operation(const StringType& lhs, const csvsqldb::Date& rhs) const
+    static bool operation(const StringType& lhs, const csvsqldb::Date& rhs)
     {
       return csvsqldb::dateFromString(lhs) != rhs;
     }
@@ -457,7 +457,7 @@ namespace csvsqldb
 
   template<>
   struct CompareNotEqual<csvsqldb::Time, StringType> {
-    bool operation(const csvsqldb::Time& lhs, const StringType& rhs) const
+    static bool operation(const csvsqldb::Time& lhs, const StringType& rhs)
     {
       return lhs != csvsqldb::timeFromString(rhs);
     }
@@ -465,7 +465,7 @@ namespace csvsqldb
 
   template<>
   struct CompareNotEqual<StringType, csvsqldb::Time> {
-    bool operation(const StringType& lhs, const csvsqldb::Time& rhs) const
+    static bool operation(const StringType& lhs, const csvsqldb::Time& rhs)
     {
       return csvsqldb::timeFromString(lhs) != rhs;
     }
@@ -473,7 +473,7 @@ namespace csvsqldb
 
   template<>
   struct CompareNotEqual<csvsqldb::Timestamp, StringType> {
-    bool operation(const csvsqldb::Timestamp& lhs, const StringType& rhs) const
+    static bool operation(const csvsqldb::Timestamp& lhs, const StringType& rhs)
     {
       return lhs != csvsqldb::timestampFromString(rhs);
     }
@@ -481,7 +481,7 @@ namespace csvsqldb
 
   template<>
   struct CompareNotEqual<StringType, csvsqldb::Timestamp> {
-    bool operation(const StringType& lhs, const csvsqldb::Timestamp& rhs) const
+    static bool operation(const StringType& lhs, const csvsqldb::Timestamp& rhs)
     {
       return csvsqldb::timestampFromString(lhs) != rhs;
     }
@@ -490,7 +490,7 @@ namespace csvsqldb
 
   template<typename L, typename R>
   struct And {
-    bool operation(const L& lhs, const R& rhs) const
+    static bool operation(const L& lhs, const R& rhs)
     {
       return static_cast<bool>(lhs) && static_cast<bool>(rhs);
     }
@@ -498,7 +498,7 @@ namespace csvsqldb
 
   template<typename L>
   struct And<L, StringType> {
-    bool operation(const L& lhs, const StringType& rhs) const
+    static bool operation(const L& lhs, const StringType& rhs)
     {
       return static_cast<bool>(lhs) && rhs;
     }
@@ -506,7 +506,7 @@ namespace csvsqldb
 
   template<typename R>
   struct And<StringType, R> {
-    bool operation(const StringType& lhs, const R& rhs) const
+    static bool operation(const StringType& lhs, const R& rhs)
     {
       return lhs && static_cast<bool>(rhs);
     }
@@ -514,7 +514,7 @@ namespace csvsqldb
 
   template<>
   struct And<StringType, StringType> {
-    bool operation(const StringType& lhs, const StringType& rhs) const
+    static bool operation(const StringType& lhs, const StringType& rhs)
     {
       return lhs && rhs;
     }
@@ -522,7 +522,7 @@ namespace csvsqldb
 
   template<typename L, typename R>
   struct Or {
-    bool operation(const L& lhs, const R& rhs) const
+    static bool operation(const L& lhs, const R& rhs)
     {
       return static_cast<bool>(lhs) || static_cast<bool>(rhs);
     }
@@ -530,7 +530,7 @@ namespace csvsqldb
 
   template<typename L>
   struct Or<L, StringType> {
-    bool operation(const L& lhs, const StringType& rhs) const
+    static bool operation(const L& lhs, const StringType& rhs)
     {
       return static_cast<bool>(lhs) || rhs;
     }
@@ -538,7 +538,7 @@ namespace csvsqldb
 
   template<typename R>
   struct Or<StringType, R> {
-    bool operation(const StringType& lhs, const R& rhs) const
+    static bool operation(const StringType& lhs, const R& rhs)
     {
       return lhs || static_cast<bool>(rhs);
     }
@@ -546,7 +546,7 @@ namespace csvsqldb
 
   template<>
   struct Or<StringType, StringType> {
-    bool operation(const StringType& lhs, const StringType& rhs) const
+    static bool operation(const StringType& lhs, const StringType& rhs)
     {
       return lhs || rhs;
     }
@@ -558,20 +558,20 @@ namespace csvsqldb
   }
 
   template<typename R>
-  R op_minus(const R& rhs)
+  static R op_minus(const R& rhs)
   {
     return -rhs;
   }
 
   template<typename R>
-  R op_plus(const R& rhs)
+  static R op_plus(const R& rhs)
   {
     return +rhs;
   }
 
   template<typename RET, typename R>
   struct Cast {
-    RET operation(const R& rhs) const
+    static RET operation(const R& rhs)
     {
       return static_cast<RET>(rhs);
     }
@@ -579,7 +579,7 @@ namespace csvsqldb
 
   template<>
   struct Cast<bool, StringType> {
-    bool operation(const StringType& rhs) const
+    static bool operation(const StringType& rhs)
     {
       return rhs;
     }
@@ -587,7 +587,7 @@ namespace csvsqldb
 
   template<>
   struct Cast<double, StringType> {
-    double operation(const StringType& rhs) const
+    static double operation(const StringType& rhs)
     {
       return ::atof(rhs);
     }
@@ -595,7 +595,7 @@ namespace csvsqldb
 
   template<>
   struct Cast<int64_t, StringType> {
-    int64_t operation(const StringType& rhs) const
+    static int64_t operation(const StringType& rhs)
     {
       return ::atol(rhs);
     }
@@ -603,7 +603,7 @@ namespace csvsqldb
 
   template<>
   struct Cast<csvsqldb::Date, StringType> {
-    csvsqldb::Date operation(const StringType& rhs) const
+    static csvsqldb::Date operation(const StringType& rhs)
     {
       return csvsqldb::dateFromString(rhs);
     }
@@ -611,7 +611,7 @@ namespace csvsqldb
 
   template<>
   struct Cast<csvsqldb::Time, StringType> {
-    csvsqldb::Time operation(const StringType& rhs) const
+    static csvsqldb::Time operation(const StringType& rhs)
     {
       return csvsqldb::timeFromString(rhs);
     }
@@ -619,7 +619,7 @@ namespace csvsqldb
 
   template<>
   struct Cast<csvsqldb::Timestamp, StringType> {
-    csvsqldb::Timestamp operation(const StringType& rhs) const
+    static csvsqldb::Timestamp operation(const StringType& rhs)
     {
       return csvsqldb::timestampFromString(rhs);
     }
@@ -627,7 +627,7 @@ namespace csvsqldb
 
   template<>
   struct Cast<csvsqldb::Timestamp, csvsqldb::Date> {
-    csvsqldb::Timestamp operation(const csvsqldb::Date& rhs) const
+    static csvsqldb::Timestamp operation(const csvsqldb::Date& rhs)
     {
       return csvsqldb::Timestamp(rhs);
     }
@@ -635,7 +635,7 @@ namespace csvsqldb
 
   template<>
   struct Cast<csvsqldb::Timestamp, csvsqldb::Time> {
-    csvsqldb::Timestamp operation(const csvsqldb::Time& rhs) const
+    static csvsqldb::Timestamp operation(const csvsqldb::Time& rhs)
     {
       return csvsqldb::Timestamp(rhs);
     }
@@ -1036,7 +1036,7 @@ namespace csvsqldb
   };
 
   template<typename RET, typename L, typename R>
-  RET op_concat(const L& lhs, const R& rhs);
+  static RET op_concat(const L& lhs, const R& rhs);
 
   template<>
   StringType op_concat<StringType>(const StringType& lhs, const StringType& rhs)

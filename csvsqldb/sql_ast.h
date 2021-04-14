@@ -373,7 +373,7 @@ namespace csvsqldb
   class CSVSQLDB_EXPORT ASTNode
   {
   public:
-    ASTNode(const SymbolTablePtr& symbolTable)
+    explicit ASTNode(const SymbolTablePtr& symbolTable)
     : _symbolTable(symbolTable)
     {
     }
@@ -399,7 +399,7 @@ namespace csvsqldb
   class CSVSQLDB_EXPORT ASTExprNode : public ASTNode
   {
   public:
-    ASTExprNode(const SymbolTablePtr& symbolTable)
+    explicit ASTExprNode(const SymbolTablePtr& symbolTable)
     : ASTNode(symbolTable)
     {
     }
@@ -527,7 +527,7 @@ namespace csvsqldb
   class CSVSQLDB_EXPORT ASTQueryExpressionNode : public ASTNode
   {
   public:
-    ASTQueryExpressionNode(const SymbolTablePtr& symbolTable)
+    explicit ASTQueryExpressionNode(const SymbolTablePtr& symbolTable)
     : ASTNode(symbolTable)
     {
     }
@@ -656,7 +656,7 @@ namespace csvsqldb
   class CSVSQLDB_EXPORT ASTTableReferenceNode : public ASTNode
   {
   public:
-    ASTTableReferenceNode(const SymbolTablePtr& symbolTable)
+    explicit ASTTableReferenceNode(const SymbolTablePtr& symbolTable)
     : ASTNode(symbolTable)
     {
     }
@@ -666,7 +666,7 @@ namespace csvsqldb
   class CSVSQLDB_EXPORT ASTTableFactorNode : public ASTTableReferenceNode
   {
   public:
-    ASTTableFactorNode(const SymbolTablePtr& symbolTable)
+    explicit ASTTableFactorNode(const SymbolTablePtr& symbolTable)
     : ASTTableReferenceNode(symbolTable)
     {
     }
@@ -1020,9 +1020,9 @@ namespace csvsqldb
     ASTFunctionNode(const SymbolTablePtr& symbolTable, const FunctionRegistry& functionRegistry, const std::string& functionName,
                     const Parameters& parameters)
     : ASTExprNode(symbolTable)
+    , _function(functionRegistry.getFunction(functionName))
     , _parameters(parameters)
     {
-      _function = functionRegistry.getFunction(functionName);
       if (!_function) {
         CSVSQLDB_THROW(SqlParserException, "function '" << functionName << "' not found");
       }
@@ -1275,7 +1275,7 @@ namespace csvsqldb
   class CSVSQLDB_EXPORT ASTAlterTableNode : public ASTNode
   {
   protected:
-    ASTAlterTableNode(const SymbolTablePtr& symbolTable)
+    explicit ASTAlterTableNode(const SymbolTablePtr& symbolTable)
     : ASTNode(symbolTable)
     {
     }

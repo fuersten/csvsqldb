@@ -52,14 +52,14 @@ namespace
     }
 
   private:
-    virtual size_t doGetProperties(const std::string& path, csvsqldb::StringVector& properties) const
+    size_t doGetProperties(const std::string& path, csvsqldb::StringVector& properties) const override
     {
       properties.push_back("TestClass1");
       properties.push_back("TestClass2");
       return 2;
     }
 
-    virtual bool doHasProperty(const std::string& path) const
+    bool doHasProperty(const std::string& path) const override
     {
       if (path == "debug.level") {
         return true;
@@ -67,12 +67,12 @@ namespace
       throw csvsqldb::ConfigurationException("not implemented");
     }
 
-    virtual bool get(const std::string& path, csvsqldb::Typer<bool> typer) const
+    bool get(const std::string& path, csvsqldb::Typer<bool> typer) const override
     {
       throw csvsqldb::ConfigurationException("not implemented");
     }
 
-    virtual int32_t get(const std::string& path, csvsqldb::Typer<int32_t> typer) const
+    int32_t get(const std::string& path, csvsqldb::Typer<int32_t> typer) const override
     {
       if (path == "debug.level.TestClass1") {
         return 1;
@@ -83,22 +83,22 @@ namespace
       throw csvsqldb::ConfigurationException("not implemented");
     }
 
-    virtual int64_t get(const std::string& path, csvsqldb::Typer<int64_t> typer) const
+    int64_t get(const std::string& path, csvsqldb::Typer<int64_t> typer) const override
     {
       throw csvsqldb::ConfigurationException("not implemented");
     }
 
-    virtual float get(const std::string& path, csvsqldb::Typer<float> typer) const
+    float get(const std::string& path, csvsqldb::Typer<float> typer) const override
     {
       throw csvsqldb::ConfigurationException("not implemented");
     }
 
-    virtual double get(const std::string& path, csvsqldb::Typer<double> typer) const
+    double get(const std::string& path, csvsqldb::Typer<double> typer) const override
     {
       throw csvsqldb::ConfigurationException("not implemented");
     }
 
-    virtual std::string get(const std::string& path, csvsqldb::Typer<std::string> typer) const
+    std::string get(const std::string& path, csvsqldb::Typer<std::string> typer) const override
     {
       if (path == "logging.device") {
         return "Console";

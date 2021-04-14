@@ -236,7 +236,7 @@ namespace csvsqldb
     class FunctionObjectImpl0 : public FunctionObject
     {
     public:
-      FunctionObjectImpl0(F f)
+      explicit FunctionObjectImpl0(F f)
       : _f(f)
       {
       }
@@ -286,7 +286,7 @@ namespace csvsqldb
     class FunctionObjectImpl1 : public FunctionObject
     {
     public:
-      FunctionObjectImpl1(F f)
+      explicit FunctionObjectImpl1(F f)
       : _f(f)
       {
       }
@@ -339,7 +339,7 @@ namespace csvsqldb
     class FunctionObjectImpl2 : public FunctionObject
     {
     public:
-      FunctionObjectImpl2(F f)
+      explicit FunctionObjectImpl2(F f)
       : _f(f)
       {
       }
@@ -395,7 +395,7 @@ namespace csvsqldb
     class FunctionObjectImpl3 : public FunctionObject
     {
     public:
-      FunctionObjectImpl3(F f)
+      explicit FunctionObjectImpl3(F f)
       : _f(f)
       {
       }
@@ -461,6 +461,8 @@ namespace csvsqldb
       LuaEngine& operator=(const LuaEngine&) = delete;
       LuaEngine(LuaEngine&&) = delete;
       LuaEngine& operator=(LuaEngine&&) = delete;
+
+      ~LuaEngine() = default;
 
       /**
        * Reads in a lua file and processes the script. Afterwards lua functions can be called or globals read out.
@@ -930,7 +932,7 @@ namespace csvsqldb
        * Is a guard which pops a lua object from the lua stack upon destruction.
        */
       struct LuaStackCleaner {
-        LuaStackCleaner(const LuaState& state)
+        explicit LuaStackCleaner(const LuaState& state)
         : _state(state)
         {
         }

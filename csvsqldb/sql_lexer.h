@@ -159,7 +159,7 @@ namespace csvsqldb
   class CSVSQLDB_EXPORT SQLLexer
   {
   public:
-    SQLLexer(const std::string& input);
+    explicit SQLLexer(const std::string& input);
 
     SQLLexer(const SQLLexer&) = delete;
     SQLLexer& operator=(const SQLLexer&) = delete;
@@ -170,7 +170,7 @@ namespace csvsqldb
 
     csvsqldb::lexer::Token next();
 
-    void setInput(const std::string& input);
+    void setInput(std::string input);
 
   private:
     using Keywords = std::map<std::string, eToken>;

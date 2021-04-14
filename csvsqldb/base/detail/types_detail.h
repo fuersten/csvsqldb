@@ -20,7 +20,7 @@ namespace csvsqldb
 
     struct any {
       template<typename T>
-      any(T const&);
+      explicit any(T const&);
     };
 
     tag operator<<(std::ostream&, any const&);

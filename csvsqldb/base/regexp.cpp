@@ -167,7 +167,7 @@ namespace csvsqldb
   class Lexer
   {
   public:
-    Lexer(std::string&& s)
+    explicit Lexer(std::string&& s)
     : _s(std::move(s))
     {
       _iter = _s.begin();
@@ -248,7 +248,7 @@ namespace csvsqldb
     {
     }
 
-    Transition(const CharacterSet* charSet)
+    explicit Transition(const CharacterSet* charSet)
     : _charSet(charSet)
     , _type(CharSet)
     {
@@ -270,7 +270,7 @@ namespace csvsqldb
     {
     }
 
-    State(const CharacterSet* charSet)
+    explicit State(const CharacterSet* charSet)
     : _type(Accept)
     , _tran(charSet)
     {
@@ -371,7 +371,7 @@ namespace csvsqldb
     using States = std::list<State>;
     using WorkStates = std::vector<State*>;
 
-    Parser(std::string&& s)
+    explicit Parser(std::string&& s)
     : _lexer(std::move(s))
     {
     }
@@ -439,9 +439,7 @@ namespace csvsqldb
           states.emplace(states.end(), state->_out2);
         }
       } else if (state) {
-        if (state) {
-          states.emplace(states.end(), state);
-        }
+        states.emplace(states.end(), state);
       }
     }
 

@@ -135,7 +135,7 @@ namespace csvsqldb
   class CSVSQLDB_EXPORT PaththroughAggregationFunction : public AggregationFunction
   {
   public:
-    PaththroughAggregationFunction(bool suppress)
+    explicit PaththroughAggregationFunction(bool suppress)
     : _suppress(suppress)
     {
     }
@@ -165,7 +165,7 @@ namespace csvsqldb
   class CSVSQLDB_EXPORT SumAggregationFunction : public AggregationFunction
   {
   public:
-    SumAggregationFunction(eType type)
+    explicit SumAggregationFunction(eType type)
     : _sum(type)
     {
       if (type != INT && type != REAL) {
@@ -192,7 +192,7 @@ namespace csvsqldb
   class CSVSQLDB_EXPORT AvgAggregationFunction : public AggregationFunction
   {
   public:
-    AvgAggregationFunction(eType type)
+    explicit AvgAggregationFunction(eType type)
     : _sum(type)
     {
       if (type != INT && type != REAL) {
@@ -220,7 +220,7 @@ namespace csvsqldb
   class CSVSQLDB_EXPORT MinAggregationFunction : public AggregationFunction
   {
   public:
-    MinAggregationFunction(eType type)
+    explicit MinAggregationFunction(eType type)
     : _value(type)
     {
     }
@@ -244,7 +244,7 @@ namespace csvsqldb
   class CSVSQLDB_EXPORT MaxAggregationFunction : public AggregationFunction
   {
   public:
-    MaxAggregationFunction(eType type)
+    explicit MaxAggregationFunction(eType type)
     : _value(type)
     {
     }
@@ -268,7 +268,7 @@ namespace csvsqldb
   class CSVSQLDB_EXPORT ArbitraryAggregationFunction : public AggregationFunction
   {
   public:
-    ArbitraryAggregationFunction(eType type)
+    explicit ArbitraryAggregationFunction(eType type)
     : _value(type)
     {
     }

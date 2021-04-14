@@ -145,7 +145,7 @@ namespace csvsqldb
   class CSVSQLDB_EXPORT CharLengthFunction : public Function
   {
   public:
-    CharLengthFunction(const std::string& name);
+    explicit CharLengthFunction(const std::string& name);
 
   private:
     Variant doCall(const Variants& parameter) const override;

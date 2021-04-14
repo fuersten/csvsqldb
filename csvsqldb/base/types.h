@@ -69,10 +69,10 @@ namespace csvsqldb
    * Converts the given string into a boolean value. The boolean will be true if the string is 'true' or not equal to 0. The
    * string will be converted
    * to upper case for the test, so 'TRUE' will also yield true.
-   * @param buffer The string to convert
+   * @param value The string to convert
    * @return true if the string is 'true' or not equal to 0, otherwise false
    */
-  CSVSQLDB_EXPORT bool stringToBool(const std::string& buffer);
+  CSVSQLDB_EXPORT bool stringToBool(const std::string& value);
 
   /**
    * Templating helper for the removal of elements in a vector.

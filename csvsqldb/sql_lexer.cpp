@@ -285,9 +285,9 @@ namespace csvsqldb
     _lexer.setInput(input);
   }
 
-  void SQLLexer::setInput(const std::string& input)
+  void SQLLexer::setInput(std::string input)
   {
-    _lexer.setInput(input);
+    _lexer.setInput(std::move(input));
   }
 
   void SQLLexer::initDefinitions()

@@ -50,7 +50,7 @@ namespace
   class MyCSVParserCallback : public csvsqldb::csv::CSVParserCallback
   {
   public:
-    virtual void onLong(int64_t num, bool isNull)
+    void onLong(int64_t num, bool isNull) override
     {
       if (isNull) {
         _results.push_back("<NULL>");
@@ -59,7 +59,7 @@ namespace
       }
     }
 
-    virtual void onDouble(double num, bool isNull)
+    void onDouble(double num, bool isNull) override
     {
       if (isNull) {
         _results.push_back("<NULL>");
@@ -68,7 +68,7 @@ namespace
       }
     }
 
-    virtual void onString(const char* s, size_t len, bool isNull)
+    void onString(const char* s, size_t len, bool isNull) override
     {
       if (isNull) {
         _results.push_back("<NULL>");
@@ -77,7 +77,7 @@ namespace
       }
     }
 
-    virtual void onDate(const csvsqldb::Date& date, bool isNull)
+    void onDate(const csvsqldb::Date& date, bool isNull) override
     {
       if (isNull) {
         _results.push_back("<NULL>");
@@ -86,7 +86,7 @@ namespace
       }
     }
 
-    virtual void onTime(const csvsqldb::Time& time, bool isNull)
+    void onTime(const csvsqldb::Time& time, bool isNull) override
     {
       if (isNull) {
         _results.push_back("<NULL>");
@@ -95,7 +95,7 @@ namespace
       }
     }
 
-    virtual void onTimestamp(const csvsqldb::Timestamp& timestamp, bool isNull)
+    void onTimestamp(const csvsqldb::Timestamp& timestamp, bool isNull) override
     {
       if (isNull) {
         _results.push_back("<NULL>");
@@ -104,7 +104,7 @@ namespace
       }
     }
 
-    virtual void onBoolean(bool boolean, bool isNull)
+    void onBoolean(bool boolean, bool isNull) override
     {
       if (isNull) {
         _results.push_back("<NULL>");

@@ -126,7 +126,7 @@ namespace csvsqldb
       return _context._blockManager;
     }
 
-    size_t getMapping(const std::string& variable, const StackMachine::VariableMapping& mapping)
+    static size_t getMapping(const std::string& variable, const StackMachine::VariableMapping& mapping)
     {
       const auto iter = std::find_if(mapping.begin(), mapping.end(),
                                      [&](const StackMachine::VariableIndex& var) { return var.first == variable; });
@@ -137,7 +137,7 @@ namespace csvsqldb
       }
     }
 
-    void fillVariableStore(VariableStore& store, const VariableMapping& variableMapping, const Values& row)
+    static void fillVariableStore(VariableStore& store, const VariableMapping& variableMapping, const Values& row)
     {
       for (const auto& mapping : variableMapping) {
         store.addVariable(mapping.first, valueToVariant(*row[mapping.second]));
@@ -168,7 +168,7 @@ namespace csvsqldb
     }
 
   protected:
-    void remapOutputSymbols(SymbolInfos& outputSymbols)
+    void remapOutputSymbols(SymbolInfos& outputSymbols) const
     {
       if (!_outputAlias.empty()) {
         for (auto& info : outputSymbols) {

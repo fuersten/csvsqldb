@@ -58,7 +58,7 @@ public:
     std::cout.rdbuf(_file.rdbuf());
   }
 
-  void flush()
+  static void flush()
   {
     std::cout.flush();
   }
@@ -91,7 +91,7 @@ public:
     std::cerr.rdbuf(_file.rdbuf());
   }
 
-  void flush()
+  static void flush()
   {
     std::cerr.flush();
   }

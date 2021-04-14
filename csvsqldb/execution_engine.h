@@ -48,7 +48,7 @@
 namespace csvsqldb
 {
   struct CSVSQLDB_EXPORT ExecutionContext {
-    ExecutionContext(Database& database);
+    explicit ExecutionContext(Database& database);
 
     Database& _database;
     csvsqldb::StringVector _files;
@@ -73,7 +73,7 @@ namespace csvsqldb
   class ExecutionEngine
   {
   public:
-    ExecutionEngine(ExecutionContext& execContext)
+    explicit ExecutionEngine(ExecutionContext& execContext)
     : _execContext(execContext)
     , _parser(_functions)
     , _blockManager(1000)
@@ -85,6 +85,8 @@ namespace csvsqldb
     ExecutionEngine& operator=(const ExecutionEngine&) = delete;
     ExecutionEngine(ExecutionEngine&&) = delete;
     ExecutionEngine& operator=(ExecutionEngine&&) = delete;
+
+    ~ExecutionEngine() = default;
 
     int64_t execute(const std::string& sql, ExecutionStatistics& statistics, std::ostream& stream)
     {

@@ -44,7 +44,7 @@ namespace csvsqldb
   class CSVSQLDB_EXPORT ASTValidationVisitor : public ASTNodeVisitor
   {
   public:
-    ASTValidationVisitor(const Database& database);
+    explicit ASTValidationVisitor(const Database& database);
 
     void visit(ASTCreateTableNode& node) override;
 

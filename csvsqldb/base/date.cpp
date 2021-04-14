@@ -306,7 +306,6 @@ namespace csvsqldb
   void Date::addDuration(uint16_t& year, uint16_t& month, uint16_t& day, uint16_t& hour, uint16_t& minute, uint16_t& second,
                          const Duration& duration)
   {
-    int32_t orgDay = day;
     int32_t temp = month + duration.monthsWithSign();
     month = static_cast<uint16_t>(modulo(temp, 1, 13));
     int carry = quotient(temp, 1, 13);
@@ -332,7 +331,7 @@ namespace csvsqldb
       tempDays = day;
     }
 
-    orgDay = tempDays + duration.daysWithSign() + carry;
+    int32_t orgDay = tempDays + duration.daysWithSign() + carry;
 
     while (1) {
       if (orgDay < 1) {
@@ -368,7 +367,7 @@ namespace csvsqldb
 
   bool Date::isValid(uint16_t year, eMonth month, uint16_t day)
   {
-    return (month >= 1 && month <= 12 && year >= 0 && year <= 9999 && day >= 1 &&
+    return (month >= 1 && month <= 12 && year <= 9999 && day >= 1 &&
             day <= (g_daysOfMonth[month - 1] + ((Date::isLeapYear(year) && month == 2) ? 1 : 0)));
   }
 
@@ -378,9 +377,8 @@ namespace csvsqldb
   }
 
   struct FormatContext {
-    FormatContext(const std::string& format)
-    : _format(format)
-    , _n(0)
+    explicit FormatContext(std::string format)
+    : _format(std::move(format))
     , _length(_format.length())
     {
     }
@@ -399,7 +397,7 @@ namespace csvsqldb
     }
 
     const std::string& _format;
-    std::string::size_type _n;
+    std::string::size_type _n{0};
     std::string::size_type _length;
   };
 

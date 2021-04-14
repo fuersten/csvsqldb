@@ -98,7 +98,7 @@ namespace csvsqldb
     explicit ex(int ev, const std::string& message) noexcept;                                                                    \
     explicit ex(std::errc ec, const std::string& message) noexcept;                                                              \
     explicit ex(const std::string& message) noexcept;                                                                            \
-    ex(const base& ex) noexcept;                                                                                                 \
+    explicit ex(const base& ex) noexcept;                                                                                        \
   }
 
 /**

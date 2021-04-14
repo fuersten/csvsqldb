@@ -356,9 +356,8 @@ namespace csvsqldb
   }
 
   struct FormatContext {
-    FormatContext(const std::string& format)
+    explicit FormatContext(const std::string& format)
     : _format(format)
-    , _n(0)
     , _length(_format.length())
     {
     }
@@ -377,7 +376,7 @@ namespace csvsqldb
     }
 
     const std::string& _format;
-    std::string::size_type _n;
+    std::string::size_type _n{0};
     std::string::size_type _length;
   };
 

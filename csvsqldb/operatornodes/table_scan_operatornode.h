@@ -48,9 +48,9 @@ namespace csvsqldb
   class CSVSQLDB_EXPORT BlockReader : public csvsqldb::csv::CSVParserCallback
   {
   public:
-    BlockReader(BlockManager& blockManager);
+    explicit BlockReader(BlockManager& blockManager);
 
-    ~BlockReader();
+    ~BlockReader() override;
 
     void initialize(std::unique_ptr<csvsqldb::csv::CSVParser> csvparser);
 

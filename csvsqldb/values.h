@@ -359,7 +359,7 @@ namespace csvsqldb
     {
     }
 
-    ValDate(const csvsqldb::Date& val)
+    explicit ValDate(const csvsqldb::Date& val)
     : _val(val)
     {
     }
@@ -439,7 +439,7 @@ namespace csvsqldb
     {
     }
 
-    ValTime(const csvsqldb::Time& val)
+    explicit ValTime(const csvsqldb::Time& val)
     : _val(val)
     , _isNull(false)
     {
@@ -521,7 +521,7 @@ namespace csvsqldb
     {
     }
 
-    ValTimestamp(const csvsqldb::Timestamp& val)
+    explicit ValTimestamp(const csvsqldb::Timestamp& val)
     : _val(val)
     , _isNull(false)
     {

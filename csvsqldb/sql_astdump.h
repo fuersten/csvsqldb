@@ -47,9 +47,8 @@ namespace csvsqldb
   class CSVSQLDB_EXPORT ASTNodeDumpVisitor : public ASTNodeVisitor
   {
   public:
-    ASTNodeDumpVisitor(std::ostream& out)
-    : _indent(0)
-    , _out{out}
+    explicit ASTNodeDumpVisitor(std::ostream& out)
+    : _out{out}
     {
     }
 
@@ -574,7 +573,7 @@ namespace csvsqldb
       _out << std::string(_indent, ' ');
     }
 
-    size_t _indent;
+    size_t _indent{0};
     std::ostream& _out;
   };
 

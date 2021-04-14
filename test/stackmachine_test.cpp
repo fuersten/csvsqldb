@@ -52,7 +52,7 @@ namespace
     }
 
   private:
-    virtual csvsqldb::Variant doCall(const csvsqldb::Variants& parameter) const
+    csvsqldb::Variant doCall(const csvsqldb::Variants& parameter) const override
     {
       return csvsqldb::Variant(csvsqldb::Date::now());
     }

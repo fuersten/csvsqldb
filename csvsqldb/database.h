@@ -77,7 +77,7 @@ namespace csvsqldb
     bool hasTable(const std::string& tableName) const;
     const TableData& getTable(const std::string& tableName) const;
 
-    void addTable(TableData&& table, bool persist = true);
+    void addTable(TableData&& tableData, bool persist = true);
     void dropTable(const std::string& tableName);
 
     const Mapping& getMappingForTable(const std::string& tableName) const;

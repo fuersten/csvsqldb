@@ -69,6 +69,8 @@ namespace csvsqldb
     class CSVSQLDB_EXPORT CSVParserCallback
     {
     public:
+      virtual ~CSVParserCallback() = default;
+
       virtual void onLong(int64_t num, bool isNull) = 0;
       virtual void onDouble(double num, bool isNull) = 0;
       virtual void onString(const char* s, size_t len, bool isNull) = 0;

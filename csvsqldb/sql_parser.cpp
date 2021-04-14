@@ -89,16 +89,16 @@ namespace csvsqldb
     return _currentToken;
   }
 
-  void SQLParser::setInput(const std::string& input)
+  void SQLParser::setInput(std::string input)
   {
-    _lexer.setInput(input);
+    _lexer.setInput(std::move(input));
     _currentToken = csvsqldb::lexer::Token();
     _currentToken._token = TOK_NONE;
   }
 
-  ASTNodePtr SQLParser::parse(const std::string& input)
+  ASTNodePtr SQLParser::parse(std::string input)
   {
-    setInput(input);
+    setInput(std::move(input));
     return parse();
   }
 
@@ -475,7 +475,7 @@ namespace csvsqldb
 
   ASTQueryExpressionNodePtr SQLParser::parseQueryExpression(const SymbolTablePtr& symboltable)
   {
-    SymbolTablePtr nestedSymbolable = symboltable;
+    SymbolTablePtr nestedSymbolable{nullptr};
 
     if (!symboltable) {
       nestedSymbolable = SymbolTable::createSymbolTable();
@@ -549,7 +549,7 @@ namespace csvsqldb
     return std::make_shared<ASTFromNode>(symboltable, tables);
   }
 
-  bool SQLParser::isJoin()
+  bool SQLParser::isJoin() const
   {
     switch (_currentToken._token) {
       case TOK_INNER:
@@ -1052,10 +1052,7 @@ namespace csvsqldb
       node = parseExpression(symboltable);
       expect(TOK_RIGHT_PAREN);
     } else if (_currentToken._token == TOK_IDENTIFIER || _currentToken._token == TOK_QUOTED_IDENTIFIER) {
-      bool isFunction = false;
-      if (_currentToken._token == TOK_IDENTIFIER || _currentToken._token == TOK_QUOTED_IDENTIFIER) {
-        isFunction = !!_functionRegistry.getFunction(_currentToken._value);
-      }
+      bool isFunction = !!_functionRegistry.getFunction(_currentToken._value);
       if (!isFunction) {
         node = parseQualifiedIdentifierOrAsterisk(symboltable);
         if (std::dynamic_pointer_cast<ASTIdentifier>(node)) {
@@ -1312,7 +1309,6 @@ namespace csvsqldb
 
   std::string SQLParser::parseQuotedIdentifier(bool& quoted)
   {
-    std::string prefix;
     std::string value = _currentToken._value;
     if (canExpect(TOK_IDENTIFIER)) {
       quoted = false;

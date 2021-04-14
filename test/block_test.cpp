@@ -38,11 +38,9 @@
 namespace
 {
   struct Test {
-    Test()
-    {
-    }
+    Test() = default;
 
-    Test(int32_t i)
+    explicit Test(int32_t i)
     : _i{i}
     {
     }

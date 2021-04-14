@@ -60,7 +60,7 @@ namespace csvsqldb
     luaengine::LuaEngine _lua;
   };
 
-  LuaConfiguration::LuaConfiguration(const std::filesystem::path& configFile)
+  LuaConfiguration::LuaConfiguration(const fs::path& configFile)
   : _p(new Private(configFile))
   {
   }

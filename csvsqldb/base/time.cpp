@@ -269,21 +269,21 @@ namespace csvsqldb
     return addSeconds(duration.seconds() + duration.minutes() * 60 + duration.hours() * 3600);
   }
 
-  std::string Time::format(const std::string& sformat) const
+  std::string Time::format(const std::string& format) const
   {
     std::stringstream ss;
-    std::string::const_iterator iter = sformat.begin();
+    std::string::const_iterator iter = format.begin();
 
     char buf[13];
     uint16_t hour, minute, second, millisecond;
     calcTimeFromNumber(_time, hour, minute, second, millisecond);
 
-    while (iter != sformat.end()) {
+    while (iter != format.end()) {
       const std::string::value_type& c = *iter;
       if (c == '%') {
         ++iter;
-        if (iter == sformat.end()) {
-          CSVSQLDB_THROW(TimeException, "Bad format specified: " << sformat);
+        if (iter == format.end()) {
+          CSVSQLDB_THROW(TimeException, "Bad format specified: " << format);
         }
         switch (*iter) {
           case 'H':
@@ -315,7 +315,7 @@ namespace csvsqldb
             ss << '%';
             break;
           default:
-            CSVSQLDB_THROW(TimeException, "Bad format specified: " << sformat);
+            CSVSQLDB_THROW(TimeException, "Bad format specified: " << format);
         }
       } else {
         ss << c;

@@ -139,7 +139,6 @@ namespace csvsqldb
       char c = readNextChar();
       _stringBuffer[0] = c;
       int64_t value = 0;
-      int n = 0;
       bool neg = false;
       if (c == '-') {
         c = readNextChar();
@@ -148,7 +147,7 @@ namespace csvsqldb
         c = readNextChar();
       }
       while (c) {
-        n = c - 48;
+        int n = c - 48;
         if (n < 0 || n > 9) {
           CSVSQLDB_THROW(csvsqldb::Exception, "field is not a long in line " << _lineCount);
         }

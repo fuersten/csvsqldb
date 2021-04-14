@@ -103,7 +103,7 @@ namespace csvsqldb
     return true;
   }
 
-  void SymbolTable::replaceSymbol(const std::string& toreplace, const std::string& name, SymbolInfoPtr& info)
+  void SymbolTable::replaceSymbol(const std::string& toreplace, const std::string& name, const SymbolInfoPtr& info)
   {
     auto iter =
       std::find_if(_symbols.begin(), _symbols.end(), [&](const SymbolInfoPtr& symbol) { return symbol->_name == toreplace; });

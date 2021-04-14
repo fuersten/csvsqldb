@@ -100,7 +100,7 @@ namespace csvsqldb
     };
 
     struct CSVSQLDB_EXPORT Instruction {
-      Instruction(OpCode opCode)
+      explicit Instruction(OpCode opCode)
       : _opCode(opCode)
       {
       }

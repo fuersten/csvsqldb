@@ -45,7 +45,7 @@ namespace csvsqldb
   class CSVSQLDB_EXPORT SQLParser
   {
   public:
-    SQLParser(const FunctionRegistry& functionRegistry);
+    explicit SQLParser(const FunctionRegistry& functionRegistry);
 
     SQLParser(const SQLParser&) = delete;
     SQLParser& operator=(const SQLParser&) = delete;
@@ -54,15 +54,15 @@ namespace csvsqldb
 
     ~SQLParser() = default;
 
-    ASTNodePtr parse(const std::string& input);
+    ASTNodePtr parse(std::string input);
     ASTNodePtr parse();
 
     ASTExprNodePtr parseExpression(const std::string& expression);
 
-    void setInput(const std::string& input);
+    void setInput(std::string input);
 
   private:
-    void reportUnexpectedToken(const std::string& message, const csvsqldb::lexer::Token& token);
+    static void reportUnexpectedToken(const std::string& message, const csvsqldb::lexer::Token& token);
 
     std::string expect(eToken tok);
     bool canExpect(eToken tok);
@@ -92,7 +92,7 @@ namespace csvsqldb
     ASTIdentifierPtr parseAliasedIdentifier(const SymbolTablePtr& symboltable);
     ASTTableFactorNodePtr parseTableFactor(const SymbolTablePtr& symboltable);
     eJoinType parseJoinType();
-    bool isJoin();
+    bool isJoin() const;
     ASTJoinNodePtr parseJoinClause(const ASTTableReferenceNodePtr& reference, eJoinType joinType);
     ASTExprNodePtr parseQualifiedIdentifierOrAsterisk(const SymbolTablePtr& symboltable);
     ASTIdentifierPtr parseQualifiedIdentifier(const SymbolTablePtr& symboltable);

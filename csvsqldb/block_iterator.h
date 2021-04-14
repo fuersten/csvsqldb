@@ -46,7 +46,7 @@ namespace csvsqldb
   struct CSVSQLDB_EXPORT GroupingElement {
     GroupingElement() = default;
 
-    GroupingElement(const Variants& groupingValues);
+    explicit GroupingElement(const Variants& groupingValues);
 
     void disconnect();
     size_t getHash() const;

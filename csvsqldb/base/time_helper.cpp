@@ -77,39 +77,39 @@ namespace csvsqldb
     return std::chrono::system_clock::from_time_t(tt);
   }
 
-  Date dateFromString(const std::string& date)
+  Date dateFromString(const std::string& isodate)
   {
-    if (date.length() != 10) {
+    if (isodate.length() != 10) {
       CSVSQLDB_THROW(Exception, "not a date");
     }
-    uint16_t year = static_cast<uint16_t>(std::stoi(date.substr(0, 4)));
-    Date::eMonth month = static_cast<Date::eMonth>(std::stoi(date.substr(5, 2)));
-    uint16_t day = static_cast<uint16_t>(std::stoi(date.substr(8, 2)));
+    uint16_t year = static_cast<uint16_t>(std::stoi(isodate.substr(0, 4)));
+    Date::eMonth month = static_cast<Date::eMonth>(std::stoi(isodate.substr(5, 2)));
+    uint16_t day = static_cast<uint16_t>(std::stoi(isodate.substr(8, 2)));
     return Date(year, month, day);
   }
 
-  Time timeFromString(const std::string& time)
+  Time timeFromString(const std::string& isotime)
   {
-    if (time.length() != 8) {
+    if (isotime.length() != 8) {
       CSVSQLDB_THROW(Exception, "not a time");
     }
-    uint16_t hour = static_cast<uint16_t>(std::stoi(time.substr(0, 2)));
-    uint16_t minute = static_cast<uint16_t>(std::stoi(time.substr(3, 2)));
-    uint16_t second = static_cast<uint16_t>(std::stoi(time.substr(6, 2)));
+    uint16_t hour = static_cast<uint16_t>(std::stoi(isotime.substr(0, 2)));
+    uint16_t minute = static_cast<uint16_t>(std::stoi(isotime.substr(3, 2)));
+    uint16_t second = static_cast<uint16_t>(std::stoi(isotime.substr(6, 2)));
     return Time(hour, minute, second, 0);
   }
 
-  Timestamp timestampFromString(const std::string& timestamp)
+  Timestamp timestampFromString(const std::string& isotimestamp)
   {
-    if (timestamp.length() != 19) {
+    if (isotimestamp.length() != 19) {
       CSVSQLDB_THROW(Exception, "not a timestamp");
     }
-    uint16_t year = static_cast<uint16_t>(std::stoi(timestamp.substr(0, 4)));
-    Date::eMonth month = static_cast<Date::eMonth>(std::stoi(timestamp.substr(5, 2)));
-    uint16_t day = static_cast<uint16_t>(std::stoi(timestamp.substr(8, 2)));
-    uint16_t hour = static_cast<uint16_t>(std::stoi(timestamp.substr(11, 2)));
-    uint16_t minute = static_cast<uint16_t>(std::stoi(timestamp.substr(14, 2)));
-    uint16_t second = static_cast<uint16_t>(std::stoi(timestamp.substr(17, 2)));
+    uint16_t year = static_cast<uint16_t>(std::stoi(isotimestamp.substr(0, 4)));
+    Date::eMonth month = static_cast<Date::eMonth>(std::stoi(isotimestamp.substr(5, 2)));
+    uint16_t day = static_cast<uint16_t>(std::stoi(isotimestamp.substr(8, 2)));
+    uint16_t hour = static_cast<uint16_t>(std::stoi(isotimestamp.substr(11, 2)));
+    uint16_t minute = static_cast<uint16_t>(std::stoi(isotimestamp.substr(14, 2)));
+    uint16_t second = static_cast<uint16_t>(std::stoi(isotimestamp.substr(17, 2)));
     return Timestamp(year, month, day, hour, minute, second, 0);
   }
 }

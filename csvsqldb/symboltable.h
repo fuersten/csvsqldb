@@ -117,7 +117,7 @@ namespace csvsqldb
 
     bool hasSymbol(const std::string& name) const;
     bool addSymbol(const std::string& name, const SymbolInfoPtr& info);
-    void replaceSymbol(const std::string& toreplace, const std::string& name, SymbolInfoPtr& info);
+    void replaceSymbol(const std::string& toreplace, const std::string& name, const SymbolInfoPtr& info);
 
     void dump(std::ostream& stream, size_t indent = 0) const;
 
@@ -130,9 +130,8 @@ namespace csvsqldb
     static SymbolTablePtr createSymbolTable(const SymbolTablePtr& parent = SymbolTablePtr());
 
   private:
-    SymbolTable(const SymbolTablePtr& parent)
-    : _aliasCount(1)
-    , _parent(parent)
+    explicit SymbolTable(const SymbolTablePtr& parent)
+    : _parent(parent)
     {
     }
 
@@ -145,7 +144,7 @@ namespace csvsqldb
     const SymbolInfoPtr& internFindSymbol(const std::string& name) const;
 
     std::vector<SymbolInfoPtr> _symbols;
-    uint32_t _aliasCount;
+    uint32_t _aliasCount{1};
     SymbolTablePtr _parent;
   };
 }

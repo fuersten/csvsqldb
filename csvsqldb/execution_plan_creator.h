@@ -46,7 +46,7 @@ namespace csvsqldb
   class CSVSQLDB_EXPORT QueryExecutionNode : public ExecutionNode
   {
   public:
-    QueryExecutionNode(const OperatorContext& context);
+    explicit QueryExecutionNode(const OperatorContext& context);
 
     const OperatorContext& getContext() const;
 

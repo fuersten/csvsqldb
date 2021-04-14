@@ -191,6 +191,9 @@ namespace csvsqldb
 
   Variant& Variant::operator=(const Variant& rhs)
   {
+    if (this == &rhs) {
+      return *this;
+    }
     if (_refCount && _refCount->dec() == 0) {
       delete[] _storage._string;
       delete _refCount;

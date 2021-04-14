@@ -64,9 +64,9 @@ namespace csvsqldb
      *  @param hour The hour to be validated (0-23).
      *  @param minute The minute to be validated (0-59).
      *  @param second The second to be validated (0-59).
-     *  @param millisecond The millisecond to be validated (0-999).
+     *  @param milliseconds The milliseconds to be validated (0-999).
      */
-    static bool isValid(uint16_t hour, uint16_t minute, uint16_t second, uint16_t millisecond);
+    static bool isValid(uint16_t hour, uint16_t minute, uint16_t second, uint16_t milliseconds);
 
     /** Constructs a time.
      *  All parts (hour, minute, second, millisecond) are set to 0.

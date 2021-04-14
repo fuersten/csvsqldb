@@ -70,7 +70,7 @@ namespace
       AND
     };
 
-    TestSQLLexer(const std::string& text)
+    explicit TestSQLLexer(const std::string& text)
     : _lexer(std::bind(&TestSQLLexer::inspectToken, this, std::placeholders::_1))
     {
       _lexer.addDefinition("identifier", R"([_a-zA-Z][_a-zA-Z0-9]*)", IDENTIFIER);
@@ -167,8 +167,8 @@ group by a,c_d)";
   {
     std::string text("select 1.1.1 from test");
     TestSQLLexer lexer(text);
-    csvsqldb::lexer::Token token = lexer.next();
-    token = lexer.next();
+    lexer.next();
+    auto token = lexer.next();
     CHECK_THROWS_AS(lexer.next(), csvsqldb::LexicalAnalysisException);
   }
 }

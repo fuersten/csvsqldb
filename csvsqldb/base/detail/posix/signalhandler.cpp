@@ -52,9 +52,8 @@ namespace csvsqldb
   class SignalHandlerThreadObject
   {
   public:
-    SignalHandlerThreadObject(SignalHandler* sighandler)
-    : _quit(false)
-    , _sighandler(sighandler)
+    explicit SignalHandlerThreadObject(SignalHandler* sighandler)
+    : _sighandler(sighandler)
     {
     }
 
@@ -96,14 +95,13 @@ namespace csvsqldb
       }
     }
 
-    bool _quit;
+    bool _quit{false};
     SignalHandler* _sighandler;
   };
 
   struct SignalHandler::Private {
-    Private(SignalHandler* sighandler)
-    : _stopSignalHandling(false)
-    , _threadObject(sighandler)
+    explicit Private(SignalHandler* sighandler)
+    : _threadObject(sighandler)
     {
     }
 
@@ -120,7 +118,7 @@ namespace csvsqldb
     }
 
     std::map<int, SignalHandler::SignalEventHandlerList> _handlerMap;
-    volatile bool _stopSignalHandling;
+    volatile bool _stopSignalHandling{false};
     SignalHandlerThreadObject _threadObject;
     std::thread _handlerThread;
   };

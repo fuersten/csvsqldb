@@ -40,7 +40,7 @@ namespace csvsqldb
   SortOperatorNode::SortOperatorNode(const OperatorContext& context, const SymbolTablePtr& symbolTable,
                                      OrderExpressions orderExpressions)
   : RowOperatorNode(context, symbolTable)
-  , _orderExpressions(orderExpressions)
+  , _orderExpressions(std::move(orderExpressions))
   {
   }
 
