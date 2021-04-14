@@ -52,7 +52,7 @@ namespace
     }
 
   private:
-    virtual const csvsqldb::Variant doCall(const csvsqldb::Variants& parameter) const
+    virtual csvsqldb::Variant doCall(const csvsqldb::Variants& parameter) const
     {
       return csvsqldb::Variant(csvsqldb::Date::now());
     }

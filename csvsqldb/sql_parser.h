@@ -52,6 +52,8 @@ namespace csvsqldb
     SQLParser(SQLParser&&) = delete;
     SQLParser& operator=(SQLParser&&) = delete;
 
+    ~SQLParser() = default;
+
     ASTNodePtr parse(const std::string& input);
     ASTNodePtr parse();
 

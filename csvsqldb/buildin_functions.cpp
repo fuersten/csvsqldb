@@ -65,7 +65,7 @@ namespace csvsqldb
   {
   }
 
-  const Variant CurrentDateFunction::doCall(const Variants& parameter) const
+  Variant CurrentDateFunction::doCall(const Variants& parameter) const
   {
     return Variant(csvsqldb::Date::now());
   }
@@ -76,7 +76,7 @@ namespace csvsqldb
   {
   }
 
-  const Variant CurrentTimeFunction::doCall(const Variants& parameter) const
+  Variant CurrentTimeFunction::doCall(const Variants& parameter) const
   {
     return Variant(csvsqldb::Time::now());
   }
@@ -87,7 +87,7 @@ namespace csvsqldb
   {
   }
 
-  const Variant CurrentTimestampFunction::doCall(const Variants& parameter) const
+  Variant CurrentTimestampFunction::doCall(const Variants& parameter) const
   {
     return Variant(csvsqldb::Timestamp::now());
   }
@@ -98,7 +98,7 @@ namespace csvsqldb
   {
   }
 
-  const Variant DateFormatFunction::doCall(const Variants& parameter) const
+  Variant DateFormatFunction::doCall(const Variants& parameter) const
   {
     return Variant(parameter[0].asDate().format(parameter[1].asString()));
   }
@@ -109,7 +109,7 @@ namespace csvsqldb
   {
   }
 
-  const Variant TimeFormatFunction::doCall(const Variants& parameter) const
+  Variant TimeFormatFunction::doCall(const Variants& parameter) const
   {
     return Variant(parameter[0].asTime().format(parameter[1].asString()));
   }
@@ -119,7 +119,7 @@ namespace csvsqldb
   {
   }
 
-  const Variant TimestampFormatFunction::doCall(const Variants& parameter) const
+  Variant TimestampFormatFunction::doCall(const Variants& parameter) const
   {
     return Variant(parameter[0].asTimestamp().format(parameter[1].asString()));
   }
@@ -137,7 +137,7 @@ namespace csvsqldb
   {
   }
 
-  const Variant ExtractFunction::doCall(const Variants& parameter) const
+  Variant ExtractFunction::doCall(const Variants& parameter) const
   {
     int64_t result = 0;
 
@@ -173,7 +173,7 @@ namespace csvsqldb
   {
   }
 
-  const Variant PowerFunction::doCall(const Variants& parameter) const
+  Variant PowerFunction::doCall(const Variants& parameter) const
   {
     const Variant base = parameter[0];
     const Variant exponent = parameter[1];
@@ -189,7 +189,7 @@ namespace csvsqldb
   {
   }
 
-  const Variant UpperFunction::doCall(const Variants& parameter) const
+  Variant UpperFunction::doCall(const Variants& parameter) const
   {
     const Variant s = parameter[0];
     return Variant(csvsqldb::toupper_copy(s.asString()));
@@ -201,7 +201,7 @@ namespace csvsqldb
   {
   }
 
-  const Variant LowerFunction::doCall(const Variants& parameter) const
+  Variant LowerFunction::doCall(const Variants& parameter) const
   {
     const Variant s = parameter[0];
     return Variant(csvsqldb::tolower_copy(s.asString()));
@@ -213,7 +213,7 @@ namespace csvsqldb
   {
   }
 
-  const Variant CharLengthFunction::doCall(const Variants& parameter) const
+  Variant CharLengthFunction::doCall(const Variants& parameter) const
   {
     const Variant s = parameter[0];
     return Variant(::strlen(s.asString()));
@@ -225,7 +225,7 @@ namespace csvsqldb
   {
   }
 
-  const Variant VersionFunction::doCall(const Variants& parameter) const
+  Variant VersionFunction::doCall(const Variants& parameter) const
   {
     return Variant(CSVSQLDB_VERSION_STRING);
   }

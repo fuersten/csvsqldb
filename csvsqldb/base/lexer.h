@@ -100,6 +100,8 @@ namespace csvsqldb
       Lexer(Lexer&&) = delete;
       Lexer& operator=(Lexer&&) = delete;
 
+      ~Lexer() = default;
+
       /**
        * Adds a lexical definition to the lexer. Example:
        ~~~~~~~~~~~~~{.cpp}
@@ -139,11 +141,7 @@ namespace csvsqldb
 
     private:
       struct TokenDefinition {
-        TokenDefinition()
-        : _rx(std::regex(""))
-        , _token(UNDEFINED)
-        {
-        }
+        TokenDefinition() = default;
 
         TokenDefinition(const std::string& name, const std::regex& r, int32_t token)
         : _name(name)
@@ -153,17 +151,17 @@ namespace csvsqldb
         }
 
         std::string _name;
-        std::regex _rx;
-        int32_t _token;
+        std::regex _rx{std::regex("")};
+        int32_t _token{UNDEFINED};
       };
-      using TokenDefinitionVector = std::vector<TokenDefinition>;
+      using TokenDefinitions = std::vector<TokenDefinition>;
 
-      TokenDefinitionVector _tokenDefinitions;
+      TokenDefinitions _tokenDefinitions;
       InspectTokenCallback _callback;
       std::string _input;
       std::string::const_iterator _pos;
       std::string::const_iterator _end;
-      uint32_t _lineCount;
+      uint32_t _lineCount{0};
       std::string::const_iterator _lineStart;
     };
   }

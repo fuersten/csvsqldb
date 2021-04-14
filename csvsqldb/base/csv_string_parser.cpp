@@ -40,7 +40,7 @@ namespace csvsqldb
 {
   namespace csv
   {
-    CSVStringParser::CSVStringParser(BufferType& buffer, const size_t bufferSize, ReadFunction readFunction)
+    CSVStringParser::CSVStringParser(BufferType& buffer, size_t bufferSize, ReadFunction readFunction)
     : _buffer(buffer)
     , _bufferSize(bufferSize)
     , _readFunction(readFunction)

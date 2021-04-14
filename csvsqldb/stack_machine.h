@@ -36,6 +36,7 @@
 #include <csvsqldb/inc.h>
 
 #include <csvsqldb/base/exception.h>
+#include <csvsqldb/base/logging.h>
 #include <csvsqldb/base/regexp.h>
 #include <csvsqldb/function_registry.h>
 #include <csvsqldb/variant.h>
@@ -106,7 +107,7 @@ namespace csvsqldb
 
       Instruction(OpCode opCode, Variant value)
       : _opCode(opCode)
-      , _value(value)
+      , _value(std::move(value))
       {
       }
 
@@ -131,10 +132,14 @@ namespace csvsqldb
       ~Instruction()
       {
         if (_refCount) {
-          if (_refCount->dec() == 0) {
-            delete _r;
-            _r = nullptr;
-            delete _refCount;
+          try {
+            if (_refCount->dec() == 0) {
+              delete _r;
+              _r = nullptr;
+              delete _refCount;
+            }
+          } catch (const std::exception& ex) {
+            CSVSQLDB_ERRORLOG("Instruction: " << ex.what());
           }
         }
       }
@@ -155,8 +160,8 @@ namespace csvsqldb
 
   private:
     Variant& getTopValue();
-    const Variant getNextValue();
-    eOperationType mapOpCodeToBinaryOperationType(OpCode code)
+    Variant getNextValue();
+    static eOperationType mapOpCodeToBinaryOperationType(OpCode code)
     {
       switch (code) {
         case ADD:

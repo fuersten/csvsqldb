@@ -49,8 +49,8 @@ namespace csvsqldb
   public:
     using Ptr = std::shared_ptr<Function>;
 
-    Function(std::string name, eType retType, const Types parameterTypes)
-    : _name(name)
+    Function(std::string name, eType retType, const Types& parameterTypes)
+    : _name(std::move(name))
     , _retType(retType)
     , _parameterTypes(parameterTypes)
     {
@@ -58,7 +58,7 @@ namespace csvsqldb
 
     virtual ~Function() = default;
 
-    const Variant call(const Variants& parameter) const
+    Variant call(const Variants& parameter) const
     {
       return doCall(parameter);
     }
@@ -77,7 +77,7 @@ namespace csvsqldb
     }
 
   private:
-    virtual const Variant doCall(const Variants& parameter) const = 0;
+    virtual Variant doCall(const Variants& parameter) const = 0;
 
     std::string _name;
     eType _retType;

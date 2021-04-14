@@ -55,6 +55,8 @@ namespace csvsqldb
      */
     Application(int argc, char** argv);
 
+    virtual ~Application() = default;
+
     Application(const Application&) = delete;
     Application(Application&&) = delete;
     Application& operator=(const Application&) = delete;

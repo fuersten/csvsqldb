@@ -73,7 +73,7 @@ namespace csvsqldb
       csvsqldb::StringVector params;
       csvsqldb::split(line, ' ', params, false);
 
-      if (params.size()) {
+      if (!params.empty()) {
         Commands::iterator it = _commands.find(csvsqldb::tolower_copy(*(params.begin())));
         if (it != _commands.end()) {
           // remove first entry as it is the command name
@@ -95,12 +95,12 @@ namespace csvsqldb
 
   void Console::addCommand(const std::string& command, CommandFunction function)
   {
-    _commands.insert(std::make_pair(csvsqldb::tolower_copy(command), function));
+    _commands.insert(std::make_pair(csvsqldb::tolower_copy(command), std::move(function)));
   }
 
   void Console::addDefault(DefaultCommandFunction function)
   {
-    _defaultCommand = function;
+    _defaultCommand = std::move(function);
   }
 
   void Console::clearHistory()

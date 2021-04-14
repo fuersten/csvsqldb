@@ -47,16 +47,14 @@ namespace csvsqldb
     /**
      * Constructs a tribool instance. The state is indeterminate.
      */
-    Tribool()
-    : _state(false)
-    , _isIndeterminate(true)
-    {
-    }
+    Tribool() = default;
 
     Tribool(const Tribool&) = default;
     Tribool& operator=(const Tribool&) = default;
     Tribool(Tribool&&) = default;
     Tribool& operator=(Tribool&&) = default;
+
+    ~Tribool() = default;
 
     /**
      * Compares two tribool objects.
@@ -131,7 +129,7 @@ namespace csvsqldb
     }
 
   private:
-    bool _state;
-    bool _isIndeterminate;
+    bool _state{false};
+    bool _isIndeterminate{true};
   };
 }

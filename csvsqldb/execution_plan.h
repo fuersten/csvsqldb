@@ -74,6 +74,8 @@ namespace csvsqldb
     ExecutionPlan(ExecutionPlan&&) = delete;
     ExecutionPlan& operator=(ExecutionPlan&&) = delete;
 
+    ~ExecutionPlan() = default;
+
     void addExecutionNode(ExecutionNode::UniquePtr& node);
 
     int64_t execute();

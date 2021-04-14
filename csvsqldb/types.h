@@ -106,6 +106,8 @@ namespace csvsqldb
     TypedValue(TypedValue&& rhs) = default;
     TypedValue& operator=(TypedValue&& rhs) = default;
 
+    ~TypedValue() = default;
+
     static TypedValue createValue(eType type, const std::string& value);
 
     eType _type{NONE};

@@ -122,6 +122,8 @@ namespace csvsqldb
     Date(Date&&) = default;
     Date& operator=(Date&&) = default;
 
+    ~Date() = default;
+
     bool operator==(const Date& date) const;
     bool operator!=(const Date& date) const;
     bool operator>(const Date& date) const;

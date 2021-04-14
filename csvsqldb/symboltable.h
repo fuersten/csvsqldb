@@ -60,6 +60,8 @@ namespace csvsqldb
 
     SymbolInfo() = default;
 
+    ~SymbolInfo() = default;
+
     SymbolInfoPtr clone()
     {
       SymbolInfoPtr info = std::make_shared<SymbolInfo>();
@@ -103,7 +105,9 @@ namespace csvsqldb
     SymbolTable(SymbolTable&&) = delete;
     SymbolTable& operator=(SymbolTable&&) = delete;
 
-    const SymbolInfoPtr findSymbolNameForTable(const std::string& tableName, const std::string& columnName) const;
+    ~SymbolTable() = default;
+
+    SymbolInfoPtr findSymbolNameForTable(const std::string& tableName, const std::string& columnName) const;
     bool hasSymbolNameForTable(const std::string& tableName, const std::string& columnName) const;
     const SymbolInfoPtr& findSymbol(const std::string& name) const;
     bool hasTableSymbol(const std::string& tableNameOrAlias) const;

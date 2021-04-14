@@ -48,13 +48,13 @@ TEST_CASE("Exception Test", "[exception]")
   {
     auto ex = csvsqldb::Exception(ENOENT, "Filesystem");
     CHECK(ex.code().value() == ENOENT);
-    std::regex r{ "Filesystem: [Nn]o such file or directory" };
+    std::regex r{"Filesystem: [Nn]o such file or directory"};
     std::cmatch m;
     CHECK(std::regex_match(ex.what(), m, r));
 
     auto ex1 = csvsqldb::Exception(std::errc::invalid_argument, "Parameter");
     CHECK(ex1.code().value() == EINVAL);
-    std::regex r1{ "Parameter: [Ii]nvalid argument" };
+    std::regex r1{"Parameter: [Ii]nvalid argument"};
     CHECK(std::regex_match(ex1.what(), m, r1));
 
     auto ex2 = csvsqldb::Exception("check");
@@ -72,7 +72,7 @@ TEST_CASE("Exception Test", "[exception]")
     auto ex1{ex};
 
     CHECK(ex1.code().value() == ENOENT);
-    std::regex r{ "Filesystem: [Nn]o such file or directory" };
+    std::regex r{"Filesystem: [Nn]o such file or directory"};
     std::cmatch m;
     CHECK(std::regex_match(ex1.what(), m, r));
   }
@@ -90,7 +90,7 @@ TEST_CASE("Exception Test", "[exception]")
   {
     errno = EWOULDBLOCK;
     std::string txt = csvsqldb::errnoText();
-    std::regex r{ "operation would block|Resource temporarily unavailable" };
+    std::regex r{"operation would block|Resource temporarily unavailable"};
     std::cmatch m;
     CHECK(std::regex_match(txt.c_str(), m, r));
   }

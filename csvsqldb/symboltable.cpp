@@ -173,7 +173,7 @@ namespace csvsqldb
     return true;
   }
 
-  const SymbolInfoPtr SymbolTable::findSymbolNameForTable(const std::string& tableName, const std::string& columnName) const
+  SymbolInfoPtr SymbolTable::findSymbolNameForTable(const std::string& tableName, const std::string& columnName) const
   {
     auto it = std::find_if(_symbols.begin(), _symbols.end(), [&tableName, &columnName](const auto& symbol) {
       return symbol->_symbolType == PLAIN && (symbol->_relation == tableName && symbol->_identifier == columnName);

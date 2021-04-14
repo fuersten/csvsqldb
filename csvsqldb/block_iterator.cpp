@@ -539,8 +539,8 @@ namespace csvsqldb
   }
 
 
-  GroupingBlockIterator::GroupingBlockIterator(const Types& types, const csvsqldb::IndexVector groupingIndices,
-                                               const csvsqldb::IndexVector outputIndices,
+  GroupingBlockIterator::GroupingBlockIterator(const Types& types, const csvsqldb::IndexVector& groupingIndices,
+                                               const csvsqldb::IndexVector& outputIndices,
                                                AggregationFunctions& aggregateFunctions, RowProvider& rowProvider,
                                                BlockManager& blockManager)
   : _rowProvider(rowProvider)

@@ -568,7 +568,7 @@ namespace csvsqldb
   {
   public:
     ASTQuerySpecificationNode(const SymbolTablePtr& symbolTable, eQuantifier quantifier, const Expressions& nodes,
-                              const ASTTableExpressionNodePtr tableExpression)
+                              const ASTTableExpressionNodePtr& tableExpression)
     : ASTQueryExpressionNode(symbolTable)
     , _quantifier(quantifier)
     , _nodes(nodes)

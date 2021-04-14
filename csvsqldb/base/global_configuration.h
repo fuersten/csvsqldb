@@ -65,7 +65,7 @@ namespace csvsqldb
      * Debug logging relevant configurations.
      */
     struct Debug {
-      int32_t global_level;
+      int32_t global_level{0};
       DebugLevel level;
     };
 
@@ -75,7 +75,7 @@ namespace csvsqldb
     struct Logging {
       std::string device;
       std::string separator;
-      bool escape_newline;
+      bool escape_newline{false};
     };
 
     /**

@@ -254,7 +254,7 @@ namespace csvsqldb
     {
     }
 
-    char _c;
+    char _c{0};
     const CharacterSet* _charSet{nullptr};
     eType _type;
   };
@@ -620,12 +620,12 @@ namespace csvsqldb
     // Needs to be specified due to the unique_ptr impl.
   }
 
-  RegExp::RegExp(RegExp&& r)
+  RegExp::RegExp(RegExp&& r) noexcept
   : _m(std::move(r._m))
   {
   }
 
-  RegExp& RegExp::operator=(RegExp&& r)
+  RegExp& RegExp::operator=(RegExp&& r) noexcept
   {
     _m = std::move(r._m);
     return *this;

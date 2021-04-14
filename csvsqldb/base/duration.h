@@ -57,6 +57,8 @@ namespace csvsqldb
     Duration(Duration&&) = default;
     Duration& operator=(Duration&&) = default;
 
+    ~Duration() = default;
+
     bool operator==(const Duration& duration) const;
     bool operator!=(const Duration& duration) const;
     bool operator>(const Duration& duration) const;

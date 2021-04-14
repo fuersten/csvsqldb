@@ -49,7 +49,7 @@ namespace std
     {
       argument_type str = val;
       result_type hash = 5381;
-      int c = 0;
+      char c = 0;
 
       while ((c = *str++)) {
         hash = ((hash << 5) + hash) ^ static_cast<result_type>(c);

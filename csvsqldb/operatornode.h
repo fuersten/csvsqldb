@@ -92,8 +92,8 @@ namespace csvsqldb
       StackMachineType() = default;
 
       StackMachineType(StackMachine sm, VariableMapping variableMappings)
-      : _sm(sm)
-      , _variableMappings(variableMappings)
+      : _sm(std::move(sm))
+      , _variableMappings(std::move(variableMappings))
       {
       }
 

@@ -72,7 +72,7 @@ namespace csvsqldb
   BlockPtr BlockManager::getBlock(size_t blockNumber) const
   {
     Blocks::const_iterator iter =
-      std::find_if(_blocks.begin(), _blocks.end(), [&](const BlockPtr block) { return blockNumber == block->getBlockNumber(); });
+      std::find_if(_blocks.begin(), _blocks.end(), [&](const BlockPtr& block) { return blockNumber == block->getBlockNumber(); });
     if (iter == _blocks.end()) {
       CSVSQLDB_THROW(csvsqldb::Exception, "block with number " << blockNumber << " not found");
     }
@@ -83,7 +83,7 @@ namespace csvsqldb
   {
     if (block) {
       --_activeBlocks;
-      if (_blocks.size()) {
+      if (!_blocks.empty()) {
         _blocks.erase(std::remove_if(_blocks.begin(), _blocks.end(),
                                      [&block](const auto& b) { return block->getBlockNumber() == b->getBlockNumber(); }),
                       _blocks.end());

@@ -46,12 +46,6 @@
 #include <cstring>
 
 
-TemporaryDirectoryGuard::TemporaryDirectoryGuard()
-: _path{uniqueTempDirectoryPath()}
-{
-}
-
-
 const std::filesystem::path& TemporaryDirectoryGuard::temporaryDirectoryPath() const
 {
   return _path;

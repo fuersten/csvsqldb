@@ -55,6 +55,8 @@ namespace csvsqldb
     Database(Database&&) = delete;
     Database& operator=(Database&&) = delete;
 
+    ~Database() = default;
+
     fs::path path() const
     {
       return _path;

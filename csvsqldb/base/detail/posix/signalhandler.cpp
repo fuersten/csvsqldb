@@ -116,9 +116,7 @@ namespace csvsqldb
 
     void start()
     {
-      _handlerThread = std::thread([&](){
-        _threadObject.run();
-      });
+      _handlerThread = std::thread([&]() { _threadObject.run(); });
     }
 
     std::map<int, SignalHandler::SignalEventHandlerList> _handlerMap;

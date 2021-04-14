@@ -654,9 +654,11 @@ namespace csvsqldb
     {
       if (_op < key._op) {
         return true;
-      } else if (_op == key._op && _lhs < key._lhs) {
+      }
+      if (_op == key._op && _lhs < key._lhs) {
         return true;
-      } else if (_op == key._op && _lhs == key._lhs && _rhs < key._rhs) {
+      }
+      if (_op == key._op && _lhs == key._lhs && _rhs < key._rhs) {
         return true;
       }
       return false;
@@ -689,9 +691,7 @@ namespace csvsqldb
       return OperationKey(opType(), lhsType(), rhsType());
     }
 
-    virtual ~BinaryOperation()
-    {
-    }
+    virtual ~BinaryOperation() = default;
 
   private:
     virtual Variant doExecute(const Variant& lhs, const Variant& rhs) const = 0;
@@ -726,7 +726,7 @@ namespace csvsqldb
       return Variant(operation(ValueGetter<LHS>::getValue(lhs), ValueGetter<RHS>::getValue(rhs)));
     }
 
-    Variant doHandleNull(const Variant& lhs, const Variant& rhs) const override
+    Variant doHandleNull(const Variant&, const Variant&) const override
     {
       return Variant(retType());
     }
@@ -923,7 +923,8 @@ namespace csvsqldb
     {
       if (rhs.isNull()) {
         return Variant(lhs.isNull());
-      } else if (lhs.isNull()) {
+      }
+      if (lhs.isNull()) {
         return Variant(false);
       }
       return Variant(lhs.asBool() && rhs.asBool());
@@ -942,7 +943,8 @@ namespace csvsqldb
     {
       if (rhs.isNull()) {
         return Variant(lhs.isNull());
-      } else if (lhs.isNull()) {
+      }
+      if (lhs.isNull()) {
         return Variant(false);
       }
       return Variant(lhs.asBool() && rhs.asBool());
@@ -961,7 +963,8 @@ namespace csvsqldb
     {
       if (rhs.isNull()) {
         return Variant(!lhs.isNull());
-      } else if (lhs.isNull()) {
+      }
+      if (lhs.isNull()) {
         return Variant(true);
       }
       return Variant(!(lhs.asBool() && rhs.asBool()));
@@ -980,7 +983,8 @@ namespace csvsqldb
     {
       if (rhs.isNull()) {
         return Variant(!lhs.isNull());
-      } else if (lhs.isNull()) {
+      }
+      if (lhs.isNull()) {
         return Variant(true);
       }
       return Variant(!(lhs.asBool() && rhs.asBool()));
@@ -1311,7 +1315,7 @@ namespace csvsqldb
   template<typename CAST>
   struct OperationNullCast : public UnaryOperationBase<OP_CAST, CAST, NoneType> {
   private:
-    CAST operation(const NoneType& rhs) const override
+    CAST operation(const NoneType&) const override
     {
       CSVSQLDB_THROW(std::runtime_error, "Should have returned a null value before getting here");
     }
@@ -1330,10 +1334,9 @@ namespace csvsqldb
     }
     if (op == OP_CAST) {
       throw std::runtime_error("cannot cast from type " + typeToString(rhs.getType()) + " to type " + typeToString(retType));
-    } else {
-      throw std::runtime_error("cannot execute unary operation " + operationTypeToString(op) + " on type " +
-                               typeToString(rhs.getType()));
     }
+    throw std::runtime_error("cannot execute unary operation " + operationTypeToString(op) + " on type " +
+                             typeToString(rhs.getType()));
   }
 
   eType inferTypeOfUnaryOperation(eOperationType op, eType retType, eType rhs)
@@ -1345,10 +1348,9 @@ namespace csvsqldb
     }
     if (op == OP_CAST) {
       throw std::runtime_error("cannot infer cast from type " + typeToString(rhs) + " to type " + typeToString(retType));
-    } else {
-      throw std::runtime_error("cannot infer type of unary operation " + operationTypeToString(op) + " on type " +
-                               typeToString(rhs));
     }
+    throw std::runtime_error("cannot infer type of unary operation " + operationTypeToString(op) + " on type " +
+                             typeToString(rhs));
   }
 
 

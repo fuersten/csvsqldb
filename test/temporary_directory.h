@@ -38,7 +38,7 @@
 class TemporaryDirectoryGuard
 {
 public:
-  TemporaryDirectoryGuard();
+  TemporaryDirectoryGuard() = default;
 
   TemporaryDirectoryGuard(const TemporaryDirectoryGuard&) = delete;
   TemporaryDirectoryGuard(TemporaryDirectoryGuard&&) = default;
@@ -53,5 +53,5 @@ private:
   static std::filesystem::path uniqueTempDirectoryPath();
   static std::filesystem::path uniqueTempDirectoryPath(std::error_code& ec);
 
-  std::filesystem::path _path;
+  std::filesystem::path _path{uniqueTempDirectoryPath()};
 };

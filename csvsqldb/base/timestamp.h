@@ -135,6 +135,8 @@ namespace csvsqldb
     Timestamp(Timestamp&&) = default;
     Timestamp& operator=(Timestamp&&) = default;
 
+    ~Timestamp() = default;
+
     bool operator==(const Timestamp& timestamp) const;
     bool operator!=(const Timestamp& timestamp) const;
     bool operator>(const Timestamp& timestamp) const;

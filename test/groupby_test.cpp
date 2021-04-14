@@ -94,8 +94,8 @@ TEST_CASE("Group By Test", "[engine]")
     TestRowProvider::setRows(
       "employees", {{815, "Mark", "Fuerstenberg", csvsqldb::Date(1969, csvsqldb::Date::May, 17),
                      csvsqldb::Date(2003, csvsqldb::Date::April, 15)},
-                    {csvsqldb::Variant(csvsqldb::INT), "Lars", "Fuerstenberg", csvsqldb::Date(1970, csvsqldb::Date::September, 23),
-                     csvsqldb::Date(2010, csvsqldb::Date::February, 1)},
+                    {csvsqldb::Variant(csvsqldb::INT), "Lars", "Fuerstenberg",
+                     csvsqldb::Date(1970, csvsqldb::Date::September, 23), csvsqldb::Date(2010, csvsqldb::Date::February, 1)},
                     {9227, "Angelica", "Tello de Fuerstenberg", csvsqldb::Date(1963, csvsqldb::Date::March, 6),
                      csvsqldb::Date(2003, csvsqldb::Date::June, 15)}});
 
@@ -129,8 +129,8 @@ TEST_CASE("Group By Test", "[engine]")
     TestRowProvider::setRows(
       "employees", {{815, "Mark", "Fuerstenberg", csvsqldb::Date(1969, csvsqldb::Date::May, 17),
                      csvsqldb::Date(2003, csvsqldb::Date::April, 15)},
-                    {csvsqldb::Variant(csvsqldb::INT), "Lars", "Fuerstenberg", csvsqldb::Date(1970, csvsqldb::Date::September, 23),
-                     csvsqldb::Date(2010, csvsqldb::Date::February, 1)},
+                    {csvsqldb::Variant(csvsqldb::INT), "Lars", "Fuerstenberg",
+                     csvsqldb::Date(1970, csvsqldb::Date::September, 23), csvsqldb::Date(2010, csvsqldb::Date::February, 1)},
                     {9227, "Angelica", "Tello de Fuerstenberg", csvsqldb::Date(1963, csvsqldb::Date::March, 6),
                      csvsqldb::Date(2003, csvsqldb::Date::June, 15)}});
 
@@ -164,8 +164,8 @@ TEST_CASE("Group By Test", "[engine]")
     TestRowProvider::setRows(
       "employees", {{815, "Mark", "Fuerstenberg", csvsqldb::Date(1969, csvsqldb::Date::May, 17),
                      csvsqldb::Date(2003, csvsqldb::Date::April, 15)},
-                    {csvsqldb::Variant(csvsqldb::INT), "Lars", "Fuerstenberg", csvsqldb::Date(1970, csvsqldb::Date::September, 23),
-                     csvsqldb::Date(2010, csvsqldb::Date::February, 1)},
+                    {csvsqldb::Variant(csvsqldb::INT), "Lars", "Fuerstenberg",
+                     csvsqldb::Date(1970, csvsqldb::Date::September, 23), csvsqldb::Date(2010, csvsqldb::Date::February, 1)},
                     {9227, "Angelica", "Tello de Fuerstenberg", csvsqldb::Date(1963, csvsqldb::Date::March, 6),
                      csvsqldb::Date(2003, csvsqldb::Date::June, 15)}});
 

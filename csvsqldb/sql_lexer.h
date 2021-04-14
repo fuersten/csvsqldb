@@ -166,12 +166,14 @@ namespace csvsqldb
     SQLLexer(SQLLexer&&) = delete;
     SQLLexer& operator=(SQLLexer&&) = delete;
 
+    ~SQLLexer() = default;
+
     csvsqldb::lexer::Token next();
 
     void setInput(const std::string& input);
 
   private:
-    typedef std::map<std::string, eToken> Keywords;
+    using Keywords = std::map<std::string, eToken>;
 
     void initDefinitions();
     void initKeywords();

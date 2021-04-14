@@ -72,8 +72,8 @@ namespace csvsqldb
      */
     explicit RegExp(std::string s);
 
-    RegExp(RegExp&& r);
-    RegExp& operator=(RegExp&& r);
+    RegExp(RegExp&& r) noexcept;
+    RegExp& operator=(RegExp&& r) noexcept;
     RegExp(const RegExp&) = delete;
     RegExp& operator=(const RegExp&) = delete;
 

@@ -73,12 +73,14 @@ namespace csvsqldb
        std::function<char(bool)> ReadFunction
        ~~~~~~~~~~~~~
        */
-      CSVStringParser(BufferType& buffer, const size_t bufferSize, ReadFunction readFunction);
+      CSVStringParser(BufferType& buffer, size_t bufferSize, ReadFunction readFunction);
 
       CSVStringParser(const CSVStringParser&) = delete;
       CSVStringParser(CSVStringParser&&) = delete;
       CSVStringParser& operator=(const CSVStringParser&) = delete;
       CSVStringParser& operator=(CSVStringParser&&) = delete;
+
+      ~CSVStringParser() = default;
 
       /**
        * Parses the next characters returned by the readFunction as a CSV string.
@@ -110,7 +112,7 @@ namespace csvsqldb
 
       enum eCharCategory { SINGLE_QUOTE = 0, DOUBLE_QUOTE = 1, OTHER = 2 };
 
-      inline ALWAYS_INLINE eCharCategory charCategory(char c)
+      static inline ALWAYS_INLINE eCharCategory charCategory(char c)
       {
         switch (c) {
           case '\'':

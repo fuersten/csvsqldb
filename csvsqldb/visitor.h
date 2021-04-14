@@ -149,7 +149,7 @@ namespace csvsqldb
     void visit(ASTLikeNode& node) override
     {
       node._lhs->accept(*this);
-      _sm.addInstruction(StackMachine::Instruction(StackMachine::LIKE, new csvsqldb::RegExp(node._like.c_str())));
+      _sm.addInstruction(StackMachine::Instruction(StackMachine::LIKE, new csvsqldb::RegExp(node._like)));
     }
 
     void visit(ASTBetweenNode& node) override
@@ -198,9 +198,9 @@ namespace csvsqldb
       if (iter == _mapping.end()) {
         _mapping.push_back(std::make_pair(variable, _index));
         return _index++;
-      } else {
-        return iter->second;
       }
+
+      return iter->second;
     }
 
     StackMachine& _sm;

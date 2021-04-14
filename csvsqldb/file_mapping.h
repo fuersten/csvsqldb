@@ -51,8 +51,8 @@ namespace csvsqldb
 
   struct CSVSQLDB_EXPORT Mapping {
     std::string _mapping;
-    char _delimiter;
-    bool _skipFirstLine;
+    char _delimiter{','};
+    bool _skipFirstLine{true};
   };
 
 

@@ -58,7 +58,6 @@ namespace csvsqldb
     _variables[index] = value;
   }
 
-
   void StackMachine::addInstruction(const Instruction& instruction)
   {
     _instructions.emplace(_instructions.end(), instruction);
@@ -72,7 +71,7 @@ namespace csvsqldb
     return _valueStack.top();
   }
 
-  const Variant StackMachine::getNextValue()
+  Variant StackMachine::getNextValue()
   {
     if (_valueStack.empty()) {
       CSVSQLDB_THROW(StackMachineException, "Cannot get next value, no more elements on stack");

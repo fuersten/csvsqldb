@@ -69,7 +69,7 @@ public:
   : _database(database)
   , _showHeaderLine(showHeaderLine)
   , _verbose(verbose)
-  , _files(files)
+  , _files(std::move(files))
   {
   }
 
@@ -184,7 +184,7 @@ public:
   }
 
 private:
-  std::string version() const
+  static std::string version()
   {
     std::stringstream ss;
     ss << "csvsqldb tool version " << CSVSQLDB_VERSION_STRING << std::endl;
@@ -274,7 +274,7 @@ private:
       sql << stream.rdbuf();
       _sql = sql.str();
       stream.close();
-    } else if (_files.size()) {
+    } else if (!_files.empty()) {
       OUT("Processing files " << csvsqldb::join(_files, ","));
       OUT("Using table mapping " << csvsqldb::join(_mapping.asStringVector(), ","));
     }
@@ -314,12 +314,12 @@ private:
         std::cout << "database path: " << _databasePath << std::endl;
         return false;
       });
-      console.addCommand("version", [this](const csvsqldb::StringVector&) -> bool {
+      console.addCommand("version", [](const csvsqldb::StringVector&) -> bool {
         std::cout << version();
         return false;
       });
       console.addCommand("verbose", [&csvDB](const csvsqldb::StringVector& params) -> bool {
-        if (params.size()) {
+        if (!params.empty()) {
           if (csvsqldb::tolower_copy(params[0]) == "on") {
             csvDB.setVerbosity(true);
           } else {
@@ -335,7 +335,7 @@ private:
         return false;
       });
       console.addCommand("add", [&csvDB](const csvsqldb::StringVector& params) -> bool {
-        if (params.size()) {
+        if (!params.empty()) {
           if (csvsqldb::tolower_copy(params[0]) == "file") {
             if (params.size() == 2) {
               csvsqldb::StringVector files;
@@ -357,7 +357,7 @@ private:
         return true;
       });
       console.addCommand("show", [&database, &csvDB](const csvsqldb::StringVector& params) -> bool {
-        if (params.size()) {
+        if (!params.empty()) {
           if (csvsqldb::tolower_copy(params[0]) == "tables") {
             for (const auto& table : database.getTables()) {
               std::cout << table.name() << "\n";
@@ -396,7 +396,7 @@ private:
               std::cout << ") -> " << typeToString(func->getReturnType()) << "\n";
             }
           } else if (csvsqldb::tolower_copy(params[0]) == "files") {
-            if (csvDB.getFiles().size()) {
+            if (!csvDB.getFiles().empty()) {
               std::cout << "csv files for processing:\n";
               for (const auto& file : csvDB.getFiles()) {
                 std::cout << file << "\n";

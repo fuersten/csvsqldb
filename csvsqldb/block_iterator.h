@@ -206,8 +206,8 @@ namespace csvsqldb
   class CSVSQLDB_EXPORT GroupingBlockIterator
   {
   public:
-    GroupingBlockIterator(const Types& types, const csvsqldb::IndexVector groupingIndices,
-                          const csvsqldb::IndexVector outputIndices, AggregationFunctions& aggregateFunctions,
+    GroupingBlockIterator(const Types& types, const csvsqldb::IndexVector& groupingIndices,
+                          const csvsqldb::IndexVector& outputIndices, AggregationFunctions& aggregateFunctions,
                           RowProvider& rowProvider, BlockManager& blockManager);
 
     ~GroupingBlockIterator();

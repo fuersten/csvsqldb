@@ -103,7 +103,7 @@ namespace csvsqldb
    */
   template<typename T>
   struct Typer {
-    typedef T type;
+    using type = T;
   };
 
   /**

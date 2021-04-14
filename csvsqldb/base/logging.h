@@ -52,7 +52,7 @@ namespace csvsqldb
     std::chrono::system_clock::time_point _time;  //!< time point of log event
     std::string _classname;                       //!< class that triggered the event
     std::string _categorie;                       //!< categorie of the event
-    long _line;                                   //!< the line in the file where the event was triggered
+    long _line{0};                                //!< the line in the file where the event was triggered
     std::string _file;                            //!< the file where the event was triggered
     std::string _message;                         //!< the message of the event
     std::thread::id _tid;                         //!< the thread id of the triggering thread

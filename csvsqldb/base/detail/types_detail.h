@@ -25,7 +25,7 @@ namespace csvsqldb
 
     tag operator<<(std::ostream&, any const&);
 
-    typedef char yes;
+    using yes = char;
     typedef char (&no)[2];
 
     no checkit(tag);

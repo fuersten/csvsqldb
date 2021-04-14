@@ -106,6 +106,8 @@ namespace csvsqldb
       CSVParser& operator=(const CSVParser&) = delete;
       CSVParser& operator=(CSVParser&&) = delete;
 
+      ~CSVParser() = default;
+
       /**
        * Parses one line of input and calls the corresponding type method callbacks. Skips the first line of input, if
        * specified by the context.
