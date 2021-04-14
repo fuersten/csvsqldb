@@ -59,7 +59,7 @@ jobs:
         with:
           submodules: true
       - name: install
-        run: sudo apt-get -y install gcc-8 g++-8   
+        run: sudo apt-get -y install gcc-8 g++-8
       - name: configure
         run: mkdir build && cd build && cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_COMPILER="g++-8" -DCMAKE_C_COMPILER="gcc-8" ..
       - name: build
