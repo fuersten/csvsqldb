@@ -43,7 +43,7 @@ namespace csvsqldb
     CSVStringParser::CSVStringParser(BufferType& buffer, size_t bufferSize, ReadFunction readFunction)
     : _buffer(buffer)
     , _bufferSize(bufferSize)
-    , _readFunction(readFunction)
+    , _readFunction(std::move(readFunction))
     , _currentBufferSize(_buffer.capacity())
     {
       initializeTransitionTable();
@@ -57,8 +57,7 @@ namespace csvsqldb
       const auto* newState = &_transitionTable[NO_QUOTE_STRING][OTHER];
       char c = _readFunction(false);
       while (c) {
-        auto cat = charCategory(c);
-        newState = &_transitionTable[_currentState][cat];
+        newState = &_transitionTable[_currentState][charCategory(c)];
         _currentState = newState->_state;
         if (newState->_copy) {
           if (pos >= _currentBufferSize) {

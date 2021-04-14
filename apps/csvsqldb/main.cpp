@@ -225,12 +225,10 @@ private:
     }
 
     csvsqldb::fs::path path(_databasePath);
-    if (app.count("--datbase-path")) {
-      path = _databasePath;
-      if (path.filename() != ".csvdb") {
-        path /= ".csvdb";
-      }
+    if (path.filename() != ".csvdb") {
+      path /= ".csvdb";
     }
+
     std::error_code ec;
     _databasePath = csvsqldb::fs::canonical(csvsqldb::fs::absolute(path, ec), ec).string();
     if (ec) {

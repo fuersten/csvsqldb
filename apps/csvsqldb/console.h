@@ -55,7 +55,7 @@ namespace csvsqldb
     using CommandFunction = std::function<bool(const csvsqldb::StringVector&)>;
     using DefaultCommandFunction = std::function<bool(const std::string&)>;
 
-    Console(const std::string& prompt, const fs::path& historyPath, uint16_t historyLength = 128);
+    Console(std::string prompt, fs::path historyPath, uint16_t historyLength = 128);
 
     Console(const Console&) = delete;
     Console(Console&&) = delete;
@@ -67,7 +67,7 @@ namespace csvsqldb
     void run();
     void stop();
 
-    void addCommand(const std::string& command, CommandFunction function);
+    void addCommand(std::string command, CommandFunction function);
     void addDefault(DefaultCommandFunction function);
 
     void clearHistory();

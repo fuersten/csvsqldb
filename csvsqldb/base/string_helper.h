@@ -139,7 +139,7 @@ namespace csvsqldb
    * @param s The string to convert
    * @return Returns The converted string.
    */
-  CSVSQLDB_EXPORT std::string toupper_copy(const std::string& s);
+  CSVSQLDB_EXPORT std::string toupper_copy(std::string s);
 
   /**
    * Converts the string inplace into lower characters only.
@@ -153,7 +153,7 @@ namespace csvsqldb
    * @param s The string to convert
    * @return Returns The converted string.
    */
-  CSVSQLDB_EXPORT std::string tolower_copy(const std::string& s);
+  CSVSQLDB_EXPORT std::string tolower_copy(std::string s);
 
   /**
    * Platform independent case insensitive string compare function.
@@ -189,12 +189,4 @@ namespace csvsqldb
    * @return Returns the trimmed string.
    */
   CSVSQLDB_EXPORT std::string trim_left(const std::string& s);
-
-  /**
-   * Decode url encoded string.
-   * @param in The string to url decode
-   * @param out The url decoded string
-   * @return true, if decoding was successful, otherwise false.
-   */
-  CSVSQLDB_EXPORT bool decode(const std::string& in, std::string& out);
 }

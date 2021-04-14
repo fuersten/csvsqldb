@@ -115,14 +115,14 @@ namespace csvsqldb
        * @param r The regular for this token.
        * @param token The unique identifier for this token.
        */
-      void addDefinition(const std::string& name, const std::string& r, int32_t token);
+      void addDefinition(std::string name, std::string r, int32_t token);
 
       /**
        * Sets a new input for the lexer. The state of the lexer will be resetted by this operation. The added definitions
        * will stay the same.
        * @param input The input string to analyse.
        */
-      void setInput(const std::string& input);
+      void setInput(std::string input);
 
       /**
        * Scans the next available Token and returns it. Will throw a LexicalAnalysisException if no definition matches.
@@ -143,15 +143,15 @@ namespace csvsqldb
       struct TokenDefinition {
         TokenDefinition() = default;
 
-        TokenDefinition(const std::string& name, const std::regex& r, int32_t token)
-        : _name(name)
-        , _rx(r)
+        TokenDefinition(std::string name, std::regex r, int32_t token)
+        : _name(std::move(name))
+        , _rx(std::move(r))
         , _token(token)
         {
         }
 
         std::string _name;
-        std::regex _rx{std::regex("")};
+        std::regex _rx{""};
         int32_t _token{UNDEFINED};
       };
       using TokenDefinitions = std::vector<TokenDefinition>;
@@ -161,7 +161,7 @@ namespace csvsqldb
       std::string _input;
       std::string::const_iterator _pos;
       std::string::const_iterator _end;
-      uint32_t _lineCount{0};
+      uint32_t _lineCount{1};
       std::string::const_iterator _lineStart;
     };
   }

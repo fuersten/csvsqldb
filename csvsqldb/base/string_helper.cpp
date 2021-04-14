@@ -46,9 +46,9 @@ namespace csvsqldb
     return s;
   }
 
-  std::string toupper_copy(const std::string& s)
+  std::string toupper_copy(std::string s)
   {
-    std::string str(s);
+    std::string str(std::move(s));
     std::transform(str.begin(), str.end(), str.begin(), ::toupper);
     return str;
   }
@@ -59,9 +59,9 @@ namespace csvsqldb
     return s;
   }
 
-  std::string tolower_copy(const std::string& s)
+  std::string tolower_copy(std::string s)
   {
-    std::string str(s);
+    std::string str(std::move(s));
     std::transform(str.begin(), str.end(), str.begin(), ::tolower);
     return str;
   }

@@ -43,9 +43,9 @@
 
 namespace csvsqldb
 {
-  Console::Console(const std::string& prompt, const fs::path& historyPath, uint16_t historyLength)
-  : _historyPath(historyPath)
-  , _prompt(prompt)
+  Console::Console(std::string prompt, fs::path historyPath, uint16_t historyLength)
+  : _historyPath(std::move(historyPath))
+  , _prompt(std::move(prompt))
   , _stop(false)
   {
     linenoiseHistorySetMaxLen(historyLength);
@@ -93,9 +93,9 @@ namespace csvsqldb
     _stop = true;
   }
 
-  void Console::addCommand(const std::string& command, CommandFunction function)
+  void Console::addCommand(std::string command, CommandFunction function)
   {
-    _commands.insert(std::make_pair(csvsqldb::tolower_copy(command), std::move(function)));
+    _commands.insert(std::make_pair(std::move(csvsqldb::tolower(command)), std::move(function)));
   }
 
   void Console::addDefault(DefaultCommandFunction function)

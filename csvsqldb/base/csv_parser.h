@@ -56,14 +56,10 @@ namespace csvsqldb
      * Context for the parametration of a CSV parser
      */
     struct CSVSQLDB_EXPORT CSVParserContext {
-      CSVParserContext()
-      : _skipFirstLine(false)
-      , _delimiter(',')
-      {
-      }
+      CSVParserContext() = default;
 
-      bool _skipFirstLine;  //!< The parser will skip the first input line (e.g. the header), default is false
-      char _delimiter;      //!< Field delimiter, default is ','
+      bool _skipFirstLine{false};  //!< The parser will skip the first input line (e.g. the header), default is false
+      char _delimiter{','};        //!< Field delimiter, default is ','
     };
 
 
@@ -148,14 +144,14 @@ namespace csvsqldb
       Types _types;
       CSVParserCallback& _callback;
 
-      State _state;
+      State _state{INIT};
       Types::const_iterator _typeIterator;
-      size_t _lineCount;
+      size_t _lineCount{1};
       BufferType _buffer;
       BufferType _stringBuffer;
-      size_t _stringBufferSize;
-      size_t _n;
-      std::streamsize _count;
+      size_t _stringBufferSize{256};
+      size_t _n{0};
+      std::streamsize _count{0};
       CSVStringParser _stringParser;
       static constexpr std::streamsize _bufferLength = 8192;
     };

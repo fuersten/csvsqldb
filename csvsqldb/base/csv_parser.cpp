@@ -44,14 +44,9 @@ namespace csvsqldb
     CSVParser::CSVParser(CSVParserContext context, std::istream& stream, Types types, CSVParserCallback& callback)
     : _context(context)
     , _stream(stream)
-    , _types(types)
+    , _types(std::move(types))
     , _callback(callback)
-    , _state(INIT)
     , _typeIterator(_types.begin())
-    , _lineCount(1)
-    , _stringBufferSize(256)
-    , _n(0)
-    , _count(0)
     , _stringParser(_stringBuffer, _stringBufferSize, std::bind(&CSVParser::readNextChar, this, std::placeholders::_1))
     {
       _buffer.resize(_bufferLength);

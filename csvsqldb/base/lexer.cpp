@@ -44,21 +44,20 @@ namespace csvsqldb
     : _callback(callback)
     , _pos(_input.cbegin())
     , _end(_input.cend())
-    , _lineCount(1)
     , _lineStart(_pos)
     {
       addDefinition("newline", R"(\r|\n)", NEWLINE);
       addDefinition("whitespace", R"([ \t\f]+)", WHITESPACE);
     }
 
-    void Lexer::addDefinition(const std::string& name, const std::string& r, int32_t token)
+    void Lexer::addDefinition(std::string name, std::string r, int32_t token)
     {
-      _tokenDefinitions.push_back(TokenDefinition(name, std::regex(r), token));
+      _tokenDefinitions.push_back(TokenDefinition(std::move(name), std::regex(std::move(r)), token));
     }
 
-    void Lexer::setInput(const std::string& input)
+    void Lexer::setInput(std::string input)
     {
-      _input = input;
+      _input = std::move(input);
       _pos = _input.cbegin();
       _end = _input.cend();
       _lineCount = 1;
