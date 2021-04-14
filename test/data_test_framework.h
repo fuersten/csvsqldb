@@ -34,6 +34,18 @@
 
 #include <csvsqldb/base/string_helper.h>
 #include <csvsqldb/execution_engine.h>
+#include <csvsqldb/operatornodes/aggregation_operatornode.h>
+#include <csvsqldb/operatornodes/cross_join_operatornode.h>
+#include <csvsqldb/operatornodes/extended_projection_operatornode.h>
+#include <csvsqldb/operatornodes/grouping_operatornode.h>
+#include <csvsqldb/operatornodes/inner_hash_join_operatornode.h>
+#include <csvsqldb/operatornodes/inner_join_operatornode.h>
+#include <csvsqldb/operatornodes/limit_operatornode.h>
+#include <csvsqldb/operatornodes/output_row_operatornode.h>
+#include <csvsqldb/operatornodes/scan_operatornode.h>
+#include <csvsqldb/operatornodes/select_operatornode.h>
+#include <csvsqldb/operatornodes/sort_operatornode.h>
+#include <csvsqldb/operatornodes/union_operatornode.h>
 
 #include "temporary_directory.h"
 

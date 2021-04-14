@@ -32,6 +32,12 @@
 
 
 #include <csvsqldb/operatornode.h>
+#include <csvsqldb/operatornodes/aggregation_operatornode.h>
+#include <csvsqldb/operatornodes/extended_projection_operatornode.h>
+#include <csvsqldb/operatornodes/output_row_operatornode.h>
+#include <csvsqldb/operatornodes/scan_operatornode.h>
+#include <csvsqldb/operatornodes/select_operatornode.h>
+#include <csvsqldb/operatornodes/table_scan_operatornode.h>
 #include <csvsqldb/sql_astdump.h>
 #include <csvsqldb/sql_parser.h>
 

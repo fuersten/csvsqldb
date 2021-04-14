@@ -10,7 +10,6 @@ set(LIB_CSVSQLDB_SOURCES
     execution_plan_creator.cpp
     file_mapping.cpp
     function_registry.cpp
-    operatornode.cpp
     operatornode_factory.cpp
     sql_lexer.cpp
     sql_parser.cpp
@@ -23,6 +22,35 @@ set(LIB_CSVSQLDB_SOURCES
     validation_visitor.cpp
     values.cpp
     variant.cpp
+
+    operatornodes/aggregation_operatornode.cpp
+    operatornodes/aggregation_operatornode.h
+    operatornodes/cross_join_operatornode.cpp
+    operatornodes/cross_join_operatornode.h
+    operatornodes/extended_projection_operatornode.cpp
+    operatornodes/extended_projection_operatornode.h
+    operatornodes/grouping_operatornode.cpp
+    operatornodes/grouping_operatornode.h
+    operatornodes/inner_hash_join_operatornode.cpp
+    operatornodes/inner_hash_join_operatornode.h
+    operatornodes/inner_join_operatornode.cpp
+    operatornodes/inner_join_operatornode.h
+    operatornodes/limit_operatornode.cpp
+    operatornodes/limit_operatornode.h
+    operatornodes/output_row_operatornode.cpp
+    operatornodes/output_row_operatornode.h
+    operatornodes/scan_operatornode.cpp
+    operatornodes/scan_operatornode.h
+    operatornodes/select_operatornode.cpp
+    operatornodes/select_operatornode.h
+    operatornodes/sort_operatornode.cpp
+    operatornodes/sort_operatornode.h
+    operatornodes/systemtable_scan_operatornode.cpp
+    operatornodes/systemtable_scan_operatornode.h
+    operatornodes/table_scan_operatornode.cpp
+    operatornodes/table_scan_operatornode.h
+    operatornodes/union_operatornode.cpp
+    operatornodes/union_operatornode.h
 
     aggregation_functions.h
     block.h

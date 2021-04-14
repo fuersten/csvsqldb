@@ -33,6 +33,20 @@
 
 #include "operatornode_factory.h"
 
+#include "operatornodes/aggregation_operatornode.h"
+#include "operatornodes/cross_join_operatornode.h"
+#include "operatornodes/extended_projection_operatornode.h"
+#include "operatornodes/grouping_operatornode.h"
+#include "operatornodes/inner_hash_join_operatornode.h"
+#include "operatornodes/inner_join_operatornode.h"
+#include "operatornodes/limit_operatornode.h"
+#include "operatornodes/output_row_operatornode.h"
+#include "operatornodes/scan_operatornode.h"
+#include "operatornodes/select_operatornode.h"
+#include "operatornodes/sort_operatornode.h"
+#include "operatornodes/table_scan_operatornode.h"
+#include "operatornodes/union_operatornode.h"
+
 
 namespace csvsqldb
 {

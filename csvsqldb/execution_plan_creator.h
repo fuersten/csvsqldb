@@ -35,7 +35,7 @@
 
 #include <csvsqldb/inc.h>
 
-#include <csvsqldb/operatornode.h>
+#include <csvsqldb/operatornodes/systemtable_scan_operatornode.h>
 #include <csvsqldb/sql_ast.h>
 #include <csvsqldb/sql_astdump.h>
 #include <csvsqldb/table_executions.h>

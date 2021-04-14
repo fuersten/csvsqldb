@@ -36,6 +36,7 @@
 #include <csvsqldb/inc.h>
 
 #include <csvsqldb/operatornode.h>
+#include <csvsqldb/sql_ast.h>
 
 
 namespace csvsqldb
