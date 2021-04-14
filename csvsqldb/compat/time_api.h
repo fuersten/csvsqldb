@@ -39,7 +39,7 @@
   #define timegm _mkgmtime
 #endif
 
-  namespace csvsqldb
+namespace csvsqldb
 {
 #if defined _MSC_VER
   inline struct tm* localtime_r(const time_t* clock, struct tm* result)

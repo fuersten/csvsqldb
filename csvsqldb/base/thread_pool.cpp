@@ -57,9 +57,7 @@ namespace csvsqldb
     }
 
     for (int n = 0; n < _numberOfThreads; ++n) {
-      _serviceThreads.emplace_back([this]() {
-        run();
-      });
+      _serviceThreads.emplace_back([this]() { run(); });
     }
   }
 

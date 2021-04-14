@@ -45,10 +45,10 @@
 #include <csvsqldb/version.h>
 
 #include "console.h"
+
 #include <CLI/App.hpp>
 #include <CLI/Config.hpp>
 #include <CLI/Formatter.hpp>
-
 #include <fstream>
 #include <sstream>
 #include <stdio.h>
