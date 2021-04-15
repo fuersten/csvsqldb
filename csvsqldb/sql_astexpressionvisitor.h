@@ -107,22 +107,22 @@ namespace csvsqldb
     void visit(ASTLikeNode& node) override
     {
       node._lhs->accept(*this);
-      _ss << "'" << node._like << "'";
+      _ss << " LIKE '" << node._like << "'";
     }
 
     void visit(ASTBetweenNode& node) override
     {
       node._lhs->accept(*this);
-      _ss << " between ";
+      _ss << " BETWEEN ";
       node._from->accept(*this);
-      _ss << " and ";
+      _ss << " AND ";
       node._to->accept(*this);
     }
 
     void visit(ASTInNode& node) override
     {
       node._lhs->accept(*this);
-      _ss << " in (";
+      _ss << " IN (";
       bool first = true;
       for (const auto& exp : node._expressions) {
         if (!first) {

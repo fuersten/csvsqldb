@@ -44,13 +44,13 @@
 
 TEST_CASE("SQL Parser Test", "[sql parser]")
 {
+  csvsqldb::ASTNodeSQLPrintVisitor visitor;
+  csvsqldb::FunctionRegistry functions;
+  csvsqldb::initBuildInFunctions(functions);
+  csvsqldb::SQLParser parser(functions);
+
   SECTION("parse select")
   {
-    csvsqldb::ASTNodeSQLPrintVisitor visitor;
-    csvsqldb::FunctionRegistry functions;
-    csvsqldb::initBuildInFunctions(functions);
-    csvsqldb::SQLParser parser(functions);
-
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     csvsqldb::ASTNodePtr node = parser.parse("select * from Test as t where birthday = DATE'1970-09-23'");
     REQUIRE(node);
@@ -239,11 +239,6 @@ TEST_CASE("SQL Parser Test", "[sql parser]")
 
   SECTION("parse select expression")
   {
-    csvsqldb::ASTNodeSQLPrintVisitor visitor;
-    csvsqldb::FunctionRegistry functions;
-    csvsqldb::initBuildInFunctions(functions);
-    csvsqldb::SQLParser parser(functions);
-
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     csvsqldb::ASTNodePtr node = parser.parse("SELECT CURRENT_TIMESTAMP FROM SYSTEM_DUAL");
     REQUIRE(node);
@@ -262,10 +257,6 @@ TEST_CASE("SQL Parser Test", "[sql parser]")
 
   SECTION("parse comment")
   {
-    csvsqldb::ASTNodeSQLPrintVisitor visitor;
-    csvsqldb::FunctionRegistry functions;
-    csvsqldb::SQLParser parser(functions);
-
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     csvsqldb::ASTNodePtr node =
       parser.parse("--select * from Test as t where birthday = DATE'1970-09-23'\nSeLeCT t.* FRoM Test as t");
@@ -282,10 +273,6 @@ TEST_CASE("SQL Parser Test", "[sql parser]")
 
   SECTION("parse union")
   {
-    csvsqldb::ASTNodeSQLPrintVisitor visitor;
-    csvsqldb::FunctionRegistry functions;
-    csvsqldb::SQLParser parser(functions);
-
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     csvsqldb::ASTNodePtr node = parser.parse(
       "SELECT a,b,c FROM Test WHERE b = DATE'1970-09-23' UNION ALL (SELECT a,b,c FROM Test WHERE a > b AND c < a OR b IS NOT "
@@ -306,10 +293,6 @@ TEST_CASE("SQL Parser Test", "[sql parser]")
 
   SECTION("parse explain")
   {
-    csvsqldb::ASTNodeSQLPrintVisitor visitor;
-    csvsqldb::FunctionRegistry functions;
-    csvsqldb::SQLParser parser(functions);
-
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     csvsqldb::ASTNodePtr node = parser.parse("explain ast select * from Test as t where birthday = DATE'1970-09-23'");
     REQUIRE(node);
@@ -326,9 +309,6 @@ TEST_CASE("SQL Parser Test", "[sql parser]")
 
   SECTION("parse select fail")
   {
-    csvsqldb::FunctionRegistry functions;
-    csvsqldb::SQLParser parser(functions);
-
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     CHECK_THROWS_AS(parser.parse("SELECT a,*,b,c FROM Test where a > b and c in (2,3,4,5,6)"), csvsqldb::SqlParserException);
 
@@ -342,10 +322,6 @@ TEST_CASE("SQL Parser Test", "[sql parser]")
 
   SECTION("parse complex select")
   {
-    csvsqldb::ASTNodeSQLPrintVisitor visitor;
-    csvsqldb::FunctionRegistry functions;
-    csvsqldb::SQLParser parser(functions);
-
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     csvsqldb::ASTNodePtr node =
       parser.parse("SELECT emp_no,first_name || ' ' || last_name as name FROM employees WHERE last_name='Tsukuda'");
@@ -376,10 +352,6 @@ TEST_CASE("SQL Parser Test", "[sql parser]")
 
   SECTION("parse multi statement")
   {
-    csvsqldb::ASTNodeSQLPrintVisitor visitor;
-    csvsqldb::FunctionRegistry functions;
-    csvsqldb::SQLParser parser(functions);
-
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     csvsqldb::ASTNodePtr node = parser.parse(
       "select * from Test as t where birthday = DATE'1970-09-23'; SELECT *,Test.*,a ff,Test.b,c FROM Test where a > b and c < "
@@ -406,10 +378,6 @@ TEST_CASE("SQL Parser Test", "[sql parser]")
 
   SECTION("parse join")
   {
-    csvsqldb::ASTNodeSQLPrintVisitor visitor;
-    csvsqldb::FunctionRegistry functions;
-    csvsqldb::SQLParser parser(functions);
-
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     csvsqldb::ASTNodePtr node = parser.parse("SELECT * FROM employee as emp, department as dept;");
     REQUIRE(node);
@@ -541,10 +509,6 @@ TEST_CASE("SQL Parser Test", "[sql parser]")
 
   SECTION("parse with order")
   {
-    csvsqldb::ASTNodeSQLPrintVisitor visitor;
-    csvsqldb::FunctionRegistry functions;
-    csvsqldb::SQLParser parser(functions);
-
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     csvsqldb::ASTNodePtr node = parser.parse(
       "SELECT emp_no,first_name || ' ' || last_name as name FROM employees WHERE last_name='Tsukuda' order by name DESC, "
@@ -564,10 +528,6 @@ TEST_CASE("SQL Parser Test", "[sql parser]")
 
   SECTION("parse with limit")
   {
-    csvsqldb::ASTNodeSQLPrintVisitor visitor;
-    csvsqldb::FunctionRegistry functions;
-    csvsqldb::SQLParser parser(functions);
-
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     csvsqldb::ASTNodePtr node = parser.parse("SELECT * FROM employees WHERE emp_no > 490000 LIMIT 10 OFFSET 100");
     REQUIRE(node);
@@ -584,10 +544,6 @@ TEST_CASE("SQL Parser Test", "[sql parser]")
 
   SECTION("parse subquery")
   {
-    csvsqldb::ASTNodeSQLPrintVisitor visitor;
-    csvsqldb::FunctionRegistry functions;
-    csvsqldb::SQLParser parser(functions);
-
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     csvsqldb::ASTNodePtr node = parser.parse("(SELECT * FROM (SELECT a,b FROM test) as t);");
     REQUIRE(node);
@@ -621,9 +577,6 @@ TEST_CASE("SQL Parser Test", "[sql parser]")
 
   SECTION("parse create table")
   {
-    csvsqldb::FunctionRegistry functions;
-    csvsqldb::SQLParser parser(functions);
-
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     csvsqldb::ASTNodePtr node = parser.parse(
       "CREATE TABLE Test(id INTEGER PRIMARY KEY, name CHAR VARYING(255) DEFAULT 'Lars', adult BOOLEAN, loan FLOAT NOT NULL "
@@ -641,9 +594,6 @@ TEST_CASE("SQL Parser Test", "[sql parser]")
 
   SECTION("parse create table fail")
   {
-    csvsqldb::FunctionRegistry functions;
-    csvsqldb::SQLParser parser(functions);
-
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     CHECK_THROWS_AS(parser.parse("CREATE TABLE Test(id INTEGER PRIMARY KEY, CHAR)"), csvsqldb::SqlParserException);
 
@@ -654,9 +604,6 @@ TEST_CASE("SQL Parser Test", "[sql parser]")
 
   SECTION("parse alter table")
   {
-    csvsqldb::FunctionRegistry functions;
-    csvsqldb::SQLParser parser(functions);
-
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     csvsqldb::ASTNodePtr node = parser.parse("ALTER TABLE Test ADD COLUMN test INT NOT NULL");
     REQUIRE(node);
@@ -670,9 +617,6 @@ TEST_CASE("SQL Parser Test", "[sql parser]")
 
   SECTION("parse alter table fail")
   {
-    csvsqldb::FunctionRegistry functions;
-    csvsqldb::SQLParser parser(functions);
-
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     CHECK_THROWS_AS(parser.parse("ALTER TABLE Test ADD COLUMN"), csvsqldb::SqlParserException);
 
@@ -682,9 +626,6 @@ TEST_CASE("SQL Parser Test", "[sql parser]")
 
   SECTION("parse drop table")
   {
-    csvsqldb::FunctionRegistry functions;
-    csvsqldb::SQLParser parser(functions);
-
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     csvsqldb::ASTNodePtr node = parser.parse("DROP TABLE Test");
     REQUIRE(node);
@@ -693,18 +634,12 @@ TEST_CASE("SQL Parser Test", "[sql parser]")
 
   SECTION("parse drop table fail")
   {
-    csvsqldb::FunctionRegistry functions;
-    csvsqldb::SQLParser parser(functions);
-
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     CHECK_THROWS_AS(parser.parse("DROP TABLE"), csvsqldb::SqlParserException);
   }
 
   SECTION("parse mapping")
   {
-    csvsqldb::FunctionRegistry functions;
-    csvsqldb::SQLParser parser(functions);
-
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     csvsqldb::ASTNodePtr node = parser.parse("CREATE MAPPING EMPLOYEES(\"employees\\d*.csv\")");
     REQUIRE(node);
@@ -713,8 +648,6 @@ TEST_CASE("SQL Parser Test", "[sql parser]")
 
   SECTION("parse mapping fail")
   {
-    csvsqldb::FunctionRegistry functions;
-    csvsqldb::SQLParser parser(functions);
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     CHECK_THROWS_AS(parser.parse("CREATE MAPPING EMPLOYEES(\"employees\\d*.csv\", \"employees_test.csv\")"),
                     csvsqldb::SqlParserException);
@@ -722,37 +655,81 @@ TEST_CASE("SQL Parser Test", "[sql parser]")
 
   SECTION("parse expression")
   {
-    csvsqldb::FunctionRegistry functions;
-    csvsqldb::SQLParser parser(functions);
-
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     csvsqldb::ASTExprNodePtr exp = parser.parseExpression("a + (37*5) / 3");
-    csvsqldb::ASTExpressionVisitor visitor;
-    exp->accept(visitor);
-    std::string sql = visitor.toString();
+    csvsqldb::ASTExpressionVisitor expvisitor;
+    exp->accept(expvisitor);
+    std::string sql = expvisitor.toString();
     csvsqldb::ASTExprNodePtr re_exp = parser.parseExpression(sql);
-    visitor.reset();
-    exp->accept(visitor);
-    CHECK(sql == visitor.toString());
+    expvisitor.reset();
+    exp->accept(expvisitor);
+    CHECK(sql == expvisitor.toString());
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     exp = parser.parseExpression("a between 3 and 15");
-    visitor.reset();
-    exp->accept(visitor);
-    sql = visitor.toString();
+    expvisitor.reset();
+    exp->accept(expvisitor);
+    sql = expvisitor.toString();
     re_exp = parser.parseExpression(sql);
-    visitor.reset();
-    exp->accept(visitor);
-    CHECK(sql == visitor.toString());
+    expvisitor.reset();
+    exp->accept(expvisitor);
+    CHECK(sql == expvisitor.toString());
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    exp = parser.parseExpression("cast(b as varchar(255))");
+    expvisitor.reset();
+    exp->accept(expvisitor);
+    sql = expvisitor.toString();
+    re_exp = parser.parseExpression(sql);
+    expvisitor.reset();
+    exp->accept(expvisitor);
+    CHECK(sql == expvisitor.toString());
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    exp = parser.parseExpression("a like 'DE%'");
+    expvisitor.reset();
+    exp->accept(expvisitor);
+    sql = expvisitor.toString();
+    re_exp = parser.parseExpression(sql);
+    expvisitor.reset();
+    exp->accept(expvisitor);
+    CHECK(sql == expvisitor.toString());
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    exp = parser.parseExpression("C IN (2,3,4,5,6)");
+    expvisitor.reset();
+    exp->accept(expvisitor);
+    sql = expvisitor.toString();
+    re_exp = parser.parseExpression(sql);
+    expvisitor.reset();
+    exp->accept(expvisitor);
+    CHECK(sql == expvisitor.toString());
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    exp = parser.parseExpression("POW(5,2)");
+    expvisitor.reset();
+    exp->accept(expvisitor);
+    sql = expvisitor.toString();
+    re_exp = parser.parseExpression(sql);
+    expvisitor.reset();
+    exp->accept(expvisitor);
+    CHECK(sql == expvisitor.toString());
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    exp = parser.parseExpression("sum(DISTINCT b)");
+    expvisitor.reset();
+    exp->accept(expvisitor);
+    sql = expvisitor.toString();
+    re_exp = parser.parseExpression(sql);
+    expvisitor.reset();
+    exp->accept(expvisitor);
+    CHECK(sql == expvisitor.toString());
   }
 
   SECTION("parse validate select")
   {
     TemporaryDirectoryGuard tmpDir;
     auto path = tmpDir.temporaryDirectoryPath();
-
-    csvsqldb::FunctionRegistry functions;
-    csvsqldb::SQLParser parser(functions);
 
     csvsqldb::Database database(path, csvsqldb::FileMapping());
 
@@ -800,8 +777,6 @@ TEST_CASE("SQL Parser Test", "[sql parser]")
 
   SECTION("create mapping")
   {
-    csvsqldb::FunctionRegistry functions;
-    csvsqldb::SQLParser parser(functions);
     csvsqldb::ASTNodePtr node = parser.parse("create mapping test('test.csv', ';', true)");
     REQUIRE(node);
     CHECK(std::dynamic_pointer_cast<csvsqldb::ASTMappingNode>(node));
@@ -829,15 +804,11 @@ TEST_CASE("SQL Parser Test", "[sql parser]")
 
   SECTION("create bad mapping")
   {
-    csvsqldb::FunctionRegistry functions;
-    csvsqldb::SQLParser parser(functions);
     CHECK_THROWS_AS(parser.parse("create mapping test('test.csv', true)"), csvsqldb::SqlParserException);
   }
 
   SECTION("drop mapping")
   {
-    csvsqldb::FunctionRegistry functions;
-    csvsqldb::SQLParser parser(functions);
     csvsqldb::ASTNodePtr node = parser.parse("drop mapping test");
     REQUIRE(node);
     REQUIRE(std::dynamic_pointer_cast<csvsqldb::ASTDropMappingNode>(node));
