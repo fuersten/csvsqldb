@@ -44,6 +44,388 @@
 
 namespace csvsqldb
 {
+  class CSVSQLDB_EXPORT ASTNodeSQLPrintVisitor : public ASTNodeVisitor
+  {
+  public:
+    ASTNodeSQLPrintVisitor() = default;
+
+    std::string toString() const
+    {
+      return _ss.str();
+    }
+
+    void reset()
+    {
+      _ss.str("");
+      _ss.clear();
+    }
+
+    void printOp(eOperationType op)
+    {
+      switch (op) {
+        case OP_CAST:
+        case OP_LIKE:
+        case OP_BETWEEN:
+        case OP_IN:
+          CSVSQLDB_THROW(SqlException, "Cannot print CAST,LIKE,BETWEEN or IN operators");
+        default:
+          _ss << " " << operationTypeToString(op) << " ";
+      }
+    }
+
+    void visit(ASTExplainNode& node) override
+    {
+      _ss << "EXPLAIN AST ";
+      node._query->accept(*this);
+    }
+
+    void visit(ASTMappingNode& node) override
+    {
+    }
+
+    void visit(ASTDropMappingNode& node) override
+    {
+    }
+
+    void visit(ASTQualifiedAsterisk& node) override
+    {
+      _ss << node.getQualifiedQuotedIdentifier();
+    }
+
+    void visit(ASTCreateTableNode& node) override
+    {
+    }
+
+    void visit(ASTAlterTableAddColumnNode& node) override
+    {
+    }
+
+    void visit(ASTAlterTableDropColumnNode& node) override
+    {
+    }
+
+    void visit(ASTDropTableNode& node) override
+    {
+    }
+
+    void visit(ASTQueryNode& node) override
+    {
+      node._query->accept(*this);
+    }
+
+    void visit(ASTUnionNode& node) override
+    {
+      node._lhs->accept(*this);
+      _ss << " UNION " << (node._quantifier == DISTINCT ? "DISTINCT " : "");
+      _ss << "(";
+      node._rhs->accept(*this);
+      _ss << ")";
+    }
+
+    void visit(ASTQuerySpecificationNode& node) override
+    {
+      _ss << "SELECT ";
+      if (node._quantifier == DISTINCT) {
+        _ss << "DISTINCT ";
+      }
+      bool first = true;
+      for (const auto& exp : node._nodes) {
+        if (!first) {
+          _ss << ",";
+        } else {
+          first = false;
+        }
+        exp->accept(*this);
+      }
+      node._tableExpression->accept(*this);
+    }
+
+    void visit(ASTTableExpressionNode& node) override
+    {
+      node._from->accept(*this);
+      if (node._where) {
+        node._where->accept(*this);
+      }
+      if (node._group) {
+        node._group->accept(*this);
+      }
+      if (node._order) {
+        node._order->accept(*this);
+      }
+      if (node._limit) {
+        node._limit->accept(*this);
+      }
+    }
+
+    void visit(ASTFromNode& node) override
+    {
+      _ss << " FROM ";
+      bool first = true;
+      for (const auto& ref : node._tableReferences) {
+        if (!first) {
+          _ss << ",";
+        } else {
+          first = false;
+        }
+        ref->accept(*this);
+      }
+    }
+
+    void visit(ASTTableIdentifierNode& node) override
+    {
+      node._factor->accept(*this);
+    }
+
+    void visit(ASTTableSubqueryNode& node) override
+    {
+      _ss << "(";
+      node._query->accept(*this);
+      _ss << ")";
+    }
+
+    void visit(ASTCrossJoinNode& node) override
+    {
+      node._tableReference->accept(*this);
+      _ss << " CROSS JOIN ";
+      node._factor->accept(*this);
+    }
+
+    void visit(ASTNaturalJoinNode& node) override
+    {
+      node._tableReference->accept(*this);
+      _ss << " " << naturalJoinToString(node._joinType);
+      _ss << " JOIN ";
+      node._factor->accept(*this);
+    }
+
+    void visit(ASTInnerJoinNode& node) override
+    {
+      node._tableReference->accept(*this);
+      _ss << " INNER JOIN ";
+      node._factor->accept(*this);
+      _ss << " ON ";
+      node._expression->accept(*this);
+    }
+
+    void visit(ASTLeftJoinNode& node) override
+    {
+      node._tableReference->accept(*this);
+      _ss << " LEFT OUTER JOIN ";
+      node._factor->accept(*this);
+      _ss << " ON ";
+      node._expression->accept(*this);
+    }
+
+    void visit(ASTRightJoinNode& node) override
+    {
+      node._tableReference->accept(*this);
+      _ss << " RIGHT OUTER JOIN ";
+      node._factor->accept(*this);
+      _ss << " ON ";
+      node._expression->accept(*this);
+    }
+
+    void visit(ASTFullJoinNode& node) override
+    {
+      node._tableReference->accept(*this);
+      _ss << " FULL OUTER JOIN ";
+      node._factor->accept(*this);
+      _ss << " ON ";
+      node._expression->accept(*this);
+    }
+
+    void visit(ASTWhereNode& node) override
+    {
+      _ss << " WHERE ";
+      node._exp->accept(*this);
+    }
+
+    void visit(ASTGroupByNode& node) override
+    {
+      _ss << " GROUP BY ";
+      bool first = true;
+      for (const auto& ident : node._identifiers) {
+        if (!first) {
+          _ss << ",";
+        } else {
+          first = false;
+        }
+        ident->accept(*this);
+      }
+    }
+
+    void visit(ASTHavingNode& node) override
+    {
+    }
+
+    void visit(ASTOrderByNode& node) override
+    {
+      _ss << " ORDER BY ";
+      bool first = true;
+      for (const auto& exp : node._orderExpressions) {
+        if (!first) {
+          _ss << ",";
+        } else {
+          first = false;
+        }
+        exp.first->accept(*this);
+        switch (exp.second) {
+          case ASC:
+            _ss << " ASC";
+            break;
+          case DESC:
+            _ss << " DESC";
+            break;
+        }
+      }
+    }
+
+    void visit(ASTLimitNode& node) override
+    {
+      _ss << " LIMIT ";
+      node._limit->accept(*this);
+      if (node._offset) {
+        _ss << " OFFSET ";
+        node._offset->accept(*this);
+      }
+    }
+
+    void visit(ASTBinaryNode& node) override
+    {
+      _ss << "(";
+      node._lhs->accept(*this);
+      printOp(node._op);
+      node._rhs->accept(*this);
+      _ss << ")";
+      if (!node._symbolName.empty()) {
+        const SymbolInfoPtr info = node.symbolTable()->findSymbol(node._symbolName);
+        if (!info->_alias.empty()) {
+          _ss << " AS " << info->_alias;
+        }
+      }
+    }
+
+    void visit(ASTUnaryNode& node) override
+    {
+      if (node._op == OP_CAST) {
+        _ss << "CAST(";
+        node._rhs->accept(*this);
+        _ss << " AS " << typeToString(node._castType);
+        /*
+         if(node._castType == STRING) {
+         // this just a workaround
+         // we need to parse STRING types also without length
+         // and we should store the length of the type in the value
+         _ss << "(255)";
+         }*/
+        _ss << ")";
+        if (!node._symbolName.empty()) {
+          const SymbolInfoPtr info = node.symbolTable()->findSymbol(node._symbolName);
+          if (!info->_alias.empty()) {
+            _ss << " AS " << info->_alias;
+          }
+        }
+      } else {
+        printOp(node._op);
+        node._rhs->accept(*this);
+      }
+    }
+
+    void visit(ASTValueNode& node) override
+    {
+      if (node._value._type == STRING) {
+        _ss << "'";
+      }
+      _ss << typedValueToString(node._value);
+      if (node._value._type == STRING) {
+        _ss << "'";
+      }
+    }
+
+    void visit(ASTLikeNode& node) override
+    {
+      node._lhs->accept(*this);
+      _ss << " LIKE '" << node._like << "'";
+    }
+
+    void visit(ASTBetweenNode& node) override
+    {
+      node._lhs->accept(*this);
+      _ss << " BETWEEN ";
+      node._from->accept(*this);
+      _ss << " AND ";
+      node._to->accept(*this);
+    }
+
+    void visit(ASTInNode& node) override
+    {
+      node._lhs->accept(*this);
+      _ss << " IN (";
+      bool first = true;
+      for (const auto& exp : node._expressions) {
+        if (!first) {
+          _ss << ",";
+        } else {
+          first = false;
+        }
+        exp->accept(*this);
+      }
+      _ss << ")";
+    }
+
+    void visit(ASTFunctionNode& node) override
+    {
+      _ss << node._function->getName() << "(";
+      bool first = true;
+      for (const auto& param : node._parameters) {
+        if (!first) {
+          _ss << ",";
+        } else {
+          first = false;
+        }
+        param._exp->accept(*this);
+      }
+      _ss << ")";
+    }
+
+    void visit(ASTAggregateFunctionNode& node) override
+    {
+      _ss << aggregateFunctionToString(node._aggregateFunction) << "(";
+      bool first = true;
+      if (node._aggregateFunction == COUNT_STAR) {
+        _ss << "*";
+      }
+      _ss << (node._quantifier == DISTINCT ? "DISTINCT " : "");
+      for (const auto& param : node._parameters) {
+        if (!first) {
+          _ss << ",";
+        } else {
+          first = false;
+        }
+        param._exp->accept(*this);
+      }
+      _ss << ")";
+      if (!node._symbolName.empty()) {
+        const SymbolInfoPtr info = node.symbolTable()->findSymbol(node._symbolName);
+        if (!info->_alias.empty()) {
+          _ss << " AS " << info->_alias;
+        }
+      }
+    }
+
+    void visit(ASTIdentifier& node) override
+    {
+      _ss << node.getQualifiedQuotedIdentifier();
+      if (node._info && !node._info->_alias.empty() && node.getQualifiedQuotedIdentifier() != node._info->_alias) {
+        _ss << " AS " << node._info->_alias;
+      }
+    }
+
+  private:
+    std::stringstream _ss;
+  };
+
+
   class CSVSQLDB_EXPORT ASTNodeDumpVisitor : public ASTNodeVisitor
   {
   public:
@@ -57,15 +439,15 @@ namespace csvsqldb
       _out << "ASTCreateTable" << std::endl;
       _indent += 2;
       indent();
-      _out << node._tableName << " -> " << (node._createIfNotExists ? "create if not exists" : "") << std::endl;
+      _out << node._tableName << " ->" << (node._createIfNotExists ? " create if not exists" : "") << std::endl;
       _indent += 2;
       for (const auto& definition : node._columnDefinitions) {
         indent();
-        _out << definition._name << " -> " << typeToString(definition._type) << " ";
-        _out << (definition._length ? "length " + std::to_string(definition._length) + " " : "");
-        _out << (definition._primaryKey ? "Primary Key " : "");
-        _out << (definition._notNull ? "Not Null " : "");
-        _out << (definition._unique ? "Unique " : "");
+        _out << definition._name << " -> " << typeToString(definition._type);
+        _out << (definition._length ? " length " + std::to_string(definition._length) : "");
+        _out << (definition._primaryKey ? " Primary Key" : "");
+        _out << (definition._notNull ? " Not Null" : "");
+        _out << (definition._unique ? " Unique" : "");
         if (definition._defaultValue.has_value()) {
           _out << typedValueToString(TypedValue(definition._type, definition._defaultValue));
         }
@@ -117,11 +499,27 @@ namespace csvsqldb
     void visit(ASTMappingNode& node) override
     {
       _out << "ASTMappingNode" << std::endl;
+      _indent += 2;
+      indent();
+      _out << node._tableName << " ->";
+      _indent += 2;
+      std::for_each(node._mappings.begin(), node._mappings.end(), [&](const auto& mapping) {
+        _out << std::endl;
+        indent();
+        _out << mapping._mapping;
+      });
+      _out << std::endl;
+      _indent -= 4;
     }
 
     void visit(ASTDropMappingNode& node) override
     {
       _out << "ASTDropMappingNode" << std::endl;
+      _indent += 2;
+      indent();
+      _out << node._tableName;
+      _out << std::endl;
+      _indent -= 2;
     }
 
     void visit(ASTAlterTableAddColumnNode& node) override
@@ -134,7 +532,7 @@ namespace csvsqldb
       _out << (node._definition._notNull ? "Not Null" : "");
       _out << (node._definition._unique ? "Unique" : "");
       if (node._definition._defaultValue.has_value()) {
-        _out << typedValueToString(TypedValue(node._definition._type, node._definition._defaultValue));
+        _out << " Default " << typedValueToString(TypedValue(node._definition._type, node._definition._defaultValue));
       }
       _out << std::endl;
       _indent -= 2;
@@ -161,6 +559,15 @@ namespace csvsqldb
     void visit(ASTExplainNode& node) override
     {
       _out << "ASTExplainNode" << std::endl;
+      _indent += 2;
+      indent();
+      _out << "Type " << descriptionTypeToString(node._descType) << std::endl;
+
+      ASTNodeSQLPrintVisitor visitor;
+      node._query->accept(visitor);
+      indent();
+      _out << "Query: " << visitor.toString() << std::endl;
+      _indent -= 2;
     }
 
     void visit(ASTUnionNode& node) override
@@ -575,389 +982,5 @@ namespace csvsqldb
 
     size_t _indent{0};
     std::ostream& _out;
-  };
-
-
-  class CSVSQLDB_EXPORT ASTNodeSQLPrintVisitor : public ASTNodeVisitor
-  {
-  public:
-    ASTNodeSQLPrintVisitor()
-    {
-    }
-
-    std::string toString() const
-    {
-      return _ss.str();
-    }
-
-    void reset()
-    {
-      _ss.str("");
-      _ss.clear();
-    }
-
-    void printOp(eOperationType op)
-    {
-      switch (op) {
-        case OP_CAST:
-        case OP_LIKE:
-        case OP_BETWEEN:
-        case OP_IN:
-          CSVSQLDB_THROW(SqlException, "Cannot print CAST,LIKE,BETWEEN or IN operators");
-        default:
-          _ss << " " << operationTypeToString(op) << " ";
-      }
-    }
-
-    void visit(ASTExplainNode& node) override
-    {
-      _ss << "EXPLAIN AST ";
-      node._query->accept(*this);
-    }
-
-    void visit(ASTMappingNode& node) override
-    {
-    }
-
-    void visit(ASTDropMappingNode& node) override
-    {
-    }
-
-    void visit(ASTQualifiedAsterisk& node) override
-    {
-      _ss << node.getQualifiedQuotedIdentifier();
-    }
-
-    void visit(ASTCreateTableNode& node) override
-    {
-    }
-
-    void visit(ASTAlterTableAddColumnNode& node) override
-    {
-    }
-
-    void visit(ASTAlterTableDropColumnNode& node) override
-    {
-    }
-
-    void visit(ASTDropTableNode& node) override
-    {
-    }
-
-    void visit(ASTQueryNode& node) override
-    {
-      node._query->accept(*this);
-    }
-
-    void visit(ASTUnionNode& node) override
-    {
-      node._lhs->accept(*this);
-      _ss << " UNION " << (node._quantifier == DISTINCT ? "DISTINCT " : "");
-      _ss << "(";
-      node._rhs->accept(*this);
-      _ss << ")";
-    }
-
-    void visit(ASTQuerySpecificationNode& node) override
-    {
-      _ss << "SELECT ";
-      if (node._quantifier == DISTINCT) {
-        _ss << "DISTINCT ";
-      }
-      bool first = true;
-      for (const auto& exp : node._nodes) {
-        if (!first) {
-          _ss << ",";
-        } else {
-          first = false;
-        }
-        exp->accept(*this);
-      }
-      node._tableExpression->accept(*this);
-    }
-
-    void visit(ASTTableExpressionNode& node) override
-    {
-      node._from->accept(*this);
-      if (node._where) {
-        node._where->accept(*this);
-      }
-      if (node._group) {
-        node._group->accept(*this);
-      }
-      if (node._order) {
-        node._order->accept(*this);
-      }
-      if (node._limit) {
-        node._limit->accept(*this);
-      }
-    }
-
-    void visit(ASTFromNode& node) override
-    {
-      _ss << " FROM ";
-      bool first = true;
-      for (const auto& ref : node._tableReferences) {
-        if (!first) {
-          _ss << ",";
-        } else {
-          first = false;
-        }
-        ref->accept(*this);
-      }
-    }
-
-    void visit(ASTTableIdentifierNode& node) override
-    {
-      node._factor->accept(*this);
-    }
-
-    void visit(ASTTableSubqueryNode& node) override
-    {
-      _ss << "(";
-      node._query->accept(*this);
-      _ss << ")";
-    }
-
-    void visit(ASTCrossJoinNode& node) override
-    {
-      node._tableReference->accept(*this);
-      _ss << " CROSS JOIN ";
-      node._factor->accept(*this);
-    }
-
-    void visit(ASTNaturalJoinNode& node) override
-    {
-      node._tableReference->accept(*this);
-      _ss << " " << naturalJoinToString(node._joinType);
-      _ss << " JOIN ";
-      node._factor->accept(*this);
-    }
-
-    void visit(ASTInnerJoinNode& node) override
-    {
-      node._tableReference->accept(*this);
-      _ss << " INNER JOIN ";
-      node._factor->accept(*this);
-      _ss << " ON ";
-      node._expression->accept(*this);
-    }
-
-    void visit(ASTLeftJoinNode& node) override
-    {
-      node._tableReference->accept(*this);
-      _ss << " LEFT OUTER JOIN ";
-      node._factor->accept(*this);
-      _ss << " ON ";
-      node._expression->accept(*this);
-    }
-
-    void visit(ASTRightJoinNode& node) override
-    {
-      node._tableReference->accept(*this);
-      _ss << " RIGHT OUTER JOIN ";
-      node._factor->accept(*this);
-      _ss << " ON ";
-      node._expression->accept(*this);
-    }
-
-    void visit(ASTFullJoinNode& node) override
-    {
-      node._tableReference->accept(*this);
-      _ss << " FULL OUTER JOIN ";
-      node._factor->accept(*this);
-      _ss << " ON ";
-      node._expression->accept(*this);
-    }
-
-    void visit(ASTWhereNode& node) override
-    {
-      _ss << " WHERE ";
-      node._exp->accept(*this);
-    }
-
-    void visit(ASTGroupByNode& node) override
-    {
-      _ss << " GROUP BY ";
-      bool first = true;
-      for (const auto& ident : node._identifiers) {
-        if (!first) {
-          _ss << ",";
-        } else {
-          first = false;
-        }
-        ident->accept(*this);
-      }
-    }
-
-    void visit(ASTHavingNode& node) override
-    {
-    }
-
-    void visit(ASTOrderByNode& node) override
-    {
-      _ss << " ORDER BY ";
-      bool first = true;
-      for (const auto& exp : node._orderExpressions) {
-        if (!first) {
-          _ss << ",";
-        } else {
-          first = false;
-        }
-        exp.first->accept(*this);
-        switch (exp.second) {
-          case ASC:
-            _ss << " ASC";
-            break;
-          case DESC:
-            _ss << " DESC";
-            break;
-        }
-      }
-    }
-
-    void visit(ASTLimitNode& node) override
-    {
-      _ss << " LIMIT ";
-      node._limit->accept(*this);
-      if (node._offset) {
-        _ss << " OFFSET ";
-        node._offset->accept(*this);
-      }
-    }
-
-    void visit(ASTBinaryNode& node) override
-    {
-      _ss << "(";
-      node._lhs->accept(*this);
-      printOp(node._op);
-      node._rhs->accept(*this);
-      _ss << ")";
-      if (!node._symbolName.empty()) {
-        const SymbolInfoPtr info = node.symbolTable()->findSymbol(node._symbolName);
-        if (!info->_alias.empty()) {
-          _ss << " AS " << info->_alias;
-        }
-      }
-    }
-
-    void visit(ASTUnaryNode& node) override
-    {
-      if (node._op == OP_CAST) {
-        _ss << "CAST(";
-        node._rhs->accept(*this);
-        _ss << " AS " << typeToString(node._castType);
-        /*
-         if(node._castType == STRING) {
-         // this just a workaround
-         // we need to parse STRING types also without length
-         // and we should store the length of the type in the value
-         _ss << "(255)";
-         }*/
-        _ss << ")";
-        if (!node._symbolName.empty()) {
-          const SymbolInfoPtr info = node.symbolTable()->findSymbol(node._symbolName);
-          if (!info->_alias.empty()) {
-            _ss << " AS " << info->_alias;
-          }
-        }
-      } else {
-        printOp(node._op);
-        node._rhs->accept(*this);
-      }
-    }
-
-    void visit(ASTValueNode& node) override
-    {
-      if (node._value._type == STRING) {
-        _ss << "'";
-      }
-      _ss << typedValueToString(node._value);
-      if (node._value._type == STRING) {
-        _ss << "'";
-      }
-    }
-
-    void visit(ASTLikeNode& node) override
-    {
-      node._lhs->accept(*this);
-      _ss << "'" << node._like << "'";
-    }
-
-    void visit(ASTBetweenNode& node) override
-    {
-      node._lhs->accept(*this);
-      _ss << " between ";
-      node._from->accept(*this);
-      _ss << " and ";
-      node._to->accept(*this);
-    }
-
-    void visit(ASTInNode& node) override
-    {
-      node._lhs->accept(*this);
-      _ss << " in (";
-      bool first = true;
-      for (const auto& exp : node._expressions) {
-        if (!first) {
-          _ss << ",";
-        } else {
-          first = false;
-        }
-        exp->accept(*this);
-      }
-      _ss << ")";
-    }
-
-    void visit(ASTFunctionNode& node) override
-    {
-      _ss << node._function->getName() << "(";
-      bool first = true;
-      for (const auto& param : node._parameters) {
-        if (!first) {
-          _ss << ",";
-        } else {
-          first = false;
-        }
-        param._exp->accept(*this);
-      }
-      _ss << ")";
-    }
-
-    void visit(ASTAggregateFunctionNode& node) override
-    {
-      _ss << aggregateFunctionToString(node._aggregateFunction) << "(";
-      bool first = true;
-      if (node._aggregateFunction == COUNT_STAR) {
-        _ss << "*";
-      }
-      _ss << (node._quantifier == DISTINCT ? "DISTINCT " : "");
-      for (const auto& param : node._parameters) {
-        if (!first) {
-          _ss << ",";
-        } else {
-          first = false;
-        }
-        param._exp->accept(*this);
-      }
-      _ss << ")";
-      if (!node._symbolName.empty()) {
-        const SymbolInfoPtr info = node.symbolTable()->findSymbol(node._symbolName);
-        if (!info->_alias.empty()) {
-          _ss << " AS " << info->_alias;
-        }
-      }
-    }
-
-    void visit(ASTIdentifier& node) override
-    {
-      _ss << node.getQualifiedQuotedIdentifier();
-      if (node._info && !node._info->_alias.empty() && node.getQualifiedQuotedIdentifier() != node._info->_alias) {
-        _ss << " AS " << node._info->_alias;
-      }
-    }
-
-  private:
-    std::stringstream _ss;
   };
 }

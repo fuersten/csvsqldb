@@ -10,6 +10,7 @@ add_executable(csvsqldbtest
     aggregation_functions_test.cpp
     aggregation_test.cpp
     application_test.cpp
+    ast_dump_visitor_test.cpp
     block_iterator_test.cpp
     block_provider_test.cpp
     block_test.cpp

@@ -46,9 +46,7 @@ namespace csvsqldb
   class CSVSQLDB_EXPORT ASTExpressionVisitor : public ASTExpressionNodeVisitor
   {
   public:
-    ASTExpressionVisitor()
-    {
-    }
+    ASTExpressionVisitor() = default;
 
     void reset()
     {

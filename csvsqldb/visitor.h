@@ -149,7 +149,29 @@ namespace csvsqldb
     void visit(ASTLikeNode& node) override
     {
       node._lhs->accept(*this);
-      _sm.addInstruction(StackMachine::Instruction(StackMachine::LIKE, new csvsqldb::RegExp(node._like)));
+
+      std::stringstream regexp;
+      for (const auto& c : node._like) {
+        switch (c) {
+          case '%':
+            regexp << ".*";
+            break;
+          case '_':
+            regexp << ".";
+            break;
+          case '.':
+          case '*':
+          case '?':
+          case '(':
+          case ')':
+            regexp << "\\" << c;
+            break;
+          default:
+            regexp << c;
+        }
+      }
+
+      _sm.addInstruction(StackMachine::Instruction(StackMachine::LIKE, new csvsqldb::RegExp(regexp.str())));
     }
 
     void visit(ASTBetweenNode& node) override

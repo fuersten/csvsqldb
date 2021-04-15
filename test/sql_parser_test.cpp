@@ -48,6 +48,7 @@ TEST_CASE("SQL Parser Test", "[sql parser]")
   {
     csvsqldb::ASTNodeSQLPrintVisitor visitor;
     csvsqldb::FunctionRegistry functions;
+    csvsqldb::initBuildInFunctions(functions);
     csvsqldb::SQLParser parser(functions);
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -117,10 +118,6 @@ TEST_CASE("SQL Parser Test", "[sql parser]")
     node = parser.parse("SELECT count(*),a,b,c FROM Test where a > b and c < a or b is not true group by a,b,c");
     REQUIRE(node);
     REQUIRE(std::dynamic_pointer_cast<csvsqldb::ASTQueryNode>(node));
-
-    //        ASTNodeDumpVisitor visitor;
-    //        std::cout << std::endl;
-    //        node->accept(visitor);
 
     visitor.reset();
     node->accept(visitor);
@@ -193,7 +190,7 @@ TEST_CASE("SQL Parser Test", "[sql parser]")
 
     visitor.reset();
     node->accept(visitor);
-    CHECK("SELECT A,B,C FROM TEST WHERE ((A > B) AND C in (2,3,4,5,6))" == visitor.toString());
+    CHECK("SELECT A,B,C FROM TEST WHERE ((A > B) AND C IN (2,3,4,5,6))" == visitor.toString());
 
     node = parser.parse(visitor.toString());
     REQUIRE(node);
@@ -203,6 +200,41 @@ TEST_CASE("SQL Parser Test", "[sql parser]")
     node = parser.parse("SELECT a,b,c FROM Test where a > b and c is not null");
     REQUIRE(node);
     REQUIRE(std::dynamic_pointer_cast<csvsqldb::ASTQueryNode>(node));
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    node = parser.parse("select a from test where a between 3 and 15");
+    REQUIRE(node);
+    REQUIRE(std::dynamic_pointer_cast<csvsqldb::ASTQueryNode>(node));
+
+    visitor.reset();
+    node->accept(visitor);
+    CHECK("SELECT A FROM TEST WHERE A BETWEEN 3 AND 15" == visitor.toString());
+
+    node = parser.parse(visitor.toString());
+    REQUIRE(node);
+    REQUIRE(std::dynamic_pointer_cast<csvsqldb::ASTQueryNode>(node));
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    node = parser.parse("select iso_region from airport where iso_region like 'DE%'");
+    REQUIRE(node);
+    REQUIRE(std::dynamic_pointer_cast<csvsqldb::ASTQueryNode>(node));
+
+    visitor.reset();
+    node->accept(visitor);
+    CHECK("SELECT ISO_REGION FROM AIRPORT WHERE ISO_REGION LIKE 'DE%'" == visitor.toString());
+
+    node = parser.parse(visitor.toString());
+    REQUIRE(node);
+    REQUIRE(std::dynamic_pointer_cast<csvsqldb::ASTQueryNode>(node));
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    node = parser.parse("select EXTRACT(MONTH FROM CURRENT_DATE) FROM SYSTEM_DUAL");
+    REQUIRE(node);
+    REQUIRE(std::dynamic_pointer_cast<csvsqldb::ASTQueryNode>(node));
+
+    visitor.reset();
+    node->accept(visitor);
+    CHECK("SELECT EXTRACT(5,CURRENT_DATE()) FROM SYSTEM_DUAL" == visitor.toString());
   }
 
   SECTION("parse select expression")
@@ -240,10 +272,6 @@ TEST_CASE("SQL Parser Test", "[sql parser]")
     REQUIRE(node);
     REQUIRE(std::dynamic_pointer_cast<csvsqldb::ASTQueryNode>(node));
 
-    //        ASTNodeDumpVisitor dumpvisitor;
-    //        std::cout << std::endl;
-    //        node->accept(dumpvisitor);
-
     node->accept(visitor);
     CHECK("SELECT T.* FROM TEST AS T" == visitor.toString());
 
@@ -268,7 +296,7 @@ TEST_CASE("SQL Parser Test", "[sql parser]")
     visitor.reset();
     node->accept(visitor);
     CHECK("SELECT A,B,C FROM TEST WHERE (B = DATE'1970-09-23') UNION (SELECT A,B,C FROM TEST WHERE (((A > B) AND (C < A)) OR (B "
-          "IS NOT TRUE)) GROUP BY A,B,C) UNION (SELECT A,B,C FROM TEST WHERE ((A > B) AND C in (2,3,4,5,6)))" ==
+          "IS NOT TRUE)) GROUP BY A,B,C) UNION (SELECT A,B,C FROM TEST WHERE ((A > B) AND C IN (2,3,4,5,6)))" ==
           visitor.toString());
 
     node = parser.parse(visitor.toString());
@@ -509,10 +537,6 @@ TEST_CASE("SQL Parser Test", "[sql parser]")
     node = parser.parse(visitor.toString());
     REQUIRE(node);
     REQUIRE(std::dynamic_pointer_cast<csvsqldb::ASTQueryNode>(node));
-
-    //        ASTNodeDumpVisitor visitor;
-    //        std::cout << std::endl;
-    //        node->accept(visitor);
   }
 
   SECTION("parse with order")

@@ -365,7 +365,7 @@ namespace csvsqldb
                                              << ") at line " << _currentToken._lineCount << ":" << _currentToken._charCount);
       }
 
-      definition._defaultValue = _currentToken._value;
+      definition._defaultValue = TypedValue::createValue(columnType, _currentToken._value)._value;
       parseNext();
     }
     if (canExpect(TOK_CONSTRAINT)) {
@@ -568,11 +568,9 @@ namespace csvsqldb
   {
     ASTTableReferenceNodePtr reference = parseTableFactor(symboltable);
 
-    if (isJoin()) {
-      while (isJoin()) {
-        eJoinType type = parseJoinType();
-        reference = parseJoinClause(reference, type);
-      }
+    while (isJoin()) {
+      eJoinType type = parseJoinType();
+      reference = parseJoinClause(reference, type);
     }
 
     return reference;
@@ -895,27 +893,7 @@ namespace csvsqldb
       }
       if (op == OP_LIKE) {
         std::string value = expect(TOK_CONST_STRING);
-        std::stringstream regexp;
-        for (const auto& c : value) {
-          switch (c) {
-            case '%':
-              regexp << ".*";
-              break;
-            case '_':
-              regexp << ".";
-              break;
-            case '.':
-            case '*':
-            case '?':
-            case '(':
-            case ')':
-              regexp << "\\" << c;
-              break;
-            default:
-              regexp << c;
-          }
-        }
-        lhs = std::make_shared<ASTLikeNode>(symboltable, lhs, regexp.str());
+        lhs = std::make_shared<ASTLikeNode>(symboltable, lhs, value);
       } else if (op == OP_BETWEEN) {
         ASTExprNodePtr from = parseFactor(symboltable);
         expect(TOK_AND);
@@ -926,10 +904,8 @@ namespace csvsqldb
         expect(TOK_LEFT_PAREN);
         while (_currentToken._token != TOK_RIGHT_PAREN) {
           expressions.push_back(parseFactor(symboltable));
-          if (canExpect(TOK_COMMA)) {
-            if (_currentToken._token == TOK_RIGHT_PAREN) {
-              CSVSQLDB_THROW(SqlParserException, "expected an expression");
-            }
+          if (canExpect(TOK_COMMA) && _currentToken._token == TOK_RIGHT_PAREN) {
+            CSVSQLDB_THROW(SqlParserException, "expected an expression");
           }
         }
         expect(TOK_RIGHT_PAREN);
