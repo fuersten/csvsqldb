@@ -396,9 +396,9 @@ namespace csvsqldb
       return _n >= _length;
     }
 
-    const std::string& _format;
+    const std::string _format;
     std::string::size_type _n{0};
-    std::string::size_type _length;
+    const std::string::size_type _length;
   };
 
   std::string Date::format(const std::string& format) const

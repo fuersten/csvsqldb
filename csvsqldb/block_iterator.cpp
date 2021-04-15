@@ -346,7 +346,7 @@ namespace csvsqldb
 
       Value* val = nullptr;
       eType type = *_typeOffset;
-      if (NONE) {
+      if (type == NONE) {
         CSVSQLDB_THROW(csvsqldb::Exception, typeToString(type) << " type not allowed");
       }
       val = reinterpret_cast<Value*>(_blocks[_currentBlock]->getRawBuffer(_offset));
