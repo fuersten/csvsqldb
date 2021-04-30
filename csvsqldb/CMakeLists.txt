@@ -17,11 +17,15 @@ set(LIB_CSVSQLDB_SOURCES
     symboltable.cpp
     table_executions.cpp
     tabledata.cpp
+    tokens.cpp
     typeoperations.cpp
     types.cpp
     validation_visitor.cpp
     values.cpp
     variant.cpp
+
+    lex.yy.cpp
+    lex.yy.h
 
     operatornodes/aggregation_operatornode.cpp
     operatornodes/aggregation_operatornode.h
@@ -73,6 +77,7 @@ set(LIB_CSVSQLDB_SOURCES
     symboltable.h
     table_executions.h
     tabledata.h
+    tokens.h
     typeoperations.h
     types.h
     validation_visitor.h
@@ -92,7 +97,6 @@ set(LIB_CSVSQLDB_BASE_SOURCES
     base/duration.cpp
     base/exception.cpp
     base/global_configuration.cpp
-    base/lexer.cpp
     base/log_devices.cpp
     base/logging.cpp
     base/lua_configuration.cpp
@@ -122,7 +126,6 @@ set(LIB_CSVSQLDB_BASE_HEADERS
     base/global_configuration.h
     base/hash_helper.h
     base/json.h
-    base/lexer.h
     base/log_devices.h
     base/logging.h
     base/lua_configuration.h
@@ -183,9 +186,12 @@ target_include_directories(libcsvsqldb PRIVATE ${CMAKE_BINARY_DIR})
 target_include_directories(libcsvsqldb PRIVATE ${CMAKE_SOURCE_DIR}/csvsqldb)
 target_include_directories(libcsvsqldb PRIVATE ${CMAKE_SOURCE_DIR}/thirdparty/json/single_include/)
 target_include_directories(libcsvsqldb PRIVATE SYSTEM ${lua_SOURCE_DIR})
+target_include_directories(libcsvsqldb PRIVATE SYSTEM /usr/local/Cellar/re-flex/3.0.2/include)
+
+target_link_directories(libcsvsqldb PUBLIC /usr/local/Cellar/re-flex/3.0.2/lib)
 
 set_target_properties(libcsvsqldb PROPERTIES DEFINE_SYMBOL LIBCSVSQLDB VERSION ${CSVSQLDB_VERSION} SOVERSION ${CSVSQLDB_VERSION_SHORT})
-target_link_libraries(libcsvsqldb PUBLIC ${CSVSQLDB_PLATFORM_LIBS} lua)
+target_link_libraries(libcsvsqldb PUBLIC ${CSVSQLDB_PLATFORM_LIBS} lua reflex)
 
 if(WIN32)
   set(CSVSQLDB_COMPILE_OPTIONS "${CSVSQLDB_COMPILE_OPTIONS} -DLIBCSVSQLDB")

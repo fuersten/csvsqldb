@@ -1,0 +1,3249 @@
+CREATE
+ TABLE
+ IF
+ NOT
+ EXISTS
+ identifier
+(
+
+    identifier
+ TIMESTAMP
+,
+
+    identifier
+ INTEGER
+ PRIMARY
+ KEY
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ INTEGER
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ REAL
+,
+
+    identifier
+ INTEGER
+
+)
+;
+
+CREATE
+ MAPPING
+ identifier
+(
+quoted identifier
+,
+ char constant
+,
+ boolean constant
+)
+;
+
+

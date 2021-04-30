@@ -36,150 +36,31 @@
 #include <csvsqldb/inc.h>
 
 #include <csvsqldb/base/lexer.h>
+#include <csvsqldb/tokens.h>
 
 #include <map>
 
 
 namespace csvsqldb
 {
-  enum eToken {
-    TOK_ADD,
-    TOK_ADD_KEYWORD,
-    TOK_ALL,
-    TOK_ALTER,
-    TOK_AND,
-    TOK_ARBITRARY,
-    TOK_AS,
-    TOK_ASC,
-    TOK_AST,
-    TOK_ASTERISK,
-    TOK_AVG,
-    TOK_BETWEEN,
-    TOK_BOOL,
-    TOK_BY,
-    TOK_CAST,
-    TOK_CHAR,
-    TOK_CHECK,
-    TOK_COLLATE,
-    TOK_COLUMN,
-    TOK_COMMA,
-    TOK_COMMENT,
-    TOK_CONCAT,
-    TOK_CONSTRAINT,
-    TOK_CONST_BOOLEAN,
-    TOK_CONST_CHAR,
-    TOK_CONST_DATE,
-    TOK_CONST_INTEGER,
-    TOK_CONST_REAL,
-    TOK_CONST_STRING,
-    TOK_COUNT,
-    TOK_CREATE,
-    TOK_CROSS,
-    TOK_CURRENT_DATE,
-    TOK_CURRENT_TIME,
-    TOK_CURRENT_TIMESTAMP,
-    TOK_DATE,
-    TOK_DAY,
-    TOK_DEFAULT,
-    TOK_DESC,
-    TOK_DESCRIBE,
-    TOK_DISTINCT,
-    TOK_DIV,
-    TOK_DOT,
-    TOK_DROP,
-    TOK_EQUAL,
-    TOK_EXCEPT,
-    TOK_EXEC,
-    TOK_EXISTS,
-    TOK_EXPLAIN,
-    TOK_EXTRACT,
-    TOK_FROM,
-    TOK_FULL,
-    TOK_GREATER,
-    TOK_GREATEREQUAL,
-    TOK_GROUP,
-    TOK_HAVING,
-    TOK_HOUR,
-    TOK_IDENTIFIER,
-    TOK_IF,
-    TOK_IN,
-    TOK_INNER,
-    TOK_INT,
-    TOK_INTERSECT,
-    TOK_IS,
-    TOK_JOIN,
-    TOK_KEY,
-    TOK_LEFT,
-    TOK_LEFT_PAREN,
-    TOK_LIKE,
-    TOK_LIMIT,
-    TOK_MAPPING,
-    TOK_MAX,
-    TOK_MIN,
-    TOK_MINUTE,
-    TOK_MOD,
-    TOK_MONTH,
-    TOK_NATURAL,
-    TOK_NONE,
-    TOK_NOT,
-    TOK_NOTEQUAL,
-    TOK_NULL,
-    TOK_OFFSET,
-    TOK_ON,
-    TOK_OR,
-    TOK_ORDER,
-    TOK_OUTER,
-    TOK_PRIMARY,
-    TOK_QUOTED_IDENTIFIER,
-    TOK_REAL,
-    TOK_RIGHT,
-    TOK_RIGHT_PAREN,
-    TOK_SECOND,
-    TOK_SELECT,
-    TOK_SEMICOLON,
-    TOK_SHOW,
-    TOK_SMALLER,
-    TOK_SMALLEREQUAL,
-    TOK_STRING,
-    TOK_SUB,
-    TOK_SUM,
-    TOK_TABLE,
-    TOK_TIME,
-    TOK_TIMESTAMP,
-    TOK_UNION,
-    TOK_UNIQUE,
-    TOK_USING,
-    TOK_VARYING,
-    TOK_WHERE,
-    TOK_YEAR
-  };
-
-  CSVSQLDB_EXPORT std::string tokenToString(eToken token);
-
   class CSVSQLDB_EXPORT SQLLexer
   {
   public:
-    explicit SQLLexer(const std::string& input);
+    explicit SQLLexer();
 
     SQLLexer(const SQLLexer&) = delete;
     SQLLexer& operator=(const SQLLexer&) = delete;
     SQLLexer(SQLLexer&&) = delete;
     SQLLexer& operator=(SQLLexer&&) = delete;
 
-    ~SQLLexer() = default;
+    ~SQLLexer();
 
-    csvsqldb::lexer::Token next();
+    csvsqldb::Token next();
 
-    void setInput(std::string input);
+    void setInput(const std::string& input);
 
   private:
-    using Keywords = std::map<std::string, eToken>;
-
-    void initDefinitions();
-    void initKeywords();
-    void inspectToken(csvsqldb::lexer::Token& token);
-
-    csvsqldb::lexer::Lexer _lexer;
-    Keywords _keywords;
+    class Impl;
+    std::unique_ptr<Impl> _impl;
   };
 }

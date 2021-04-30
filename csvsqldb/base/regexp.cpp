@@ -40,7 +40,7 @@
 #include <vector>
 
 
-namespace csvsqldb
+namespace csvsqldb::detail
 {
   enum eToken { STAR, PLUS, PIPE, QUEST, LPAREN, RPAREN, CHAR, CHARCLASS, CHARSET, EOP };
 
@@ -595,17 +595,19 @@ namespace csvsqldb
     State* _start{nullptr};
     CharacterSets _charSets;
   };
+}
 
 
+namespace csvsqldb
+{
   struct RegExp::Private {
     Private(std::string s)
     : _parser(std::move(s))
     {
     }
 
-    Parser _parser;
+    detail::Parser _parser;
   };
-
 
   RegExp::RegExp()
   : _m(new Private(""))

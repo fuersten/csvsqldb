@@ -62,11 +62,11 @@ namespace csvsqldb
     void setInput(std::string input);
 
   private:
-    static void reportUnexpectedToken(const std::string& message, const csvsqldb::lexer::Token& token);
+    static void reportUnexpectedToken(const std::string& message, const csvsqldb::Token& token);
 
     std::string expect(eToken tok);
     bool canExpect(eToken tok);
-    csvsqldb::lexer::Token parseNext();
+    csvsqldb::Token parseNext();
 
     ASTCreateTableNodePtr parseCreateTable();
     eType parseType();
@@ -118,8 +118,8 @@ namespace csvsqldb
     ASTExprNodePtr parseFactor(const SymbolTablePtr& symboltable);
     ASTExprNodePtr parseUnary(const SymbolTablePtr& symboltable);
 
-    SQLLexer _lexer{""};
-    csvsqldb::lexer::Token _currentToken;
+    SQLLexer _lexer;
+    csvsqldb::Token _currentToken;
     const FunctionRegistry& _functionRegistry;
   };
 }
