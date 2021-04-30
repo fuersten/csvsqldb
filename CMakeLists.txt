@@ -48,10 +48,6 @@ include(cmake/fetch_lua.cmake)
 
 find_package(Threads REQUIRED)
 
-if(CMAKE_BUILD_TYPE MATCHES "Debug")
-    add_definitions(-DDEBUG)
-endif()
-
 if(NOT APPLE AND UNIX)
     set(CSVSQLDB_PLATFORM_LIBS dl Threads::Threads $<$<AND:$<CXX_COMPILER_ID:GNU>,$<VERSION_LESS:$<CXX_COMPILER_VERSION>,9.0>>:stdc++fs>)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -Wall -Werror")
