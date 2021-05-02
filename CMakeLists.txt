@@ -46,6 +46,7 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake)
 
 include(cmake/fetch_ctre.cmake)
 include(cmake/fetch_lua.cmake)
+include(cmake/fetch_reflex.cmake)
 
 find_package(Threads REQUIRED)
 
@@ -97,5 +98,6 @@ endif()
 add_subdirectory(apps)
 add_subdirectory(csvsqldb)
 add_subdirectory(thirdparty/lua)
+add_subdirectory(thirdparty/reflex)
 add_subdirectory(test)
 add_subdirectory(sandbox)

@@ -11,18 +11,18 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-#define REFLEX_OPTION_YYLTYPE             yy::location
-#define REFLEX_OPTION_YYSTYPE             yy::parser::semantic_type
-#define REFLEX_OPTION_bison_cc            true
-#define REFLEX_OPTION_bison_cc_namespace  yy
-#define REFLEX_OPTION_bison_cc_parser     parser
-#define REFLEX_OPTION_bison_complete      true
-#define REFLEX_OPTION_header_file         "lex.yy.h"
-#define REFLEX_OPTION_lex                 lex
-#define REFLEX_OPTION_lexer               Lexer
-#define REFLEX_OPTION_outfile             "lex.yy.cpp"
-#define REFLEX_OPTION_token_eof           csvsqldb::Token(0)
-#define REFLEX_OPTION_token_type          csvsqldb::Token
+#define REFLEX_OPTION_YYLTYPE yy::location
+#define REFLEX_OPTION_YYSTYPE yy::parser::semantic_type
+#define REFLEX_OPTION_bison_cc true
+#define REFLEX_OPTION_bison_cc_namespace yy
+#define REFLEX_OPTION_bison_cc_parser parser
+#define REFLEX_OPTION_bison_complete true
+#define REFLEX_OPTION_header_file "lex.yy.h"
+#define REFLEX_OPTION_lex lex
+#define REFLEX_OPTION_lexer Lexer
+#define REFLEX_OPTION_outfile "lex.yy.cpp"
+#define REFLEX_OPTION_token_eof csvsqldb::Token(0)
+#define REFLEX_OPTION_token_type csvsqldb::Token
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -32,8 +32,9 @@
 
 #line 2 "lexer.l"
 
-  #include <iostream>
-  #include "tokens.h"
+#include "tokens.h"
+
+#include <iostream>
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -58,14 +59,12 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-class Lexer : public reflex::AbstractLexer<reflex::Matcher> {
- public:
+class Lexer : public reflex::AbstractLexer<reflex::Matcher>
+{
+public:
   typedef reflex::AbstractLexer<reflex::Matcher> AbstractBaseLexer;
-  Lexer(
-      const reflex::Input& input = reflex::Input(),
-      std::ostream&        os    = std::cout)
-    :
-      AbstractBaseLexer(input, os)
+  Lexer(const reflex::Input& input = reflex::Input(), std::ostream& os = std::cout)
+  : AbstractBaseLexer(input, os)
   {
   }
   static const int INITIAL = 0;

@@ -10,7 +10,7 @@ int process_stream(std::istream& stream)
 {
   Lexer lexer{stream};
   auto token = lexer.lex();
-  while(token._token != csvsqldb::TOK_EOI) {
+  while (token._token != csvsqldb::TOK_EOI) {
     std::cout << csvsqldb::tokenToString(token._token) << " -> " << token._value << std::endl;
     token = lexer.lex();
   }

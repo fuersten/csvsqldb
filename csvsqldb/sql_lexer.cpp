@@ -36,7 +36,6 @@
 
 #include "base/logging.h"
 #include "base/string_helper.h"
-
 #include "lex.yy.h"
 
 #include <ctre.hpp>
@@ -72,7 +71,8 @@ namespace csvsqldb
   }
 
   SQLLexer::~SQLLexer()
-  {}
+  {
+  }
 
   void SQLLexer::setInput(std::string_view input)
   {

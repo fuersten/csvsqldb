@@ -123,6 +123,8 @@ arbitrary					(?i)arbitrary
 identifier        [_a-zA-Z][_a-zA-Z0-9]*
 quoted_identifer  \"([^\"]*)\"
 
+ws                [ \t\n\r]+ 
+
 
 %%
 {integer_const}   {csvsqldb::Token token{csvsqldb::TOK_CONST_INTEGER}; token._value = text(); return token;}
@@ -239,4 +241,5 @@ quoted_identifer  \"([^\"]*)\"
 {arbitrary}			  {csvsqldb::Token token{csvsqldb::TOK_ARBITRARY}; return token;}
 {identifier}      {csvsqldb::Token token{csvsqldb::TOK_IDENTIFIER}; token.setIdentifier(text()); return token;}
 {quoted_identifer} {csvsqldb::Token token{csvsqldb::TOK_QUOTED_IDENTIFIER}; token.setQuotedIdentifier(text()); return token;}
+{ws}              {continue;}
 %%

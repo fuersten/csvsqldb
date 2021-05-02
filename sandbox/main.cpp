@@ -40,12 +40,12 @@ public:
   }
 
   lex_item lex() {
-    static constexpr auto pattern = ctll::fixed_string{ "(\\.)|(\\+)|(\\*)|(/)|(\\-)|(,)|(<>)|(<)|(==)|(>=)|(<=)|(>)|(=)|(\\[)|(\\])|(\\()|(\\))|(if)|(end)|(while)|(or)|(not)|(and)|([a-zA-Z][_a-zA-Z0-9]*)|(([1-9][0-9]*|0)\\.[0-9]+([Ee][\\+\\-]?[0-9]+)?)|([0-9]+)|(true|false)|('((?:[^'\\\\]|.)*)')|([ \t]+)|([\n\r]+)|(#[^\n\r]+)" };
+    static constexpr auto pattern = ctll::fixed_string{ "(\\.)|(\\+)|(\\*)|(/)|(\\-)|(,)|(<>)|(<)|(==)|(>=)|(<=)|(>)|(=)|(\\[)|(\\])|(\\()|(\\))|(if)|(end)|(while)|(or)|(not)|(and)|([a-zA-Z][_a-zA-Z0-9]*)|((?:[1-9][0-9]*|0)\\.[0-9]+(?:[Ee][\\+\\-]?[0-9]+)?)|([0-9]+)|(true|false)|('(?:(?:[^'\\\\]|.)*)')|([ \t]+)|([\n\r]+)|(#[^\n\r]+)" };
 
     lex_item item;
 
     while(_start < _end) {
-      if (auto [m,dot,plus,mul,div,minus,comma,not_equal,lesser,equal,greater_equal,lesser_equal,greater,assignment,lsquare,rsquare,lparen,rparen,keyword_if,keyword_end,keyword_while,keyword_or,keyword_not,keyword_and,id,real,_1,_2,num,boolean,string,_3,comment,ws,nl] = ctre::search<pattern>(_start, _end); m) {
+      if (auto [m,dot,plus,mul,div,minus,comma,not_equal,lesser,equal,greater_equal,lesser_equal,greater,assignment,lsquare,rsquare,lparen,rparen,keyword_if,keyword_end,keyword_while,keyword_or,keyword_not,keyword_and,id,real,num,boolean,string,comment,ws,nl] = ctre::search<pattern>(_start, _end); m) {
         if (id) {
           calc_start(_start, id);
           item = lex_item{type::identifier, id, get_location(id)};
@@ -60,7 +60,7 @@ public:
           item = lex_item{type::real, real, get_location(real)};
         } else if (string) {
           calc_start(_start, string);
-          item = lex_item{type::string, _3, get_location(string)};
+          item = lex_item{type::string, string, get_location(string)};
         } else if (comma) {
           calc_start(_start, comma);
           item = lex_item{type::comma, comma, get_location(comma)};

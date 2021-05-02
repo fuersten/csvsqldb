@@ -274,11 +274,11 @@ namespace csvsqldb
   void Token::setQuotedIdentifier(const std::string& s)
   {
     //_value = toupper_copy(s.substr(1, s.length()-2));
-    _value = s.substr(1, s.length()-2);
+    _value = s.substr(1, s.length() - 2);
   }
 
   void Token::setString(const std::string& s)
   {
-    _value = s.substr(1, s.length()-2);
+    _value = s.substr(1, s.length() - 2);
   }
 }
