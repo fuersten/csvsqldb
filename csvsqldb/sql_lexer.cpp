@@ -35,10 +35,7 @@
 #include "sql_lexer.h"
 
 #include "base/logging.h"
-#include "base/string_helper.h"
 #include "lex.yy.h"
-
-#include <ctre.hpp>
 
 
 namespace csvsqldb
