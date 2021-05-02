@@ -38,6 +38,7 @@
 #include <csvsqldb/tokens.h>
 
 #include <map>
+#include <memory>
 #include <string_view>
 
 
