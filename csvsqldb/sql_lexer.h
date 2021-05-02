@@ -34,11 +34,10 @@
 #pragma once
 
 #include <csvsqldb/inc.h>
-
-#include <csvsqldb/base/lexer.h>
 #include <csvsqldb/tokens.h>
 
 #include <map>
+#include <string_view>
 
 
 namespace csvsqldb
@@ -57,7 +56,7 @@ namespace csvsqldb
 
     csvsqldb::Token next();
 
-    void setInput(const std::string& input);
+    void setInput(std::string_view input);
 
   private:
     class Impl;

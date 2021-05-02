@@ -39,6 +39,8 @@
 
 #include "lex.yy.h"
 
+#include <ctre.hpp>
+
 
 namespace csvsqldb
 {
@@ -47,10 +49,10 @@ namespace csvsqldb
   public:
     Impl() = default;
 
-    void setInput(const std::string& input)
+    void setInput(std::string_view input)
     {
       _stream.clear();
-      _stream.str(input);
+      _stream << input;
       _lexer.reset(new Lexer{_stream});
     }
 
@@ -72,7 +74,7 @@ namespace csvsqldb
   SQLLexer::~SQLLexer()
   {}
 
-  void SQLLexer::setInput(const std::string& input)
+  void SQLLexer::setInput(std::string_view input)
   {
     _impl->setInput(input);
   }

@@ -186,6 +186,7 @@ target_include_directories(libcsvsqldb PRIVATE ${CMAKE_BINARY_DIR})
 target_include_directories(libcsvsqldb PRIVATE ${CMAKE_SOURCE_DIR}/csvsqldb)
 target_include_directories(libcsvsqldb PRIVATE ${CMAKE_SOURCE_DIR}/thirdparty/json/single_include/)
 target_include_directories(libcsvsqldb PRIVATE SYSTEM ${lua_SOURCE_DIR})
+target_include_directories(libcsvsqldb SYSTEM PRIVATE ${ctre_SOURCE_DIR}/include)
 target_include_directories(libcsvsqldb PRIVATE SYSTEM /usr/local/Cellar/re-flex/3.0.2/include)
 
 target_link_directories(libcsvsqldb PUBLIC /usr/local/Cellar/re-flex/3.0.2/lib)
