@@ -22,6 +22,7 @@
 * Replaced boost::regex with std::regex
 * Lots of small refactorings and cleanups
 * All thridparty dependencies are now handled via submodules or are fetched while configuring
+* Uses fast_float library for parsing floating point numbers
 
 ### Removed
 

@@ -200,7 +200,7 @@ target_include_directories(libcsvsqldb PRIVATE SYSTEM ${reflex_SOURCE_DIR}/inclu
 target_include_directories(libcsvsqldb PRIVATE SYSTEM ${CMAKE_SOURCE_DIR}/csvsqldb/generated)
 
 set_target_properties(libcsvsqldb PROPERTIES DEFINE_SYMBOL LIBCSVSQLDB VERSION ${CSVSQLDB_VERSION} SOVERSION ${CSVSQLDB_VERSION_SHORT})
-target_link_libraries(libcsvsqldb PUBLIC ${CSVSQLDB_PLATFORM_LIBS} lua reflex)
+target_link_libraries(libcsvsqldb PUBLIC ${CSVSQLDB_PLATFORM_LIBS} lua reflex fast_float)
 
 target_compile_definitions(libcsvsqldb PRIVATE $<$<CONFIG:Debug>:BLOCK_RANGE_CHECK>)
 

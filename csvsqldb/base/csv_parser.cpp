@@ -36,6 +36,8 @@
 #include "exception.h"
 #include "time_helper.h"
 
+#include <fast_float/fast_float.h>
+
 
 namespace csvsqldb
 {
@@ -169,7 +171,12 @@ namespace csvsqldb
         _stringBuffer[++n] = readNextChar();
       }
       if (_stringBuffer[0]) {
-        _callback.onDouble(::atof(&_stringBuffer[0]), false);
+        double result{0.0};
+        auto answer = fast_float::from_chars(_stringBuffer.data(), _stringBuffer.data() + n, result);
+        if (answer.ec != std::errc()) {
+          CSVSQLDB_THROW(csvsqldb::Exception, "not a float '" << _stringBuffer.data() << "'");
+        }
+        _callback.onDouble(result, false);
       } else {
         _callback.onDouble(std::numeric_limits<double>::max(), true);
       }

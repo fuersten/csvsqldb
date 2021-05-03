@@ -44,6 +44,7 @@ endif()
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake)
 
+include(cmake/fetch_fast_float.cmake)
 include(cmake/fetch_lua.cmake)
 include(cmake/fetch_reflex.cmake)
 
