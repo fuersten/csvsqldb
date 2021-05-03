@@ -88,7 +88,7 @@ target_include_directories(csvsqldbtest PRIVATE ${CMAKE_BINARY_DIR})
 target_include_directories(csvsqldbtest PRIVATE SYSTEM ${lua_SOURCE_DIR})
 target_link_libraries(csvsqldbtest PRIVATE ${CSVSQLDB_PLATFORM_LIBS} libcsvsqldb)
 
-target_compile_definitions(csvsqldbtest PUBLIC -DBLOCK_RANGE_CHECK)
+target_compile_definitions(csvsqldbtest PRIVATE $<$<CONFIG:Debug>:BLOCK_RANGE_CHECK>)
 
 if(COVERAGE)
   target_link_libraries(csvsqldbtest PUBLIC --coverage)

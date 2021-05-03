@@ -356,6 +356,7 @@ TEST_CASE("Block Test", "[block]")
     CHECK_FALSE(block1.allocate<int64_t>());
     CHECK_FALSE(block1.allocate<Test>(42));
   }
+#if defined(BLOCK_RANGE_CHECK)
   SECTION("add value error")
   {
     CHECK_THROWS_AS(block.addValue(csvsqldb::Variant()), csvsqldb::Exception);
@@ -387,4 +388,5 @@ TEST_CASE("Block Test", "[block]")
     CHECK_THROWS_WITH(block.isEnd(1024), "block offset out of range");
     CHECK_THROWS_WITH(block.isEnd(std::numeric_limits<size_t>::max()), "block offset out of range");
   }
+#endif
 }

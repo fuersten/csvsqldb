@@ -202,6 +202,8 @@ target_include_directories(libcsvsqldb PRIVATE SYSTEM ${CMAKE_SOURCE_DIR}/csvsql
 set_target_properties(libcsvsqldb PROPERTIES DEFINE_SYMBOL LIBCSVSQLDB VERSION ${CSVSQLDB_VERSION} SOVERSION ${CSVSQLDB_VERSION_SHORT})
 target_link_libraries(libcsvsqldb PUBLIC ${CSVSQLDB_PLATFORM_LIBS} lua reflex)
 
+target_compile_definitions(libcsvsqldb PRIVATE $<$<CONFIG:Debug>:BLOCK_RANGE_CHECK>)
+
 if(WIN32)
   set(CSVSQLDB_COMPILE_OPTIONS "${CSVSQLDB_COMPILE_OPTIONS} -DLIBCSVSQLDB")
 endif()
