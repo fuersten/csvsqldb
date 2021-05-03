@@ -1,5 +1,5 @@
 //
-//  sql_lexer.h
+//  pragma_push.h
 //  csvsqldb
 //
 //  BSD 3-Clause License
@@ -31,37 +31,14 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-#pragma once
+#if defined(__clang__)
+  #pragma clang diagnostic push
+#endif
 
-#include <csvsqldb/inc.h>
+#if defined(__GNUC__)
+  #pragma GCC diagnostic push
+#endif
 
-#include <csvsqldb/tokens.h>
-
-#include <map>
-#include <memory>
-#include <string_view>
-
-
-namespace csvsqldb
-{
-  class CSVSQLDB_EXPORT SQLLexer
-  {
-  public:
-    explicit SQLLexer();
-
-    SQLLexer(const SQLLexer&) = delete;
-    SQLLexer& operator=(const SQLLexer&) = delete;
-    SQLLexer(SQLLexer&&) = delete;
-    SQLLexer& operator=(SQLLexer&&) = delete;
-
-    ~SQLLexer();
-
-    csvsqldb::Token next();
-
-    void setInput(std::string_view input);
-
-  private:
-    class Impl;
-    std::unique_ptr<Impl> _impl;
-  };
-}
+#if defined(_MSC_VER)
+  #pragma warning(push)
+#endif

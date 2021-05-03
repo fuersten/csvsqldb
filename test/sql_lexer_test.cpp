@@ -40,11 +40,7 @@ TEST_CASE("SQL Lexer Test", "[sql]")
 {
   SECTION("token to string")
   {
-    CHECK("UNDEFINED" == csvsqldb::tokenToString(static_cast<csvsqldb::eToken>(csvsqldb::lexer::UNDEFINED)));
-    CHECK("NEWLINE" == csvsqldb::tokenToString(static_cast<csvsqldb::eToken>(csvsqldb::lexer::NEWLINE)));
-    CHECK("WHITESPACE" == csvsqldb::tokenToString(static_cast<csvsqldb::eToken>(csvsqldb::lexer::WHITESPACE)));
-    CHECK("EOI" == csvsqldb::tokenToString(static_cast<csvsqldb::eToken>(csvsqldb::lexer::EOI)));
-
+    CHECK("eoi" == csvsqldb::tokenToString(static_cast<csvsqldb::eToken>(csvsqldb::TOK_EOI)));
     CHECK("+" == csvsqldb::tokenToString(csvsqldb::TOK_ADD));
     CHECK("ADD" == csvsqldb::tokenToString(csvsqldb::TOK_ADD_KEYWORD));
     CHECK("ALTER" == csvsqldb::tokenToString(csvsqldb::TOK_ALTER));

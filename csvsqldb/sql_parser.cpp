@@ -46,7 +46,7 @@ namespace csvsqldb
     _currentToken._token = TOK_NONE;
   }
 
-  void SQLParser::reportUnexpectedToken(const std::string& message, const csvsqldb::lexer::Token& token)
+  void SQLParser::reportUnexpectedToken(const std::string& message, const csvsqldb::Token& token)
   {
     CSVSQLDB_THROW(SqlParserException,
                    message << "'" << token._value << "' at line " << token._lineCount << ":" << token._charCount);
@@ -75,16 +75,12 @@ namespace csvsqldb
     return false;
   }
 
-  csvsqldb::lexer::Token SQLParser::parseNext()
+  csvsqldb::Token SQLParser::parseNext()
   {
-    if (_currentToken._token == csvsqldb::lexer::EOI) {
+    if (_currentToken._token == csvsqldb::TOK_EOI) {
       CSVSQLDB_THROW(SqlParserException, "already at end of input");
     }
-    csvsqldb::lexer::Token tok = _lexer.next();
-    while (tok._token == TOK_COMMENT) {
-      tok = _lexer.next();
-    }
-    _currentToken = tok;
+    _currentToken = _lexer.next();
 
     return _currentToken;
   }
@@ -92,7 +88,6 @@ namespace csvsqldb
   void SQLParser::setInput(std::string input)
   {
     _lexer.setInput(std::move(input));
-    _currentToken = csvsqldb::lexer::Token();
     _currentToken._token = TOK_NONE;
   }
 
@@ -110,7 +105,7 @@ namespace csvsqldb
       parseNext();
     }
 
-    if (_currentToken._token != csvsqldb::lexer::EOI) {
+    if (_currentToken._token != csvsqldb::TOK_EOI) {
       if (_currentToken._token == TOK_SELECT || _currentToken._token == TOK_LEFT_PAREN) {
         astnode = parseQuery();
       } else if (_currentToken._token == TOK_CREATE) {
@@ -140,7 +135,7 @@ namespace csvsqldb
       }
       if (_currentToken._token == TOK_SEMICOLON) {
         expect(TOK_SEMICOLON);
-      } else if (_currentToken._token != csvsqldb::lexer::EOI) {
+      } else if (_currentToken._token != csvsqldb::TOK_EOI) {
         // there are more tokens, but there is no semicolon and we are ready with parsing, so this is not good
         expect(TOK_SEMICOLON);
       }
@@ -560,6 +555,8 @@ namespace csvsqldb
       case TOK_JOIN:
       case TOK_CROSS:
         return true;
+      default:
+        return false;
     }
     return false;
   }
@@ -1234,7 +1231,10 @@ namespace csvsqldb
           parameters.push_back(param);
           expect(TOK_RIGHT_PAREN);
           funcName = "EXTRACT";
+          break;
         }
+        default:
+          CSVSQLDB_THROW(SqlParserException, "should never happen");
       }
       node = std::make_shared<ASTFunctionNode>(symboltable, _functionRegistry, funcName, parameters);
     } else {
