@@ -787,6 +787,11 @@ namespace csvsqldb
       return _greater.operation(static_cast<const CAST&>(lhs), static_cast<const CAST&>(rhs));
     }
 
+    Variant doHandleNull(const Variant&, const Variant&) const override
+    {
+      return Variant(false);
+    }
+
     GreaterThen<CAST, CAST> _greater;
   };
 
@@ -796,6 +801,11 @@ namespace csvsqldb
     bool operation(const LHS& lhs, const RHS& rhs) const override
     {
       return _greater.operation(lhs, rhs);
+    }
+
+    Variant doHandleNull(const Variant&, const Variant&) const override
+    {
+      return Variant(false);
     }
 
     GreaterThen<LHS, RHS> _greater;
@@ -809,6 +819,11 @@ namespace csvsqldb
       return _greater.operation(static_cast<const CAST&>(lhs), static_cast<const CAST&>(rhs));
     }
 
+    Variant doHandleNull(const Variant&, const Variant&) const override
+    {
+      return Variant(false);
+    }
+
     GreaterEqual<CAST, CAST> _greater;
   };
 
@@ -818,6 +833,11 @@ namespace csvsqldb
     bool operation(const LHS& lhs, const RHS& rhs) const override
     {
       return _greater.operation(lhs, rhs);
+    }
+
+    Variant doHandleNull(const Variant&, const Variant&) const override
+    {
+      return Variant(false);
     }
 
     GreaterEqual<LHS, RHS> _greater;
@@ -831,6 +851,11 @@ namespace csvsqldb
       return _lesser.operation(static_cast<const CAST&>(lhs), static_cast<const CAST&>(rhs));
     }
 
+    Variant doHandleNull(const Variant&, const Variant&) const override
+    {
+      return Variant(false);
+    }
+
     LessThen<CAST, CAST> _lesser;
   };
 
@@ -840,6 +865,11 @@ namespace csvsqldb
     bool operation(const LHS& lhs, const RHS& rhs) const override
     {
       return _lesser.operation(lhs, rhs);
+    }
+
+    Variant doHandleNull(const Variant&, const Variant&) const override
+    {
+      return Variant(false);
     }
 
     LessThen<LHS, RHS> _lesser;
@@ -853,6 +883,11 @@ namespace csvsqldb
       return _lesser.operation(static_cast<const CAST&>(lhs), static_cast<const CAST&>(rhs));
     }
 
+    Variant doHandleNull(const Variant&, const Variant&) const override
+    {
+      return Variant(false);
+    }
+
     LessEqual<CAST, CAST> _lesser;
   };
 
@@ -862,6 +897,11 @@ namespace csvsqldb
     bool operation(const LHS& lhs, const RHS& rhs) const override
     {
       return _lesser.operation(lhs, rhs);
+    }
+
+    Variant doHandleNull(const Variant&, const Variant&) const override
+    {
+      return Variant(false);
     }
 
     LessEqual<LHS, RHS> _lesser;
@@ -875,6 +915,11 @@ namespace csvsqldb
       return _compare.operation(static_cast<const CAST&>(lhs), static_cast<const CAST&>(rhs));
     }
 
+    Variant doHandleNull(const Variant&, const Variant&) const override
+    {
+      return Variant(false);
+    }
+
     CompareEqual<CAST, CAST> _compare;
   };
 
@@ -884,6 +929,11 @@ namespace csvsqldb
     bool operation(const LHS& lhs, const RHS& rhs) const override
     {
       return _compare.operation(lhs, rhs);
+    }
+
+    Variant doHandleNull(const Variant&, const Variant&) const override
+    {
+      return Variant(false);
     }
 
     CompareEqual<LHS, RHS> _compare;
@@ -897,6 +947,11 @@ namespace csvsqldb
       return _compare.operation(static_cast<const CAST&>(lhs), static_cast<const CAST&>(rhs));
     }
 
+    Variant doHandleNull(const Variant&, const Variant&) const override
+    {
+      return Variant(false);
+    }
+
     CompareNotEqual<CAST, CAST> _compare;
   };
 
@@ -906,6 +961,11 @@ namespace csvsqldb
     bool operation(const LHS& lhs, const RHS& rhs) const override
     {
       return _compare.operation(lhs, rhs);
+    }
+
+    Variant doHandleNull(const Variant&, const Variant&) const override
+    {
+      return Variant(false);
     }
 
     CompareNotEqual<LHS, RHS> _compare;

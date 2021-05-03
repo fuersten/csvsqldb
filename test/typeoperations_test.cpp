@@ -235,19 +235,60 @@ TEST_CASE("Type operations Test", "[operations]")
     csvsqldb::Variant result = binaryOperation(csvsqldb::OP_ADD, i, null);
     CHECK(result.isNull());
 
+    result = binaryOperation(csvsqldb::OP_AND, b_true, b_true);
+    CHECK_FALSE(result.isNull());
+    CHECK(result.asBool());
+    result = binaryOperation(csvsqldb::OP_AND, b_true, b_false);
+    CHECK_FALSE(result.isNull());
+    CHECK_FALSE(result.asBool());
+    result = binaryOperation(csvsqldb::OP_AND, b_false, b_true);
+    CHECK_FALSE(result.isNull());
+    CHECK_FALSE(result.asBool());
     result = binaryOperation(csvsqldb::OP_AND, b_true, null);
     CHECK(result.isNull());
+    result = binaryOperation(csvsqldb::OP_AND, b_false, null);
+    CHECK_FALSE(result.isNull());
+    CHECK_FALSE(result.asBool());
+    result = binaryOperation(csvsqldb::OP_AND, null, b_true);
+    CHECK(result.isNull());
     result = binaryOperation(csvsqldb::OP_AND, null, b_false);
-    CHECK(!result.isNull());
-    CHECK(!result.asBool());
+    CHECK_FALSE(result.isNull());
+    CHECK_FALSE(result.asBool());
 
+    result = binaryOperation(csvsqldb::OP_OR, b_true, b_true);
+    CHECK_FALSE(result.isNull());
+    CHECK(result.asBool());
     result = binaryOperation(csvsqldb::OP_OR, b_true, null);
-    CHECK(!result.isNull());
+    CHECK_FALSE(result.isNull());
+    CHECK(result.asBool());
+    result = binaryOperation(csvsqldb::OP_OR, b_true, b_false);
+    CHECK_FALSE(result.isNull());
+    CHECK(result.asBool());
+
+    result = binaryOperation(csvsqldb::OP_OR, null, b_true);
+    CHECK_FALSE(result.isNull());
+    CHECK(result.asBool());
+    result = binaryOperation(csvsqldb::OP_OR, null, null);
+    CHECK(result.isNull());
+    result = binaryOperation(csvsqldb::OP_OR, null, b_false);
+    CHECK(result.isNull());
+
+    result = binaryOperation(csvsqldb::OP_OR, b_false, b_true);
+    CHECK_FALSE(result.isNull());
     CHECK(result.asBool());
     result = binaryOperation(csvsqldb::OP_OR, b_false, null);
     CHECK(result.isNull());
-    result = binaryOperation(csvsqldb::OP_OR, null, b_true);
-    CHECK(!result.isNull());
+    result = binaryOperation(csvsqldb::OP_OR, b_false, b_false);
+    CHECK_FALSE(result.isNull());
+    CHECK_FALSE(result.asBool());
+
+    result = unaryOperation(csvsqldb::OP_NOT, csvsqldb::BOOLEAN, b_true);
+    CHECK_FALSE(result.isNull());
+    CHECK_FALSE(result.asBool());
+    result = unaryOperation(csvsqldb::OP_NOT, csvsqldb::BOOLEAN, null);
+    CHECK(result.isNull());
+    result = unaryOperation(csvsqldb::OP_NOT, csvsqldb::BOOLEAN, b_false);
+    CHECK_FALSE(result.isNull());
     CHECK(result.asBool());
   }
 
@@ -386,35 +427,95 @@ TEST_CASE("Type compare operations Test", "[operations]")
   {
     Expected expected{true, false};
     executeOperation(values, csvsqldb::OP_GT, expected);
+
+    csvsqldb::Variant null(csvsqldb::INT);
+    csvsqldb::Variant i(4711);
+    csvsqldb::Variant result = binaryOperation(csvsqldb::OP_GT, null, i);
+    CHECK_FALSE(result.isNull());
+    CHECK_FALSE(result.asBool());
+
+    result = binaryOperation(csvsqldb::OP_GT, i, null);
+    CHECK_FALSE(result.isNull());
+    CHECK_FALSE(result.asBool());
   }
 
   SECTION("ge operations")
   {
     Expected expected{true, false};
     executeOperation(values, csvsqldb::OP_GE, expected);
+
+    csvsqldb::Variant null(csvsqldb::INT);
+    csvsqldb::Variant i(4711);
+    csvsqldb::Variant result = binaryOperation(csvsqldb::OP_GE, null, i);
+    CHECK_FALSE(result.isNull());
+    CHECK_FALSE(result.asBool());
+
+    result = binaryOperation(csvsqldb::OP_GE, i, null);
+    CHECK_FALSE(result.isNull());
+    CHECK_FALSE(result.asBool());
   }
 
   SECTION("lt operations")
   {
     Expected expected{false, true};
     executeOperation(values, csvsqldb::OP_LT, expected);
+
+    csvsqldb::Variant null(csvsqldb::INT);
+    csvsqldb::Variant i(4711);
+    csvsqldb::Variant result = binaryOperation(csvsqldb::OP_LT, null, i);
+    CHECK_FALSE(result.isNull());
+    CHECK_FALSE(result.asBool());
+
+    result = binaryOperation(csvsqldb::OP_LT, i, null);
+    CHECK_FALSE(result.isNull());
+    CHECK_FALSE(result.asBool());
   }
 
   SECTION("le operations")
   {
     Expected expected{false, true};
-    executeOperation(values, csvsqldb::OP_LT, expected);
+    executeOperation(values, csvsqldb::OP_LE, expected);
+
+    csvsqldb::Variant null(csvsqldb::INT);
+    csvsqldb::Variant i(4711);
+    csvsqldb::Variant result = binaryOperation(csvsqldb::OP_LE, null, i);
+    CHECK_FALSE(result.isNull());
+    CHECK_FALSE(result.asBool());
+
+    result = binaryOperation(csvsqldb::OP_LE, i, null);
+    CHECK_FALSE(result.isNull());
+    CHECK_FALSE(result.asBool());
   }
 
   SECTION("eq operations")
   {
     Expected expected{true, false};
     executeOperation(eq_values, csvsqldb::OP_EQ, expected);
+
+    csvsqldb::Variant null(csvsqldb::INT);
+    csvsqldb::Variant i(4711);
+    csvsqldb::Variant result = binaryOperation(csvsqldb::OP_EQ, null, i);
+    CHECK_FALSE(result.isNull());
+    CHECK_FALSE(result.asBool());
+
+    result = binaryOperation(csvsqldb::OP_EQ, i, null);
+    CHECK_FALSE(result.isNull());
+    CHECK_FALSE(result.asBool());
   }
 
   SECTION("neq operations")
   {
     Expected expected{false, true};
     executeOperation(eq_values, csvsqldb::OP_NEQ, expected);
+
+    csvsqldb::Variant null(csvsqldb::INT);
+    csvsqldb::Variant i(4711);
+    csvsqldb::Variant result = binaryOperation(csvsqldb::OP_NEQ, null, i);
+    CHECK_FALSE(result.isNull());
+    CHECK_FALSE(result.asBool());
+
+    result = binaryOperation(csvsqldb::OP_NEQ, i, null);
+    CHECK_FALSE(result.isNull());
+    CHECK_FALSE(result.asBool());
   }
 }
