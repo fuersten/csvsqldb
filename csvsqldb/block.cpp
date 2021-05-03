@@ -139,7 +139,7 @@ namespace csvsqldb
       } else {
         val = new (&_store[0] + _offset) ValInt();
       }
-      _offset += val->getSize();
+      _offset += ValInt::getBaseSize();
     }
     return val;
   }
@@ -155,7 +155,7 @@ namespace csvsqldb
       } else {
         val = new (&_store[0] + _offset) ValDouble();
       }
-      _offset += val->getSize();
+      _offset += ValDouble::getBaseSize();
     }
     return val;
   }
@@ -190,7 +190,7 @@ namespace csvsqldb
       } else {
         val = new (&_store[0] + _offset) ValBool();
       }
-      _offset += val->getSize();
+      _offset += ValBool::getBaseSize();
     }
     return val;
   }
@@ -206,7 +206,7 @@ namespace csvsqldb
       } else {
         val = new (&_store[0] + _offset) ValDate();
       }
-      _offset += val->getSize();
+      _offset += ValDate::getBaseSize();
     }
     return val;
   }
@@ -222,7 +222,7 @@ namespace csvsqldb
       } else {
         val = new (&_store[0] + _offset) ValTime();
       }
-      _offset += val->getSize();
+      _offset += ValTime::getBaseSize();
     }
     return val;
   }
@@ -238,7 +238,7 @@ namespace csvsqldb
       } else {
         val = new (&_store[0] + _offset) ValTimestamp();
       }
-      _offset += val->getSize();
+      _offset += ValTimestamp::getBaseSize();
     }
     return val;
   }
@@ -256,6 +256,7 @@ namespace csvsqldb
           } else {
             val = new (&_store[0] + _offset) ValInt();
           }
+          _offset += ValInt::getBaseSize();
         }
         break;
       case REAL:
@@ -266,6 +267,7 @@ namespace csvsqldb
           } else {
             val = new (&_store[0] + _offset) ValDouble();
           }
+          _offset += ValDouble::getBaseSize();
         }
         break;
       case BOOLEAN:
@@ -276,6 +278,7 @@ namespace csvsqldb
           } else {
             val = new (&_store[0] + _offset) ValBool();
           }
+          _offset += ValBool::getBaseSize();
         }
         break;
       case DATE:
@@ -286,6 +289,7 @@ namespace csvsqldb
           } else {
             val = new (&_store[0] + _offset) ValDate();
           }
+          _offset += ValDate::getBaseSize();
         }
         break;
       case TIME:
@@ -296,6 +300,7 @@ namespace csvsqldb
           } else {
             val = new (&_store[0] + _offset) ValTime();
           }
+          _offset += ValTime::getBaseSize();
         }
         break;
       case TIMESTAMP:
@@ -306,6 +311,7 @@ namespace csvsqldb
           } else {
             val = new (&_store[0] + _offset) ValTimestamp();
           }
+          _offset += ValTimestamp::getBaseSize();
         }
         break;
       case STRING: {
@@ -319,14 +325,12 @@ namespace csvsqldb
           } else {
             val = new (&_store[0] + _offset) ValString();
           }
+          _offset += val->getSize();
         }
         break;
       }
       case NONE:
         CSVSQLDB_THROW(csvsqldb::Exception, "type not allowed " << typeToString(value.getType()));
-    }
-    if (val) {
-      _offset += val->getSize();
     }
     return val;
   }
@@ -337,39 +341,45 @@ namespace csvsqldb
 
     switch (value.getType()) {
       case INT:
-        if (hasSizeFor(value.getSize())) {
+        if (hasSizeFor(ValInt::getBaseSize())) {
           markValue();
           val = new (&_store[0] + _offset) ValInt(static_cast<const ValInt&>(value));
+          _offset += ValInt::getBaseSize();
         }
         break;
       case REAL:
-        if (hasSizeFor(value.getSize())) {
+        if (hasSizeFor(ValDouble::getBaseSize())) {
           markValue();
           val = new (&_store[0] + _offset) ValDouble(static_cast<const ValDouble&>(value));
+          _offset += ValDouble::getBaseSize();
         }
         break;
       case BOOLEAN:
-        if (hasSizeFor(value.getSize())) {
+        if (hasSizeFor(ValBool::getBaseSize())) {
           markValue();
           val = new (&_store[0] + _offset) ValBool(static_cast<const ValBool&>(value));
+          _offset += ValBool::getBaseSize();
         }
         break;
       case DATE:
-        if (hasSizeFor(value.getSize())) {
+        if (hasSizeFor(ValDate::getBaseSize())) {
           markValue();
           val = new (&_store[0] + _offset) ValDate(static_cast<const ValDate&>(value));
+          _offset += ValDate::getBaseSize();
         }
         break;
       case TIME:
-        if (hasSizeFor(value.getSize())) {
+        if (hasSizeFor(ValTime::getBaseSize())) {
           markValue();
           val = new (&_store[0] + _offset) ValTime(static_cast<const ValTime&>(value));
+          _offset += ValTime::getBaseSize();
         }
         break;
       case TIMESTAMP:
-        if (hasSizeFor(value.getSize())) {
+        if (hasSizeFor(ValTimestamp::getBaseSize())) {
           markValue();
           val = new (&_store[0] + _offset) ValTimestamp(static_cast<const ValTimestamp&>(value));
+          _offset += ValTimestamp::getBaseSize();
         }
         break;
       case STRING: {
@@ -383,14 +393,12 @@ namespace csvsqldb
           } else {
             val = new (&_store[0] + _offset) ValString();
           }
+          _offset += val->getSize();
         }
         break;
       }
       case NONE:
         CSVSQLDB_THROW(csvsqldb::Exception, "type not allowed " << typeToString(value.getType()));
-    }
-    if (val) {
-      _offset += val->getSize();
     }
     return val;
   }
