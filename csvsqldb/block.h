@@ -161,41 +161,51 @@ namespace csvsqldb
 
     inline StoreType* getRawBuffer(size_t offset)
     {
+#if defined BLOCK_RANGE_CHECK
       if (offset >= _offset) {
         CSVSQLDB_THROW(csvsqldb::Exception, "block offset out of range");
       }
+#endif
       return &_store[offset];
     }
 
     inline bool isValue(size_t offset) const
     {
+#if defined BLOCK_RANGE_CHECK
       if (offset >= _offset) {
         CSVSQLDB_THROW(csvsqldb::Exception, "block offset out of range");
       }
+#endif
       return (*(&_store[0] + offset) == sValueMarker);
     }
 
     inline bool isRow(size_t offset) const
     {
+#if defined BLOCK_RANGE_CHECK
       if (offset >= _offset) {
         CSVSQLDB_THROW(csvsqldb::Exception, "block offset out of range");
       }
+#endif
       return (*(&_store[0] + offset) == sRowMarker);
     }
 
     inline bool isBlock(size_t offset) const
     {
+#if defined BLOCK_RANGE_CHECK
       if (offset >= _offset) {
         CSVSQLDB_THROW(csvsqldb::Exception, "block offset out of range");
       }
+#endif
       return (*(&_store[0] + offset) == sBlockMarker);
     }
 
     inline bool isEnd(size_t offset) const
     {
+#if defined BLOCK_RANGE_CHECK
       if (offset >= _offset) {
         CSVSQLDB_THROW(csvsqldb::Exception, "block offset out of range");
       }
+#endif
       return (*(&_store[0] + offset) == sEndMarker);
     }
 

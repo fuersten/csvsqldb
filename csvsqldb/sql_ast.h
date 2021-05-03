@@ -174,7 +174,7 @@ namespace csvsqldb
 
   struct CSVSQLDB_EXPORT NamedType {
     std::string _name;
-    eType _type{ NONE };
+    eType _type{NONE};
 
     bool operator!=(const NamedType& rhs) const
     {
