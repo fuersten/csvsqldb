@@ -1,6 +1,6 @@
 //
-//  sql_lexer.cpp
-//  csv db
+//  pragma_conversion.h
+//  csvsqldb
 //
 //  BSD 3-Clause License
 //  Copyright (c) 2015-2020 Lars-Christian Fürstenberg
@@ -31,64 +31,14 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
+#if defined(__clang__)
+  #pragma clang diagnostic ignored "-Wconversion"
+#endif
 
-#include "sql_lexer.h"
+#if defined(__GNUC__)
+  #pragma GCC diagnostic ignored "-Wconversion"
+#endif
 
-#include "base/logging.h"
-
-// clang-format off
-#include "base/pragma_push.h"
-#include "base/pragma_conversion.h"
-#include "base/pragma_sign.h"
-#include "lex.yy.h"
-#include "base/pragma_pop.h"
-// clang-format on
-
-
-namespace csvsqldb
-{
-  class SQLLexer::Impl
-  {
-  public:
-    Impl() = default;
-
-    void setInput(std::string_view input)
-    {
-      _stream.clear();
-      _stream << input;
-      _lexer.reset(new Lexer{_stream});
-    }
-
-    csvsqldb::Token next()
-    {
-      return _lexer->lex();
-    }
-
-  private:
-    std::stringstream _stream;
-    std::unique_ptr<Lexer> _lexer;
-  };
-
-  SQLLexer::SQLLexer()
-  : _impl{new Impl}
-  {
-  }
-
-  SQLLexer::~SQLLexer()
-  {
-  }
-
-  void SQLLexer::setInput(std::string_view input)
-  {
-    _impl->setInput(input);
-  }
-
-  csvsqldb::Token SQLLexer::next()
-  {
-    csvsqldb::Token tok = _impl->next();
-    while (tok._token == TOK_COMMENT) {
-      tok = _impl->next();
-    }
-    return tok;
-  }
-}
+#if defined(_MSC_VER)
+  #pragma warning(disable : 4244)
+#endif

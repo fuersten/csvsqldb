@@ -24,9 +24,6 @@ set(LIB_CSVSQLDB_SOURCES
     values.cpp
     variant.cpp
 
-    lex.yy.cpp
-    lex.yy.h
-
     operatornodes/aggregation_operatornode.cpp
     operatornodes/aggregation_operatornode.h
     operatornodes/cross_join_operatornode.cpp
@@ -142,7 +139,18 @@ set(LIB_CSVSQLDB_BASE_HEADERS
     base/types.h
     base/regexp.h
     base/detail/types_detail.h
+
+    base/pragma_conversion.h
+    base/pragma_pop.h
+    base/pragma_push.h
+    base/pragma_sign.h
 )
+
+set(LIB_CSVSQLDB_GENERATED
+    generated/lex.yy.cpp
+    generated/lex.yy.h
+)
+ 
 
 set(LIB_CSVSQLDB_COMPAT_HEADERS
     compat/get_time.h
@@ -169,6 +177,7 @@ endif()
 source_group("Source Files\\base" FILES ${LIB_CSVSQLDB_BASE_SOURCES})
 source_group("Header Files\\base" FILES ${LIB_CSVSQLDB_BASE_HEADERS})
 source_group("Header Files\\compat" FILES ${LIB_CSVSQLDB_COMPAT_HEADERS})
+source_group("Source Files\\generated" FILES ${LIB_CSVSQLDB_GENERATED})
 
 configure_file(version.h.in ${CMAKE_CURRENT_BINARY_DIR}/version.h)
 set(LIB_CSVSQLDB_SOURCES 
@@ -176,6 +185,7 @@ set(LIB_CSVSQLDB_SOURCES
     ${LIB_CSVSQLDB_BASE_SOURCES}
     ${LIB_CSVSQLDB_BASE_HEADERS}
     ${LIB_CSVSQLDB_COMPAT_HEADERS}
+    ${LIB_CSVSQLDB_GENERATED}
     ${CMAKE_CURRENT_BINARY_DIR}/version.h
 )
 
@@ -186,8 +196,8 @@ target_include_directories(libcsvsqldb PRIVATE ${CMAKE_BINARY_DIR})
 target_include_directories(libcsvsqldb PRIVATE ${CMAKE_SOURCE_DIR}/csvsqldb)
 target_include_directories(libcsvsqldb PRIVATE ${CMAKE_SOURCE_DIR}/thirdparty/json/single_include/)
 target_include_directories(libcsvsqldb PRIVATE SYSTEM ${lua_SOURCE_DIR})
-target_include_directories(libcsvsqldb SYSTEM PRIVATE ${ctre_SOURCE_DIR}/include)
 target_include_directories(libcsvsqldb PRIVATE SYSTEM ${reflex_SOURCE_DIR}/include)
+target_include_directories(libcsvsqldb PRIVATE SYSTEM ${CMAKE_SOURCE_DIR}/csvsqldb/generated)
 
 set_target_properties(libcsvsqldb PROPERTIES DEFINE_SYMBOL LIBCSVSQLDB VERSION ${CSVSQLDB_VERSION} SOVERSION ${CSVSQLDB_VERSION_SHORT})
 target_link_libraries(libcsvsqldb PUBLIC ${CSVSQLDB_PLATFORM_LIBS} lua reflex)

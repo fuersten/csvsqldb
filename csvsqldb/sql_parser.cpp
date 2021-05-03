@@ -555,6 +555,8 @@ namespace csvsqldb
       case TOK_JOIN:
       case TOK_CROSS:
         return true;
+      default:
+        return false;
     }
     return false;
   }
@@ -1229,7 +1231,10 @@ namespace csvsqldb
           parameters.push_back(param);
           expect(TOK_RIGHT_PAREN);
           funcName = "EXTRACT";
+          break;
         }
+        default:
+          CSVSQLDB_THROW(SqlParserException, "should never happen");
       }
       node = std::make_shared<ASTFunctionNode>(symboltable, _functionRegistry, funcName, parameters);
     } else {

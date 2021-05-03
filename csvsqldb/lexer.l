@@ -2,7 +2,16 @@
 %top{
   #include <iostream>
   #include "tokens.h"
+
+#include "base/pragma_push.h"
+#include "base/pragma_sign.h"
+#include "base/pragma_conversion.h"
 }
+
+%{
+#include "base/pragma_pop.h"
+%}
+
 
 digit            [0-9]
 digit_no_zero    [1-9]
