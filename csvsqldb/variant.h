@@ -183,20 +183,20 @@ namespace csvsqldb
   CSVSQLDB_EXPORT Variant valueToVariant(const Value& value);
 
   template<typename T>
-  struct ValueGetter {
+  struct CSVSQLDB_EXPORT ValueGetter {
     static T getValue(const Variant& value);
   };
 
   template<>
-  struct ValueGetter<NoneType> {
-    static NoneType getValue(const Variant& value)
+  struct CSVSQLDB_EXPORT ValueGetter<NoneType> {
+    static NoneType getValue(const Variant&)
     {
       CSVSQLDB_THROW(VariantException, "Cannot get a value from a null type");
     }
   };
 
   template<>
-  struct ValueGetter<bool> {
+  struct CSVSQLDB_EXPORT ValueGetter<bool> {
     static bool getValue(const Variant& value)
     {
       return value.asBool();
@@ -204,7 +204,7 @@ namespace csvsqldb
   };
 
   template<>
-  struct ValueGetter<int64_t> {
+  struct CSVSQLDB_EXPORT ValueGetter<int64_t> {
     static int64_t getValue(const Variant& value)
     {
       return value.asInt();
@@ -212,7 +212,7 @@ namespace csvsqldb
   };
 
   template<>
-  struct ValueGetter<double> {
+  struct CSVSQLDB_EXPORT ValueGetter<double> {
     static double getValue(const Variant& value)
     {
       return value.asDouble();
@@ -220,7 +220,7 @@ namespace csvsqldb
   };
 
   template<>
-  struct ValueGetter<csvsqldb::Date> {
+  struct CSVSQLDB_EXPORT ValueGetter<csvsqldb::Date> {
     static csvsqldb::Date getValue(const Variant& value)
     {
       return value.asDate();
@@ -228,7 +228,7 @@ namespace csvsqldb
   };
 
   template<>
-  struct ValueGetter<csvsqldb::Time> {
+  struct CSVSQLDB_EXPORT ValueGetter<csvsqldb::Time> {
     static csvsqldb::Time getValue(const Variant& value)
     {
       return value.asTime();
@@ -236,7 +236,7 @@ namespace csvsqldb
   };
 
   template<>
-  struct ValueGetter<csvsqldb::Timestamp> {
+  struct CSVSQLDB_EXPORT ValueGetter<csvsqldb::Timestamp> {
     static csvsqldb::Timestamp getValue(const Variant& value)
     {
       return value.asTimestamp();
@@ -244,7 +244,7 @@ namespace csvsqldb
   };
 
   template<>
-  struct ValueGetter<StringType> {
+  struct CSVSQLDB_EXPORT ValueGetter<StringType> {
     static StringType getValue(const Variant& value)
     {
       return const_cast<StringType>(value.asString());
@@ -252,7 +252,7 @@ namespace csvsqldb
   };
 
   template<>
-  struct ValueGetter<std::string> {
+  struct CSVSQLDB_EXPORT ValueGetter<std::string> {
     static const char* getValue(const Variant& value)
     {
       return value.asString();
@@ -263,7 +263,7 @@ namespace csvsqldb
 namespace std
 {
   template<>
-  struct hash<csvsqldb::Variant> {
+  struct CSVSQLDB_EXPORT hash<csvsqldb::Variant> {
     typedef csvsqldb::Variant argument_type;
     typedef std::size_t result_type;
 

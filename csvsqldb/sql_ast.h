@@ -174,7 +174,7 @@ namespace csvsqldb
 
   struct CSVSQLDB_EXPORT NamedType {
     std::string _name;
-    eType _type;
+    eType _type{ NONE };
 
     bool operator!=(const NamedType& rhs) const
     {
@@ -234,136 +234,136 @@ namespace csvsqldb
   public:
     ASTExpressionNodeVisitor() = default;
 
-    void visit(ASTBinaryNode& node) override
+    void visit(ASTBinaryNode&) override
     {
     }
-    void visit(ASTUnaryNode& node) override
+    void visit(ASTUnaryNode&) override
     {
     }
-    void visit(ASTValueNode& node) override
+    void visit(ASTValueNode&) override
     {
     }
-    void visit(ASTLikeNode& node) override
+    void visit(ASTLikeNode&) override
     {
     }
-    void visit(ASTBetweenNode& node) override
+    void visit(ASTBetweenNode&) override
     {
     }
-    void visit(ASTInNode& node) override
+    void visit(ASTInNode&) override
     {
     }
-    void visit(ASTFunctionNode& node) override
+    void visit(ASTFunctionNode&) override
     {
     }
-    void visit(ASTAggregateFunctionNode& node) override
+    void visit(ASTAggregateFunctionNode&) override
     {
     }
-    void visit(ASTIdentifier& node) override
+    void visit(ASTIdentifier&) override
     {
     }
 
   private:
-    void visit(ASTExplainNode& node) override
+    void visit(ASTExplainNode&) override
     {
       CSVSQLDB_THROW(SqlParserException, "Visting non expression node");
     }
-    void visit(ASTQualifiedAsterisk& node) override
+    void visit(ASTQualifiedAsterisk&) override
     {
       CSVSQLDB_THROW(SqlParserException, "Visting non expression node");
     }
-    void visit(ASTCreateTableNode& node) override
+    void visit(ASTCreateTableNode&) override
     {
       CSVSQLDB_THROW(SqlParserException, "Visting non expression node");
     }
-    void visit(ASTMappingNode& node) override
+    void visit(ASTMappingNode&) override
     {
       CSVSQLDB_THROW(SqlParserException, "Visting non expression node");
     }
-    void visit(ASTDropMappingNode& node) override
+    void visit(ASTDropMappingNode&) override
     {
       CSVSQLDB_THROW(SqlParserException, "Visting non expression node");
     }
-    void visit(ASTAlterTableAddColumnNode& node) override
+    void visit(ASTAlterTableAddColumnNode&) override
     {
       CSVSQLDB_THROW(SqlParserException, "Visting non expression node");
     }
-    void visit(ASTAlterTableDropColumnNode& node) override
+    void visit(ASTAlterTableDropColumnNode&) override
     {
       CSVSQLDB_THROW(SqlParserException, "Visting non expression node");
     }
-    void visit(ASTDropTableNode& node) override
+    void visit(ASTDropTableNode&) override
     {
       CSVSQLDB_THROW(SqlParserException, "Visting non expression node");
     }
-    void visit(ASTUnionNode& node) override
+    void visit(ASTUnionNode&) override
     {
       CSVSQLDB_THROW(SqlParserException, "Visting non expression node");
     }
-    void visit(ASTQueryNode& node) override
+    void visit(ASTQueryNode&) override
     {
       CSVSQLDB_THROW(SqlParserException, "Visting non expression node");
     }
-    void visit(ASTQuerySpecificationNode& node) override
+    void visit(ASTQuerySpecificationNode&) override
     {
       CSVSQLDB_THROW(SqlParserException, "Visting non expression node");
     }
-    void visit(ASTTableExpressionNode& node) override
+    void visit(ASTTableExpressionNode&) override
     {
       CSVSQLDB_THROW(SqlParserException, "Visting non expression node");
     }
-    void visit(ASTFromNode& node) override
+    void visit(ASTFromNode&) override
     {
       CSVSQLDB_THROW(SqlParserException, "Visting non expression node");
     }
-    void visit(ASTTableIdentifierNode& node) override
+    void visit(ASTTableIdentifierNode&) override
     {
       CSVSQLDB_THROW(SqlParserException, "Visting non expression node");
     }
-    void visit(ASTTableSubqueryNode& node) override
+    void visit(ASTTableSubqueryNode&) override
     {
       CSVSQLDB_THROW(SqlParserException, "Visting non expression node");
     }
-    void visit(ASTCrossJoinNode& node) override
+    void visit(ASTCrossJoinNode&) override
     {
       CSVSQLDB_THROW(SqlParserException, "Visting non expression node");
     }
-    void visit(ASTNaturalJoinNode& node) override
+    void visit(ASTNaturalJoinNode&) override
     {
       CSVSQLDB_THROW(SqlParserException, "Visting non expression node");
     }
-    void visit(ASTInnerJoinNode& node) override
+    void visit(ASTInnerJoinNode&) override
     {
       CSVSQLDB_THROW(SqlParserException, "Visting non expression node");
     }
-    void visit(ASTLeftJoinNode& node) override
+    void visit(ASTLeftJoinNode&) override
     {
       CSVSQLDB_THROW(SqlParserException, "Visting non expression node");
     }
-    void visit(ASTRightJoinNode& node) override
+    void visit(ASTRightJoinNode&) override
     {
       CSVSQLDB_THROW(SqlParserException, "Visting non expression node");
     }
-    void visit(ASTFullJoinNode& node) override
+    void visit(ASTFullJoinNode&) override
     {
       CSVSQLDB_THROW(SqlParserException, "Visting non expression node");
     }
-    void visit(ASTWhereNode& node) override
+    void visit(ASTWhereNode&) override
     {
       CSVSQLDB_THROW(SqlParserException, "Visting non expression node");
     }
-    void visit(ASTGroupByNode& node) override
+    void visit(ASTGroupByNode&) override
     {
       CSVSQLDB_THROW(SqlParserException, "Visting non expression node");
     }
-    void visit(ASTHavingNode& node) override
+    void visit(ASTHavingNode&) override
     {
       CSVSQLDB_THROW(SqlParserException, "Visting non expression node");
     }
-    void visit(ASTOrderByNode& node) override
+    void visit(ASTOrderByNode&) override
     {
       CSVSQLDB_THROW(SqlParserException, "Visting non expression node");
     }
-    void visit(ASTLimitNode& node) override
+    void visit(ASTLimitNode&) override
     {
       CSVSQLDB_THROW(SqlParserException, "Visting non expression node");
     }

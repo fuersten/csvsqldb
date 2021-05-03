@@ -110,11 +110,11 @@ namespace csvsqldb
       _executionPlan.addExecutionNode(execNode);
     }
 
-    void visit(ASTAlterTableAddColumnNode& node) override
+    void visit(ASTAlterTableAddColumnNode&) override
     {
     }
 
-    void visit(ASTAlterTableDropColumnNode& node) override
+    void visit(ASTAlterTableDropColumnNode&) override
     {
     }
 
@@ -196,43 +196,43 @@ namespace csvsqldb
       }
     }
 
-    void visit(ASTBinaryNode& node) override
+    void visit(ASTBinaryNode&) override
     {
     }
 
-    void visit(ASTUnaryNode& node) override
+    void visit(ASTUnaryNode&) override
     {
     }
 
-    void visit(ASTValueNode& node) override
+    void visit(ASTValueNode&) override
     {
     }
 
-    void visit(ASTLikeNode& node) override
+    void visit(ASTLikeNode&) override
     {
     }
 
-    void visit(ASTBetweenNode& node) override
+    void visit(ASTBetweenNode&) override
     {
     }
 
-    void visit(ASTInNode& node) override
+    void visit(ASTInNode&) override
     {
     }
 
-    void visit(ASTFunctionNode& node) override
+    void visit(ASTFunctionNode&) override
     {
     }
 
-    void visit(ASTAggregateFunctionNode& node) override
+    void visit(ASTAggregateFunctionNode&) override
     {
     }
 
-    void visit(ASTIdentifier& node) override
+    void visit(ASTIdentifier&) override
     {
     }
 
-    void visit(ASTQualifiedAsterisk& node) override
+    void visit(ASTQualifiedAsterisk&) override
     {
     }
 
@@ -272,7 +272,7 @@ namespace csvsqldb
       _currentRowOperator = join;
     }
 
-    void visit(ASTNaturalJoinNode& node) override
+    void visit(ASTNaturalJoinNode&) override
     {
     }
 
@@ -298,15 +298,15 @@ namespace csvsqldb
       _currentRowOperator = join;
     }
 
-    void visit(ASTLeftJoinNode& node) override
+    void visit(ASTLeftJoinNode&) override
     {
     }
 
-    void visit(ASTRightJoinNode& node) override
+    void visit(ASTRightJoinNode&) override
     {
     }
 
-    void visit(ASTFullJoinNode& node) override
+    void visit(ASTFullJoinNode&) override
     {
     }
 
@@ -317,11 +317,11 @@ namespace csvsqldb
       _currentRowOperator = select;
     }
 
-    void visit(ASTGroupByNode& node) override
+    void visit(ASTGroupByNode&) override
     {
     }
 
-    void visit(ASTHavingNode& node) override
+    void visit(ASTHavingNode&) override
     {
     }
 

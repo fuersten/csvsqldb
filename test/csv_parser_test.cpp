@@ -68,7 +68,7 @@ namespace
       }
     }
 
-    void onString(const char* s, size_t len, bool isNull) override
+    void onString(const char* s, size_t, bool isNull) override
     {
       if (isNull) {
         _results.push_back("<NULL>");

@@ -199,7 +199,7 @@ namespace csvsqldb
       _sm.addInstruction(StackMachine::Instruction(StackMachine::FUNC, Variant(node._function->getName())));
     }
 
-    void visit(ASTAggregateFunctionNode& node) override
+    void visit(ASTAggregateFunctionNode&) override
     {
       // TODO LCF: add these expressions to a new collection and create a store variable for them
       CSVSQLDB_THROW(StackMachineException, "aggregation functions in expressions not allowed");
@@ -250,7 +250,7 @@ namespace csvsqldb
       node._rhs->accept(*this);
     }
 
-    void visit(ASTValueNode& node) override
+    void visit(ASTValueNode&) override
     {
     }
 
@@ -266,7 +266,7 @@ namespace csvsqldb
       node._lhs->accept(*this);
     }
 
-    void visit(ASTInNode& node) override
+    void visit(ASTInNode&) override
     {
     }
 
@@ -277,7 +277,7 @@ namespace csvsqldb
       }
     }
 
-    void visit(ASTAggregateFunctionNode& node) override
+    void visit(ASTAggregateFunctionNode&) override
     {
     }
 

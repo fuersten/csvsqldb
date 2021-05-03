@@ -79,11 +79,11 @@ namespace csvsqldb
       node._query->accept(*this);
     }
 
-    void visit(ASTMappingNode& node) override
+    void visit(ASTMappingNode&) override
     {
     }
 
-    void visit(ASTDropMappingNode& node) override
+    void visit(ASTDropMappingNode&) override
     {
     }
 
@@ -92,19 +92,19 @@ namespace csvsqldb
       _ss << node.getQualifiedQuotedIdentifier();
     }
 
-    void visit(ASTCreateTableNode& node) override
+    void visit(ASTCreateTableNode&) override
     {
     }
 
-    void visit(ASTAlterTableAddColumnNode& node) override
+    void visit(ASTAlterTableAddColumnNode&) override
     {
     }
 
-    void visit(ASTAlterTableDropColumnNode& node) override
+    void visit(ASTAlterTableDropColumnNode&) override
     {
     }
 
-    void visit(ASTDropTableNode& node) override
+    void visit(ASTDropTableNode&) override
     {
     }
 
@@ -254,7 +254,7 @@ namespace csvsqldb
       }
     }
 
-    void visit(ASTHavingNode& node) override
+    void visit(ASTHavingNode&) override
     {
     }
 

@@ -158,7 +158,7 @@ namespace csvsqldb
     T unwrapType(lua_State* L, int index = -1);
 
     template<>
-    void unwrapType<void>(lua_State* L, int index)
+    void unwrapType<void>(lua_State*, int)
     {
     }
 
@@ -246,7 +246,7 @@ namespace csvsqldb
        * @param L The lua state object
        */
       template<typename RET>
-      typename std::enable_if<std::is_void<RET>::value, RET>::type call(lua_State* L) const
+      typename std::enable_if<std::is_void<RET>::value, RET>::type call(lua_State*) const
       {
         _f();
       }
@@ -297,7 +297,7 @@ namespace csvsqldb
        * @param t0 First function parameter
        */
       template<typename RET>
-      typename std::enable_if<std::is_void<RET>::value, RET>::type call(lua_State* L, T0 t0) const
+      typename std::enable_if<std::is_void<RET>::value, RET>::type call(lua_State*, T0 t0) const
       {
         _f(t0);
       }
@@ -351,7 +351,7 @@ namespace csvsqldb
        * @param t1 Second function parameter
        */
       template<typename RET>
-      typename std::enable_if<std::is_void<RET>::value, RET>::type call(lua_State* L, T0 t0, T1 t1) const
+      typename std::enable_if<std::is_void<RET>::value, RET>::type call(lua_State*, T0 t0, T1 t1) const
       {
         _f(t0, t1);
       }
@@ -408,7 +408,7 @@ namespace csvsqldb
        * @param t2 Third function parameter
        */
       template<typename RET>
-      typename std::enable_if<std::is_void<RET>::value, RET>::type call(lua_State* L, T0 t0, T1 t1, T2 t2) const
+      typename std::enable_if<std::is_void<RET>::value, RET>::type call(lua_State*, T0 t0, T1 t1, T2 t2) const
       {
         _f(t0, t1, t2);
       }

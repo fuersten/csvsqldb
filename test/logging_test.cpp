@@ -52,7 +52,7 @@ namespace
     }
 
   private:
-    size_t doGetProperties(const std::string& path, csvsqldb::StringVector& properties) const override
+    size_t doGetProperties(const std::string&, csvsqldb::StringVector& properties) const override
     {
       properties.push_back("TestClass1");
       properties.push_back("TestClass2");
@@ -67,12 +67,12 @@ namespace
       throw csvsqldb::ConfigurationException("not implemented");
     }
 
-    bool get(const std::string& path, csvsqldb::Typer<bool> typer) const override
+    bool get(const std::string& path, csvsqldb::Typer<bool>) const override
     {
       throw csvsqldb::ConfigurationException("not implemented");
     }
 
-    int32_t get(const std::string& path, csvsqldb::Typer<int32_t> typer) const override
+    int32_t get(const std::string& path, csvsqldb::Typer<int32_t>) const override
     {
       if (path == "debug.level.TestClass1") {
         return 1;
@@ -83,22 +83,22 @@ namespace
       throw csvsqldb::ConfigurationException("not implemented");
     }
 
-    int64_t get(const std::string& path, csvsqldb::Typer<int64_t> typer) const override
+    int64_t get(const std::string&, csvsqldb::Typer<int64_t>) const override
     {
       throw csvsqldb::ConfigurationException("not implemented");
     }
 
-    float get(const std::string& path, csvsqldb::Typer<float> typer) const override
+    float get(const std::string&, csvsqldb::Typer<float>) const override
     {
       throw csvsqldb::ConfigurationException("not implemented");
     }
 
-    double get(const std::string& path, csvsqldb::Typer<double> typer) const override
+    double get(const std::string&, csvsqldb::Typer<double>) const override
     {
       throw csvsqldb::ConfigurationException("not implemented");
     }
 
-    std::string get(const std::string& path, csvsqldb::Typer<std::string> typer) const override
+    std::string get(const std::string& path, csvsqldb::Typer<std::string>) const override
     {
       if (path == "logging.device") {
         return "Console";

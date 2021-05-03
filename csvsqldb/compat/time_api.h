@@ -44,15 +44,13 @@ namespace csvsqldb
 #if defined _MSC_VER
   inline struct tm* localtime_r(const time_t* clock, struct tm* result)
   {
-    struct tm* p = localtime(clock);
-    *(result) = *p;
+    localtime_s(result, clock);
     return result;
   }
 
   inline struct tm* gmtime_r(const time_t* clock, struct tm* result)
   {
-    struct tm* p = gmtime(clock);
-    *(result) = *p;
+    gmtime_s(result, clock);
     return result;
   }
 #endif

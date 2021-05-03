@@ -45,7 +45,7 @@ namespace csvsqldb
   public:
     void getColumnInfos(SymbolInfos& outputSymbols) override;
 
-    bool connect(const RowOperatorNodePtr& input) override
+    bool connect(const RowOperatorNodePtr&) override
     {
       CSVSQLDB_THROW(csvsqldb::Exception, "connect not allowed");
     }

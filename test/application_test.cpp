@@ -54,7 +54,7 @@ public:
   bool _didTearDown{false};
 
 private:
-  bool setUp(int argc, char** argv) override
+  bool setUp(int, char**) override
   {
     _didSetup = true;
     return _setUp;
