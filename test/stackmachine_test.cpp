@@ -956,9 +956,10 @@ TEST_CASE("Stackmachine Error Test", "[stackmachine]")
   }
   SECTION("Wrong FUNC parameter")
   {
+    sm.addInstruction(csvsqldb::StackMachine::Instruction(csvsqldb::StackMachine::PUSH, 815));
     sm.addInstruction(csvsqldb::StackMachine::Instruction(csvsqldb::StackMachine::PUSH, 4711));
-    sm.addInstruction(csvsqldb::StackMachine::Instruction(csvsqldb::StackMachine::FUNC, "UPPER"));
-    CHECK_THROWS_WITH(sm.evaluate(store, functions), "calling function 'UPPER' with wrong parameter");
+    sm.addInstruction(csvsqldb::StackMachine::Instruction(csvsqldb::StackMachine::FUNC, "EXTRACT"));
+    CHECK_THROWS_WITH(sm.evaluate(store, functions), "calling function 'EXTRACT' with wrong parameter");
   }
   SECTION("LIKE without regexp")
   {
