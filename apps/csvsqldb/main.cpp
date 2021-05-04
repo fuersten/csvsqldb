@@ -79,6 +79,7 @@ public:
       csvsqldb::ExecutionContext context(_database);
       context._files = _files;
       context._showHeaderLine = _showHeaderLine;
+      context._maxActiveBlocks = _maxActiveBlocks;
 
       csvsqldb::ExecutionEngine<csvsqldb::OperatorNodeFactory> engine(context);
       csvsqldb::ExecutionStatistics statistics;
@@ -112,6 +113,16 @@ public:
     return _verbose;
   }
 
+  void setMaxActiveBlocks(size_t maxBlocks)
+  {
+    _maxActiveBlocks = maxBlocks;
+  }
+
+  size_t getMaxActiveBlocks() const
+  {
+    return _maxActiveBlocks;
+  }
+
   bool addFile(const std::string& csvFile)
   {
     if (std::find(_files.begin(), _files.end(), csvFile) == _files.end()) {
@@ -137,6 +148,7 @@ private:
   csvsqldb::Database& _database;
   bool _showHeaderLine;
   bool _verbose;
+  size_t _maxActiveBlocks{csvsqldb::sDefaultMaxActiveBlocks};
   csvsqldb::StringVector _files;
 };
 
@@ -301,6 +313,7 @@ private:
         std::cout << "quit|exit - quit shell\n";
         std::cout << "version - show version\n";
         std::cout << "verbose ([on|off]) - show verbosity or switch it on/off\n";
+        std::cout << "max active blocks (blocks) - show max active blocks or set blocks\n";
         std::cout << "database - show the database path\n";
         std::cout << "clear history - clear all history entries\n";
         std::cout << "show [tables|mappings|columns <tablename>|functions|files] - show db objects\n";
@@ -325,6 +338,25 @@ private:
           }
         } else {
           std::cout << "verbose " << (csvDB.getVerbosity() ? "on" : "off") << std::endl;
+        }
+        return false;
+      });
+      console.addCommand("max", [&csvDB](const csvsqldb::StringVector& params) -> bool {
+        if (params.empty() || params.size() < 2 || csvsqldb::tolower_copy(params[0]) != "active" ||
+            csvsqldb::tolower_copy(params[1]) != "blocks") {
+          std::cout << "ERROR: unknown command\n";
+          return false;
+        }
+        if (params.size() == 3) {
+          char* end{nullptr};
+          auto result = ::strtoul(params[2].c_str(), &end, 10);
+          if (static_cast<size_t>(end - params[2].data()) != params[2].length() || result == 0) {
+            std::cerr << "max active blocks has to be a numer > 0" << std::endl;
+          } else {
+            csvDB.setMaxActiveBlocks(result);
+          }
+        } else {
+          std::cout << "max active blocks " << csvDB.getMaxActiveBlocks() << std::endl;
         }
         return false;
       });

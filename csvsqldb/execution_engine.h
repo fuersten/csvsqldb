@@ -53,6 +53,7 @@ namespace csvsqldb
     Database& _database;
     csvsqldb::StringVector _files;
     bool _showHeaderLine{true};
+    size_t _maxActiveBlocks{sDefaultMaxActiveBlocks};
   };
 
   struct CSVSQLDB_EXPORT ExecutionStatistics {
@@ -76,7 +77,7 @@ namespace csvsqldb
     explicit ExecutionEngine(ExecutionContext& execContext)
     : _execContext(execContext)
     , _parser(_functions)
-    , _blockManager(sDefaultMaxActiveBlocks)
+    , _blockManager(execContext._maxActiveBlocks)
     {
       initBuildInFunctions(_functions);
     }
