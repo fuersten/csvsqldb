@@ -8,7 +8,7 @@
 * Windows is now supported as plattform
 * The project now uses github actions as CI
 * Tons of unit tests have been added and the coverage is about 90%
-* The number of maximum active blocks can now be configured interactively
+* The number of maximum active blocks can now be configured interactively and by command line
 
 ### Changed
 

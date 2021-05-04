@@ -65,10 +65,9 @@
 class CsvDB
 {
 public:
-  CsvDB(csvsqldb::Database& database, bool showHeaderLine, bool verbose, csvsqldb::StringVector files)
+  CsvDB(csvsqldb::Database& database, bool showHeaderLine, csvsqldb::StringVector files)
   : _database(database)
   , _showHeaderLine(showHeaderLine)
-  , _verbose(verbose)
   , _files(std::move(files))
   {
   }
@@ -217,6 +216,7 @@ private:
     app.add_option("-p,--datbase-path", _databasePath, "Path to the database");
     auto command_file_option = app.add_option("-c,--command-file", _commandFile, "Command file with sql commands to process");
     app.add_option("-s,--sql", _sql, "Sql commands to call")->excludes(command_file_option);
+    app.add_option("-b,--blocks", _maxActiveBlocks, "Sets the maximum active blocks");
     app.add_option("-m,--mapping", mapping, "Mapping from csv file to table");
     app.add_option("files,-f,--files", _files, "Csv files to process, can use expansion patterns like ~ or *");
 
@@ -291,7 +291,9 @@ private:
 
     OUT("");
 
-    CsvDB csvDB(database, _showHeaderLine, _verbose, _files);
+    CsvDB csvDB(database, _showHeaderLine, _files);
+    csvDB.setVerbosity(_verbose);
+    csvDB.setMaxActiveBlocks(_maxActiveBlocks);
 
     if (!_sql.empty()) {
       csvDB.executeSql(_sql);
@@ -323,11 +325,11 @@ private:
       });
       console.addCommand("database", [this](const csvsqldb::StringVector&) -> bool {
         std::cout << "database path: " << _databasePath << std::endl;
-        return false;
+        return true;
       });
       console.addCommand("version", [](const csvsqldb::StringVector&) -> bool {
         std::cout << version();
-        return false;
+        return true;
       });
       console.addCommand("verbose", [&csvDB](const csvsqldb::StringVector& params) -> bool {
         if (!params.empty()) {
@@ -336,10 +338,10 @@ private:
           } else {
             csvDB.setVerbosity(false);
           }
-        } else {
-          std::cout << "verbose " << (csvDB.getVerbosity() ? "on" : "off") << std::endl;
         }
-        return false;
+        std::cout << "verbose " << (csvDB.getVerbosity() ? "on" : "off") << std::endl;
+
+        return true;
       });
       console.addCommand("max", [&csvDB](const csvsqldb::StringVector& params) -> bool {
         if (params.empty() || params.size() < 2 || csvsqldb::tolower_copy(params[0]) != "active" ||
@@ -355,14 +357,14 @@ private:
           } else {
             csvDB.setMaxActiveBlocks(result);
           }
-        } else {
-          std::cout << "max active blocks " << csvDB.getMaxActiveBlocks() << std::endl;
         }
-        return false;
+        std::cout << "max active blocks " << csvDB.getMaxActiveBlocks() << std::endl;
+
+        return true;
       });
       console.addCommand("clear", [&console](const csvsqldb::StringVector&) -> bool {
         console.clearHistory();
-        return false;
+        return true;
       });
       console.addCommand("add", [&csvDB](const csvsqldb::StringVector& params) -> bool {
         if (!params.empty()) {
@@ -459,6 +461,7 @@ private:
   std::string _databasePath;
   std::string _commandFile;
   std::string _sql;
+  size_t _maxActiveBlocks{csvsqldb::sDefaultMaxActiveBlocks};
   csvsqldb::FileMapping _mapping;
   bool _showHeaderLine;
   bool _verbose;
