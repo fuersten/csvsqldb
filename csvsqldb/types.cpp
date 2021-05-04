@@ -40,10 +40,6 @@
 
 namespace csvsqldb
 {
-  CSVSQLDB_IMPLEMENT_EXCEPTION(SqlException, Exception);
-  CSVSQLDB_IMPLEMENT_EXCEPTION(SqlParserException, SqlException);
-
-
   std::string descriptionTypeToString(eDescriptionType type)
   {
     switch (type) {

@@ -52,6 +52,8 @@ namespace csvsqldb
    */
   namespace csv
   {
+    CSVSQLDB_DECLARE_EXCEPTION(CSVParserException, Exception);
+
     /**
      * Context for the parametration of a CSV parser
      */
@@ -140,6 +142,8 @@ namespace csvsqldb
       char readNextChar(bool ignoreDelimiter = false);
       bool checkBuffer();
       bool readBuffer();
+
+      bool skipLineError(const char* error);
 
       CSVParserContext _context;
       std::istream& _stream;

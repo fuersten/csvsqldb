@@ -41,9 +41,6 @@
 
 namespace csvsqldb
 {
-  CSVSQLDB_IMPLEMENT_EXCEPTION(StackMachineException, csvsqldb::Exception);
-
-
   const Variant& VariableStore::operator[](size_t index) const
   {
     return _variables[index];
