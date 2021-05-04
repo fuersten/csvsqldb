@@ -109,10 +109,9 @@ namespace csvsqldb
   private:
     void initializeBlockReader();
 
-    BlockReader _blockReader;
-    BlockIteratorPtr _iterator;
-
     std::unique_ptr<std::istream> _stream;
     csvsqldb::csv::CSVParserContext _csvContext;
+    BlockReader _blockReader;
+    BlockIteratorPtr _iterator;
   };
 }
