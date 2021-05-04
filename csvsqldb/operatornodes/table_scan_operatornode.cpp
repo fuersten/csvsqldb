@@ -51,6 +51,10 @@ namespace csvsqldb
     if (_readThread.joinable()) {
       _readThread.join();
     }
+    while (!_blocks.empty()) {
+      _blockManager.release(_blocks.front());
+      _blocks.pop();
+    }
   }
 
   void BlockReader::initialize(std::unique_ptr<csvsqldb::csv::CSVParser> csvparser)
@@ -65,7 +69,11 @@ namespace csvsqldb
     if (_blocks.empty() && !_block) {
       return nullptr;
     }
-    _cv.wait(lk, [this] { return !_blocks.empty(); });
+    _cv.wait(lk, [this] { return !_blocks.empty() || !_error.empty(); });
+
+    if (!_error.empty()) {
+      CSVSQLDB_THROW(csvsqldb::Exception, _error);
+    }
 
     BlockPtr block = nullptr;
     if (!_blocks.empty()) {
@@ -78,18 +86,23 @@ namespace csvsqldb
 
   void BlockReader::readBlocks()
   {
-    bool moreLines = _csvparser->parseLine();
-    _block->nextRow();
-
-    while (_continue && moreLines) {
-      moreLines = _csvparser->parseLine();
+    try {
+      bool moreLines = _csvparser->parseLine();
       _block->nextRow();
-    }
-    {
-      std::unique_lock lk(_queueMutex);
-      _block->endBlocks();
-      _blocks.push(_block);
-      _block = nullptr;
+
+      while (_continue && moreLines) {
+        moreLines = _csvparser->parseLine();
+        _block->nextRow();
+      }
+      {
+        std::unique_lock lk(_queueMutex);
+        _block->endBlocks();
+        _blocks.push(_block);
+        _block = nullptr;
+      }
+    } catch (csvsqldb::Exception& ex) {
+      _continue = false;
+      _error = ex.what();
     }
     _cv.notify_all();
   }
@@ -265,7 +278,7 @@ namespace csvsqldb
       CSVSQLDB_THROW(MappingException, "no file found for mapping '" << filePattern << "'");
     }
 
-    _stream = std::make_unique<std::fstream>(pathToCsvFile.string());
+    _stream = std::make_unique<std::fstream>(pathToCsvFile);
     if (!_stream || _stream->fail()) {
       CSVSQLDB_THROW(csvsqldb::FilesystemException,
                      "could not open file '" << pathToCsvFile << "' (" << csvsqldb::errnoText() << ")");

@@ -183,8 +183,9 @@ namespace csvsqldb
           const Values& rrow = *row;
           if (!_block->addValue(*(rrow[iter->second]))) {
             _block->markNextBlock();
+            auto tmpBlock = _context._blockManager.createBlock();
             previousBlock = _block;
-            _block = _context._blockManager.createBlock();
+            _block = tmpBlock;
             _block->addValue(*(rrow[iter->second]));
           }
         } else if (std::dynamic_pointer_cast<ASTQualifiedAsterisk>(exp)) {
@@ -207,8 +208,9 @@ namespace csvsqldb
             for (size_t n = 0; n < tableData.columnCount(); ++n) {
               if (!_block->addValue(*(rrow[n]))) {
                 _block->markNextBlock();
+                auto tmpBlock = _context._blockManager.createBlock();
                 previousBlock = _block;
-                _block = _context._blockManager.createBlock();
+                _block = tmpBlock;
                 _block->addValue(*(rrow[n]));
               }
             }
@@ -217,8 +219,9 @@ namespace csvsqldb
             for (size_t n = 0; n < _inputSymbols.size(); ++n) {
               if (!_block->addValue(*(rrow[n]))) {
                 _block->markNextBlock();
+                auto tmpBlock = _context._blockManager.createBlock();
                 previousBlock = _block;
-                _block = _context._blockManager.createBlock();
+                _block = tmpBlock;
                 _block->addValue(*(rrow[n]));
               }
             }
@@ -228,8 +231,9 @@ namespace csvsqldb
 
           if (!_block->addValue(_sms[smIndex]._sm.evaluate(_sms[smIndex]._store, _context._functions))) {
             _block->markNextBlock();
+            auto tmpBlock = _context._blockManager.createBlock();
             previousBlock = _block;
-            _block = _context._blockManager.createBlock();
+            _block = tmpBlock;
             _block->addValue(_sms[smIndex]._sm.evaluate(_sms[smIndex]._store, _context._functions));
           }
           ++smIndex;

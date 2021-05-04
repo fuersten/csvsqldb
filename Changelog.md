@@ -32,4 +32,7 @@
 ### Fixed
 
 * Comparissions with NULL values will work correctly now
+* Fixed race condition in table scan operator
+* Fixed race condition in block manager and other operators
+* Fixed exception handling concerning exceeding the maximum allowed number of blocks
 

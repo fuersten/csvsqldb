@@ -76,7 +76,7 @@ namespace csvsqldb
     explicit ExecutionEngine(ExecutionContext& execContext)
     : _execContext(execContext)
     , _parser(_functions)
-    , _blockManager(1000)
+    , _blockManager(sDefaultMaxActiveBlocks)
     {
       initBuildInFunctions(_functions);
     }

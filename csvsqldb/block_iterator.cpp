@@ -119,8 +119,9 @@ namespace csvsqldb
   {
     if (_block->isBlock(_offset)) {
       _blockManager.release(_previousBlock);
-      _previousBlock = _block;
+      auto tmpBlock = _block;
       _block = _blockProvider.getNextBlock();
+      _previousBlock = tmpBlock;
       if (!_block) {
         CSVSQLDB_THROW(csvsqldb::Exception, "next block is missing");
       }
