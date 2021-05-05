@@ -9,6 +9,7 @@
 * The project now uses github actions as CI
 * Tons of unit tests have been added and the coverage is about 90%
 * The number of maximum active blocks can now be configured interactively and by command line
+* The cast function can now also cast from real, bool, date, integer, date, time, timestamp to varchar
 
 ### Changed
 

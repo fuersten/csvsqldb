@@ -136,119 +136,119 @@ ws                [ \t\n\r]+
 
 
 %%
-{integer_const}   {csvsqldb::Token token{csvsqldb::TOK_CONST_INTEGER}; token._value = text(); return token;}
-{real_const}      {csvsqldb::Token token{csvsqldb::TOK_CONST_REAL}; token._value = text(); return token;}
-{boolean_const}   {csvsqldb::Token token{csvsqldb::TOK_CONST_BOOLEAN}; token._value = text(); return token;}
-{char_const}      {csvsqldb::Token token{csvsqldb::TOK_CONST_CHAR}; token.setString(text()); return token;}
-{string_const}    {csvsqldb::Token token{csvsqldb::TOK_CONST_STRING}; token.setString(text()); return token;}
-{plus}            {csvsqldb::Token token{csvsqldb::TOK_ADD}; return token;}
-{comment}         {csvsqldb::Token token{csvsqldb::TOK_COMMENT}; return token;}
-{sub}             {csvsqldb::Token token{csvsqldb::TOK_SUB}; return token;}
-{dot}             {csvsqldb::Token token{csvsqldb::TOK_DOT}; return token;}
-{equal}           {csvsqldb::Token token{csvsqldb::TOK_EQUAL}; return token;}
-{not_equal}       {csvsqldb::Token token{csvsqldb::TOK_NOTEQUAL}; return token;}
-{greater_equal}   {csvsqldb::Token token{csvsqldb::TOK_GREATEREQUAL}; return token;}
-{lesser_equal}    {csvsqldb::Token token{csvsqldb::TOK_SMALLEREQUAL}; return token;}
-{lesser}          {csvsqldb::Token token{csvsqldb::TOK_SMALLER}; return token;}
-{greater}         {csvsqldb::Token token{csvsqldb::TOK_GREATER}; return token;}
-{comma}           {csvsqldb::Token token{csvsqldb::TOK_COMMA}; return token;}
-{semicolon}       {csvsqldb::Token token{csvsqldb::TOK_SEMICOLON}; return token;}
-{asterisk}        {csvsqldb::Token token{csvsqldb::TOK_ASTERISK}; return token;}
-{left_paren}      {csvsqldb::Token token{csvsqldb::TOK_LEFT_PAREN}; return token;}
-{right_paren}     {csvsqldb::Token token{csvsqldb::TOK_RIGHT_PAREN}; return token;}
-{div}             {csvsqldb::Token token{csvsqldb::TOK_DIV}; return token;}
-{mod}             {csvsqldb::Token token{csvsqldb::TOK_MOD}; return token;}
-{concat}          {csvsqldb::Token token{csvsqldb::TOK_CONCAT}; return token;}
+{integer_const}   {csvsqldb::Token token{csvsqldb::TOK_CONST_INTEGER, {lineno(),columno()}}; token._value = text(); return token;}
+{real_const}      {csvsqldb::Token token{csvsqldb::TOK_CONST_REAL, {lineno(),columno()}}; token._value = text(); return token;}
+{boolean_const}   {csvsqldb::Token token{csvsqldb::TOK_CONST_BOOLEAN, {lineno(),columno()}}; token._value = text(); return token;}
+{char_const}      {csvsqldb::Token token{csvsqldb::TOK_CONST_CHAR, {lineno(),columno()}}; token.setString(text()); return token;}
+{string_const}    {csvsqldb::Token token{csvsqldb::TOK_CONST_STRING, {lineno(),columno()}}; token.setString(text()); return token;}
+{plus}            {csvsqldb::Token token{csvsqldb::TOK_ADD, {lineno(),columno()}}; return token;}
+{comment}         {csvsqldb::Token token{csvsqldb::TOK_COMMENT, {lineno(),columno()}}; return token;}
+{sub}             {csvsqldb::Token token{csvsqldb::TOK_SUB, {lineno(),columno()}}; return token;}
+{dot}             {csvsqldb::Token token{csvsqldb::TOK_DOT, {lineno(),columno()}}; return token;}
+{equal}           {csvsqldb::Token token{csvsqldb::TOK_EQUAL, {lineno(),columno()}}; return token;}
+{not_equal}       {csvsqldb::Token token{csvsqldb::TOK_NOTEQUAL, {lineno(),columno()}}; return token;}
+{greater_equal}   {csvsqldb::Token token{csvsqldb::TOK_GREATEREQUAL, {lineno(),columno()}}; return token;}
+{lesser_equal}    {csvsqldb::Token token{csvsqldb::TOK_SMALLEREQUAL, {lineno(),columno()}}; return token;}
+{lesser}          {csvsqldb::Token token{csvsqldb::TOK_SMALLER, {lineno(),columno()}}; return token;}
+{greater}         {csvsqldb::Token token{csvsqldb::TOK_GREATER, {lineno(),columno()}}; return token;}
+{comma}           {csvsqldb::Token token{csvsqldb::TOK_COMMA, {lineno(),columno()}}; return token;}
+{semicolon}       {csvsqldb::Token token{csvsqldb::TOK_SEMICOLON, {lineno(),columno()}}; return token;}
+{asterisk}        {csvsqldb::Token token{csvsqldb::TOK_ASTERISK, {lineno(),columno()}}; return token;}
+{left_paren}      {csvsqldb::Token token{csvsqldb::TOK_LEFT_PAREN, {lineno(),columno()}}; return token;}
+{right_paren}     {csvsqldb::Token token{csvsqldb::TOK_RIGHT_PAREN, {lineno(),columno()}}; return token;}
+{div}             {csvsqldb::Token token{csvsqldb::TOK_DIV, {lineno(),columno()}}; return token;}
+{mod}             {csvsqldb::Token token{csvsqldb::TOK_MOD, {lineno(),columno()}}; return token;}
+{concat}          {csvsqldb::Token token{csvsqldb::TOK_CONCAT, {lineno(),columno()}}; return token;}
 
 
-{union}           {csvsqldb::Token token{csvsqldb::TOK_UNION}; return token;}
-{select}          {csvsqldb::Token token{csvsqldb::TOK_SELECT}; return token;}
-{from}            {csvsqldb::Token token{csvsqldb::TOK_FROM}; return token;}
-{where}           {csvsqldb::Token token{csvsqldb::TOK_WHERE}; return token;}
-{using}           {csvsqldb::Token token{csvsqldb::TOK_USING}; return token;}
-{intersect}       {csvsqldb::Token token{csvsqldb::TOK_INTERSECT}; return token;}
-{except}          {csvsqldb::Token token{csvsqldb::TOK_EXCEPT}; return token;}
-{as}              {csvsqldb::Token token{csvsqldb::TOK_AS}; return token;}
-{all}             {csvsqldb::Token token{csvsqldb::TOK_ALL}; return token;}
-{cast}            {csvsqldb::Token token{csvsqldb::TOK_CAST}; return token;}
-{distinct}        {csvsqldb::Token token{csvsqldb::TOK_DISTINCT}; return token;}
-{on}              {csvsqldb::Token token{csvsqldb::TOK_ON}; return token;}
-{natural}         {csvsqldb::Token token{csvsqldb::TOK_NATURAL}; return token;}
-{left}            {csvsqldb::Token token{csvsqldb::TOK_LEFT}; return token;}
-{right}           {csvsqldb::Token token{csvsqldb::TOK_RIGHT}; return token;}
-{inner}           {csvsqldb::Token token{csvsqldb::TOK_INNER}; return token;}
-{outer}           {csvsqldb::Token token{csvsqldb::TOK_OUTER}; return token;}
-{cross}           {csvsqldb::Token token{csvsqldb::TOK_CROSS}; return token;}
-{full}            {csvsqldb::Token token{csvsqldb::TOK_FULL}; return token;}
-{join}            {csvsqldb::Token token{csvsqldb::TOK_JOIN}; return token;}
-{like}            {csvsqldb::Token token{csvsqldb::TOK_LIKE}; return token;}
-{and}             {csvsqldb::Token token{csvsqldb::TOK_AND}; return token;}
-{or}              {csvsqldb::Token token{csvsqldb::TOK_OR}; return token;}
-{not}             {csvsqldb::Token token{csvsqldb::TOK_NOT}; return token;}
-{is}              {csvsqldb::Token token{csvsqldb::TOK_IS}; return token;}
-{null}            {csvsqldb::Token token{csvsqldb::TOK_NULL}; return token;}
-{between}         {csvsqldb::Token token{csvsqldb::TOK_BETWEEN}; return token;}
-{in}              {csvsqldb::Token token{csvsqldb::TOK_IN}; return token;}
-{exists}          {csvsqldb::Token token{csvsqldb::TOK_EXISTS}; return token;}
-{group}           {csvsqldb::Token token{csvsqldb::TOK_GROUP}; return token;}
-{order}           {csvsqldb::Token token{csvsqldb::TOK_ORDER}; return token;}
-{by}              {csvsqldb::Token token{csvsqldb::TOK_BY}; return token;}
-{collate}         {csvsqldb::Token token{csvsqldb::TOK_COLLATE}; return token;}
-{asc}             {csvsqldb::Token token{csvsqldb::TOK_ASC}; return token;}
-{desc}            {csvsqldb::Token token{csvsqldb::TOK_DESC}; return token;}
-{having}          {csvsqldb::Token token{csvsqldb::TOK_HAVING}; return token;}
-{limit}           {csvsqldb::Token token{csvsqldb::TOK_LIMIT}; return token;}
-{offset}          {csvsqldb::Token token{csvsqldb::TOK_OFFSET}; return token;}
-{create}          {csvsqldb::Token token{csvsqldb::TOK_CREATE}; return token;}
-{table}           {csvsqldb::Token token{csvsqldb::TOK_TABLE}; return token;}
-{if}              {csvsqldb::Token token{csvsqldb::TOK_IF}; return token;}
-{boolean}         {csvsqldb::Token token{csvsqldb::TOK_BOOL}; return token;}
-{bool}            {csvsqldb::Token token{csvsqldb::TOK_BOOL}; return token;}
-{int}             {csvsqldb::Token token{csvsqldb::TOK_INT}; return token;}
-{integer}         {csvsqldb::Token token{csvsqldb::TOK_INT}; return token;}
-{real}            {csvsqldb::Token token{csvsqldb::TOK_REAL}; return token;}
-{float}           {csvsqldb::Token token{csvsqldb::TOK_REAL}; return token;}
-{double}          {csvsqldb::Token token{csvsqldb::TOK_REAL}; return token;}
-{varchar}         {csvsqldb::Token token{csvsqldb::TOK_STRING}; return token;}
-{char}            {csvsqldb::Token token{csvsqldb::TOK_CHAR}; return token;}
-{character}       {csvsqldb::Token token{csvsqldb::TOK_CHAR}; return token;}
-{date}            {csvsqldb::Token token{csvsqldb::TOK_DATE}; return token;}
-{time}            {csvsqldb::Token token{csvsqldb::TOK_TIME}; return token;}
-{timestamp}       {csvsqldb::Token token{csvsqldb::TOK_TIMESTAMP}; return token;}
-{constraint}      {csvsqldb::Token token{csvsqldb::TOK_CONSTRAINT}; return token;}
-{primary}         {csvsqldb::Token token{csvsqldb::TOK_PRIMARY}; return token;}
-{key}             {csvsqldb::Token token{csvsqldb::TOK_KEY}; return token;}
-{unique}          {csvsqldb::Token token{csvsqldb::TOK_UNIQUE}; return token;}
-{default}         {csvsqldb::Token token{csvsqldb::TOK_DEFAULT}; return token;}
-{check}           {csvsqldb::Token token{csvsqldb::TOK_CHECK}; return token;}
-{alter}           {csvsqldb::Token token{csvsqldb::TOK_ALTER}; return token;}
-{column}          {csvsqldb::Token token{csvsqldb::TOK_COLUMN}; return token;}
-{drop}            {csvsqldb::Token token{csvsqldb::TOK_DROP}; return token;}
-{add}             {csvsqldb::Token token{csvsqldb::TOK_ADD_KEYWORD}; return token;}
-{sum}             {csvsqldb::Token token{csvsqldb::TOK_SUM}; return token;}
-{count}           {csvsqldb::Token token{csvsqldb::TOK_COUNT}; return token;}
-{avg}             {csvsqldb::Token token{csvsqldb::TOK_AVG}; return token;}
-{max}             {csvsqldb::Token token{csvsqldb::TOK_MAX}; return token;}
-{min}             {csvsqldb::Token token{csvsqldb::TOK_MIN}; return token;}
-{current_date}    {csvsqldb::Token token{csvsqldb::TOK_CURRENT_DATE}; return token;}
-{current_time}    {csvsqldb::Token token{csvsqldb::TOK_CURRENT_TIME}; return token;}
-{current_timestamp} {csvsqldb::Token token{csvsqldb::TOK_CURRENT_TIMESTAMP}; return token;}
-{varying}         {csvsqldb::Token token{csvsqldb::TOK_VARYING}; return token;}
-{describe}        {csvsqldb::Token token{csvsqldb::TOK_DESCRIBE}; return token;}
-{ast}             {csvsqldb::Token token{csvsqldb::TOK_AST}; return token;}
-{extract}         {csvsqldb::Token token{csvsqldb::TOK_EXTRACT}; return token;}
-{second}          {csvsqldb::Token token{csvsqldb::TOK_SECOND}; return token;}
-{minute}          {csvsqldb::Token token{csvsqldb::TOK_MINUTE}; return token;}
-{hour}            {csvsqldb::Token token{csvsqldb::TOK_HOUR}; return token;}
-{year}            {csvsqldb::Token token{csvsqldb::TOK_YEAR}; return token;}
-{month}           {csvsqldb::Token token{csvsqldb::TOK_MONTH}; return token;}
-{day}             {csvsqldb::Token token{csvsqldb::TOK_DAY}; return token;}
-{explain}         {csvsqldb::Token token{csvsqldb::TOK_EXPLAIN}; return token;}
-{show}            {csvsqldb::Token token{csvsqldb::TOK_SHOW}; return token;}
-{mapping}         {csvsqldb::Token token{csvsqldb::TOK_MAPPING}; return token;}
-{exec}            {csvsqldb::Token token{csvsqldb::TOK_EXEC}; return token;}
-{arbitrary}       {csvsqldb::Token token{csvsqldb::TOK_ARBITRARY}; return token;}
-{identifier}      {csvsqldb::Token token{csvsqldb::TOK_IDENTIFIER}; token.setIdentifier(text()); return token;}
-{quoted_identifer} {csvsqldb::Token token{csvsqldb::TOK_QUOTED_IDENTIFIER}; token.setQuotedIdentifier(text()); return token;}
+{union}           {csvsqldb::Token token{csvsqldb::TOK_UNION, {lineno(),columno()}}; return token;}
+{select}          {csvsqldb::Token token{csvsqldb::TOK_SELECT, {lineno(),columno()}}; return token;}
+{from}            {csvsqldb::Token token{csvsqldb::TOK_FROM, {lineno(),columno()}}; return token;}
+{where}           {csvsqldb::Token token{csvsqldb::TOK_WHERE, {lineno(),columno()}}; return token;}
+{using}           {csvsqldb::Token token{csvsqldb::TOK_USING, {lineno(),columno()}}; return token;}
+{intersect}       {csvsqldb::Token token{csvsqldb::TOK_INTERSECT, {lineno(),columno()}}; return token;}
+{except}          {csvsqldb::Token token{csvsqldb::TOK_EXCEPT, {lineno(),columno()}}; return token;}
+{as}              {csvsqldb::Token token{csvsqldb::TOK_AS, {lineno(),columno()}}; return token;}
+{all}             {csvsqldb::Token token{csvsqldb::TOK_ALL, {lineno(),columno()}}; return token;}
+{cast}            {csvsqldb::Token token{csvsqldb::TOK_CAST, {lineno(),columno()}}; return token;}
+{distinct}        {csvsqldb::Token token{csvsqldb::TOK_DISTINCT, {lineno(),columno()}}; return token;}
+{on}              {csvsqldb::Token token{csvsqldb::TOK_ON, {lineno(),columno()}}; return token;}
+{natural}         {csvsqldb::Token token{csvsqldb::TOK_NATURAL, {lineno(),columno()}}; return token;}
+{left}            {csvsqldb::Token token{csvsqldb::TOK_LEFT, {lineno(),columno()}}; return token;}
+{right}           {csvsqldb::Token token{csvsqldb::TOK_RIGHT, {lineno(),columno()}}; return token;}
+{inner}           {csvsqldb::Token token{csvsqldb::TOK_INNER, {lineno(),columno()}}; return token;}
+{outer}           {csvsqldb::Token token{csvsqldb::TOK_OUTER, {lineno(),columno()}}; return token;}
+{cross}           {csvsqldb::Token token{csvsqldb::TOK_CROSS, {lineno(),columno()}}; return token;}
+{full}            {csvsqldb::Token token{csvsqldb::TOK_FULL, {lineno(),columno()}}; return token;}
+{join}            {csvsqldb::Token token{csvsqldb::TOK_JOIN, {lineno(),columno()}}; return token;}
+{like}            {csvsqldb::Token token{csvsqldb::TOK_LIKE, {lineno(),columno()}}; return token;}
+{and}             {csvsqldb::Token token{csvsqldb::TOK_AND, {lineno(),columno()}}; return token;}
+{or}              {csvsqldb::Token token{csvsqldb::TOK_OR, {lineno(),columno()}}; return token;}
+{not}             {csvsqldb::Token token{csvsqldb::TOK_NOT, {lineno(),columno()}}; return token;}
+{is}              {csvsqldb::Token token{csvsqldb::TOK_IS, {lineno(),columno()}}; return token;}
+{null}            {csvsqldb::Token token{csvsqldb::TOK_NULL, {lineno(),columno()}}; return token;}
+{between}         {csvsqldb::Token token{csvsqldb::TOK_BETWEEN, {lineno(),columno()}}; return token;}
+{in}              {csvsqldb::Token token{csvsqldb::TOK_IN, {lineno(),columno()}}; return token;}
+{exists}          {csvsqldb::Token token{csvsqldb::TOK_EXISTS, {lineno(),columno()}}; return token;}
+{group}           {csvsqldb::Token token{csvsqldb::TOK_GROUP, {lineno(),columno()}}; return token;}
+{order}           {csvsqldb::Token token{csvsqldb::TOK_ORDER, {lineno(),columno()}}; return token;}
+{by}              {csvsqldb::Token token{csvsqldb::TOK_BY, {lineno(),columno()}}; return token;}
+{collate}         {csvsqldb::Token token{csvsqldb::TOK_COLLATE, {lineno(),columno()}}; return token;}
+{asc}             {csvsqldb::Token token{csvsqldb::TOK_ASC, {lineno(),columno()}}; return token;}
+{desc}            {csvsqldb::Token token{csvsqldb::TOK_DESC, {lineno(),columno()}}; return token;}
+{having}          {csvsqldb::Token token{csvsqldb::TOK_HAVING, {lineno(),columno()}}; return token;}
+{limit}           {csvsqldb::Token token{csvsqldb::TOK_LIMIT, {lineno(),columno()}}; return token;}
+{offset}          {csvsqldb::Token token{csvsqldb::TOK_OFFSET, {lineno(),columno()}}; return token;}
+{create}          {csvsqldb::Token token{csvsqldb::TOK_CREATE, {lineno(),columno()}}; return token;}
+{table}           {csvsqldb::Token token{csvsqldb::TOK_TABLE, {lineno(),columno()}}; return token;}
+{if}              {csvsqldb::Token token{csvsqldb::TOK_IF, {lineno(),columno()}}; return token;}
+{boolean}         {csvsqldb::Token token{csvsqldb::TOK_BOOL, {lineno(),columno()}}; return token;}
+{bool}            {csvsqldb::Token token{csvsqldb::TOK_BOOL, {lineno(),columno()}}; return token;}
+{int}             {csvsqldb::Token token{csvsqldb::TOK_INT, {lineno(),columno()}}; return token;}
+{integer}         {csvsqldb::Token token{csvsqldb::TOK_INT, {lineno(),columno()}}; return token;}
+{real}            {csvsqldb::Token token{csvsqldb::TOK_REAL, {lineno(),columno()}}; return token;}
+{float}           {csvsqldb::Token token{csvsqldb::TOK_REAL, {lineno(),columno()}}; return token;}
+{double}          {csvsqldb::Token token{csvsqldb::TOK_REAL, {lineno(),columno()}}; return token;}
+{varchar}         {csvsqldb::Token token{csvsqldb::TOK_STRING, {lineno(),columno()}}; return token;}
+{char}            {csvsqldb::Token token{csvsqldb::TOK_CHAR, {lineno(),columno()}}; return token;}
+{character}       {csvsqldb::Token token{csvsqldb::TOK_CHAR, {lineno(),columno()}}; return token;}
+{date}            {csvsqldb::Token token{csvsqldb::TOK_DATE, {lineno(),columno()}}; return token;}
+{time}            {csvsqldb::Token token{csvsqldb::TOK_TIME, {lineno(),columno()}}; return token;}
+{timestamp}       {csvsqldb::Token token{csvsqldb::TOK_TIMESTAMP, {lineno(),columno()}}; return token;}
+{constraint}      {csvsqldb::Token token{csvsqldb::TOK_CONSTRAINT, {lineno(),columno()}}; return token;}
+{primary}         {csvsqldb::Token token{csvsqldb::TOK_PRIMARY, {lineno(),columno()}}; return token;}
+{key}             {csvsqldb::Token token{csvsqldb::TOK_KEY, {lineno(),columno()}}; return token;}
+{unique}          {csvsqldb::Token token{csvsqldb::TOK_UNIQUE, {lineno(),columno()}}; return token;}
+{default}         {csvsqldb::Token token{csvsqldb::TOK_DEFAULT, {lineno(),columno()}}; return token;}
+{check}           {csvsqldb::Token token{csvsqldb::TOK_CHECK, {lineno(),columno()}}; return token;}
+{alter}           {csvsqldb::Token token{csvsqldb::TOK_ALTER, {lineno(),columno()}}; return token;}
+{column}          {csvsqldb::Token token{csvsqldb::TOK_COLUMN, {lineno(),columno()}}; return token;}
+{drop}            {csvsqldb::Token token{csvsqldb::TOK_DROP, {lineno(),columno()}}; return token;}
+{add}             {csvsqldb::Token token{csvsqldb::TOK_ADD_KEYWORD, {lineno(),columno()}}; return token;}
+{sum}             {csvsqldb::Token token{csvsqldb::TOK_SUM, {lineno(),columno()}}; return token;}
+{count}           {csvsqldb::Token token{csvsqldb::TOK_COUNT, {lineno(),columno()}}; return token;}
+{avg}             {csvsqldb::Token token{csvsqldb::TOK_AVG, {lineno(),columno()}}; return token;}
+{max}             {csvsqldb::Token token{csvsqldb::TOK_MAX, {lineno(),columno()}}; return token;}
+{min}             {csvsqldb::Token token{csvsqldb::TOK_MIN, {lineno(),columno()}}; return token;}
+{current_date}    {csvsqldb::Token token{csvsqldb::TOK_CURRENT_DATE, {lineno(),columno()}}; return token;}
+{current_time}    {csvsqldb::Token token{csvsqldb::TOK_CURRENT_TIME, {lineno(),columno()}}; return token;}
+{current_timestamp} {csvsqldb::Token token{csvsqldb::TOK_CURRENT_TIMESTAMP, {lineno(),columno()}}; return token;}
+{varying}         {csvsqldb::Token token{csvsqldb::TOK_VARYING, {lineno(),columno()}}; return token;}
+{describe}        {csvsqldb::Token token{csvsqldb::TOK_DESCRIBE, {lineno(),columno()}}; return token;}
+{ast}             {csvsqldb::Token token{csvsqldb::TOK_AST, {lineno(),columno()}}; return token;}
+{extract}         {csvsqldb::Token token{csvsqldb::TOK_EXTRACT, {lineno(),columno()}}; return token;}
+{second}          {csvsqldb::Token token{csvsqldb::TOK_SECOND, {lineno(),columno()}}; return token;}
+{minute}          {csvsqldb::Token token{csvsqldb::TOK_MINUTE, {lineno(),columno()}}; return token;}
+{hour}            {csvsqldb::Token token{csvsqldb::TOK_HOUR, {lineno(),columno()}}; return token;}
+{year}            {csvsqldb::Token token{csvsqldb::TOK_YEAR, {lineno(),columno()}}; return token;}
+{month}           {csvsqldb::Token token{csvsqldb::TOK_MONTH, {lineno(),columno()}}; return token;}
+{day}             {csvsqldb::Token token{csvsqldb::TOK_DAY, {lineno(),columno()}}; return token;}
+{explain}         {csvsqldb::Token token{csvsqldb::TOK_EXPLAIN, {lineno(),columno()}}; return token;}
+{show}            {csvsqldb::Token token{csvsqldb::TOK_SHOW, {lineno(),columno()}}; return token;}
+{mapping}         {csvsqldb::Token token{csvsqldb::TOK_MAPPING, {lineno(),columno()}}; return token;}
+{exec}            {csvsqldb::Token token{csvsqldb::TOK_EXEC, {lineno(),columno()}}; return token;}
+{arbitrary}       {csvsqldb::Token token{csvsqldb::TOK_ARBITRARY, {lineno(),columno()}}; return token;}
+{identifier}      {csvsqldb::Token token{csvsqldb::TOK_IDENTIFIER, {lineno(),columno()}}; token.setIdentifier(text()); return token;}
+{quoted_identifer} {csvsqldb::Token token{csvsqldb::TOK_QUOTED_IDENTIFIER, {lineno(),columno()}}; token.setQuotedIdentifier(text()); return token;}
 {ws}              {continue;}
 %%

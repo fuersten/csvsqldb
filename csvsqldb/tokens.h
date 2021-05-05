@@ -156,9 +156,21 @@ namespace csvsqldb
 
   CSVSQLDB_EXPORT std::string tokenToString(eToken token);
 
+
+  struct Location {
+    size_t _line{0};
+    size_t _column{0};
+  };
+
   struct CSVSQLDB_EXPORT Token {
     Token(int n)
     : _token(static_cast<eToken>(n))
+    {
+    }
+
+    Token(eToken token, Location location)
+    : _token{token}
+    , _location{std::move(location)}
     {
     }
 
@@ -170,8 +182,7 @@ namespace csvsqldb
 
     eToken _token{TOK_NONE};
     std::string _value;
-    uint32_t _lineCount{0};
-    uint16_t _charCount{0};
+    Location _location;
   };
 
 }

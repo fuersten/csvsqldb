@@ -274,6 +274,7 @@ namespace csvsqldb
 
     void visit(ASTNaturalJoinNode&) override
     {
+      CSVSQLDB_THROW(csvsqldb::Exception, "natural join not supported yet");
     }
 
     void visit(ASTInnerJoinNode& node) override
@@ -300,14 +301,17 @@ namespace csvsqldb
 
     void visit(ASTLeftJoinNode&) override
     {
+      CSVSQLDB_THROW(csvsqldb::Exception, "left join not supported yet");
     }
 
     void visit(ASTRightJoinNode&) override
     {
+      CSVSQLDB_THROW(csvsqldb::Exception, "right join not supported yet");
     }
 
     void visit(ASTFullJoinNode&) override
     {
+      CSVSQLDB_THROW(csvsqldb::Exception, "full join not supported yet");
     }
 
     void visit(ASTWhereNode& node) override
@@ -323,6 +327,7 @@ namespace csvsqldb
 
     void visit(ASTHavingNode&) override
     {
+      CSVSQLDB_THROW(csvsqldb::Exception, "having not supported yet");
     }
 
     void visit(ASTOrderByNode& node) override
