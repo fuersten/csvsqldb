@@ -59,8 +59,17 @@ namespace csvsqldb
   {
     _currentBlock = _context._blockManager.createBlock();
 
-    _currentBlock->addValue(Variant(false));
-    _currentBlock->nextRow();
+    if (_tableInfo._identifier == "SYSTEM_DUAL") {
+      _currentBlock->addValue(Variant(false));
+      _currentBlock->nextRow();
+    } else if (_tableInfo._identifier == "SYSTEM_TABLES") {
+      const auto& systemTables{_context._database.getSystemTables()};
+      for (const auto& table : _context._database.getTables()) {
+        _currentBlock->addValue(Variant(table.name()));
+        _currentBlock->addValue(Variant(systemTables.isSystemTable(table.name())));
+        _currentBlock->nextRow();
+      }
+    }
     _currentBlock->endBlocks();
 
     return _currentBlock;
