@@ -246,7 +246,7 @@ namespace csvsqldb
     void visit(ASTTableIdentifierNode& node) override
     {
       RowOperatorNodePtr scan;
-      if (node._factor->getQualifiedIdentifier().substr(0, 7) == "SYSTEM_") {
+      if (_context._database.getSystemTables().isSystemTable(node._factor->getQualifiedIdentifier())) {
         scan = std::make_shared<SystemTableScanOperatorNode>(_context, node.symbolTable(), *node._factor->_info);
       } else {
         scan = OperatorFactory::createScanOperatorNode(_context, node.symbolTable(), *node._factor->_info);

@@ -45,6 +45,7 @@ add_executable(csvsqldbtest
     stringutil_test.cpp
     subquery_test.cpp
     symboltable_test.cpp
+    system_table_test.cpp
     table_executions_test.cpp
     tabledata_test.cpp
     threadpool_test.cpp

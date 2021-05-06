@@ -46,9 +46,14 @@ namespace csvsqldb
     doSetUp();
   }
 
-  TableData SystemTable::getTable() const
+  TableData SystemTable::getTableData() const
   {
     return _tableData;
+  }
+
+  const std::string& SystemTable::getName() const
+  {
+    return _tableData.name();
   }
 
 
@@ -97,5 +102,12 @@ namespace csvsqldb
   std::vector<SystemTablePtr> SystemTables::getSystemTables() const
   {
     return _systemTables;
+  }
+
+  bool SystemTables::isSystemTable(const std::string& name) const
+  {
+    auto result =
+      std::find_if(_systemTables.begin(), _systemTables.end(), [&name](const auto& table) { return name == table->getName(); });
+    return result != _systemTables.end();
   }
 }

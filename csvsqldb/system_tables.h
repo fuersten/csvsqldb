@@ -58,7 +58,8 @@ namespace csvsqldb
 
     void setUp();
 
-    TableData getTable() const;
+    TableData getTableData() const;
+    const std::string& getName() const;
 
   private:
     virtual void doSetUp() = 0;
@@ -93,7 +94,14 @@ namespace csvsqldb
   public:
     SystemTables();
 
+    SystemTables(const SystemTables&) = delete;
+    SystemTables(SystemTables&&) = delete;
+    SystemTables& operator=(const SystemTables&) = delete;
+    SystemTables& operator=(SystemTables&&) = delete;
+
     std::vector<SystemTablePtr> getSystemTables() const;
+
+    bool isSystemTable(const std::string& name) const;
 
   private:
     void addSystemTables();

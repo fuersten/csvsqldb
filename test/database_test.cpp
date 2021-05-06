@@ -62,35 +62,10 @@ TEST_CASE("Database Test", "[database]")
     REQUIRE(database.hasTable("SYSTEM_DUAL"));
     auto systemDualTable = database.getTable("SYSTEM_DUAL");
     CHECK("SYSTEM_DUAL" == systemDualTable.name());
-    auto column = systemDualTable.getColumn("x");
-    CHECK(column._type == csvsqldb::BOOLEAN);
-    CHECK_FALSE(column._primaryKey);
-    CHECK_FALSE(column._unique);
-    CHECK_FALSE(column._notNull);
-    CHECK_FALSE(column._defaultValue.has_value());
-    CHECK_FALSE(column._check);
-    CHECK(0 == column._length);
 
     REQUIRE(database.hasTable("SYSTEM_TABLES"));
     auto systemMetaTable = database.getTable("SYSTEM_TABLES");
     CHECK("SYSTEM_TABLES" == systemMetaTable.name());
-    column = systemMetaTable.getColumn("NAME");
-    CHECK(column._type == csvsqldb::STRING);
-    CHECK(column._primaryKey);
-    CHECK(column._unique);
-    CHECK(column._notNull);
-    CHECK_FALSE(column._defaultValue.has_value());
-    CHECK_FALSE(column._check);
-    CHECK(0 == column._length);
-
-    column = systemMetaTable.getColumn("SYSTEM");
-    CHECK(column._type == csvsqldb::BOOLEAN);
-    CHECK_FALSE(column._primaryKey);
-    CHECK_FALSE(column._unique);
-    CHECK(column._notNull);
-    CHECK_FALSE(column._defaultValue.has_value());
-    CHECK_FALSE(column._check);
-    CHECK(0 == column._length);
   }
   SECTION("construction no path")
   {
