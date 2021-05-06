@@ -15,6 +15,7 @@ set(LIB_CSVSQLDB_SOURCES
     sql_parser.cpp
     stack_machine.cpp
     symboltable.cpp
+    system_tables.cpp
     table_executions.cpp
     tabledata.cpp
     tokens.cpp
@@ -72,6 +73,7 @@ set(LIB_CSVSQLDB_SOURCES
     sql_parser.h
     stack_machine.h
     symboltable.h
+    system_tables.h
     table_executions.h
     tabledata.h
     tokens.h

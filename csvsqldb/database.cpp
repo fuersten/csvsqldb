@@ -36,6 +36,7 @@
 #include "base/exception.h"
 #include "base/string_helper.h"
 #include "sql_parser.h"
+#include "system_tables.h"
 
 #include <algorithm>
 #include <fstream>
@@ -75,9 +76,10 @@ namespace csvsqldb
 
   void Database::addSystemTables()
   {
-    TableData tabledata("SYSTEM_DUAL");
-    tabledata.addColumn("x", BOOLEAN, false, false, false, std::any(), ASTExprNodePtr(), 0);
-    addTable(std::move(tabledata), false);
+    SystemTables systemTables;
+    for (const auto& table : systemTables.getSystemTables()) {
+      addTable(table->getTable(), false);
+    }
   }
 
   void Database::readTablesFromPath()

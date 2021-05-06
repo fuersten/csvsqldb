@@ -1,6 +1,6 @@
 //
-//  sql_lexer.cpp
-//  csv db
+//  system_tables.cpp
+//  csvsqldb
 //
 //  BSD 3-Clause License
 //  Copyright (c) 2015-2020 Lars-Christian Fürstenberg
@@ -31,66 +31,52 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-
-#include "sql_lexer.h"
-
-#include "base/logging.h"
-#include "types.h"
-
-// clang-format off
-#include "base/pragma_push.h"
-#include "base/pragma_conversion.h"
-#include "base/pragma_sign.h"
-#include "lex.yy.h"
-#include "base/pragma_pop.h"
-// clang-format on
+#include "system_tables.h"
 
 
 namespace csvsqldb
 {
-  class SQLLexer::Impl
-  {
-  public:
-    Impl() = default;
-
-    void setInput(std::string_view input)
-    {
-      _stream.clear();
-      _stream << input;
-      _lexer.reset(new Lexer{_stream});
-    }
-
-    csvsqldb::Token next()
-    {
-      return _lexer->lex();
-    }
-
-  private:
-    std::stringstream _stream;
-    std::unique_ptr<Lexer> _lexer;
-  };
-
-  SQLLexer::SQLLexer()
-  : _impl{new Impl}
+  SystemTable::SystemTable(std::string name)
+  : _tableData{std::move(name)}
   {
   }
 
-  SQLLexer::~SQLLexer()
+  void SystemTable::setUp()
+  {
+    doSetUp();
+  }
+
+  TableData SystemTable::getTable() const
+  {
+    return _tableData;
+  }
+
+
+  SystemDualTable::SystemDualTable()
+  : SystemTable("SYSTEM_DUAL")
   {
   }
 
-  void SQLLexer::setInput(std::string_view input)
+  void SystemDualTable::doSetUp()
   {
-    _impl->setInput(input);
+    _tableData.addColumn("x", BOOLEAN, false, false, false, std::any(), ASTExprNodePtr(), 0);
   }
 
-  csvsqldb::Token SQLLexer::next()
-  {
-    csvsqldb::Token tok = _impl->next();
-    while (tok._token == TOK_COMMENT) {
-      tok = _impl->next();
-    }
 
-    return tok;
+  SystemTables::SystemTables()
+  {
+    addSystemTables();
+  }
+
+  void SystemTables::addSystemTables()
+  {
+    auto systemDual{std::make_shared<SystemDualTable>()};
+    systemDual->setUp();
+    _systemTables.emplace_back(std::move(systemDual));
+  }
+
+  std::vector<SystemTablePtr> SystemTables::getSystemTables() const
+  {
+    return _systemTables;
   }
 }

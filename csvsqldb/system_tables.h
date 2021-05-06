@@ -1,6 +1,6 @@
 //
-//  sql_lexer.cpp
-//  csv db
+//  system_tables.h
+//  csvsqldb
 //
 //  BSD 3-Clause License
 //  Copyright (c) 2015-2020 Lars-Christian Fürstenberg
@@ -31,66 +31,62 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
+#pragma once
 
-#include "sql_lexer.h"
+#include <csvsqldb/inc.h>
 
-#include "base/logging.h"
-#include "types.h"
+#include <csvsqldb/tabledata.h>
 
-// clang-format off
-#include "base/pragma_push.h"
-#include "base/pragma_conversion.h"
-#include "base/pragma_sign.h"
-#include "lex.yy.h"
-#include "base/pragma_pop.h"
-// clang-format on
+#include <memory>
 
 
 namespace csvsqldb
 {
-  class SQLLexer::Impl
+  class SystemTable;
+  using SystemTablePtr = std::shared_ptr<const SystemTable>;
+
+  class CSVSQLDB_EXPORT SystemTable
   {
   public:
-    Impl() = default;
+    explicit SystemTable(std::string name);
 
-    void setInput(std::string_view input)
-    {
-      _stream.clear();
-      _stream << input;
-      _lexer.reset(new Lexer{_stream});
-    }
+    SystemTable(const SystemTable&) = delete;
+    SystemTable(SystemTable&&) = delete;
+    SystemTable& operator=(const SystemTable&) = delete;
+    SystemTable& operator=(SystemTable&&) = delete;
+    virtual ~SystemTable() = default;
 
-    csvsqldb::Token next()
-    {
-      return _lexer->lex();
-    }
+    void setUp();
+
+    TableData getTable() const;
 
   private:
-    std::stringstream _stream;
-    std::unique_ptr<Lexer> _lexer;
+    virtual void doSetUp() = 0;
+
+  protected:
+    TableData _tableData;
   };
 
-  SQLLexer::SQLLexer()
-  : _impl{new Impl}
+  class CSVSQLDB_EXPORT SystemDualTable : public SystemTable
   {
-  }
+  public:
+    SystemDualTable();
 
-  SQLLexer::~SQLLexer()
+  private:
+    void doSetUp() override;
+  };
+
+
+  class CSVSQLDB_EXPORT SystemTables
   {
-  }
+  public:
+    SystemTables();
 
-  void SQLLexer::setInput(std::string_view input)
-  {
-    _impl->setInput(input);
-  }
+    std::vector<SystemTablePtr> getSystemTables() const;
 
-  csvsqldb::Token SQLLexer::next()
-  {
-    csvsqldb::Token tok = _impl->next();
-    while (tok._token == TOK_COMMENT) {
-      tok = _impl->next();
-    }
+  private:
+    void addSystemTables();
 
-    return tok;
-  }
+    std::vector<SystemTablePtr> _systemTables;
+  };
 }

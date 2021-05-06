@@ -815,6 +815,19 @@ TEST_CASE("SQL Parser Test", "[sql parser]")
   }
 }
 
+TEST_CASE("SQL Parser Fail Test", "[sql parser]")
+{
+  csvsqldb::ASTNodeSQLPrintVisitor visitor;
+  csvsqldb::FunctionRegistry functions;
+  csvsqldb::initBuildInFunctions(functions);
+  csvsqldb::SQLParser parser(functions);
+
+  SECTION("select with identifer after tablename")
+  {
+    CHECK_THROWS_AS(parser.parse("select count(*) from salaries from"), csvsqldb::SqlParserException);
+  }
+}
+
 TEST_CASE("SQL AST Test", "[sql parser]")
 {
   SECTION("identifiers")
