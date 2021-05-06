@@ -4,6 +4,7 @@ set(LIB_CSVSQLDB_SOURCES
     block.cpp
     block_iterator.cpp
     buildin_functions.cpp
+    data_provider.cpp
     database.cpp
     execution_engine.cpp
     execution_plan.cpp
@@ -58,6 +59,7 @@ set(LIB_CSVSQLDB_SOURCES
     block.h
     block_iterator.h
     buildin_functions.h
+    data_provider.h
     database.h
     execution_engine.h
     execution_plan.h

@@ -1,5 +1,5 @@
 //
-//  systemtable_scan_operatornode.h
+//  symboltable.cpp
 //  csvsqldb
 //
 //  BSD 3-Clause License
@@ -31,27 +31,42 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-#pragma once
-
-#include <csvsqldb/inc.h>
-
-#include <csvsqldb/block_iterator.h>
-#include <csvsqldb/operatornodes/scan_operatornode.h>
+#include "data_provider.h"
 
 
 namespace csvsqldb
 {
-  class CSVSQLDB_EXPORT SystemTableScanOperatorNode : public ScanOperatorNode
+  SystemDualDataProvider::SystemDualDataProvider(BlockManager& blockManager)
+  : _blockManager{blockManager}
   {
-  public:
-    SystemTableScanOperatorNode(const OperatorContext& context, const SymbolTablePtr& symbolTable, const SymbolInfo& tableInfo);
+  }
 
-    void dump(std::ostream& stream) const override;
+  BlockPtr SystemDualDataProvider::getNextBlock()
+  {
+    auto block = _blockManager.createBlock();
+    block->addValue(Variant(false));
+    block->nextRow();
+    block->endBlocks();
+    return block;
+  }
 
-    const Values* getNextRow() override;
 
-  private:
-    BlockIteratorPtr _iterator;
-    std::unique_ptr<BlockProvider> _blockProvider;
-  };
+  SystemTablesDataProvider::SystemTablesDataProvider(Database& database, BlockManager& blockManager)
+  : _database{database}
+  , _blockManager{blockManager}
+  {
+  }
+
+  BlockPtr SystemTablesDataProvider::getNextBlock()
+  {
+    auto block = _blockManager.createBlock();
+    const auto& systemTables{_database.getSystemTables()};
+    for (const auto& table : _database.getTables()) {
+      block->addValue(Variant(table.name()));
+      block->addValue(Variant(systemTables.isSystemTable(table.name())));
+      block->nextRow();
+    }
+    block->endBlocks();
+    return block;
+  }
 }

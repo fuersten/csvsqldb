@@ -33,6 +33,9 @@
 
 #include "system_tables.h"
 
+#include "base/exception.h"
+#include "data_provider.h"
+
 
 namespace csvsqldb
 {
@@ -56,6 +59,11 @@ namespace csvsqldb
     return _tableData.name();
   }
 
+  std::unique_ptr<BlockProvider> SystemTable::createDataProvider(Database& database, BlockManager& blockManager) const
+  {
+    return doCreateDataProvider(database, blockManager);
+  }
+
 
   SystemDualTable::SystemDualTable()
   : SystemTable("SYSTEM_DUAL")
@@ -65,6 +73,11 @@ namespace csvsqldb
   void SystemDualTable::doSetUp()
   {
     _tableData.addColumn("x", BOOLEAN, false, false, false, std::any(), ASTExprNodePtr(), 0);
+  }
+
+  std::unique_ptr<BlockProvider> SystemDualTable::doCreateDataProvider(Database&, BlockManager& blockManager) const
+  {
+    return std::make_unique<SystemDualDataProvider>(blockManager);
   }
 
 
@@ -77,6 +90,11 @@ namespace csvsqldb
   {
     _tableData.addColumn("NAME", STRING, true, true, true, std::any(), ASTExprNodePtr(), 0);
     _tableData.addColumn("SYSTEM", BOOLEAN, false, false, true, std::any(), ASTExprNodePtr(), 0);
+  }
+
+  std::unique_ptr<BlockProvider> SystemTableMeta::doCreateDataProvider(Database& database, BlockManager& blockManager) const
+  {
+    return std::make_unique<SystemTablesDataProvider>(database, blockManager);
   }
 
 
@@ -109,5 +127,16 @@ namespace csvsqldb
     auto result =
       std::find_if(_systemTables.begin(), _systemTables.end(), [&name](const auto& table) { return name == table->getName(); });
     return result != _systemTables.end();
+  }
+
+  std::unique_ptr<BlockProvider> SystemTables::createDataProvider(const std::string& name, Database& database,
+                                                                  BlockManager& blockManager) const
+  {
+    auto result =
+      std::find_if(_systemTables.begin(), _systemTables.end(), [&name](const auto& table) { return name == table->getName(); });
+    if (result == _systemTables.end()) {
+      CSVSQLDB_THROW(Exception, "system table " << name << "not found");
+    }
+    return (*result)->createDataProvider(database, blockManager);
   }
 }

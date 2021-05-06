@@ -35,6 +35,7 @@
 
 #include <csvsqldb/inc.h>
 
+#include <csvsqldb/block.h>
 #include <csvsqldb/tabledata.h>
 
 #include <memory>
@@ -42,6 +43,7 @@
 
 namespace csvsqldb
 {
+  class Database;
   class SystemTable;
   using SystemTablePtr = std::shared_ptr<const SystemTable>;
 
@@ -57,12 +59,14 @@ namespace csvsqldb
     virtual ~SystemTable() = default;
 
     void setUp();
+    std::unique_ptr<BlockProvider> createDataProvider(Database& database, BlockManager& blockManager) const;
 
     TableData getTableData() const;
     const std::string& getName() const;
 
   private:
     virtual void doSetUp() = 0;
+    virtual std::unique_ptr<BlockProvider> doCreateDataProvider(Database& database, BlockManager& blockManager) const = 0;
 
   protected:
     TableData _tableData;
@@ -76,6 +80,7 @@ namespace csvsqldb
 
   private:
     void doSetUp() override;
+    std::unique_ptr<BlockProvider> doCreateDataProvider(Database& database, BlockManager& blockManager) const override;
   };
 
 
@@ -86,6 +91,7 @@ namespace csvsqldb
 
   private:
     void doSetUp() override;
+    std::unique_ptr<BlockProvider> doCreateDataProvider(Database& database, BlockManager& blockManager) const override;
   };
 
 
@@ -102,6 +108,8 @@ namespace csvsqldb
     std::vector<SystemTablePtr> getSystemTables() const;
 
     bool isSystemTable(const std::string& name) const;
+    std::unique_ptr<BlockProvider> createDataProvider(const std::string& name, Database& database,
+                                                      BlockManager& blockManager) const;
 
   private:
     void addSystemTables();
