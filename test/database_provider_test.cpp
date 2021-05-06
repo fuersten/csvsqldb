@@ -80,4 +80,9 @@ TEST_CASE("Data Provider Test", "[system tables]")
     CHECK(csvsqldb::STRING == values->at(0)->getType());
     CHECK(csvsqldb::BOOLEAN == values->at(1)->getType());
   }
+  SECTION("no table")
+  {
+    CHECK_THROWS_WITH(database.getSystemTables().createDataProvider("NO SYSTEM TABLE", database, blockManager),
+                      "system table 'NO SYSTEM TABLE' not found");
+  }
 }

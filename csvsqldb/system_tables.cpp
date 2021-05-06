@@ -135,7 +135,7 @@ namespace csvsqldb
     auto result =
       std::find_if(_systemTables.begin(), _systemTables.end(), [&name](const auto& table) { return name == table->getName(); });
     if (result == _systemTables.end()) {
-      CSVSQLDB_THROW(Exception, "system table " << name << "not found");
+      CSVSQLDB_THROW(Exception, "system table '" << name << "' not found");
     }
     return (*result)->createDataProvider(database, blockManager);
   }
