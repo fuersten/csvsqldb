@@ -67,10 +67,21 @@ namespace csvsqldb
     TableData _tableData;
   };
 
+
   class CSVSQLDB_EXPORT SystemDualTable : public SystemTable
   {
   public:
     SystemDualTable();
+
+  private:
+    void doSetUp() override;
+  };
+
+
+  class CSVSQLDB_EXPORT SystemTableMeta : public SystemTable
+  {
+  public:
+    SystemTableMeta();
 
   private:
     void doSetUp() override;

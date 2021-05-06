@@ -63,6 +63,26 @@ namespace csvsqldb
   }
 
 
+  SystemTableMeta::SystemTableMeta()
+  : SystemTable("SYSTEM_TABLES")
+  {
+  }
+
+  void SystemTableMeta::doSetUp()
+  {
+    _tableData.addColumn("NAME", STRING, true, true, true, std::any(), ASTExprNodePtr(), 0);
+    _tableData.addColumn("SYSTEM", BOOLEAN, false, false, true, std::any(), ASTExprNodePtr(), 0);
+  }
+
+
+  template<typename T>
+  SystemTablePtr makeSystemTable()
+  {
+    std::shared_ptr<SystemTable> table{std::make_shared<T>()};
+    table->setUp();
+    return table;
+  }
+
   SystemTables::SystemTables()
   {
     addSystemTables();
@@ -70,9 +90,8 @@ namespace csvsqldb
 
   void SystemTables::addSystemTables()
   {
-    auto systemDual{std::make_shared<SystemDualTable>()};
-    systemDual->setUp();
-    _systemTables.emplace_back(std::move(systemDual));
+    _systemTables.emplace_back(makeSystemTable<SystemDualTable>());
+    _systemTables.emplace_back(makeSystemTable<SystemTableMeta>());
   }
 
   std::vector<SystemTablePtr> SystemTables::getSystemTables() const

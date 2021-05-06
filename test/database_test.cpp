@@ -60,13 +60,34 @@ TEST_CASE("Database Test", "[database]")
     CHECK(std::filesystem::exists(path / "tables", ec));
 
     REQUIRE(database.hasTable("SYSTEM_DUAL"));
-    auto systemTable = database.getTable("SYSTEM_DUAL");
-    CHECK("SYSTEM_DUAL" == systemTable.name());
-    auto column = systemTable.getColumn("x");
+    auto systemDualTable = database.getTable("SYSTEM_DUAL");
+    CHECK("SYSTEM_DUAL" == systemDualTable.name());
+    auto column = systemDualTable.getColumn("x");
     CHECK(column._type == csvsqldb::BOOLEAN);
     CHECK_FALSE(column._primaryKey);
     CHECK_FALSE(column._unique);
     CHECK_FALSE(column._notNull);
+    CHECK_FALSE(column._defaultValue.has_value());
+    CHECK_FALSE(column._check);
+    CHECK(0 == column._length);
+
+    REQUIRE(database.hasTable("SYSTEM_TABLES"));
+    auto systemMetaTable = database.getTable("SYSTEM_TABLES");
+    CHECK("SYSTEM_TABLES" == systemMetaTable.name());
+    column = systemMetaTable.getColumn("NAME");
+    CHECK(column._type == csvsqldb::STRING);
+    CHECK(column._primaryKey);
+    CHECK(column._unique);
+    CHECK(column._notNull);
+    CHECK_FALSE(column._defaultValue.has_value());
+    CHECK_FALSE(column._check);
+    CHECK(0 == column._length);
+
+    column = systemMetaTable.getColumn("SYSTEM");
+    CHECK(column._type == csvsqldb::BOOLEAN);
+    CHECK_FALSE(column._primaryKey);
+    CHECK_FALSE(column._unique);
+    CHECK(column._notNull);
     CHECK_FALSE(column._defaultValue.has_value());
     CHECK_FALSE(column._check);
     CHECK(0 == column._length);
@@ -118,7 +139,7 @@ TEST_CASE("Database Test", "[database]")
       database.addTable(std::move(otherTable));
       CHECK(database.hasTable("PETS"));
 
-      CHECK(3 == database.getTables().size());
+      CHECK(4 == database.getTables().size());
     }
 
     csvsqldb::Database database{path, mapping};
