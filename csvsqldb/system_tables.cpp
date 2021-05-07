@@ -98,6 +98,29 @@ namespace csvsqldb
   }
 
 
+  SystemColumnMeta::SystemColumnMeta()
+  : SystemTable("SYSTEM_COLUMNS")
+  {
+  }
+
+  void SystemColumnMeta::doSetUp()
+  {
+    _tableData.addColumn("TABLE_NAME", STRING, false, false, true, std::any(), ASTExprNodePtr(), 0);
+    _tableData.addColumn("COLUMN_NAME", STRING, false, false, true, std::any(), ASTExprNodePtr(), 0);
+    _tableData.addColumn("TYPE", STRING, false, false, true, std::any(), ASTExprNodePtr(), 0);
+    _tableData.addColumn("PRIMARY_KEY", BOOLEAN, false, false, true, std::any(), ASTExprNodePtr(), 0);
+    _tableData.addColumn("UNIQUE", BOOLEAN, false, false, true, std::any(), ASTExprNodePtr(), 0);
+    _tableData.addColumn("DEFAULT_VALUE", STRING, false, false, false, std::any(), ASTExprNodePtr(), 0);
+    _tableData.addColumn("CHECK", STRING, false, false, false, std::any(), ASTExprNodePtr(), 0);
+    _tableData.addColumn("LENGTH", INT, false, false, false, std::any(), ASTExprNodePtr(), 0);
+  }
+
+  std::unique_ptr<BlockProvider> SystemColumnMeta::doCreateDataProvider(Database& database, BlockManager& blockManager) const
+  {
+    return std::make_unique<SystemColumnsDataProvider>(database, blockManager);
+  }
+
+
   template<typename T>
   SystemTablePtr makeSystemTable()
   {
@@ -115,6 +138,7 @@ namespace csvsqldb
   {
     _systemTables.emplace_back(makeSystemTable<SystemDualTable>());
     _systemTables.emplace_back(makeSystemTable<SystemTableMeta>());
+    _systemTables.emplace_back(makeSystemTable<SystemColumnMeta>());
   }
 
   std::vector<SystemTablePtr> SystemTables::getSystemTables() const

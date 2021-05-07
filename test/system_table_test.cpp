@@ -43,13 +43,14 @@ TEST_CASE("System Tables Test", "[system tables]")
   SECTION("Check tables")
   {
     csvsqldb::SystemTables tables;
-    CHECK(tables.getSystemTables().size() == 2);
+    CHECK(tables.getSystemTables().size() == 3);
   }
   SECTION("Is system table")
   {
     csvsqldb::SystemTables tables;
     CHECK(tables.isSystemTable("SYSTEM_DUAL"));
     CHECK(tables.isSystemTable("SYSTEM_TABLES"));
+    CHECK(tables.isSystemTable("SYSTEM_COLUMNS"));
 
     CHECK_FALSE(tables.isSystemTable("SYSTEM"));
     CHECK_FALSE(tables.isSystemTable("EMPLOYEE"));
@@ -90,6 +91,85 @@ TEST_CASE("System Tables Test", "[system tables]")
     CHECK_FALSE(column._primaryKey);
     CHECK_FALSE(column._unique);
     CHECK(column._notNull);
+    CHECK_FALSE(column._defaultValue.has_value());
+    CHECK_FALSE(column._check);
+    CHECK(0 == column._length);
+  }
+  SECTION("System Column Meta")
+  {
+    csvsqldb::SystemColumnMeta table;
+    CHECK(table.getName() == "SYSTEM_COLUMNS");
+    table.setUp();
+
+    auto tableData = table.getTableData();
+    auto column = tableData.getColumn("TABLE_NAME");
+    CHECK(column._type == csvsqldb::STRING);
+    CHECK_FALSE(column._primaryKey);
+    CHECK_FALSE(column._unique);
+    CHECK(column._notNull);
+    CHECK_FALSE(column._defaultValue.has_value());
+    CHECK_FALSE(column._check);
+    CHECK(0 == column._length);
+
+    column = tableData.getColumn("COLUMN_NAME");
+    CHECK(column._type == csvsqldb::STRING);
+    CHECK_FALSE(column._primaryKey);
+    CHECK_FALSE(column._unique);
+    CHECK(column._notNull);
+    CHECK_FALSE(column._defaultValue.has_value());
+    CHECK_FALSE(column._check);
+    CHECK(0 == column._length);
+
+    column = tableData.getColumn("TYPE");
+    CHECK(column._type == csvsqldb::STRING);
+    CHECK_FALSE(column._primaryKey);
+    CHECK_FALSE(column._unique);
+    CHECK(column._notNull);
+    CHECK_FALSE(column._defaultValue.has_value());
+    CHECK_FALSE(column._check);
+    CHECK(0 == column._length);
+
+    column = tableData.getColumn("PRIMARY_KEY");
+    CHECK(column._type == csvsqldb::BOOLEAN);
+    CHECK_FALSE(column._primaryKey);
+    CHECK_FALSE(column._unique);
+    CHECK(column._notNull);
+    CHECK_FALSE(column._defaultValue.has_value());
+    CHECK_FALSE(column._check);
+    CHECK(0 == column._length);
+
+    column = tableData.getColumn("UNIQUE");
+    CHECK(column._type == csvsqldb::BOOLEAN);
+    CHECK_FALSE(column._primaryKey);
+    CHECK_FALSE(column._unique);
+    CHECK(column._notNull);
+    CHECK_FALSE(column._defaultValue.has_value());
+    CHECK_FALSE(column._check);
+    CHECK(0 == column._length);
+
+    column = tableData.getColumn("DEFAULT_VALUE");
+    CHECK(column._type == csvsqldb::STRING);
+    CHECK_FALSE(column._primaryKey);
+    CHECK_FALSE(column._unique);
+    CHECK_FALSE(column._notNull);
+    CHECK_FALSE(column._defaultValue.has_value());
+    CHECK_FALSE(column._check);
+    CHECK(0 == column._length);
+
+    column = tableData.getColumn("CHECK");
+    CHECK(column._type == csvsqldb::STRING);
+    CHECK_FALSE(column._primaryKey);
+    CHECK_FALSE(column._unique);
+    CHECK_FALSE(column._notNull);
+    CHECK_FALSE(column._defaultValue.has_value());
+    CHECK_FALSE(column._check);
+    CHECK(0 == column._length);
+
+    column = tableData.getColumn("LENGTH");
+    CHECK(column._type == csvsqldb::INT);
+    CHECK_FALSE(column._primaryKey);
+    CHECK_FALSE(column._unique);
+    CHECK_FALSE(column._notNull);
     CHECK_FALSE(column._defaultValue.has_value());
     CHECK_FALSE(column._check);
     CHECK(0 == column._length);

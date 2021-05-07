@@ -64,4 +64,17 @@ namespace csvsqldb
     Database& _database;
     BlockManager& _blockManager;
   };
+
+
+  class SystemColumnsDataProvider : public BlockProvider
+  {
+  public:
+    SystemColumnsDataProvider(Database& database, BlockManager& blockManager);
+
+    BlockPtr getNextBlock() override;
+
+  private:
+    Database& _database;
+    BlockManager& _blockManager;
+  };
 }

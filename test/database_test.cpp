@@ -66,6 +66,10 @@ TEST_CASE("Database Test", "[database]")
     REQUIRE(database.hasTable("SYSTEM_TABLES"));
     auto systemMetaTable = database.getTable("SYSTEM_TABLES");
     CHECK("SYSTEM_TABLES" == systemMetaTable.name());
+
+    REQUIRE(database.hasTable("SYSTEM_COLUMNS"));
+    auto systemMetaColumns = database.getTable("SYSTEM_COLUMNS");
+    CHECK("SYSTEM_COLUMNS" == systemMetaColumns.name());
   }
   SECTION("construction no path")
   {
@@ -114,7 +118,7 @@ TEST_CASE("Database Test", "[database]")
       database.addTable(std::move(otherTable));
       CHECK(database.hasTable("PETS"));
 
-      CHECK(4 == database.getTables().size());
+      CHECK(5 == database.getTables().size());
     }
 
     csvsqldb::Database database{path, mapping};

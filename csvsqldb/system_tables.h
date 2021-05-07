@@ -95,6 +95,17 @@ namespace csvsqldb
   };
 
 
+  class CSVSQLDB_EXPORT SystemColumnMeta : public SystemTable
+  {
+  public:
+    SystemColumnMeta();
+
+  private:
+    void doSetUp() override;
+    std::unique_ptr<BlockProvider> doCreateDataProvider(Database& database, BlockManager& blockManager) const override;
+  };
+
+
   class CSVSQLDB_EXPORT SystemTables
   {
   public:

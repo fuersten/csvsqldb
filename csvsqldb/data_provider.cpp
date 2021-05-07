@@ -33,6 +33,8 @@
 
 #include "data_provider.h"
 
+#include "sql_astexpressionvisitor.h"
+
 
 namespace csvsqldb
 {
@@ -65,6 +67,45 @@ namespace csvsqldb
       block->addValue(Variant(table.name()));
       block->addValue(Variant(systemTables.isSystemTable(table.name())));
       block->nextRow();
+    }
+    block->endBlocks();
+    return block;
+  }
+
+
+  SystemColumnsDataProvider::SystemColumnsDataProvider(Database& database, BlockManager& blockManager)
+  : _database{database}
+  , _blockManager{blockManager}
+  {
+  }
+
+  BlockPtr SystemColumnsDataProvider::getNextBlock()
+  {
+    auto block = _blockManager.createBlock();
+    for (const auto& table : _database.getTables()) {
+      const auto& tableName = table.name();
+      for (auto n = 0u; n < table.columnCount(); ++n) {
+        const auto& column = table.getColumn(n);
+        block->addValue(Variant(tableName));
+        block->addValue(Variant(column._name));
+        block->addValue(Variant(typeToString(column._type)));
+        block->addValue(Variant(column._primaryKey));
+        block->addValue(Variant(column._unique));
+        if (column._defaultValue.has_value()) {
+          block->addValue(Variant(typedValueToString(TypedValue(column._type, column._defaultValue))));
+        } else {
+          block->addValue(Variant{column._type});
+        }
+        if (column._check) {
+          ASTExpressionVisitor visitor;
+          column._check->accept(visitor);
+          block->addValue(Variant(visitor.toString()));
+        } else {
+          block->addValue(Variant{column._type});
+        }
+        block->addValue(Variant(static_cast<int64_t>(column._length)));
+        block->nextRow();
+      }
     }
     block->endBlocks();
     return block;
