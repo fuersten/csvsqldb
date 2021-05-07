@@ -101,4 +101,17 @@ namespace csvsqldb
   private:
     BlockManager& _blockManager;
   };
+
+
+  class SystemMappingsDataProvider : public BlockProvider
+  {
+  public:
+    SystemMappingsDataProvider(Database& database, BlockManager& blockManager);
+
+    BlockPtr getNextBlock() override;
+
+  private:
+    Database& _database;
+    BlockManager& _blockManager;
+  };
 }

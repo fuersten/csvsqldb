@@ -156,6 +156,23 @@ namespace csvsqldb
   }
 
 
+  SystemMappingMeta::SystemMappingMeta()
+  : SystemTable("SYSTEM_MAPPINGS")
+  {
+  }
+
+  void SystemMappingMeta::doSetUp()
+  {
+    _tableData.addColumn("PATTERN", STRING, false, false, true, std::any(), ASTExprNodePtr(), 0);
+    _tableData.addColumn("TABLE_NAME", STRING, true, true, true, std::any(), ASTExprNodePtr(), 0);
+  }
+
+  std::unique_ptr<BlockProvider> SystemMappingMeta::doCreateDataProvider(Database& database, BlockManager& blockManager) const
+  {
+    return std::make_unique<SystemMappingsDataProvider>(database, blockManager);
+  }
+
+
   template<typename T>
   SystemTablePtr makeSystemTable()
   {
@@ -176,6 +193,7 @@ namespace csvsqldb
     _systemTables.emplace_back(makeSystemTable<SystemColumnMeta>());
     _systemTables.emplace_back(makeSystemTable<SystemFunctionMeta>());
     _systemTables.emplace_back(makeSystemTable<SystemParameterMeta>());
+    _systemTables.emplace_back(makeSystemTable<SystemMappingMeta>());
   }
 
   std::vector<SystemTablePtr> SystemTables::getSystemTables() const

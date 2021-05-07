@@ -43,7 +43,7 @@ TEST_CASE("System Tables Test", "[system tables]")
   SECTION("Check tables")
   {
     csvsqldb::SystemTables tables;
-    CHECK(tables.getSystemTables().size() == 5);
+    CHECK(tables.getSystemTables().size() == 6);
   }
   SECTION("Is system table")
   {
@@ -53,6 +53,7 @@ TEST_CASE("System Tables Test", "[system tables]")
     CHECK(tables.isSystemTable("SYSTEM_COLUMNS"));
     CHECK(tables.isSystemTable("SYSTEM_FUNCTIONS"));
     CHECK(tables.isSystemTable("SYSTEM_PARAMETERS"));
+    CHECK(tables.isSystemTable("SYSTEM_MAPPINGS"));
 
     CHECK_FALSE(tables.isSystemTable("SYSTEM"));
     CHECK_FALSE(tables.isSystemTable("EMPLOYEE"));
@@ -228,6 +229,31 @@ TEST_CASE("System Tables Test", "[system tables]")
 
     column = tableData.getColumn("INDEX");
     CHECK(column._type == csvsqldb::INT);
+    CHECK_FALSE(column._primaryKey);
+    CHECK_FALSE(column._unique);
+    CHECK(column._notNull);
+    CHECK_FALSE(column._defaultValue.has_value());
+    CHECK_FALSE(column._check);
+    CHECK(0 == column._length);
+  }
+  SECTION("System Mapping Meta")
+  {
+    csvsqldb::SystemMappingMeta table;
+    CHECK(table.getName() == "SYSTEM_MAPPINGS");
+    table.setUp();
+
+    auto tableData = table.getTableData();
+    auto column = tableData.getColumn("TABLE_NAME");
+    CHECK(column._type == csvsqldb::STRING);
+    CHECK(column._primaryKey);
+    CHECK(column._unique);
+    CHECK(column._notNull);
+    CHECK_FALSE(column._defaultValue.has_value());
+    CHECK_FALSE(column._check);
+    CHECK(0 == column._length);
+
+    column = tableData.getColumn("PATTERN");
+    CHECK(column._type == csvsqldb::STRING);
     CHECK_FALSE(column._primaryKey);
     CHECK_FALSE(column._unique);
     CHECK(column._notNull);

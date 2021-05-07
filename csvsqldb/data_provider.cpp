@@ -37,6 +37,8 @@
 #include "function_registry.h"
 #include "sql_astexpressionvisitor.h"
 
+#include <regex>
+
 
 namespace csvsqldb
 {
@@ -164,4 +166,29 @@ namespace csvsqldb
     block->endBlocks();
     return block;
   }
+
+
+  SystemMappingsDataProvider::SystemMappingsDataProvider(Database& database, BlockManager& blockManager)
+  : _database{database}
+  , _blockManager{blockManager}
+  {
+  }
+
+  BlockPtr SystemMappingsDataProvider::getNextBlock()
+  {
+    static auto r = std::regex{R"((.+)->(.+))"};
+    auto block = _blockManager.createBlock();
+
+    std::smatch m;
+    for (const auto& mapping : _database.getMappings()) {
+      if (std::regex_match(mapping, m, r) && m.size() == 3) {
+        block->addValue(Variant(m[1].str()));
+        block->addValue(Variant(m[2].str()));
+        block->nextRow();
+      }
+    }
+    block->endBlocks();
+    return block;
+  }
+
 }
