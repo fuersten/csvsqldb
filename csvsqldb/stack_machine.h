@@ -52,8 +52,7 @@ namespace csvsqldb
   class CSVSQLDB_EXPORT VariableStore
   {
   public:
-    using VariableIndex = std::pair<std::string, size_t>;
-    using VariableMapping = std::vector<VariableIndex>;
+    using VariableMapping = std::vector<std::pair<std::string, size_t>>;
     using VariableIndexMapping = std::vector<std::pair<size_t, size_t>>;
 
     VariableStore() = default;
@@ -71,15 +70,13 @@ namespace csvsqldb
 
     static size_t getMapping(const std::string& variable, const VariableMapping& mapping)
     {
-      const auto iter = std::find_if(mapping.begin(), mapping.end(),
-                                     [&](const VariableStore::VariableIndex& var) { return var.first == variable; });
+      const auto iter = std::find_if(mapping.begin(), mapping.end(), [&](const auto& var) { return var.first == variable; });
       if (iter == mapping.end()) {
         CSVSQLDB_THROW(csvsqldb::Exception, "no mapping found for variable '" << variable << "'");
       } else {
         return iter->second;
       }
     }
-
 
   private:
     std::vector<Variant> _variables;

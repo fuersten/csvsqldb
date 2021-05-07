@@ -214,8 +214,8 @@ namespace csvsqldb
   protected:
     size_t getMapping(const std::string& variable)
     {
-      VariableStore::VariableMapping::iterator iter = std::find_if(
-        _mapping.begin(), _mapping.end(), [&](const VariableStore::VariableIndex& var) { return var.first == variable; });
+      VariableStore::VariableMapping::iterator iter =
+        std::find_if(_mapping.begin(), _mapping.end(), [&](const auto& var) { return var.first == variable; });
 
       if (iter == _mapping.end()) {
         _mapping.push_back(std::make_pair(variable, _index));

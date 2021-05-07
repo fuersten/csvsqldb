@@ -40,6 +40,7 @@
 
 #include <catch2/catch.hpp>
 
+using namespace std::string_literals;
 
 namespace
 {
@@ -59,6 +60,50 @@ namespace
   };
 }
 
+
+TEST_CASE("Variable Store Test", "[stackmachine]")
+{
+  SECTION("add variable")
+  {
+    csvsqldb::VariableStore store;
+    store.addVariable(0, csvsqldb::Variant{4711});
+    CHECK(store[0] == csvsqldb::Variant{4711});
+    store.addVariable(1, csvsqldb::Variant{"hutzli"});
+    CHECK(store[1] == csvsqldb::Variant{"hutzli"});
+    store.addVariable(0, csvsqldb::Variant{false});
+    CHECK(store[0] == csvsqldb::Variant{false});
+  }
+  SECTION("fill variable store")
+  {
+    csvsqldb::Values values;
+    values.emplace_back(csvsqldb::createValue(csvsqldb::INT, 4711LL));
+    values.emplace_back(csvsqldb::createValue(csvsqldb::STRING, "Check this out"s));
+    values.emplace_back(csvsqldb::createValue(csvsqldb::BOOLEAN, false));
+
+    csvsqldb::VariableStore::VariableIndexMapping mapping;
+    mapping.emplace_back(std::make_pair(0, 2));
+    mapping.emplace_back(std::make_pair(1, 1));
+
+    csvsqldb::VariableStore store;
+    store.fillVariableStore(mapping, values);
+
+    CHECK(store[0] == csvsqldb::Variant{false});
+    CHECK(store[1] == csvsqldb::Variant{"Check this out"});
+  }
+  SECTION("get mapping")
+  {
+    csvsqldb::VariableStore::VariableMapping mapping;
+    mapping.emplace_back(std::make_pair("emp_no", 1));
+    mapping.emplace_back(std::make_pair("dept", 2));
+    mapping.emplace_back(std::make_pair("age", 0));
+
+    CHECK(csvsqldb::VariableStore::getMapping("emp_no", mapping) == 1);
+    CHECK(csvsqldb::VariableStore::getMapping("dept", mapping) == 2);
+    CHECK(csvsqldb::VariableStore::getMapping("age", mapping) == 0);
+
+    CHECK_THROWS_WITH(csvsqldb::VariableStore::getMapping("no-field", mapping), "no mapping found for variable 'no-field'");
+  }
+}
 
 TEST_CASE("Stackmachine Test", "[stackmachine]")
 {
