@@ -121,6 +121,41 @@ namespace csvsqldb
   }
 
 
+  SystemFunctionMeta::SystemFunctionMeta()
+  : SystemTable("SYSTEM_FUNCTIONS")
+  {
+  }
+
+  void SystemFunctionMeta::doSetUp()
+  {
+    _tableData.addColumn("NAME", STRING, true, true, true, std::any(), ASTExprNodePtr(), 0);
+  }
+
+  std::unique_ptr<BlockProvider> SystemFunctionMeta::doCreateDataProvider(Database& database, BlockManager& blockManager) const
+  {
+    return std::make_unique<SystemFunctionsDataProvider>(database, blockManager);
+  }
+
+
+  SystemParameterMeta::SystemParameterMeta()
+  : SystemTable("SYSTEM_PARAMETERS")
+  {
+  }
+
+  void SystemParameterMeta::doSetUp()
+  {
+    _tableData.addColumn("FUNCTION_NAME", STRING, false, false, true, std::any(), ASTExprNodePtr(), 0);
+    _tableData.addColumn("TYPE", STRING, false, false, true, std::any(), ASTExprNodePtr(), 0);
+    _tableData.addColumn("INDEX", INT, false, false, true, std::any(), ASTExprNodePtr(), 0);
+    _tableData.addColumn("RETURN", BOOLEAN, false, false, true, std::any(), ASTExprNodePtr(), 0);
+  }
+
+  std::unique_ptr<BlockProvider> SystemParameterMeta::doCreateDataProvider(Database& database, BlockManager& blockManager) const
+  {
+    return std::make_unique<SystemParametersDataProvider>(database, blockManager);
+  }
+
+
   template<typename T>
   SystemTablePtr makeSystemTable()
   {
@@ -139,6 +174,8 @@ namespace csvsqldb
     _systemTables.emplace_back(makeSystemTable<SystemDualTable>());
     _systemTables.emplace_back(makeSystemTable<SystemTableMeta>());
     _systemTables.emplace_back(makeSystemTable<SystemColumnMeta>());
+    _systemTables.emplace_back(makeSystemTable<SystemFunctionMeta>());
+    _systemTables.emplace_back(makeSystemTable<SystemParameterMeta>());
   }
 
   std::vector<SystemTablePtr> SystemTables::getSystemTables() const

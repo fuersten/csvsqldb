@@ -60,16 +60,24 @@ TEST_CASE("Database Test", "[database]")
     CHECK(std::filesystem::exists(path / "tables", ec));
 
     REQUIRE(database.hasTable("SYSTEM_DUAL"));
-    auto systemDualTable = database.getTable("SYSTEM_DUAL");
-    CHECK("SYSTEM_DUAL" == systemDualTable.name());
+    auto systemTable = database.getTable("SYSTEM_DUAL");
+    CHECK("SYSTEM_DUAL" == systemTable.name());
 
     REQUIRE(database.hasTable("SYSTEM_TABLES"));
-    auto systemMetaTable = database.getTable("SYSTEM_TABLES");
-    CHECK("SYSTEM_TABLES" == systemMetaTable.name());
+    systemTable = database.getTable("SYSTEM_TABLES");
+    CHECK("SYSTEM_TABLES" == systemTable.name());
 
     REQUIRE(database.hasTable("SYSTEM_COLUMNS"));
-    auto systemMetaColumns = database.getTable("SYSTEM_COLUMNS");
-    CHECK("SYSTEM_COLUMNS" == systemMetaColumns.name());
+    systemTable = database.getTable("SYSTEM_COLUMNS");
+    CHECK("SYSTEM_COLUMNS" == systemTable.name());
+
+    REQUIRE(database.hasTable("SYSTEM_FUNCTIONS"));
+    systemTable = database.getTable("SYSTEM_FUNCTIONS");
+    CHECK("SYSTEM_FUNCTIONS" == systemTable.name());
+
+    REQUIRE(database.hasTable("SYSTEM_PARAMETERS"));
+    systemTable = database.getTable("SYSTEM_PARAMETERS");
+    CHECK("SYSTEM_PARAMETERS" == systemTable.name());
   }
   SECTION("construction no path")
   {
@@ -118,7 +126,7 @@ TEST_CASE("Database Test", "[database]")
       database.addTable(std::move(otherTable));
       CHECK(database.hasTable("PETS"));
 
-      CHECK(5 == database.getTables().size());
+      CHECK(7 == database.getTables().size());
     }
 
     csvsqldb::Database database{path, mapping};

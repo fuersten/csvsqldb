@@ -33,6 +33,8 @@
 
 #include "data_provider.h"
 
+#include "buildin_functions.h"
+#include "function_registry.h"
 #include "sql_astexpressionvisitor.h"
 
 
@@ -106,6 +108,58 @@ namespace csvsqldb
         block->addValue(Variant(static_cast<int64_t>(column._length)));
         block->nextRow();
       }
+    }
+    block->endBlocks();
+    return block;
+  }
+
+
+  SystemFunctionsDataProvider::SystemFunctionsDataProvider(Database&, BlockManager& blockManager)
+  : _blockManager{blockManager}
+  {
+  }
+
+  BlockPtr SystemFunctionsDataProvider::getNextBlock()
+  {
+    auto block = _blockManager.createBlock();
+
+    FunctionRegistry functionRegistry;
+    initBuildInFunctions(functionRegistry);
+    for (const auto& func : functionRegistry.getFunctions()) {
+      block->addValue(Variant(func->getName()));
+      block->nextRow();
+    }
+    block->endBlocks();
+    return block;
+  }
+
+
+  SystemParametersDataProvider::SystemParametersDataProvider(Database&, BlockManager& blockManager)
+  : _blockManager{blockManager}
+  {
+  }
+
+  BlockPtr SystemParametersDataProvider::getNextBlock()
+  {
+    auto block = _blockManager.createBlock();
+
+    FunctionRegistry functionRegistry;
+    initBuildInFunctions(functionRegistry);
+    for (const auto& func : functionRegistry.getFunctions()) {
+      const auto& funcName = func->getName();
+      int64_t index{0u};
+      for (const auto& param : func->getParameterTypes()) {
+        block->addValue(Variant(funcName));
+        block->addValue(typeToString(param));
+        block->addValue(Variant{index++});
+        block->addValue(Variant(false));
+        block->nextRow();
+      }
+      block->addValue(Variant(funcName));
+      block->addValue(typeToString(func->getReturnType()));
+      block->addValue(Variant{-1});
+      block->addValue(Variant(true));
+      block->nextRow();
     }
     block->endBlocks();
     return block;
