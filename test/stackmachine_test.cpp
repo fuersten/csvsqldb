@@ -76,7 +76,7 @@ TEST_CASE("Variable Store Test", "[stackmachine]")
   SECTION("fill variable store")
   {
     csvsqldb::Values values;
-    values.emplace_back(csvsqldb::createValue(csvsqldb::INT, 4711LL));
+    values.emplace_back(csvsqldb::createValue(csvsqldb::INT, static_cast<int64_t>(4711)));
     values.emplace_back(csvsqldb::createValue(csvsqldb::STRING, "Check this out"s));
     values.emplace_back(csvsqldb::createValue(csvsqldb::BOOLEAN, false));
 

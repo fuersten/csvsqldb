@@ -30,14 +30,35 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-#include <csvsqldb/operatornode.h>
+#include <csvsqldb/operatornodes/systemtable_scan_operatornode.h>
+
+#include "temporary_directory.h"
+#include "test/test_util.h"
 
 #include <catch2/catch.hpp>
 
 
-TEST_CASE("OperatorBaseNode Test", "[operatornodes]")
+TEST_CASE("System Scan Operator Node Test", "[operatornodes]")
 {
-  SECTION("expansion")
+  TemporaryDirectoryGuard tmpDir;
+  auto path = tmpDir.temporaryDirectoryPath();
+  csvsqldb::FileMapping mapping;
+  csvsqldb::Database database{path, mapping};
+  csvsqldb::FunctionRegistry functions;
+  csvsqldb::BlockManager blockManager;
+  csvsqldb::OperatorContext context{database, functions, blockManager, {}};
+  auto symbolTable = csvsqldb::SymbolTable::createSymbolTable();
+
+  SECTION("Scan System Table")
   {
+    csvsqldb::SymbolInfo info;
+    info._identifier = "SYSTEM_TABLES";
+    csvsqldb::SystemTableScanOperatorNode operatorNode{context, symbolTable, info};
+    const auto* values = operatorNode.getNextRow();
+    REQUIRE(values);
+    REQUIRE(2 == values->size());
+    values = operatorNode.getNextRow();
+    REQUIRE(values);
+    REQUIRE(2 == values->size());
   }
 }
