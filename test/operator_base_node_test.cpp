@@ -1,6 +1,5 @@
 //
-//  select_operatornode.h
-//  csvsqldb
+//  csvsqldb test
 //
 //  BSD 3-Clause License
 //  Copyright (c) 2015-2020 Lars-Christian Fürstenberg
@@ -31,36 +30,14 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-#pragma once
-
-#include <csvsqldb/inc.h>
-
 #include <csvsqldb/operatornode.h>
-#include <csvsqldb/sql_ast.h>
+
+#include <catch2/catch.hpp>
 
 
-namespace csvsqldb
+TEST_CASE("OperatorBaseNode Test", "[operatornodes]")
 {
-  class CSVSQLDB_EXPORT SelectOperatorNode : public RowOperatorNode
+  SECTION("expansion")
   {
-  public:
-    SelectOperatorNode(const OperatorContext& context, const SymbolTablePtr& symbolTable, const ASTExprNodePtr& exp);
-
-    const Values* getNextRow() override;
-
-    bool connect(const RowOperatorNodePtr& input) override;
-
-    void getColumnInfos(SymbolInfos& outputSymbols) override;
-
-    void dump(std::ostream& stream) const override;
-
-  private:
-    SymbolInfos _inputSymbols;
-    VariableStore _store;
-    StackMachine _sm;
-    VariableStore::VariableMapping _mapping;
-    IdentifierSet _expressionVariables;
-    VariableIndexMapping _variableMapping;
-    RowOperatorNodePtr _input;
-  };
+  }
 }

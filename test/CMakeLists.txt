@@ -36,6 +36,7 @@ add_executable(csvsqldbtest
     logging_test.cpp
     luaengine_test.cpp
     null_operation_test.cpp
+    operator_base_node_test.cpp
     operatornode_factory_test.cpp
     regexp_test.cpp
     row_processing_test.cpp

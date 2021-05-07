@@ -104,7 +104,7 @@ TEST_CASE("Block Provider Test", "[block]")
       csvsqldb::VariableStore store;
 
       csvsqldb::ASTExprNodePtr exp = parser.parseExpression("hire_date > DATE'2012-01-01'");
-      csvsqldb::StackMachine::VariableMapping mapping;
+      csvsqldb::VariableStore::VariableMapping mapping;
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
@@ -159,7 +159,7 @@ TEST_CASE("Block Provider Test", "[block]")
       csvsqldb::VariableStore store;
 
       csvsqldb::ASTExprNodePtr exp = parser.parseExpression("emp.last_name = 'Fürstenberg'");
-      csvsqldb::StackMachine::VariableMapping mapping;
+      csvsqldb::VariableStore::VariableMapping mapping;
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);

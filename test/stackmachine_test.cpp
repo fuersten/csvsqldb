@@ -87,7 +87,7 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
   {
     {
       csvsqldb::ASTExprNodePtr exp = parser.parseExpression("(37 * 5) / 3");
-      csvsqldb::StackMachine::VariableMapping mapping;
+      csvsqldb::VariableStore::VariableMapping mapping;
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
@@ -96,7 +96,7 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
 
     {
       csvsqldb::ASTExprNodePtr exp = parser.parseExpression("5 - 3 * 10 + 7");
-      csvsqldb::StackMachine::VariableMapping mapping;
+      csvsqldb::VariableStore::VariableMapping mapping;
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
@@ -105,7 +105,7 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
 
     {
       csvsqldb::ASTExprNodePtr exp = parser.parseExpression("5 between 3 and 17");
-      csvsqldb::StackMachine::VariableMapping mapping;
+      csvsqldb::VariableStore::VariableMapping mapping;
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
@@ -114,7 +114,7 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
 
     {
       csvsqldb::ASTExprNodePtr exp = parser.parseExpression("not 5 between 3 and 17");
-      csvsqldb::StackMachine::VariableMapping mapping;
+      csvsqldb::VariableStore::VariableMapping mapping;
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
@@ -123,7 +123,7 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
 
     {
       csvsqldb::ASTExprNodePtr exp = parser.parseExpression("5 between 17 and 3");
-      csvsqldb::StackMachine::VariableMapping mapping;
+      csvsqldb::VariableStore::VariableMapping mapping;
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
@@ -132,7 +132,7 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
 
     {
       csvsqldb::ASTExprNodePtr exp = parser.parseExpression("not 5 between 17 and 3");
-      csvsqldb::StackMachine::VariableMapping mapping;
+      csvsqldb::VariableStore::VariableMapping mapping;
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
@@ -141,7 +141,7 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
 
     {
       csvsqldb::ASTExprNodePtr exp = parser.parseExpression("- 3 * 10");
-      csvsqldb::StackMachine::VariableMapping mapping;
+      csvsqldb::VariableStore::VariableMapping mapping;
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
@@ -150,7 +150,7 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
 
     {
       csvsqldb::ASTExprNodePtr exp = parser.parseExpression("3 <> 4");
-      csvsqldb::StackMachine::VariableMapping mapping;
+      csvsqldb::VariableStore::VariableMapping mapping;
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
@@ -159,7 +159,7 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
 
     {
       csvsqldb::ASTExprNodePtr exp = parser.parseExpression("4 <> 4");
-      csvsqldb::StackMachine::VariableMapping mapping;
+      csvsqldb::VariableStore::VariableMapping mapping;
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
@@ -168,7 +168,7 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
 
     {
       csvsqldb::ASTExprNodePtr exp = parser.parseExpression("121 % 10");
-      csvsqldb::StackMachine::VariableMapping mapping;
+      csvsqldb::VariableStore::VariableMapping mapping;
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
@@ -177,7 +177,7 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
 
     {
       csvsqldb::ASTExprNodePtr exp = parser.parseExpression("CAST(4.5 AS INT) = 4");
-      csvsqldb::StackMachine::VariableMapping mapping;
+      csvsqldb::VariableStore::VariableMapping mapping;
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
@@ -186,7 +186,7 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
 
     {
       csvsqldb::ASTExprNodePtr exp = parser.parseExpression("4 <> 4 or 5 between 3 and 17 and CAST(4.5 AS INT) = 4");
-      csvsqldb::StackMachine::VariableMapping mapping;
+      csvsqldb::VariableStore::VariableMapping mapping;
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
@@ -195,7 +195,7 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
 
     {
       csvsqldb::ASTExprNodePtr exp = parser.parseExpression("4 = 4 or 5 between 3 and 17 and CAST(4.5 AS INT) = 4");
-      csvsqldb::StackMachine::VariableMapping mapping;
+      csvsqldb::VariableStore::VariableMapping mapping;
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
@@ -204,7 +204,7 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
 
     {
       csvsqldb::ASTExprNodePtr exp = parser.parseExpression("'Lars' || ' ' || 'Fürstenberg'");
-      csvsqldb::StackMachine::VariableMapping mapping;
+      csvsqldb::VariableStore::VariableMapping mapping;
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
@@ -213,7 +213,7 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
 
     {
       csvsqldb::ASTExprNodePtr exp = parser.parseExpression("DATE '2014-12-30' > DATE '1970-09-23'");
-      csvsqldb::StackMachine::VariableMapping mapping;
+      csvsqldb::VariableStore::VariableMapping mapping;
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
@@ -222,7 +222,7 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
 
     {
       csvsqldb::ASTExprNodePtr exp = parser.parseExpression("DATE '2014-12-30' <> DATE '1970-09-23'");
-      csvsqldb::StackMachine::VariableMapping mapping;
+      csvsqldb::VariableStore::VariableMapping mapping;
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
@@ -231,7 +231,7 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
 
     {
       csvsqldb::ASTExprNodePtr exp = parser.parseExpression("DATE '1970-09-23' = DATE '1970-09-23'");
-      csvsqldb::StackMachine::VariableMapping mapping;
+      csvsqldb::VariableStore::VariableMapping mapping;
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
@@ -240,7 +240,7 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
 
     {
       csvsqldb::ASTExprNodePtr exp = parser.parseExpression("TIME '13:40:25' > TIME '08:09:11'");
-      csvsqldb::StackMachine::VariableMapping mapping;
+      csvsqldb::VariableStore::VariableMapping mapping;
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
@@ -249,7 +249,7 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
 
     {
       csvsqldb::ASTExprNodePtr exp = parser.parseExpression("TIME '13:40:25' <> TIME '08:09:11'");
-      csvsqldb::StackMachine::VariableMapping mapping;
+      csvsqldb::VariableStore::VariableMapping mapping;
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
@@ -258,7 +258,7 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
 
     {
       csvsqldb::ASTExprNodePtr exp = parser.parseExpression("TIME '08:09:11' = TIME '08:09:11'");
-      csvsqldb::StackMachine::VariableMapping mapping;
+      csvsqldb::VariableStore::VariableMapping mapping;
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
@@ -267,7 +267,7 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
 
     {
       csvsqldb::ASTExprNodePtr exp = parser.parseExpression("TIMESTAMP '2014-12-30T13:40:25' > TIMESTAMP '1970-09-23T08:09:11'");
-      csvsqldb::StackMachine::VariableMapping mapping;
+      csvsqldb::VariableStore::VariableMapping mapping;
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
@@ -276,7 +276,7 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
 
     {
       csvsqldb::ASTExprNodePtr exp = parser.parseExpression("TIMESTAMP '2014-12-30T13:40:25' <> TIMESTAMP '1970-09-23T08:09:11'");
-      csvsqldb::StackMachine::VariableMapping mapping;
+      csvsqldb::VariableStore::VariableMapping mapping;
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
@@ -285,7 +285,7 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
 
     {
       csvsqldb::ASTExprNodePtr exp = parser.parseExpression("TIMESTAMP '1970-09-23T08:09:11' = TIMESTAMP '1970-09-23T08:09:11'");
-      csvsqldb::StackMachine::VariableMapping mapping;
+      csvsqldb::VariableStore::VariableMapping mapping;
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
@@ -294,7 +294,7 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
 
     {
       csvsqldb::ASTExprNodePtr exp = parser.parseExpression("'Lars' = 'Lars'");
-      csvsqldb::StackMachine::VariableMapping mapping;
+      csvsqldb::VariableStore::VariableMapping mapping;
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
@@ -303,7 +303,7 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
 
     {
       csvsqldb::ASTExprNodePtr exp = parser.parseExpression("'Lars' = 'Mark'");
-      csvsqldb::StackMachine::VariableMapping mapping;
+      csvsqldb::VariableStore::VariableMapping mapping;
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
@@ -312,7 +312,7 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
 
     {
       csvsqldb::ASTExprNodePtr exp = parser.parseExpression("'Lars' <> 'Lars'");
-      csvsqldb::StackMachine::VariableMapping mapping;
+      csvsqldb::VariableStore::VariableMapping mapping;
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
@@ -321,7 +321,7 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
 
     {
       csvsqldb::ASTExprNodePtr exp = parser.parseExpression("'Lars' <> 'Mark'");
-      csvsqldb::StackMachine::VariableMapping mapping;
+      csvsqldb::VariableStore::VariableMapping mapping;
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
@@ -330,7 +330,7 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
 
     {
       csvsqldb::ASTExprNodePtr exp = parser.parseExpression("'Lars' > 'Mark'");
-      csvsqldb::StackMachine::VariableMapping mapping;
+      csvsqldb::VariableStore::VariableMapping mapping;
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
@@ -339,7 +339,7 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
 
     {
       csvsqldb::ASTExprNodePtr exp = parser.parseExpression("'Lars' < 'Mark'");
-      csvsqldb::StackMachine::VariableMapping mapping;
+      csvsqldb::VariableStore::VariableMapping mapping;
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
@@ -348,7 +348,7 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
 
     {
       csvsqldb::ASTExprNodePtr exp = parser.parseExpression("'Lars' >= 'Mark'");
-      csvsqldb::StackMachine::VariableMapping mapping;
+      csvsqldb::VariableStore::VariableMapping mapping;
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
@@ -357,7 +357,7 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
 
     {
       csvsqldb::ASTExprNodePtr exp = parser.parseExpression("'Lars' <= 'Mark'");
-      csvsqldb::StackMachine::VariableMapping mapping;
+      csvsqldb::VariableStore::VariableMapping mapping;
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
@@ -366,7 +366,7 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
 
     {
       csvsqldb::ASTExprNodePtr exp = parser.parseExpression("DATE'2015-01-01' - DATE'1970-09-23'");
-      csvsqldb::StackMachine::VariableMapping mapping;
+      csvsqldb::VariableStore::VariableMapping mapping;
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
@@ -378,7 +378,7 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
   {
     {
       csvsqldb::ASTExprNodePtr exp = parser.parseExpression("8 IN(1,2,3,4,5,6,7,8,9,10)");
-      csvsqldb::StackMachine::VariableMapping mapping;
+      csvsqldb::VariableStore::VariableMapping mapping;
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
@@ -387,7 +387,7 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
 
     {
       csvsqldb::ASTExprNodePtr exp = parser.parseExpression("11 IN(1,2,3,4,5,6,7,8,9,10)");
-      csvsqldb::StackMachine::VariableMapping mapping;
+      csvsqldb::VariableStore::VariableMapping mapping;
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
@@ -397,7 +397,7 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
     {
       csvsqldb::ASTExprNodePtr exp =
         parser.parseExpression("DATE'1970-09-23' IN(DATE'1963-03-06',DATE'1969-05-17',DATE'1946-05-14',DATE'1970-09-23')");
-      csvsqldb::StackMachine::VariableMapping mapping;
+      csvsqldb::VariableStore::VariableMapping mapping;
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
@@ -411,7 +411,7 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
       csvsqldb::Variant aVar(100);
       store.addVariable(0, aVar);
       csvsqldb::ASTExprNodePtr exp = parser.parseExpression("a + (37 * 5) / 3");
-      csvsqldb::StackMachine::VariableMapping mapping;
+      csvsqldb::VariableStore::VariableMapping mapping;
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
@@ -420,7 +420,7 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
 
     {
       csvsqldb::ASTExprNodePtr exp = parser.parseExpression("a * a + b * b");
-      csvsqldb::StackMachine::VariableMapping mapping;
+      csvsqldb::VariableStore::VariableMapping mapping;
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
@@ -451,7 +451,7 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
 
     {
       csvsqldb::ASTExprNodePtr exp = parser.parseExpression("a");
-      csvsqldb::StackMachine::VariableMapping mapping;
+      csvsqldb::VariableStore::VariableMapping mapping;
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
@@ -474,7 +474,7 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
       csvsqldb::Variant bVar(4);
       store.addVariable(0, bVar);
       csvsqldb::ASTExprNodePtr exp = parser.parseExpression("(pow(CAST(10 AS REAL),2.0) * 2) / b");
-      csvsqldb::StackMachine::VariableMapping mapping;
+      csvsqldb::VariableStore::VariableMapping mapping;
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
@@ -483,7 +483,7 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
 
     {
       csvsqldb::ASTExprNodePtr exp = parser.parseExpression("CURRENT_DATE");
-      csvsqldb::StackMachine::VariableMapping mapping;
+      csvsqldb::VariableStore::VariableMapping mapping;
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
@@ -495,7 +495,7 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
   {
     {
       csvsqldb::ASTExprNodePtr exp = parser.parseExpression("CURRENT_DATE");
-      csvsqldb::StackMachine::VariableMapping mapping;
+      csvsqldb::VariableStore::VariableMapping mapping;
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
@@ -504,7 +504,7 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
 
     {
       csvsqldb::ASTExprNodePtr exp = parser.parseExpression("CURRENT_TIMESTAMP");
-      csvsqldb::StackMachine::VariableMapping mapping;
+      csvsqldb::VariableStore::VariableMapping mapping;
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
@@ -513,7 +513,7 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
 
     {
       csvsqldb::ASTExprNodePtr exp = parser.parseExpression("EXTRACT(YEAR FROM CURRENT_TIMESTAMP)");
-      csvsqldb::StackMachine::VariableMapping mapping;
+      csvsqldb::VariableStore::VariableMapping mapping;
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
@@ -522,7 +522,7 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
 
     {
       csvsqldb::ASTExprNodePtr exp = parser.parseExpression("EXTRACT(MONTH FROM CURRENT_DATE)");
-      csvsqldb::StackMachine::VariableMapping mapping;
+      csvsqldb::VariableStore::VariableMapping mapping;
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
@@ -531,7 +531,7 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
 
     {
       csvsqldb::ASTExprNodePtr exp = parser.parseExpression("EXTRACT(DAY FROM CURRENT_DATE)");
-      csvsqldb::StackMachine::VariableMapping mapping;
+      csvsqldb::VariableStore::VariableMapping mapping;
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
@@ -540,7 +540,7 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
 
     {
       csvsqldb::ASTExprNodePtr exp = parser.parseExpression("EXTRACT(HOUR FROM CURRENT_TIME)");
-      csvsqldb::StackMachine::VariableMapping mapping;
+      csvsqldb::VariableStore::VariableMapping mapping;
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
@@ -551,7 +551,7 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
       csvsqldb::Variant bVar(4);
       store.addVariable(0, bVar);
       csvsqldb::ASTExprNodePtr exp = parser.parseExpression("(pow(CAST(10 AS REAL),2.0) * 2) / b");
-      csvsqldb::StackMachine::VariableMapping mapping;
+      csvsqldb::VariableStore::VariableMapping mapping;
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
@@ -562,7 +562,7 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
       csvsqldb::Variant bVar(4);
       store.addVariable(0, bVar);
       csvsqldb::ASTExprNodePtr exp = parser.parseExpression("(pow(10, 2.0) * 2) / b");
-      csvsqldb::StackMachine::VariableMapping mapping;
+      csvsqldb::VariableStore::VariableMapping mapping;
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
@@ -573,7 +573,7 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
       csvsqldb::Variant bVar("Hutzli");
       store.addVariable(0, bVar);
       csvsqldb::ASTExprNodePtr exp = parser.parseExpression("upper(s)");
-      csvsqldb::StackMachine::VariableMapping mapping;
+      csvsqldb::VariableStore::VariableMapping mapping;
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
@@ -584,7 +584,7 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
       csvsqldb::Variant bVar("HutZli");
       store.addVariable(0, bVar);
       csvsqldb::ASTExprNodePtr exp = parser.parseExpression("lower(s)");
-      csvsqldb::StackMachine::VariableMapping mapping;
+      csvsqldb::VariableStore::VariableMapping mapping;
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
@@ -593,7 +593,7 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
 
     {
       csvsqldb::ASTExprNodePtr exp = parser.parseExpression("DATE_FORMAT(DATE'1970-09-23', '%d.%m.%Y')");
-      csvsqldb::StackMachine::VariableMapping mapping;
+      csvsqldb::VariableStore::VariableMapping mapping;
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
@@ -610,7 +610,7 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
     {
       store.addVariable(0, b_true);
       csvsqldb::ASTExprNodePtr exp = parser.parseExpression("a OR NOT a");
-      csvsqldb::StackMachine::VariableMapping mapping;
+      csvsqldb::VariableStore::VariableMapping mapping;
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
@@ -620,7 +620,7 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
     {
       store.addVariable(0, b_false);
       csvsqldb::ASTExprNodePtr exp = parser.parseExpression("a OR NOT a");
-      csvsqldb::StackMachine::VariableMapping mapping;
+      csvsqldb::VariableStore::VariableMapping mapping;
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
@@ -630,7 +630,7 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
     {
       store.addVariable(0, null);
       csvsqldb::ASTExprNodePtr exp = parser.parseExpression("a OR NOT a");
-      csvsqldb::StackMachine::VariableMapping mapping;
+      csvsqldb::VariableStore::VariableMapping mapping;
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
@@ -647,7 +647,7 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
     {
       store.addVariable(0, b_true);
       csvsqldb::ASTExprNodePtr exp = parser.parseExpression("a IS TRUE");
-      csvsqldb::StackMachine::VariableMapping mapping;
+      csvsqldb::VariableStore::VariableMapping mapping;
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
@@ -657,7 +657,7 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
     {
       store.addVariable(0, b_true);
       csvsqldb::ASTExprNodePtr exp = parser.parseExpression("a IS FALSE");
-      csvsqldb::StackMachine::VariableMapping mapping;
+      csvsqldb::VariableStore::VariableMapping mapping;
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
@@ -667,7 +667,7 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
     {
       store.addVariable(0, b_true);
       csvsqldb::ASTExprNodePtr exp = parser.parseExpression("a IS NOT FALSE");
-      csvsqldb::StackMachine::VariableMapping mapping;
+      csvsqldb::VariableStore::VariableMapping mapping;
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
@@ -677,7 +677,7 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
     {
       store.addVariable(0, b_true);
       csvsqldb::ASTExprNodePtr exp = parser.parseExpression("a IS NULL");
-      csvsqldb::StackMachine::VariableMapping mapping;
+      csvsqldb::VariableStore::VariableMapping mapping;
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
@@ -689,7 +689,7 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
   {
     {
       csvsqldb::ASTExprNodePtr exp = parser.parseExpression("cast(null as boolean)");
-      csvsqldb::StackMachine::VariableMapping mapping;
+      csvsqldb::VariableStore::VariableMapping mapping;
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
@@ -698,7 +698,7 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
 
     {
       csvsqldb::ASTExprNodePtr exp = parser.parseExpression("cast(null as boolean) and false");
-      csvsqldb::StackMachine::VariableMapping mapping;
+      csvsqldb::VariableStore::VariableMapping mapping;
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
@@ -707,7 +707,7 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
 
     {
       csvsqldb::ASTExprNodePtr exp = parser.parseExpression("cast(null as boolean) and true");
-      csvsqldb::StackMachine::VariableMapping mapping;
+      csvsqldb::VariableStore::VariableMapping mapping;
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
@@ -716,7 +716,7 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
 
     {
       csvsqldb::ASTExprNodePtr exp = parser.parseExpression("cast(null as boolean) and cast(null as boolean)");
-      csvsqldb::StackMachine::VariableMapping mapping;
+      csvsqldb::VariableStore::VariableMapping mapping;
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
@@ -725,7 +725,7 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
 
     {
       csvsqldb::ASTExprNodePtr exp = parser.parseExpression("cast(null as boolean) or false");
-      csvsqldb::StackMachine::VariableMapping mapping;
+      csvsqldb::VariableStore::VariableMapping mapping;
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
@@ -734,7 +734,7 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
 
     {
       csvsqldb::ASTExprNodePtr exp = parser.parseExpression("cast(null as boolean) or true");
-      csvsqldb::StackMachine::VariableMapping mapping;
+      csvsqldb::VariableStore::VariableMapping mapping;
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
@@ -743,7 +743,7 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
 
     {
       csvsqldb::ASTExprNodePtr exp = parser.parseExpression("cast(null as boolean) or cast(null as boolean)");
-      csvsqldb::StackMachine::VariableMapping mapping;
+      csvsqldb::VariableStore::VariableMapping mapping;
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
@@ -752,7 +752,7 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
 
     {
       csvsqldb::ASTExprNodePtr exp = parser.parseExpression("not cast(null as boolean)");
-      csvsqldb::StackMachine::VariableMapping mapping;
+      csvsqldb::VariableStore::VariableMapping mapping;
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
@@ -761,7 +761,7 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
 
     {
       csvsqldb::ASTExprNodePtr exp = parser.parseExpression("NULL BETWEEN 2 AND 4");
-      csvsqldb::StackMachine::VariableMapping mapping;
+      csvsqldb::VariableStore::VariableMapping mapping;
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
@@ -770,7 +770,7 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
 
     {
       csvsqldb::ASTExprNodePtr exp = parser.parseExpression("2 BETWEEN NULL AND 4");
-      csvsqldb::StackMachine::VariableMapping mapping;
+      csvsqldb::VariableStore::VariableMapping mapping;
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
@@ -779,7 +779,7 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
 
     {
       csvsqldb::ASTExprNodePtr exp = parser.parseExpression("2 BETWEEN 1 AND NULL");
-      csvsqldb::StackMachine::VariableMapping mapping;
+      csvsqldb::VariableStore::VariableMapping mapping;
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
@@ -808,7 +808,7 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
   {
     {
       csvsqldb::ASTExprNodePtr exp = parser.parseExpression("'Han Solo' like '%an So%'");
-      csvsqldb::StackMachine::VariableMapping mapping;
+      csvsqldb::VariableStore::VariableMapping mapping;
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
@@ -817,7 +817,7 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
 
     {
       csvsqldb::ASTExprNodePtr exp = parser.parseExpression("'Darth Vader' like '%an So%'");
-      csvsqldb::StackMachine::VariableMapping mapping;
+      csvsqldb::VariableStore::VariableMapping mapping;
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);
@@ -826,7 +826,7 @@ TEST_CASE("Stackmachine Test", "[stackmachine]")
 
     {
       csvsqldb::ASTExprNodePtr exp = parser.parseExpression("'Darth Vader' not like '%an So%'");
-      csvsqldb::StackMachine::VariableMapping mapping;
+      csvsqldb::VariableStore::VariableMapping mapping;
       csvsqldb::StackMachine sm;
       csvsqldb::ASTInstructionStackVisitor visitor(sm, mapping);
       exp->accept(visitor);

@@ -46,7 +46,7 @@ namespace csvsqldb
   class CSVSQLDB_EXPORT ASTInstructionStackVisitor : public ASTExpressionNodeVisitor
   {
   public:
-    ASTInstructionStackVisitor(StackMachine& sm, StackMachine::VariableMapping& mapping)
+    ASTInstructionStackVisitor(StackMachine& sm, VariableStore::VariableMapping& mapping)
     : _sm(sm)
     , _mapping(mapping)
     , _index(0)
@@ -214,8 +214,8 @@ namespace csvsqldb
   protected:
     size_t getMapping(const std::string& variable)
     {
-      StackMachine::VariableMapping::iterator iter = std::find_if(
-        _mapping.begin(), _mapping.end(), [&](const StackMachine::VariableIndex& var) { return var.first == variable; });
+      VariableStore::VariableMapping::iterator iter = std::find_if(
+        _mapping.begin(), _mapping.end(), [&](const VariableStore::VariableIndex& var) { return var.first == variable; });
 
       if (iter == _mapping.end()) {
         _mapping.push_back(std::make_pair(variable, _index));
@@ -226,7 +226,7 @@ namespace csvsqldb
     }
 
     StackMachine& _sm;
-    StackMachine::VariableMapping& _mapping;
+    VariableStore::VariableMapping& _mapping;
     size_t _index;
   };
 
