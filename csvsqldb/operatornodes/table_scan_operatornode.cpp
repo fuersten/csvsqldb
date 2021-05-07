@@ -78,12 +78,17 @@ namespace csvsqldb
 
   void BlockReader::readBlocks()
   {
-    bool moreLines = _csvparser->parseLine();
-    _block->nextRow();
-
-    while (_continue && moreLines) {
-      moreLines = _csvparser->parseLine();
+    try {
+      bool moreLines = _csvparser->parseLine();
       _block->nextRow();
+
+      while (_continue && moreLines) {
+        moreLines = _csvparser->parseLine();
+        _block->nextRow();
+      }
+    }
+    catch(std::exception& ex) {
+      std::cerr << "ERROR: " << ex.what() << std::endl;
     }
     {
       std::unique_lock lk(_queueMutex);

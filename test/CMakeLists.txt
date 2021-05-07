@@ -18,7 +18,6 @@ add_executable(csvsqldbtest
     buildin_functions_test.cpp
     configuration_test.cpp
     csv_parser_test.cpp
-    csv_string_parser_test.cpp
     data_framework_test.cpp
     database_system_test.cpp
     database_test.cpp

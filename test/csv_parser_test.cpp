@@ -68,12 +68,12 @@ namespace
       }
     }
 
-    void onString(const char* s, size_t, bool isNull) override
+    void onString(const char* s, size_t l, bool isNull) override
     {
       if (isNull) {
         _results.push_back("<NULL>");
       } else {
-        _results.push_back(s);
+        _results.push_back(std::string(s, l));
       }
     }
 
@@ -340,6 +340,46 @@ TEST_CASE("CSV Parser Test", "[csv]")
   }
 }
 
+TEST_CASE("CSV String Parsing Test", "[csv]")
+{
+  MyCSVParserCallback callback;
+  csvsqldb::csv::CSVParserContext context;
+  context._skipFirstLine = false;
+  csvsqldb::csv::Types types;
+  types.push_back(csvsqldb::csv::STRING);
+  std::stringstream ss(R"(test
+'test'
+"test"
+''
+""
+te'st
+te"st
+'te"st'
+"te'st"
+'te''st'
+"te""st"
+'te,st'
+"te,st"
+)");
+  csvsqldb::csv::CSVParser csvparser(context, ss, types, callback);
+  parse(csvparser);
+
+  size_t index = 0;
+  CHECK("test" == callback._results[index++]);
+  CHECK("test" == callback._results[index++]);
+  CHECK("test" == callback._results[index++]);
+  CHECK(callback._results[index++].empty());
+  CHECK(callback._results[index++].empty());
+  CHECK("te'st" == callback._results[index++]);
+  CHECK("te\"st" == callback._results[index++]);
+  CHECK("te\"st" == callback._results[index++]);
+  CHECK("te'st" == callback._results[index++]);
+  CHECK("te'st" == callback._results[index++]);
+  CHECK("te\"st" == callback._results[index++]);
+  CHECK("te,st" == callback._results[index++]);
+  CHECK("te,st" == callback._results[index++]);
+}
+
 TEST_CASE("CSV Parser Error Test", "[csv]")
 {
   MyCSVParserCallback callback;
@@ -407,7 +447,7 @@ TEST_CASE("CSV Parser Error Test", "[csv]")
 
     std::stringstream ss(R"(47291,1960-09-09,"Ulf"
 60134,1964-04-21,Seshu
-72329,1953-02-09,)");
+72329,1953-02-09)");
 
     csvsqldb::csv::CSVParser csvparser(context, ss, types, callback);
     parse(csvparser);

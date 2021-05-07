@@ -88,7 +88,6 @@ set(LIB_CSVSQLDB_BASE_SOURCES
     base/application.cpp
     base/configuration.cpp
     base/csv_parser.cpp
-    base/csv_string_parser.cpp
     base/date.cpp
     base/default_configuration.cpp
     base/duration.cpp
@@ -112,7 +111,7 @@ set(LIB_CSVSQLDB_BASE_HEADERS
     base/application.h
     base/configuration.h
     base/csv_parser.h
-    base/csv_string_parser.h
+    base/csv_parser_g.h
     base/date.h
     base/default_configuration.h
     base/duration.h
