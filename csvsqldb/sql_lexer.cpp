@@ -33,9 +33,9 @@
 
 
 #include "sql_lexer.h"
-#include "types.h"
 
 #include "base/logging.h"
+#include "types.h"
 
 // clang-format off
 #include "base/pragma_push.h"

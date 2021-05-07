@@ -20,6 +20,7 @@ add_executable(csvsqldbtest
     csv_parser_test.cpp
     csv_string_parser_test.cpp
     data_framework_test.cpp
+    database_provider_test.cpp
     database_system_test.cpp
     database_test.cpp
     date_test.cpp
@@ -45,6 +46,8 @@ add_executable(csvsqldbtest
     stringutil_test.cpp
     subquery_test.cpp
     symboltable_test.cpp
+    system_table_test.cpp
+    systemtable_scan_operatornode_test.cpp
     table_executions_test.cpp
     tabledata_test.cpp
     threadpool_test.cpp

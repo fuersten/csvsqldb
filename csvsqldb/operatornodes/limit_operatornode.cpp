@@ -45,7 +45,7 @@ namespace csvsqldb
     {
       StackMachine sm;
       VariableStore store;
-      StackMachine::VariableMapping mapping;
+      VariableStore::VariableMapping mapping;
 
       ASTInstructionStackVisitor visitor(sm, mapping);
       limit->accept(visitor);
@@ -55,7 +55,7 @@ namespace csvsqldb
     if (offset) {
       StackMachine sm;
       VariableStore store;
-      StackMachine::VariableMapping mapping;
+      VariableStore::VariableMapping mapping;
 
       ASTInstructionStackVisitor visitor(sm, mapping);
       offset->accept(visitor);

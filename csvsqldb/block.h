@@ -107,6 +107,7 @@ namespace csvsqldb
   class CSVSQLDB_EXPORT BlockProvider
   {
   public:
+    virtual ~BlockProvider() = default;
     virtual BlockPtr getNextBlock() = 0;
   };
 
@@ -114,6 +115,7 @@ namespace csvsqldb
   class CSVSQLDB_EXPORT RowProvider
   {
   public:
+    virtual ~RowProvider() = default;
     virtual const Values* getNextRow() = 0;
   };
 

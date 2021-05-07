@@ -75,9 +75,9 @@ namespace csvsqldb
 
   void Database::addSystemTables()
   {
-    TableData tabledata("SYSTEM_DUAL");
-    tabledata.addColumn("x", BOOLEAN, false, false, false, std::any(), ASTExprNodePtr(), 0);
-    addTable(std::move(tabledata), false);
+    for (const auto& table : _systemTables.getSystemTables()) {
+      addTable(table->getTableData(), false);
+    }
   }
 
   void Database::readTablesFromPath()
@@ -151,7 +151,7 @@ namespace csvsqldb
 
   void Database::dropTable(const std::string& tableName)
   {
-    if (tableName.substr(0, 7) == "SYSTEM_") {
+    if (_systemTables.isSystemTable(tableName)) {
       CSVSQLDB_THROW(Exception, "table '" << tableName << "' is a system table. Dropping nothing");
     }
     auto it = std::find_if(_tables.begin(), _tables.end(), [&tableName](const auto& data) { return data.name() == tableName; });
@@ -175,7 +175,7 @@ namespace csvsqldb
 
   void Database::addMapping(const std::string& tableName, const FileMapping& mapping)
   {
-    if (tableName.substr(0, 7) == "SYSTEM_") {
+    if (_systemTables.isSystemTable(tableName)) {
       CSVSQLDB_THROW(Exception, "cant add mapping for system tables");
     }
 
@@ -192,7 +192,7 @@ namespace csvsqldb
 
   void Database::removeMapping(const std::string& tableName)
   {
-    if (tableName.substr(0, 7) == "SYSTEM_") {
+    if (_systemTables.isSystemTable(tableName)) {
       CSVSQLDB_THROW(Exception, "cant drop mapping for system tables");
     }
 

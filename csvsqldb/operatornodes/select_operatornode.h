@@ -58,9 +58,9 @@ namespace csvsqldb
     SymbolInfos _inputSymbols;
     VariableStore _store;
     StackMachine _sm;
-    StackMachine::VariableMapping _mapping;
+    VariableStore::VariableMapping _mapping;
     IdentifierSet _expressionVariables;
-    VariableMapping _variableMapping;
+    VariableIndexMapping _variableMapping;
     RowOperatorNodePtr _input;
   };
 }

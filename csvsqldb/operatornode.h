@@ -75,13 +75,13 @@ namespace csvsqldb
   class CSVSQLDB_EXPORT OperatorBaseNode
   {
   public:
-    using VariableMapping = std::vector<std::pair<size_t, size_t>>;
+    using VariableIndexMapping = std::vector<std::pair<size_t, size_t>>;
     using OutputInputMapping = std::map<size_t, size_t>;
 
     struct StackMachineType {
       StackMachineType() = default;
 
-      StackMachineType(StackMachine sm, VariableMapping variableMappings)
+      StackMachineType(StackMachine sm, VariableIndexMapping variableMappings)
       : _sm(std::move(sm))
       , _variableMappings(std::move(variableMappings))
       {
@@ -89,7 +89,7 @@ namespace csvsqldb
 
       StackMachine _sm;
       VariableStore _store;
-      VariableMapping _variableMappings;
+      VariableIndexMapping _variableMappings;
     };
 
     using StackMachines = std::vector<StackMachineType>;
@@ -124,24 +124,6 @@ namespace csvsqldb
     virtual BlockManager& getBlockManager()
     {
       return _context._blockManager;
-    }
-
-    static size_t getMapping(const std::string& variable, const StackMachine::VariableMapping& mapping)
-    {
-      const auto iter = std::find_if(mapping.begin(), mapping.end(),
-                                     [&](const StackMachine::VariableIndex& var) { return var.first == variable; });
-      if (iter == mapping.end()) {
-        CSVSQLDB_THROW(csvsqldb::Exception, "no mapping found for variable '" << variable << "'");
-      } else {
-        return iter->second;
-      }
-    }
-
-    static void fillVariableStore(VariableStore& store, const VariableMapping& variableMapping, const Values& row)
-    {
-      for (const auto& mapping : variableMapping) {
-        store.addVariable(mapping.first, valueToVariant(*row[mapping.second]));
-      }
     }
 
     virtual void dump(std::ostream& stream) const = 0;
