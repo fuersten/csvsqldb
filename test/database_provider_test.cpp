@@ -39,6 +39,19 @@
 #include <catch2/catch.hpp>
 
 
+namespace
+{
+  csvsqldb::Types setupTypes(const csvsqldb::SystemTable& table)
+  {
+    csvsqldb::Types types;
+    for (size_t n = 0; n < table.getTableData().columnCount(); ++n) {
+      types.push_back(table.getTableData().getColumn(n)._type);
+    }
+
+    return types;
+  }
+}
+
 TEST_CASE("Data Provider Test", "[system tables]")
 {
   TemporaryDirectoryGuard tmpDir;
@@ -47,38 +60,101 @@ TEST_CASE("Data Provider Test", "[system tables]")
   csvsqldb::BlockManager blockManager;
   csvsqldb::Database database{path, mapping};
 
-  SECTION("SYSTEM_DUAL construction")
+  SECTION("SYSTEM_DUAL provider")
   {
     csvsqldb::SystemDualTable table;
     table.setUp();
     auto provider = database.getSystemTables().createDataProvider("SYSTEM_DUAL", database, blockManager);
     REQUIRE(provider);
-    csvsqldb::Types types;
-    for (size_t n = 0; n < table.getTableData().columnCount(); ++n) {
-      types.push_back(table.getTableData().getColumn(n)._type);
-    }
+    csvsqldb::Types types = setupTypes(table);
     csvsqldb::BlockIterator iterator(types, *provider, blockManager);
     auto* values = iterator.getNextRow();
     REQUIRE(values);
     REQUIRE(1 == values->size());
     CHECK(csvsqldb::BOOLEAN == values->at(0)->getType());
   }
-  SECTION("SYSTEM_TABLE construction")
+  SECTION("SYSTEM_TABLES provider")
   {
     csvsqldb::SystemTableMeta table;
     table.setUp();
     auto provider = database.getSystemTables().createDataProvider("SYSTEM_TABLES", database, blockManager);
     REQUIRE(provider);
-    csvsqldb::Types types;
-    for (size_t n = 0; n < table.getTableData().columnCount(); ++n) {
-      types.push_back(table.getTableData().getColumn(n)._type);
-    }
+    csvsqldb::Types types = setupTypes(table);
     csvsqldb::BlockIterator iterator(types, *provider, blockManager);
     auto* values = iterator.getNextRow();
     REQUIRE(values);
     REQUIRE(2 == values->size());
     CHECK(csvsqldb::STRING == values->at(0)->getType());
     CHECK(csvsqldb::BOOLEAN == values->at(1)->getType());
+  }
+  SECTION("SYSTEM_COLUMNS provider")
+  {
+    csvsqldb::SystemColumnMeta table;
+    table.setUp();
+    auto provider = database.getSystemTables().createDataProvider("SYSTEM_COLUMNS", database, blockManager);
+    REQUIRE(provider);
+    csvsqldb::Types types = setupTypes(table);
+    csvsqldb::BlockIterator iterator(types, *provider, blockManager);
+    auto* values = iterator.getNextRow();
+    REQUIRE(values);
+    REQUIRE(8 == values->size());
+    CHECK(csvsqldb::STRING == values->at(0)->getType());
+    CHECK(csvsqldb::STRING == values->at(1)->getType());
+    CHECK(csvsqldb::STRING == values->at(2)->getType());
+    CHECK(csvsqldb::BOOLEAN == values->at(3)->getType());
+    CHECK(csvsqldb::BOOLEAN == values->at(4)->getType());
+    CHECK(csvsqldb::STRING == values->at(5)->getType());
+    CHECK(csvsqldb::STRING == values->at(6)->getType());
+    CHECK(csvsqldb::INT == values->at(7)->getType());
+  }
+  SECTION("SYSTEM_FUNCTIONS provider")
+  {
+    csvsqldb::SystemFunctionMeta table;
+    table.setUp();
+    auto provider = database.getSystemTables().createDataProvider("SYSTEM_FUNCTIONS", database, blockManager);
+    REQUIRE(provider);
+    csvsqldb::Types types = setupTypes(table);
+    csvsqldb::BlockIterator iterator(types, *provider, blockManager);
+    auto* values = iterator.getNextRow();
+    REQUIRE(values);
+    REQUIRE(1 == values->size());
+    CHECK(csvsqldb::STRING == values->at(0)->getType());
+  }
+  SECTION("SYSTEM_PARAMETERS provider")
+  {
+    csvsqldb::SystemParameterMeta table;
+    table.setUp();
+    auto provider = database.getSystemTables().createDataProvider("SYSTEM_PARAMETERS", database, blockManager);
+    REQUIRE(provider);
+    csvsqldb::Types types = setupTypes(table);
+    csvsqldb::BlockIterator iterator(types, *provider, blockManager);
+    auto* values = iterator.getNextRow();
+    REQUIRE(values);
+    REQUIRE(4 == values->size());
+    CHECK(csvsqldb::STRING == values->at(0)->getType());
+    CHECK(csvsqldb::STRING == values->at(1)->getType());
+    CHECK(csvsqldb::INT == values->at(2)->getType());
+    CHECK(csvsqldb::BOOLEAN == values->at(3)->getType());
+  }
+  SECTION("SYSTEM_MAPPINGS provider")
+  {
+    csvsqldb::FileMapping::Mappings mappings;
+    mappings.push_back({"friends.csv->friends", ',', false});
+    mapping.initialize(mappings);
+
+    database.addMapping("FRIENDS", mapping);
+
+    csvsqldb::SystemMappingMeta table;
+    table.setUp();
+    auto provider = database.getSystemTables().createDataProvider("SYSTEM_MAPPINGS", database, blockManager);
+    REQUIRE(provider);
+    csvsqldb::Types types = setupTypes(table);
+    csvsqldb::BlockIterator iterator(types, *provider, blockManager);
+    auto* values = iterator.getNextRow();
+    REQUIRE(values);
+    REQUIRE(2 == values->size());
+    CHECK(csvsqldb::STRING == values->at(0)->getType());
+    CHECK(csvsqldb::STRING == values->at(1)->getType());
   }
   SECTION("no table")
   {

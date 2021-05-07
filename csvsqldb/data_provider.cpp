@@ -98,14 +98,14 @@ namespace csvsqldb
         if (column._defaultValue.has_value()) {
           block->addValue(Variant(typedValueToString(TypedValue(column._type, column._defaultValue))));
         } else {
-          block->addValue(Variant{column._type});
+          block->addValue(Variant{STRING});
         }
         if (column._check) {
           ASTExpressionVisitor visitor;
           column._check->accept(visitor);
           block->addValue(Variant(visitor.toString()));
         } else {
-          block->addValue(Variant{column._type});
+          block->addValue(Variant{STRING});
         }
         block->addValue(Variant(static_cast<int64_t>(column._length)));
         block->nextRow();
