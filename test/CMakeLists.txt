@@ -15,6 +15,7 @@ add_executable(csvsqldbtest
     block_provider_test.cpp
     block_test.cpp
     block_manager_test.cpp
+    block_producer_test.cpp
     buildin_functions_test.cpp
     configuration_test.cpp
     csv_parser_test.cpp
