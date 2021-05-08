@@ -1,5 +1,5 @@
 //
-//  table_scan_operatornode.h
+//  block_producer.h
 //  csvsqldb
 //
 //  BSD 3-Clause License
@@ -35,69 +35,54 @@
 
 #include <csvsqldb/inc.h>
 
-#include <csvsqldb/base/csv_parser.h>
-#include <csvsqldb/block_iterator.h>
-#include <csvsqldb/block_producer.h>
-#include <csvsqldb/operatornodes/scan_operatornode.h>
+#include <csvsqldb/block.h>
+
+#include <condition_variable>
+#include <queue>
+#include <thread>
 
 
 namespace csvsqldb
 {
-  class CSVSQLDB_EXPORT CSVBlockReader : public csvsqldb::csv::CSVParserCallback
+  class CSVSQLDB_EXPORT BlockProducer
   {
   public:
-    explicit CSVBlockReader(BlockManager& blockManager);
+    explicit BlockProducer(BlockManager& blockManager);
 
-    void initialize(std::unique_ptr<csvsqldb::csv::CSVParser> csvparser);
+    BlockProducer(const BlockProducer&) = delete;
+    BlockProducer(BlockProducer&&) = delete;
+    BlockProducer& operator=(const BlockProducer&) = delete;
+    BlockProducer& operator=(BlockProducer&&) = delete;
 
-    bool valid() const
-    {
-      return _csvparser.get();
-    }
+    ~BlockProducer();
+
+    void start(std::function<void(BlockProducer& producer)> reader);
 
     BlockPtr getNextBlock();
 
-    /// CSVParserCallback interface
-    void onLong(int64_t num, bool isNull) override;
-
-    void onDouble(double num, bool isNull) override;
-
-    void onString(const char* s, size_t len, bool isNull) override;
-
-    void onDate(const csvsqldb::Date& date, bool isNull) override;
-
-    void onTime(const csvsqldb::Time& time, bool isNull) override;
-
-    void onTimestamp(const csvsqldb::Timestamp& timestamp, bool isNull) override;
-
-    void onBoolean(bool boolean, bool isNull) override;
+    void nextRow();
+    void addInt(int64_t num, bool isNull);
+    void addReal(double num, bool isNull);
+    void addString(const char* s, size_t len, bool isNull);
+    void addBool(bool b, bool isNull);
+    void addDate(const csvsqldb::Date& date, bool isNull);
+    void addTime(const csvsqldb::Time& time, bool isNull);
+    void addTimestamp(const csvsqldb::Timestamp& timestamp, bool isNull);
 
   private:
-    std::unique_ptr<csvsqldb::csv::CSVParser> _csvparser;
-    BlockProducer _producer;
-  };
+    void addBlock();
+    void readBlocks();
 
+    using Blocks = std::queue<BlockPtr>;
 
-  class CSVSQLDB_EXPORT TableScanOperatorNode
-  : public ScanOperatorNode
-  , public BlockProvider
-  {
-  public:
-    TableScanOperatorNode(const OperatorContext& context, const SymbolTablePtr& symbolTable, const SymbolInfo& tableInfo);
-
-    void dump(std::ostream& stream) const override;
-
-    const Values* getNextRow() override;
-
-    /// BlockProvider interface
-    BlockPtr getNextBlock() override;
-
-  private:
-    void initializeBlockReader();
-
-    std::unique_ptr<std::istream> _stream;
-    csvsqldb::csv::CSVParserContext _csvContext;
-    BlockIteratorPtr _iterator;
-    CSVBlockReader _blockReader;
+    BlockManager& _blockManager;
+    Blocks _blocks;
+    BlockPtr _block{nullptr};
+    std::thread _readThread;
+    std::condition_variable _cv;
+    std::mutex _queueMutex;
+    bool _continue{true};
+    std::string _error;
+    std::function<void(BlockProducer& producer)> _reader;
   };
 }

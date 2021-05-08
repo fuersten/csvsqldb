@@ -3,6 +3,7 @@ set(LIB_CSVSQLDB_SOURCES
     aggregation_functions.cpp
     block.cpp
     block_iterator.cpp
+    block_producer.cpp
     buildin_functions.cpp
     data_provider.cpp
     database.cpp
@@ -58,6 +59,7 @@ set(LIB_CSVSQLDB_SOURCES
     aggregation_functions.h
     block.h
     block_iterator.h
+    block_producer.h
     buildin_functions.h
     data_provider.h
     database.h

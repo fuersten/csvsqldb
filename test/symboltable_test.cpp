@@ -55,7 +55,7 @@ TEST_CASE("Symbol Table Utils Test", "[symbols]")
   }
   SECTION("symbol type to string fail")
   {
-    // clang-format off
+// clang-format off
     #include <csvsqldb/base/pragma_push.h>
     #include <csvsqldb/base/pragma_conversion.h>
 
