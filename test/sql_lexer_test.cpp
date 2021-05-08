@@ -153,7 +153,7 @@ TEST_CASE("SQL Lexer Test", "[sql]")
   }
   SECTION("token to string fail")
   {
-// clang-format off
+    // clang-format off
     #include <csvsqldb/base/pragma_push.h>
     #include <csvsqldb/base/pragma_conversion.h>
 

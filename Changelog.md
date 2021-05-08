@@ -17,6 +17,7 @@
 ### Changed
 
 * Changed the SQL lexer to a generated re-flex lexer yielding huge performance improvements for lexing SQL statements
+* Replaced CSV parser with a much cleaner and optimized version yielding significant performance improvements
 * Restructured the project and split files into more logical units
 * Updated the code to use C++17
 * Migrated tests to catch2

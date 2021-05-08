@@ -40,8 +40,8 @@
 #include <csvsqldb/operatornodes/scan_operatornode.h>
 
 #include <condition_variable>
-#include <queue>
 #include <iostream>
+#include <queue>
 
 
 namespace csvsqldb

@@ -144,6 +144,7 @@ TEST_CASE("Block Iterator Test", "[block]")
     REQUIRE(3 == values->size());
     CHECK_THROWS_WITH(iter.getNextRow(), "should be at row delimiter");
   }
+#if defined(BLOCK_RANGE_CHECK)
   SECTION("missing end delimiter")
   {
     MockBlockProvider provider{[&manager]() {
@@ -164,6 +165,7 @@ TEST_CASE("Block Iterator Test", "[block]")
     REQUIRE(3 == values->size());
     CHECK_THROWS_WITH(iter.getNextRow(), "block offset out of range");
   }
+#endif
   SECTION("not enough values")
   {
     MockBlockProvider provider{[&manager]() {

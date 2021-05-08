@@ -36,7 +36,17 @@
 #include "exception.h"
 #include "time_helper.h"
 
+// clang-format off
+#include "base/pragma_push.h"
+#include "base/pragma_old_style_cast.h"
+#include "base/pragma_sign.h"
+#include "base/pragma_shadow.h"
+#include "base/pragma_non_virtual_dtor.h"
+
 #include <fast_float/fast_float.h>
+
+#include "base/pragma_pop.h"
+// clang-format on
 
 
 namespace csvsqldb
@@ -110,7 +120,8 @@ namespace csvsqldb
     {
       auto field = static_cast<size_t>(typesIter - _types.begin()) + 1;
       auto column = static_cast<size_t>(fieldStart - _currentLine.data()) + 1;
-      std::cerr << _context._filename << ":" << _lineCount << ":" << column << ":" << field << ": ERROR: " << error << " - skipping line\n";
+      std::cerr << _context._filename << ":" << _lineCount << ":" << column << ":" << field << ": ERROR: " << error
+                << " - skipping line\n";
       std::cerr << "ERROR: skipping line " << _lineCount << ": " << error << "\n";
     }
 
@@ -204,16 +215,16 @@ namespace csvsqldb
           CSVSQLDB_THROW(CSVParserException, "expected a DATE field (YYYY-mm-dd)");
         }
 
-        uint16_t year = static_cast<uint16_t>(str[0] - 48) * 1000;
-        year += static_cast<uint16_t>(str[1] - 48) * 100;
-        year += static_cast<uint16_t>(str[2] - 48) * 10;
+        uint16_t year = static_cast<uint16_t>((str[0] - 48) * 1000);
+        year += static_cast<uint16_t>((str[1] - 48) * 100);
+        year += static_cast<uint16_t>((str[2] - 48) * 10);
         year += static_cast<uint16_t>(str[3] - 48);
 
-        uint16_t mo = static_cast<uint16_t>(str[5] - 48) * 10;
+        uint16_t mo = static_cast<uint16_t>((str[5] - 48) * 10);
         mo += static_cast<uint16_t>(str[6] - 48);
         auto month = static_cast<csvsqldb::Date::eMonth>(mo);
 
-        uint16_t day = static_cast<uint16_t>(str[8] - 48) * 10;
+        uint16_t day = static_cast<uint16_t>((str[8] - 48) * 10);
         day += static_cast<uint16_t>(str[9] - 48);
 
         _callback.onDate(csvsqldb::Date(year, month, day), false);
@@ -230,13 +241,13 @@ namespace csvsqldb
           CSVSQLDB_THROW(CSVParserException, "expected a TIME field (HH:MM:SS)");
         }
 
-        uint16_t hour = static_cast<uint16_t>(str[0] - 48) * 10;
+        uint16_t hour = static_cast<uint16_t>((str[0] - 48) * 10);
         hour += static_cast<uint16_t>(str[1] - 48);
 
-        uint16_t minute = static_cast<uint16_t>(str[3] - 48) * 10;
+        uint16_t minute = static_cast<uint16_t>((str[3] - 48) * 10);
         minute += static_cast<uint16_t>(str[4] - 48);
 
-        uint16_t second = static_cast<uint16_t>(str[6] - 48) * 10;
+        uint16_t second = static_cast<uint16_t>((str[6] - 48) * 10);
         second += static_cast<uint16_t>(str[7] - 48);
 
         _callback.onTime(csvsqldb::Time(hour, minute, second), false);
@@ -256,22 +267,22 @@ namespace csvsqldb
             CSVSQLDB_THROW(CSVParserException, "expected a TIMESTAMP field (YYYY-mm-ddTHH:MM:SS)");
           }
 
-          uint16_t year = static_cast<uint16_t>(str[0] - 48) * 1000;
-          year += static_cast<uint16_t>(str[1] - 48) * 100;
-          year += static_cast<uint16_t>(str[2] - 48) * 10;
+          uint16_t year = static_cast<uint16_t>((str[0] - 48) * 1000);
+          year += static_cast<uint16_t>((str[1] - 48) * 100);
+          year += static_cast<uint16_t>((str[2] - 48) * 10);
           year += static_cast<uint16_t>(str[3] - 48);
 
-          uint16_t mo = static_cast<uint16_t>(str[5] - 48) * 10;
+          uint16_t mo = static_cast<uint16_t>((str[5] - 48) * 10);
           mo += static_cast<uint16_t>(str[6] - 48);
           auto month = static_cast<csvsqldb::Date::eMonth>(mo);
 
-          uint16_t day = static_cast<uint16_t>(str[8] - 48) * 10;
+          uint16_t day = static_cast<uint16_t>((str[8] - 48) * 10);
           day += static_cast<uint16_t>(str[9] - 48);
 
-          uint16_t hour = static_cast<uint16_t>(str[11] - 48) * 10;
+          uint16_t hour = static_cast<uint16_t>((str[11] - 48) * 10);
           hour += static_cast<uint16_t>(str[12] - 48);
 
-          uint16_t minute = static_cast<uint16_t>(str[14] - 48) * 10;
+          uint16_t minute = static_cast<uint16_t>((str[14] - 48) * 10);
           minute += static_cast<uint16_t>(str[15] - 48);
 
           uint16_t second = static_cast<uint16_t>(str[17] - 48) * 10;
@@ -279,8 +290,8 @@ namespace csvsqldb
 
           uint16_t milliseconds = 0;
           if (end - str == 23 && str[19] == '.') {
-            milliseconds = static_cast<uint16_t>(str[20] - 48) * 100;
-            milliseconds += static_cast<uint16_t>(str[21] - 48) * 10;
+            milliseconds = static_cast<uint16_t>((str[20] - 48) * 100);
+            milliseconds += static_cast<uint16_t>((str[21] - 48) * 10);
             milliseconds += static_cast<uint16_t>(str[22] - 48);
           }
           _callback.onTimestamp(csvsqldb::Timestamp(year, month, day, hour, minute, second, milliseconds), false);
