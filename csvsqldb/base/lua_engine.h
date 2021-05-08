@@ -151,7 +151,7 @@ namespace csvsqldb
     template<>
     void bindType<long>(lua_State* L, long& l)
     {
-      lua_pushnumber(L, l);
+      lua_pushnumber(L, static_cast<double>(l));
     }
 
     template<typename T>

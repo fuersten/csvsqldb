@@ -110,8 +110,8 @@ namespace csvsqldb
     : base(message)                                                                                                              \
     {                                                                                                                            \
     }                                                                                                                            \
-    explicit ex(const base& ex) noexcept                                                                                         \
-    : base(ex)                                                                                                                   \
+    explicit ex(const base& e) noexcept                                                                                          \
+    : base(e)                                                                                                                    \
     {                                                                                                                            \
     }                                                                                                                            \
   };

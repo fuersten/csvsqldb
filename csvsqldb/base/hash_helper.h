@@ -48,14 +48,14 @@ namespace std
     result_type operator()(argument_type const& val) const
     {
       argument_type str = val;
-      result_type hash = 5381;
+      result_type h = 5381;
       char c = 0;
 
       while ((c = *str++)) {
-        hash = ((hash << 5) + hash) ^ static_cast<result_type>(c);
+        h = ((h << 5) + h) ^ static_cast<result_type>(c);
       }
 
-      return hash;
+      return h;
     }
   };
 }

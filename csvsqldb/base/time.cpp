@@ -42,8 +42,8 @@
 namespace csvsqldb
 {
 #define MODULO(x, y) ((abs(x) % (y)) * (x < 0 ? -1 : 1))
-#define SECONDSPERDAY 86400L
-#define MILLISECONDSPERDAY (SECONDSPERDAY * 1000L)
+#define SECONDSPERDAY 86400
+#define MILLISECONDSPERDAY (SECONDSPERDAY * 1000)
 
 
   Time Time::now()

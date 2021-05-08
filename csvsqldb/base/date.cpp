@@ -345,7 +345,7 @@ namespace csvsqldb
       }
       int tempMonth = month + carry;
       month = static_cast<uint16_t>(modulo(tempMonth, 1, 13));
-      year += quotient(tempMonth, 1, 13);
+      year += static_cast<uint16_t>(quotient(tempMonth, 1, 13));
     }
     day = static_cast<uint16_t>(orgDay);
     if (!Date::isValid(year, static_cast<eMonth>(month), day)) {
