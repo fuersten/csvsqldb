@@ -284,6 +284,7 @@ namespace csvsqldb
                      "could not open file '" << pathToCsvFile << "' (" << csvsqldb::errnoText() << ")");
     }
 
+    _csvContext._filename = pathToCsvFile.string();
     _csvContext._skipFirstLine = true;
     _csvContext._delimiter = mapping._delimiter;
     _blockReader.initialize(std::make_unique<csvsqldb::csv::CSVParser>(_csvContext, *_stream, types, _blockReader));

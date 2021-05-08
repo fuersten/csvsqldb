@@ -58,6 +58,7 @@ namespace csvsqldb
      */
     struct CSVSQLDB_EXPORT CSVParserContext {
       CSVParserContext() = default;
+      std::string _filename;
       bool _skipFirstLine{false};  //!< The parser will skip the first input line (e.g. the header), default is false
       char _delimiter{','};        //!< Field delimiter, default is ','
     };

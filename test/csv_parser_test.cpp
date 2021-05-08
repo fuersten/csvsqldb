@@ -384,6 +384,7 @@ TEST_CASE("CSV Parser Error Test", "[csv]")
 {
   MyCSVParserCallback callback;
   csvsqldb::csv::CSVParserContext context;
+  context._filename = "inline";
   context._skipFirstLine = false;
   RedirectStdErr red;
 
@@ -402,7 +403,7 @@ TEST_CASE("CSV Parser Error Test", "[csv]")
     csvsqldb::csv::CSVParser csvparser(context, ss, types, callback);
     parse(csvparser);
 
-    checkLog("ERROR: skipping line 2: expected a date field (YYYY-mm-dd) in line 2");
+    checkLog("inline:2:7:2: ERROR: expected a DATE field (YYYY-mm-dd) - skipping line");
   }
   SECTION("too many fields")
   {
@@ -418,7 +419,7 @@ TEST_CASE("CSV Parser Error Test", "[csv]")
     csvsqldb::csv::CSVParser csvparser(context, ss, types, callback);
     parse(csvparser);
 
-    checkLog("ERROR: skipping line 1: too many fields found in line 1");
+    checkLog("inline:1:18:3: ERROR: too many fields found - skipping line");
   }
   SECTION("too few fields")
   {
@@ -436,7 +437,7 @@ TEST_CASE("CSV Parser Error Test", "[csv]")
     csvsqldb::csv::CSVParser csvparser(context, ss, types, callback);
     parse(csvparser);
 
-    checkLog("ERROR: skipping line 1: too few fields found in line 1");
+    checkLog("inline:1:22:4: ERROR: too few fields found - skipping line");
   }
   SECTION("no more input")
   {
@@ -452,7 +453,7 @@ TEST_CASE("CSV Parser Error Test", "[csv]")
     csvsqldb::csv::CSVParser csvparser(context, ss, types, callback);
     parse(csvparser);
 
-    checkLog("ERROR: skipping line 3: too few fields found in line 3");
+    checkLog("inline:3:16:3: ERROR: too few fields found - skipping line");
   }
   SECTION("no long type")
   {
@@ -464,7 +465,7 @@ TEST_CASE("CSV Parser Error Test", "[csv]")
     csvsqldb::csv::CSVParser csvparser(context, ss, types, callback);
     parse(csvparser);
 
-    checkLog("ERROR: skipping line 1: field is not a long in line 1");
+    checkLog("inline:1:1:1: ERROR: field is not a valid INTEGER - skipping line");
   }
   SECTION("no bool type")
   {
@@ -476,7 +477,7 @@ TEST_CASE("CSV Parser Error Test", "[csv]")
     csvsqldb::csv::CSVParser csvparser(context, ss, types, callback);
     parse(csvparser);
 
-    checkLog("ERROR: skipping line 1: field is not a bool in line 1");
+    checkLog("inline:1:1:1: ERROR: field is not a valid BOOLEAN - skipping line");
   }
   SECTION("no time type")
   {
@@ -488,6 +489,6 @@ TEST_CASE("CSV Parser Error Test", "[csv]")
     csvsqldb::csv::CSVParser csvparser(context, ss, types, callback);
     parse(csvparser);
 
-    checkLog("ERROR: skipping line 1: expected a time field (HH:MM:SS) in line 1");
+    checkLog("inline:1:1:1: ERROR: expected a TIME field (HH:MM:SS) - skipping line");
   }
 }
