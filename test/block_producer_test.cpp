@@ -53,7 +53,7 @@ TEST_CASE("Block Producer Test", "[block]")
       types.emplace_back(csvsqldb::INT);
     }
 
-    dataProducer.start([](csvsqldb::BlockProducer& producer) {
+    dataProducer.start([&](csvsqldb::BlockProducer& producer) {
       for (auto n = 0u; n < rows; ++n) {
         for (auto m = 0u; m < numFields; ++m) {
           producer.addBool(true, false);
@@ -83,7 +83,7 @@ TEST_CASE("Block Producer Test", "[block]")
       types.emplace_back(csvsqldb::INT);
     }
 
-    dataProducer.start([](csvsqldb::BlockProducer& producer) {
+    dataProducer.start([&](csvsqldb::BlockProducer& producer) {
       for (auto m = 0u; m < numFields; ++m) {
         producer.addBool(true, false);
         throw csvsqldb::Exception("exception");
