@@ -338,6 +338,41 @@ TEST_CASE("CSV Parser Test", "[csv]")
     nextRowBase = 24;
     CHECK("abc,def" == callback._results[nextRowBase + 1]);
   }
+
+  SECTION("parse null")
+  {
+    csvsqldb::csv::Types types;
+    types.push_back(csvsqldb::csv::LONG);
+    types.push_back(csvsqldb::csv::DOUBLE);
+    types.push_back(csvsqldb::csv::STRING);
+    types.push_back(csvsqldb::csv::DATE);
+    types.push_back(csvsqldb::csv::TIME);
+    types.push_back(csvsqldb::csv::TIMESTAMP);
+
+    std::stringstream ss(R"(row_id,weight,name,birth_date,birth_time,last_change
+3456,92.5,"Ulf",1954-03-20,17:45:23,2021-05-08T10:59:53.123
+,,,,,
+)");
+
+    csvsqldb::csv::CSVParser csvparser(context, ss, types, callback);
+    parse(csvparser);
+
+    size_t nextRowBase = 0;
+    CHECK("3456" == callback._results[nextRowBase + 0]);
+    CHECK("92.500000" == callback._results[nextRowBase + 1]);
+    CHECK("Ulf" == callback._results[nextRowBase + 2]);
+    CHECK("1954-03-20" == callback._results[nextRowBase + 3]);
+    CHECK("17:45:23" == callback._results[nextRowBase + 4]);
+    CHECK("2021-05-08T10:59:53" == callback._results[nextRowBase + 5]);
+
+    nextRowBase = 6;
+    CHECK("<NULL>" == callback._results[nextRowBase + 0]);
+    CHECK("<NULL>" == callback._results[nextRowBase + 1]);
+    CHECK("<NULL>" == callback._results[nextRowBase + 2]);
+    CHECK("<NULL>" == callback._results[nextRowBase + 3]);
+    CHECK("<NULL>" == callback._results[nextRowBase + 4]);
+    CHECK("<NULL>" == callback._results[nextRowBase + 5]);
+  }
 }
 
 TEST_CASE("CSV String Parsing Test", "[csv]")

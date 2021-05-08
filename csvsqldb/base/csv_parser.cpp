@@ -82,7 +82,7 @@ namespace csvsqldb
                 }
               }
             }
-            if (start < end) {
+            if (start <= end) {
               parseValue(*typesIter, start, end, end);
               if (++typesIter != _types.end()) {
                 start = end - (start < end ? 1 : 0);
