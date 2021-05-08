@@ -130,6 +130,8 @@ namespace csvsqldb
       void parseTimestamp(const char* str, const char* end) const;
       const char* parseValue(CsvTypes type, const char* start, const char* end, const char* lineEnd) const;
 
+      void skipLineError(Types::const_iterator typesIter, const char* fieldStart, const char* error) const;
+
       CSVParserContext _context;
       std::istream& _stream;
       Types _types;

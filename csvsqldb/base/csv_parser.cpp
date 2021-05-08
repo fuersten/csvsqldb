@@ -89,10 +89,14 @@ namespace csvsqldb
                 CSVSQLDB_THROW(CSVParserException, "too few fields found");
               }
             }
-          } catch (const csvsqldb::Exception& ex) {
-            auto field = static_cast<size_t>(typesIter - _types.begin()) + 1;
-            auto column = static_cast<size_t>(start - _currentLine.data()) + 1;
-            std::cerr << _context._filename << ":" << _lineCount << ":" << column << ":" << field << ": ERROR: " << ex.what() << " - skipping line\n";
+          } catch (const csvsqldb::TimeException& ex) {
+            skipLineError(typesIter, start, ex.what());
+          } catch (const csvsqldb::DateException& ex) {
+            skipLineError(typesIter, start, ex.what());
+          } catch (const csvsqldb::TimestampException& ex) {
+            skipLineError(typesIter, start, ex.what());
+          } catch (const CSVParserException& ex) {
+            skipLineError(typesIter, start, ex.what());
           }
         }
       } else {
@@ -100,6 +104,14 @@ namespace csvsqldb
       }
       _continue = !!std::getline(_stream, _currentLine);
       return _continue && !_currentLine.empty();
+    }
+
+    void CSVParser::skipLineError(Types::const_iterator typesIter, const char* fieldStart, const char* error) const
+    {
+      auto field = static_cast<size_t>(typesIter - _types.begin()) + 1;
+      auto column = static_cast<size_t>(fieldStart - _currentLine.data()) + 1;
+      std::cerr << _context._filename << ":" << _lineCount << ":" << column << ":" << field << ": ERROR: " << error << " - skipping line\n";
+      std::cerr << "ERROR: skipping line " << _lineCount << ": " << error << "\n";
     }
 
     const char* CSVParser::parseString(const char* str, const char* end, const char* lineEnd) const

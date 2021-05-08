@@ -40,7 +40,7 @@
 
 namespace csvsqldb
 {
-  std::string getError(int no)
+  static std::string getError(int no)
   {
     switch (no) {
       case WRDE_BADCHAR:
