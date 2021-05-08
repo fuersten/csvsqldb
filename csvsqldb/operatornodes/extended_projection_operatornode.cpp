@@ -117,7 +117,7 @@ namespace csvsqldb
         StackMachine sm;
         IdentifierSet expressionVariables;
 
-        StackMachine::VariableMapping mapping;
+        VariableStore::VariableMapping mapping;
         {
           ASTInstructionStackVisitor visitor(sm, mapping);
           exp->accept(visitor);
@@ -128,14 +128,14 @@ namespace csvsqldb
           exp->accept(visitor);
         }
 
-        VariableMapping varMapping;
+        VariableIndexMapping varMapping;
         for (const auto& variable : expressionVariables) {
           bool found = false;
           for (size_t n = 0; !found && n < _inputSymbols.size(); ++n) {
             const SymbolInfoPtr& info = _inputSymbols[n];
 
             if (variable._info->_name == info->_name) {
-              varMapping.push_back(std::make_pair(getMapping(variable.getQualifiedIdentifier(), mapping), n));
+              varMapping.push_back(std::make_pair(VariableStore::getMapping(variable.getQualifiedIdentifier(), mapping), n));
               found = true;
             }
           }
@@ -183,8 +183,9 @@ namespace csvsqldb
           const Values& rrow = *row;
           if (!_block->addValue(*(rrow[iter->second]))) {
             _block->markNextBlock();
+            auto tmpBlock = _context._blockManager.createBlock();
             previousBlock = _block;
-            _block = _context._blockManager.createBlock();
+            _block = tmpBlock;
             _block->addValue(*(rrow[iter->second]));
           }
         } else if (std::dynamic_pointer_cast<ASTQualifiedAsterisk>(exp)) {
@@ -207,8 +208,9 @@ namespace csvsqldb
             for (size_t n = 0; n < tableData.columnCount(); ++n) {
               if (!_block->addValue(*(rrow[n]))) {
                 _block->markNextBlock();
+                auto tmpBlock = _context._blockManager.createBlock();
                 previousBlock = _block;
-                _block = _context._blockManager.createBlock();
+                _block = tmpBlock;
                 _block->addValue(*(rrow[n]));
               }
             }
@@ -217,19 +219,21 @@ namespace csvsqldb
             for (size_t n = 0; n < _inputSymbols.size(); ++n) {
               if (!_block->addValue(*(rrow[n]))) {
                 _block->markNextBlock();
+                auto tmpBlock = _context._blockManager.createBlock();
                 previousBlock = _block;
-                _block = _context._blockManager.createBlock();
+                _block = tmpBlock;
                 _block->addValue(*(rrow[n]));
               }
             }
           }
         } else {
-          fillVariableStore(_sms[smIndex]._store, _sms[smIndex]._variableMappings, *row);
+          _sms[smIndex]._store.fillVariableStore(_sms[smIndex]._variableMappings, *row);
 
           if (!_block->addValue(_sms[smIndex]._sm.evaluate(_sms[smIndex]._store, _context._functions))) {
             _block->markNextBlock();
+            auto tmpBlock = _context._blockManager.createBlock();
             previousBlock = _block;
-            _block = _context._blockManager.createBlock();
+            _block = tmpBlock;
             _block->addValue(_sms[smIndex]._sm.evaluate(_sms[smIndex]._store, _context._functions));
           }
           ++smIndex;

@@ -1,6 +1,5 @@
 //
-//  systemtable_scan_operatornode.h
-//  csvsqldb
+//  csvsqldb test
 //
 //  BSD 3-Clause License
 //  Copyright (c) 2015-2020 Lars-Christian Fürstenberg
@@ -31,27 +30,35 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-#pragma once
+#include <csvsqldb/operatornodes/systemtable_scan_operatornode.h>
 
-#include <csvsqldb/inc.h>
+#include "temporary_directory.h"
+#include "test/test_util.h"
 
-#include <csvsqldb/block_iterator.h>
-#include <csvsqldb/operatornodes/scan_operatornode.h>
+#include <catch2/catch.hpp>
 
 
-namespace csvsqldb
+TEST_CASE("System Scan Operator Node Test", "[operatornodes]")
 {
-  class CSVSQLDB_EXPORT SystemTableScanOperatorNode : public ScanOperatorNode
+  TemporaryDirectoryGuard tmpDir;
+  auto path = tmpDir.temporaryDirectoryPath();
+  csvsqldb::FileMapping mapping;
+  csvsqldb::Database database{path, mapping};
+  csvsqldb::FunctionRegistry functions;
+  csvsqldb::BlockManager blockManager;
+  csvsqldb::OperatorContext context{database, functions, blockManager, {}};
+  auto symbolTable = csvsqldb::SymbolTable::createSymbolTable();
+
+  SECTION("Scan System Table")
   {
-  public:
-    SystemTableScanOperatorNode(const OperatorContext& context, const SymbolTablePtr& symbolTable, const SymbolInfo& tableInfo);
-
-    void dump(std::ostream& stream) const override;
-
-    const Values* getNextRow() override;
-
-  private:
-    BlockIteratorPtr _iterator;
-    std::unique_ptr<BlockProvider> _blockProvider;
-  };
+    csvsqldb::SymbolInfo info;
+    info._identifier = "SYSTEM_TABLES";
+    csvsqldb::SystemTableScanOperatorNode operatorNode{context, symbolTable, info};
+    const auto* values = operatorNode.getNextRow();
+    REQUIRE(values);
+    REQUIRE(2 == values->size());
+    values = operatorNode.getNextRow();
+    REQUIRE(values);
+    REQUIRE(2 == values->size());
+  }
 }

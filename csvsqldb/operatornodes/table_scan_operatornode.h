@@ -90,6 +90,7 @@ namespace csvsqldb
     std::condition_variable _cv;
     std::mutex _queueMutex;
     bool _continue{true};
+    std::string _error;
   };
 
 
@@ -112,7 +113,7 @@ namespace csvsqldb
 
     std::unique_ptr<std::istream> _stream;
     csvsqldb::csv::CSVParserContext _csvContext;
-    BlockReader _blockReader;
     BlockIteratorPtr _iterator;
+    BlockReader _blockReader;
   };
 }

@@ -38,9 +38,6 @@
 
 namespace csvsqldb
 {
-  CSVSQLDB_IMPLEMENT_EXCEPTION(VariantException, csvsqldb::Exception);
-
-
   Variant::~Variant()
   {
     if (_refCount && _refCount->dec() == 0) {

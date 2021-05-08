@@ -586,10 +586,26 @@ namespace csvsqldb
   };
 
   template<>
+  struct Cast<StringType, bool> {
+    static std::string operation(bool rhs)
+    {
+      return rhs ? "true" : "false";
+    }
+  };
+
+  template<>
   struct Cast<double, StringType> {
     static double operation(const StringType& rhs)
     {
       return ::atof(rhs);
+    }
+  };
+
+  template<>
+  struct Cast<StringType, double> {
+    static std::string operation(double rhs)
+    {
+      return std::to_string(rhs);
     }
   };
 
@@ -602,10 +618,26 @@ namespace csvsqldb
   };
 
   template<>
+  struct Cast<StringType, int64_t> {
+    static std::string operation(int64_t rhs)
+    {
+      return std::to_string(rhs);
+    }
+  };
+
+  template<>
   struct Cast<csvsqldb::Date, StringType> {
     static csvsqldb::Date operation(const StringType& rhs)
     {
       return csvsqldb::dateFromString(rhs);
+    }
+  };
+
+  template<>
+  struct Cast<StringType, csvsqldb::Date> {
+    static std::string operation(csvsqldb::Date rhs)
+    {
+      return rhs.format("%F");
     }
   };
 
@@ -618,10 +650,26 @@ namespace csvsqldb
   };
 
   template<>
+  struct Cast<StringType, csvsqldb::Time> {
+    static std::string operation(csvsqldb::Time rhs)
+    {
+      return rhs.format("%X");
+    }
+  };
+
+  template<>
   struct Cast<csvsqldb::Timestamp, StringType> {
     static csvsqldb::Timestamp operation(const StringType& rhs)
     {
       return csvsqldb::timestampFromString(rhs);
+    }
+  };
+
+  template<>
+  struct Cast<StringType, csvsqldb::Timestamp> {
+    static std::string operation(csvsqldb::Timestamp rhs)
+    {
+      return rhs.format("%F");
     }
   };
 
@@ -1372,6 +1420,17 @@ namespace csvsqldb
     Cast<CAST, RHS> _cast;
   };
 
+  template<typename RHS>
+  struct OperationCast<StringType, RHS> : public UnaryOperationBase<OP_CAST, std::string, RHS> {
+  private:
+    std::string operation(const RHS& rhs) const override
+    {
+      return _cast.operation(rhs);
+    }
+
+    Cast<StringType, RHS> _cast;
+  };
+
   template<typename CAST>
   struct OperationNullCast : public UnaryOperationBase<OP_CAST, CAST, NoneType> {
   private:
@@ -2019,6 +2078,14 @@ namespace csvsqldb
     using op_cast_sz = OperationCast<csvsqldb::Timestamp, StringType>;
     using op_cast_dz = OperationCast<csvsqldb::Timestamp, csvsqldb::Date>;
     using op_cast_tz = OperationCast<csvsqldb::Timestamp, csvsqldb::Time>;
+
+    using op_cast_fs = OperationCast<StringType, double>;
+    using op_cast_is = OperationCast<StringType, int64_t>;
+    using op_cast_bs = OperationCast<StringType, bool>;
+    using op_cast_ds = OperationCast<StringType, csvsqldb::Date>;
+    using op_cast_ts = OperationCast<StringType, csvsqldb::Time>;
+    using op_cast_zs = OperationCast<StringType, csvsqldb::Timestamp>;
+
     using op_null_cast_nb = OperationNullCast<bool>;
     using op_null_cast_ni = OperationNullCast<int64_t>;
     using op_null_cast_nf = OperationNullCast<double>;
@@ -2078,6 +2145,19 @@ namespace csvsqldb
       g_unaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
       operation = std::make_unique<op_cast_tz>();
       g_unaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_cast_fs>();
+      g_unaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_cast_is>();
+      g_unaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_cast_bs>();
+      g_unaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_cast_ds>();
+      g_unaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_cast_ts>();
+      g_unaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+      operation = std::make_unique<op_cast_zs>();
+      g_unaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
+
       operation = std::make_unique<op_null_cast_nb>();
       g_unaryOperations.insert(std::make_pair(operation->key(), std::move(operation)));
       operation = std::make_unique<op_null_cast_ni>();

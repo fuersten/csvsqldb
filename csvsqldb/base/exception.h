@@ -94,37 +94,27 @@ namespace csvsqldb
   class CSVSQLDB_EXPORT ex : public base                                                                                         \
   {                                                                                                                              \
   public:                                                                                                                        \
-    explicit ex(std::error_code ec, const std::string& message) noexcept;                                                        \
-    explicit ex(int ev, const std::string& message) noexcept;                                                                    \
-    explicit ex(std::errc ec, const std::string& message) noexcept;                                                              \
-    explicit ex(const std::string& message) noexcept;                                                                            \
-    explicit ex(const base& ex) noexcept;                                                                                        \
-  }
-
-/**
- * Macro for exception class implementations with a specific base class.
- */
-#define CSVSQLDB_IMPLEMENT_EXCEPTION(ex, base)                                                                                   \
-  ex::ex(std::error_code ec, const std::string& message) noexcept                                                                \
-  : base(ec, message)                                                                                                            \
-  {                                                                                                                              \
-  }                                                                                                                              \
-  ex::ex(int ev, const std::string& message) noexcept                                                                            \
-  : base(ev, message)                                                                                                            \
-  {                                                                                                                              \
-  }                                                                                                                              \
-  ex::ex(std::errc ec, const std::string& message) noexcept                                                                      \
-  : base(ec, message)                                                                                                            \
-  {                                                                                                                              \
-  }                                                                                                                              \
-  ex::ex(const std::string& message) noexcept                                                                                    \
-  : base(message)                                                                                                                \
-  {                                                                                                                              \
-  }                                                                                                                              \
-  ex::ex(const base& ex) noexcept                                                                                                \
-  : base(ex)                                                                                                                     \
-  {                                                                                                                              \
-  }
+    explicit ex(std::error_code ec, const std::string& message) noexcept                                                         \
+    : base(ec, message)                                                                                                          \
+    {                                                                                                                            \
+    }                                                                                                                            \
+    explicit ex(int ev, const std::string& message) noexcept                                                                     \
+    : base(ev, message)                                                                                                          \
+    {                                                                                                                            \
+    }                                                                                                                            \
+    explicit ex(std::errc ec, const std::string& message) noexcept                                                               \
+    : base(ec, message)                                                                                                          \
+    {                                                                                                                            \
+    }                                                                                                                            \
+    explicit ex(const std::string& message) noexcept                                                                             \
+    : base(message)                                                                                                              \
+    {                                                                                                                            \
+    }                                                                                                                            \
+    explicit ex(const base& ex) noexcept                                                                                         \
+    : base(ex)                                                                                                                   \
+    {                                                                                                                            \
+    }                                                                                                                            \
+  };
 
   /**
    * Exception object for configuration exceptions.
@@ -157,11 +147,6 @@ namespace csvsqldb
   CSVSQLDB_DECLARE_EXCEPTION(InvalidOperationException, Exception);
 
   /**
-   * Exception object for lexical analysis errors.
-   */
-  CSVSQLDB_DECLARE_EXCEPTION(LexicalAnalysisException, Exception);
-
-  /**
    * Exception object for date errors.
    */
   CSVSQLDB_DECLARE_EXCEPTION(DateException, Exception);
@@ -185,11 +170,6 @@ namespace csvsqldb
    * Exception object for input errors.
    */
   CSVSQLDB_DECLARE_EXCEPTION(NoMoreInputException, Exception);
-
-  /**
-   * Exception object for chrono errors.
-   */
-  CSVSQLDB_DECLARE_EXCEPTION(ChronoException, Exception);
 
   /**
    * Exception object for regex errors.

@@ -49,7 +49,7 @@ namespace csvsqldb
   void SQLParser::reportUnexpectedToken(const std::string& message, const csvsqldb::Token& token)
   {
     CSVSQLDB_THROW(SqlParserException,
-                   message << "'" << token._value << "' at line " << token._lineCount << ":" << token._charCount);
+                   message << "'" << token._value << "' at line " << token._location._line << ":" << token._location._column);
   }
 
   std::string SQLParser::expect(eToken tok)
@@ -57,8 +57,8 @@ namespace csvsqldb
     if (_currentToken._token != tok) {
       CSVSQLDB_THROW(SqlParserException, "expected '" << tokenToString(tok) << "' but found '"
                                                       << tokenToString(eToken(_currentToken._token)) << "' ("
-                                                      << _currentToken._value << ") at line " << _currentToken._lineCount << ":"
-                                                      << _currentToken._charCount);
+                                                      << _currentToken._value << ") at line " << _currentToken._location._line
+                                                      << ":" << _currentToken._location._column);
     }
     std::string val = _currentToken._value;
     parseNext();
@@ -232,7 +232,8 @@ namespace csvsqldb
               _currentToken._token == TOK_UNIQUE || _currentToken._token == TOK_PRIMARY || _currentToken._token == TOK_CHECK)) {
           CSVSQLDB_THROW(SqlParserException, "expected a table element but found '"
                                                << tokenToString(eToken(_currentToken._token)) << "' (" << _currentToken._value
-                                               << ") at line " << _currentToken._lineCount << ":" << _currentToken._charCount);
+                                               << ") at line " << _currentToken._location._line << ":"
+                                               << _currentToken._location._column);
         }
       } else {
         break;
@@ -281,9 +282,10 @@ namespace csvsqldb
         type = DATE;
         break;
       default:
-        CSVSQLDB_THROW(SqlParserException, "expected a type but found '"
-                                             << tokenToString(eToken(_currentToken._token)) << "' (" << _currentToken._value
-                                             << ") at line " << _currentToken._lineCount << ":" << _currentToken._charCount);
+        CSVSQLDB_THROW(SqlParserException, "expected a type but found '" << tokenToString(eToken(_currentToken._token)) << "' ("
+                                                                         << _currentToken._value << ") at line "
+                                                                         << _currentToken._location._line << ":"
+                                                                         << _currentToken._location._column);
     }
 
     return type;
@@ -342,9 +344,10 @@ namespace csvsqldb
         columnType = TIMESTAMP;
         break;
       default:
-        CSVSQLDB_THROW(SqlParserException, "expected a type but found '"
-                                             << tokenToString(eToken(_currentToken._token)) << "' (" << _currentToken._value
-                                             << ") at line " << _currentToken._lineCount << ":" << _currentToken._charCount);
+        CSVSQLDB_THROW(SqlParserException, "expected a type but found '" << tokenToString(eToken(_currentToken._token)) << "' ("
+                                                                         << _currentToken._value << ") at line "
+                                                                         << _currentToken._location._line << ":"
+                                                                         << _currentToken._location._column);
     }
     ColumnDefinition definition(columnName, columnType);
     definition._length = columnLength;
@@ -355,9 +358,10 @@ namespace csvsqldb
       if (_currentToken._token != TOK_CONST_STRING && _currentToken._token != TOK_CONST_INTEGER &&
           _currentToken._token != TOK_CONST_BOOLEAN && _currentToken._token != TOK_CONST_DATE &&
           _currentToken._token != TOK_CONST_REAL && _currentToken._token != TOK_CONST_CHAR) {
-        CSVSQLDB_THROW(SqlParserException, "expected a constant but found '"
-                                             << tokenToString(eToken(_currentToken._token)) << "' (" << _currentToken._value
-                                             << ") at line " << _currentToken._lineCount << ":" << _currentToken._charCount);
+        CSVSQLDB_THROW(SqlParserException, "expected a constant but found '" << tokenToString(eToken(_currentToken._token))
+                                                                             << "' (" << _currentToken._value << ") at line "
+                                                                             << _currentToken._location._line << ":"
+                                                                             << _currentToken._location._column);
       }
 
       definition._defaultValue = TypedValue::createValue(columnType, _currentToken._value)._value;
@@ -445,9 +449,10 @@ namespace csvsqldb
       canExpect(TOK_COLUMN);
       alterNode = std::make_shared<ASTAlterTableDropColumnNode>(SymbolTable::createSymbolTable(), expect(TOK_IDENTIFIER));
     } else {
-      CSVSQLDB_THROW(SqlParserException, "expected add or drop but found '"
-                                           << tokenToString(eToken(_currentToken._token)) << "' (" << _currentToken._value
-                                           << ") at line " << _currentToken._lineCount << ":" << _currentToken._charCount);
+      CSVSQLDB_THROW(SqlParserException, "expected add or drop but found '" << tokenToString(eToken(_currentToken._token))
+                                                                            << "' (" << _currentToken._value << ") at line "
+                                                                            << _currentToken._location._line << ":"
+                                                                            << _currentToken._location._column);
     }
 
     return alterNode;

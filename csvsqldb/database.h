@@ -36,7 +36,7 @@
 #include <csvsqldb/inc.h>
 
 #include <csvsqldb/file_mapping.h>
-#include <csvsqldb/tabledata.h>
+#include <csvsqldb/system_tables.h>
 
 #include <filesystem>
 
@@ -93,6 +93,11 @@ namespace csvsqldb
       return _mappings.asStringVector();
     }
 
+    const SystemTables& getSystemTables() const
+    {
+      return _systemTables;
+    }
+
   private:
     void setUp();
     void addSystemTables();
@@ -102,5 +107,6 @@ namespace csvsqldb
     fs::path _path;
     std::vector<TableData> _tables;
     FileMapping _mappings;
+    SystemTables _systemTables;
   };
 }

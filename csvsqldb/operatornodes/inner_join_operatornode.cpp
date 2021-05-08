@@ -57,7 +57,7 @@ namespace csvsqldb
       row = CrossJoinOperatorNode::getNextRow();
 
       if (row) {
-        fillVariableStore(store, _sm._variableMappings, *row);
+        store.fillVariableStore(_sm._variableMappings, *row);
         match = _sm._sm.evaluate(store, _context._functions).asBool();
       }
     } while (row && !match);
@@ -74,7 +74,7 @@ namespace csvsqldb
       StackMachine sm;
       IdentifierSet expressionVariables;
 
-      StackMachine::VariableMapping mapping;
+      VariableStore::VariableMapping mapping;
       {
         ASTInstructionStackVisitor visitor(sm, mapping);
         _exp->accept(visitor);
@@ -85,14 +85,14 @@ namespace csvsqldb
         _exp->accept(visitor);
       }
 
-      VariableMapping variableMapping;
+      VariableIndexMapping variableMapping;
       for (const auto& variable : expressionVariables) {
         bool found = false;
         for (size_t n = 0; !found && n < outputSymbols.size(); ++n) {
           const SymbolInfoPtr& info = outputSymbols[n];
 
           if (variable._info->_name == info->_name) {
-            variableMapping.push_back(std::make_pair(getMapping(variable.getQualifiedIdentifier(), mapping), n));
+            variableMapping.push_back(std::make_pair(VariableStore::getMapping(variable.getQualifiedIdentifier(), mapping), n));
             found = true;
           }
         }

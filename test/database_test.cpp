@@ -62,14 +62,26 @@ TEST_CASE("Database Test", "[database]")
     REQUIRE(database.hasTable("SYSTEM_DUAL"));
     auto systemTable = database.getTable("SYSTEM_DUAL");
     CHECK("SYSTEM_DUAL" == systemTable.name());
-    auto column = systemTable.getColumn("x");
-    CHECK(column._type == csvsqldb::BOOLEAN);
-    CHECK_FALSE(column._primaryKey);
-    CHECK_FALSE(column._unique);
-    CHECK_FALSE(column._notNull);
-    CHECK_FALSE(column._defaultValue.has_value());
-    CHECK_FALSE(column._check);
-    CHECK(0 == column._length);
+
+    REQUIRE(database.hasTable("SYSTEM_TABLES"));
+    systemTable = database.getTable("SYSTEM_TABLES");
+    CHECK("SYSTEM_TABLES" == systemTable.name());
+
+    REQUIRE(database.hasTable("SYSTEM_COLUMNS"));
+    systemTable = database.getTable("SYSTEM_COLUMNS");
+    CHECK("SYSTEM_COLUMNS" == systemTable.name());
+
+    REQUIRE(database.hasTable("SYSTEM_FUNCTIONS"));
+    systemTable = database.getTable("SYSTEM_FUNCTIONS");
+    CHECK("SYSTEM_FUNCTIONS" == systemTable.name());
+
+    REQUIRE(database.hasTable("SYSTEM_PARAMETERS"));
+    systemTable = database.getTable("SYSTEM_PARAMETERS");
+    CHECK("SYSTEM_PARAMETERS" == systemTable.name());
+
+    REQUIRE(database.hasTable("SYSTEM_MAPPINGS"));
+    systemTable = database.getTable("SYSTEM_MAPPINGS");
+    CHECK("SYSTEM_MAPPINGS" == systemTable.name());
   }
   SECTION("construction no path")
   {
@@ -118,7 +130,7 @@ TEST_CASE("Database Test", "[database]")
       database.addTable(std::move(otherTable));
       CHECK(database.hasTable("PETS"));
 
-      CHECK(3 == database.getTables().size());
+      CHECK(8 == database.getTables().size());
     }
 
     csvsqldb::Database database{path, mapping};

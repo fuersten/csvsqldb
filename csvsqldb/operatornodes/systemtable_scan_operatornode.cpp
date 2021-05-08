@@ -40,6 +40,8 @@ namespace csvsqldb
                                                            const SymbolInfo& tableInfo)
   : ScanOperatorNode(context, symbolTable, tableInfo)
   {
+    _blockProvider =
+      _context._database.getSystemTables().createDataProvider(_tableInfo._identifier, context._database, context._blockManager);
   }
 
   void SystemTableScanOperatorNode::dump(std::ostream& stream) const
@@ -49,20 +51,9 @@ namespace csvsqldb
 
   const Values* SystemTableScanOperatorNode::getNextRow()
   {
-    if (!_currentBlock) {
-      _iterator = std::make_shared<BlockIterator>(_types, *this, _context._blockManager);
+    if (!_iterator) {
+      _iterator = std::make_shared<BlockIterator>(_types, *_blockProvider, _context._blockManager);
     }
     return _iterator->getNextRow();
-  }
-
-  BlockPtr SystemTableScanOperatorNode::getNextBlock()
-  {
-    _currentBlock = _context._blockManager.createBlock();
-
-    _currentBlock->addValue(Variant(false));
-    _currentBlock->nextRow();
-    _currentBlock->endBlocks();
-
-    return _currentBlock;
   }
 }

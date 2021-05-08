@@ -95,7 +95,7 @@ namespace csvsqldb
       StackMachine sm;
       IdentifierSet expressionVariables;
 
-      StackMachine::VariableMapping mapping;
+      VariableStore::VariableMapping mapping;
       {
         ASTInstructionStackVisitor visitor(sm, mapping);
         _exp->accept(visitor);
@@ -106,7 +106,7 @@ namespace csvsqldb
         _exp->accept(visitor);
       }
 
-      VariableMapping variableMapping;
+      VariableIndexMapping variableMapping;
       size_t hashTableKeyPosition = 0;
       for (const auto& variable : expressionVariables) {
         bool found = false;
@@ -114,7 +114,7 @@ namespace csvsqldb
           const SymbolInfoPtr& info = _outputSymbols[n];
 
           if (variable._info->_name == info->_name) {
-            variableMapping.push_back(std::make_pair(getMapping(variable.getQualifiedIdentifier(), mapping), n));
+            variableMapping.push_back(std::make_pair(VariableStore::getMapping(variable.getQualifiedIdentifier(), mapping), n));
             found = true;
           }
         }

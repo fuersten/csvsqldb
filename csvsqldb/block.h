@@ -40,6 +40,7 @@
 #include <csvsqldb/variant.h>
 
 #include <memory>
+#include <mutex>
 #include <vector>
 
 
@@ -57,7 +58,7 @@ namespace csvsqldb
   class RowProvider;
   using RowProviderPtr = std::shared_ptr<RowProvider>;
 
-  static constexpr size_t sDefaultMaxActiveBlocks = 100;
+  static constexpr size_t sDefaultMaxActiveBlocks = 1000;
   static constexpr size_t sDefaultBlockCapacity = 1 * 1024 * 1024;
 
   static constexpr StoreType sValueMarker = static_cast<char>(0xAA);
@@ -97,6 +98,8 @@ namespace csvsqldb
     size_t _maxCountActiveBlocks{0};
     size_t _totalBlocks{0};
 
+    mutable std::mutex _blockMutex;
+
     inline static size_t sBlockNumber{0};
   };
 
@@ -104,6 +107,7 @@ namespace csvsqldb
   class CSVSQLDB_EXPORT BlockProvider
   {
   public:
+    virtual ~BlockProvider() = default;
     virtual BlockPtr getNextBlock() = 0;
   };
 
@@ -111,6 +115,7 @@ namespace csvsqldb
   class CSVSQLDB_EXPORT RowProvider
   {
   public:
+    virtual ~RowProvider() = default;
     virtual const Values* getNextRow() = 0;
   };
 

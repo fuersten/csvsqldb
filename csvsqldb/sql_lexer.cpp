@@ -35,6 +35,7 @@
 #include "sql_lexer.h"
 
 #include "base/logging.h"
+#include "types.h"
 
 // clang-format off
 #include "base/pragma_push.h"
@@ -89,6 +90,7 @@ namespace csvsqldb
     while (tok._token == TOK_COMMENT) {
       tok = _impl->next();
     }
+
     return tok;
   }
 }

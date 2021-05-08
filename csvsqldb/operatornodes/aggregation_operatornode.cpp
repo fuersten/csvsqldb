@@ -77,7 +77,7 @@ namespace csvsqldb
           StackMachine sm;
           IdentifierSet expressionVariables;
 
-          StackMachine::VariableMapping mapping;
+          VariableStore::VariableMapping mapping;
           {
             ASTInstructionStackVisitor visitor(sm, mapping);
             aggr->_parameters[0]._exp->accept(visitor);
@@ -88,14 +88,14 @@ namespace csvsqldb
             aggr->_parameters[0]._exp->accept(visitor);
           }
 
-          VariableMapping varMapping;
+          VariableIndexMapping varMapping;
           for (const auto& variable : expressionVariables) {
             bool found = false;
             for (size_t n = 0; !found && n < infos.size(); ++n) {
               const SymbolInfoPtr& info = infos[n];
 
               if (variable._info->_name == info->_name) {
-                varMapping.push_back(std::make_pair(getMapping(variable.getQualifiedIdentifier(), mapping), n));
+                varMapping.push_back(std::make_pair(VariableStore::getMapping(variable.getQualifiedIdentifier(), mapping), n));
                 found = true;
               }
             }
@@ -107,7 +107,7 @@ namespace csvsqldb
         } else {
           // we just need a dummy value
           StackMachine sm;
-          VariableMapping varMapping;
+          VariableIndexMapping varMapping;
           sm.addInstruction(StackMachine::Instruction(StackMachine::PUSH, Variant(BOOLEAN)));
           _sms.push_back(StackMachineType(sm, varMapping));
         }
@@ -145,7 +145,7 @@ namespace csvsqldb
     const Values* row = nullptr;
     while ((row = _input->getNextRow())) {
       for (auto& aggrFunc : _aggregateFunctions) {
-        fillVariableStore(_sms[smIndex]._store, _sms[smIndex]._variableMappings, *row);
+        _sms[smIndex]._store.fillVariableStore(_sms[smIndex]._variableMappings, *row);
         const Variant& variant = _sms[smIndex]._sm.evaluate(_sms[smIndex]._store, _context._functions);
         aggrFunc->step(variant);
         ++n;

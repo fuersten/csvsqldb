@@ -58,7 +58,7 @@ namespace csvsqldb
   {
     const Values* row = _input->getNextRow();
     while (row) {
-      fillVariableStore(_store, _variableMapping, *row);
+      _store.fillVariableStore(_variableMapping, *row);
       if (_sm.evaluate(_store, _context._functions).asBool()) {
         return row;
       }
@@ -78,7 +78,7 @@ namespace csvsqldb
         const SymbolInfoPtr& info = _inputSymbols[n];
 
         if ((info->_identifier == variable._info->_name) || (info->_qualifiedIdentifier == variable._info->_name)) {
-          _variableMapping.push_back(std::make_pair(getMapping(variable.getQualifiedIdentifier(), _mapping), n));
+          _variableMapping.push_back(std::make_pair(VariableStore::getMapping(variable.getQualifiedIdentifier(), _mapping), n));
           found = true;
         }
       }

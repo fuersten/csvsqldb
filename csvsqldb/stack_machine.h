@@ -52,11 +52,31 @@ namespace csvsqldb
   class CSVSQLDB_EXPORT VariableStore
   {
   public:
+    using VariableMapping = std::vector<std::pair<std::string, size_t>>;
+    using VariableIndexMapping = std::vector<std::pair<size_t, size_t>>;
+
     VariableStore() = default;
 
     void addVariable(size_t index, const Variant& value);
 
     const Variant& operator[](size_t index) const;
+
+    void fillVariableStore(const VariableIndexMapping& variableMapping, const Values& row)
+    {
+      for (const auto& index : variableMapping) {
+        addVariable(index.first, valueToVariant(*row[index.second]));
+      }
+    }
+
+    static size_t getMapping(const std::string& variable, const VariableMapping& mapping)
+    {
+      const auto iter = std::find_if(mapping.begin(), mapping.end(), [&](const auto& var) { return var.first == variable; });
+      if (iter == mapping.end()) {
+        CSVSQLDB_THROW(csvsqldb::Exception, "no mapping found for variable '" << variable << "'");
+      } else {
+        return iter->second;
+      }
+    }
 
   private:
     std::vector<Variant> _variables;
@@ -66,9 +86,6 @@ namespace csvsqldb
   class CSVSQLDB_EXPORT StackMachine
   {
   public:
-    using VariableIndex = std::pair<std::string, size_t>;
-    using VariableMapping = std::vector<VariableIndex>;
-
     enum OpCode {
       ADD,
       AND,

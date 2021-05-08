@@ -36,6 +36,8 @@
 
 #include <catch2/catch.hpp>
 
+using namespace std::string_literals;
+
 namespace
 {
   struct Expected {
@@ -324,6 +326,31 @@ TEST_CASE("Type operations Test", "[operations]")
     lhs = csvsqldb::Variant("2015-06-29T08:09:11");
     result = unaryOperation(csvsqldb::OP_CAST, csvsqldb::TIMESTAMP, lhs);
     CHECK(csvsqldb::TIMESTAMP == result.getType());
+
+    lhs = csvsqldb::Variant(47.11);
+    result = unaryOperation(csvsqldb::OP_CAST, csvsqldb::STRING, lhs);
+    CHECK(csvsqldb::STRING == result.getType());
+    CHECK(result.asString() == "47.110000"s);
+
+    lhs = csvsqldb::Variant(true);
+    result = unaryOperation(csvsqldb::OP_CAST, csvsqldb::STRING, lhs);
+    CHECK(csvsqldb::STRING == result.getType());
+    CHECK(result.asString() == "true"s);
+
+    lhs = csvsqldb::Variant(csvsqldb::Date{2020, csvsqldb::Date::November, 3});
+    result = unaryOperation(csvsqldb::OP_CAST, csvsqldb::STRING, lhs);
+    CHECK(csvsqldb::STRING == result.getType());
+    CHECK(result.asString() == "2020-11-03"s);
+
+    lhs = csvsqldb::Variant(csvsqldb::Time{18, 56, 13});
+    result = unaryOperation(csvsqldb::OP_CAST, csvsqldb::STRING, lhs);
+    CHECK(csvsqldb::STRING == result.getType());
+    CHECK(result.asString() == "18:56:13"s);
+
+    lhs = csvsqldb::Variant(csvsqldb::Timestamp{2020, csvsqldb::Date::December, 3, 18, 56, 13});
+    result = unaryOperation(csvsqldb::OP_CAST, csvsqldb::STRING, lhs);
+    CHECK(csvsqldb::STRING == result.getType());
+    CHECK(result.asString() == "2020-12-03T18:56:13"s);
   }
 
   SECTION("null cast operations")

@@ -56,6 +56,8 @@ namespace csvsqldb
 
   BlockPtr BlockManager::createBlock()
   {
+    std::unique_lock blockGuard{_blockMutex};
+
     auto maxCountActiveBlocks = std::max(_activeBlocks + 1, _maxCountActiveBlocks);
     if ((_activeBlocks + 1) > _maxActiveBlocks) {
       CSVSQLDB_THROW(csvsqldb::Exception, "exceeded maximum number of active blocks");
@@ -71,6 +73,8 @@ namespace csvsqldb
 
   BlockPtr BlockManager::getBlock(size_t blockNumber) const
   {
+    std::unique_lock blockGuard{_blockMutex};
+
     Blocks::const_iterator iter =
       std::find_if(_blocks.begin(), _blocks.end(), [&](const BlockPtr& block) { return blockNumber == block->getBlockNumber(); });
     if (iter == _blocks.end()) {
@@ -81,6 +85,8 @@ namespace csvsqldb
 
   void BlockManager::release(BlockPtr& block)
   {
+    std::unique_lock blockGuard{_blockMutex};
+
     if (block) {
       --_activeBlocks;
       if (!_blocks.empty()) {

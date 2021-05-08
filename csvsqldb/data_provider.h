@@ -1,5 +1,5 @@
 //
-//  systemtable_scan_operatornode.h
+//  symboltable.h
 //  csvsqldb
 //
 //  BSD 3-Clause License
@@ -35,23 +35,83 @@
 
 #include <csvsqldb/inc.h>
 
-#include <csvsqldb/block_iterator.h>
-#include <csvsqldb/operatornodes/scan_operatornode.h>
+#include <csvsqldb/block.h>
+#include <csvsqldb/database.h>
 
 
 namespace csvsqldb
 {
-  class CSVSQLDB_EXPORT SystemTableScanOperatorNode : public ScanOperatorNode
+  class SystemDualDataProvider : public BlockProvider
   {
   public:
-    SystemTableScanOperatorNode(const OperatorContext& context, const SymbolTablePtr& symbolTable, const SymbolInfo& tableInfo);
+    SystemDualDataProvider(BlockManager& blockManager);
 
-    void dump(std::ostream& stream) const override;
-
-    const Values* getNextRow() override;
+    BlockPtr getNextBlock() override;
 
   private:
-    BlockIteratorPtr _iterator;
-    std::unique_ptr<BlockProvider> _blockProvider;
+    BlockManager& _blockManager;
+  };
+
+
+  class SystemTablesDataProvider : public BlockProvider
+  {
+  public:
+    SystemTablesDataProvider(Database& database, BlockManager& blockManager);
+
+    BlockPtr getNextBlock() override;
+
+  private:
+    Database& _database;
+    BlockManager& _blockManager;
+  };
+
+
+  class SystemColumnsDataProvider : public BlockProvider
+  {
+  public:
+    SystemColumnsDataProvider(Database& database, BlockManager& blockManager);
+
+    BlockPtr getNextBlock() override;
+
+  private:
+    Database& _database;
+    BlockManager& _blockManager;
+  };
+
+
+  class SystemFunctionsDataProvider : public BlockProvider
+  {
+  public:
+    SystemFunctionsDataProvider(Database& database, BlockManager& blockManager);
+
+    BlockPtr getNextBlock() override;
+
+  private:
+    BlockManager& _blockManager;
+  };
+
+
+  class SystemParametersDataProvider : public BlockProvider
+  {
+  public:
+    SystemParametersDataProvider(Database& database, BlockManager& blockManager);
+
+    BlockPtr getNextBlock() override;
+
+  private:
+    BlockManager& _blockManager;
+  };
+
+
+  class SystemMappingsDataProvider : public BlockProvider
+  {
+  public:
+    SystemMappingsDataProvider(Database& database, BlockManager& blockManager);
+
+    BlockPtr getNextBlock() override;
+
+  private:
+    Database& _database;
+    BlockManager& _blockManager;
   };
 }

@@ -44,10 +44,10 @@ namespace csvsqldb
   namespace csv
   {
     CSVParser::CSVParser(CSVParserContext context, std::istream& stream, Types types, CSVParserCallback& callback)
-      : _context(context)
-      , _stream(stream)
-      , _types(std::move(types))
-      , _callback(callback)
+    : _context(context)
+    , _stream(stream)
+    , _types(std::move(types))
+    , _callback(callback)
     {
       if (_context._skipFirstLine) {
         if (std::getline(_stream, _currentLine)) {
@@ -78,17 +78,18 @@ namespace csvsqldb
                 start = scanPos + 1;
                 ++typesIter;
                 if (typesIter == _types.end() && start < end) {
-                  CSVSQLDB_THROW(csvsqldb::Exception, "too many fields found in line " << _lineCount);
+                  CSVSQLDB_THROW(CSVParserException, "too many fields found in line " << _lineCount);
                 }
               }
             }
             parseValue(*typesIter, start, end, end);
             if (++typesIter != _types.end()) {
-              CSVSQLDB_THROW(csvsqldb::Exception, "too few fields found in line " << _lineCount);
+              CSVSQLDB_THROW(CSVParserException, "too few fields found in line " << _lineCount);
             }
           } catch (const csvsqldb::Exception& ex) {
             std::cerr << "ERROR: skipping line " << _lineCount << ": " << ex.what() << "\n";
-          }        }
+          }
+        }
       } else {
         return false;
       }
@@ -110,9 +111,9 @@ namespace csvsqldb
           }
         }
         if (src < lineEnd && *src != _context._delimiter) {
-          CSVSQLDB_THROW(csvsqldb::Exception, "wrong delimiters in string");
+          CSVSQLDB_THROW(CSVParserException, "wrong delimiters in string");
         } else {
-          auto val = std::string(str, src-1);
+          auto val = std::string(str, src - 1);
           char dequote[2] = {quote, quote};
           size_t pos = 0;
           while (true) {
@@ -133,7 +134,7 @@ namespace csvsqldb
 
     void CSVParser::parseLong(const char* str, const char* end) const
     {
-      if(str != end) {
+      if (str != end) {
         bool neg = *str == '-';
         if (neg || *str == '+') {
           ++str;
@@ -144,26 +145,24 @@ namespace csvsqldb
           val = val * 10 + d;
         }
         if (--str != end) {
-          CSVSQLDB_THROW(csvsqldb::Exception, "field is not a long in line " << _lineCount);
+          CSVSQLDB_THROW(CSVParserException, "field is not a long in line " << _lineCount);
         }
         _callback.onLong(neg ? -val : val, false);
-      }
-      else {
+      } else {
         _callback.onLong(std::numeric_limits<int64_t>::max(), true);
       }
     }
 
     void CSVParser::parseDouble(const char* str, const char* end) const
     {
-      if(str != end) {
+      if (str != end) {
         double val{0.0};
         auto answer = fast_float::from_chars(str, end, val);
         if (answer.ec != std::errc()) {
-          CSVSQLDB_THROW(csvsqldb::Exception, "'" << std::string(str, end) << "' is not a valid REAL in line " << _lineCount);
+          CSVSQLDB_THROW(CSVParserException, "'" << std::string(str, end) << "' is not a valid REAL in line " << _lineCount);
         }
         _callback.onDouble(val, false);
-      }
-      else {
+      } else {
         _callback.onDouble(std::numeric_limits<double>::max(), true);
       }
     }
@@ -172,7 +171,7 @@ namespace csvsqldb
     {
       if (end - str == 1) {
         if ((*str - 48) < 0 || (*str - 48) > 9) {
-          CSVSQLDB_THROW(csvsqldb::Exception, "field is not a bool in line " << _lineCount);
+          CSVSQLDB_THROW(CSVParserException, "field is not a bool in line " << _lineCount);
         }
         _callback.onBoolean((*str - 48) != 0, false);
       } else {
@@ -182,10 +181,10 @@ namespace csvsqldb
 
     void CSVParser::parseDate(const char* str, const char* end) const
     {
-      if(str != end) {
+      if (str != end) {
         // TODO LCF: check for digits
         if (str[4] != '-' || str[7] != '-') {
-          CSVSQLDB_THROW(csvsqldb::Exception, "expected a date field (YYYY-mm-dd) in line " << _lineCount);
+          CSVSQLDB_THROW(CSVParserException, "expected a date field (YYYY-mm-dd) in line " << _lineCount);
         }
 
         uint16_t year = static_cast<uint16_t>(str[0] - 48) * 1000;
@@ -201,18 +200,17 @@ namespace csvsqldb
         day += static_cast<uint16_t>(str[9] - 48);
 
         _callback.onDate(csvsqldb::Date(year, month, day), false);
-      }
-      else {
+      } else {
         _callback.onDate(csvsqldb::Date(), true);
       }
     }
 
     void CSVParser::parseTime(const char* str, const char* end) const
     {
-      if(str != end) {
+      if (str != end) {
         // TODO LCF: check for digits
         if (str[2] != ':' || str[5] != ':') {
-          CSVSQLDB_THROW(csvsqldb::Exception, "expected a time field (HH:MM:SS) in line " << _lineCount);
+          CSVSQLDB_THROW(CSVParserException, "expected a time field (HH:MM:SS) in line " << _lineCount);
         }
 
         uint16_t hour = static_cast<uint16_t>(str[0] - 48) * 10;
@@ -225,21 +223,20 @@ namespace csvsqldb
         second += static_cast<uint16_t>(str[7] - 48);
 
         _callback.onTime(csvsqldb::Time(hour, minute, second), false);
-      }
-      else {
+      } else {
         _callback.onTime(csvsqldb::Time(), true);
       }
     }
 
     void CSVParser::parseTimestamp(const char* str, const char* end) const
     {
-      if(str != end) {
+      if (str != end) {
         if (end - str < 19) {
-          CSVSQLDB_THROW(csvsqldb::Exception, "expected a timestamp field (YYYY-mm-ddTHH:MM:SS) in line " << _lineCount);
+          CSVSQLDB_THROW(CSVParserException, "expected a timestamp field (YYYY-mm-ddTHH:MM:SS) in line " << _lineCount);
         } else {
           // TODO LCF: check for digits
           if (str[4] != '-' || str[7] != '-' || (str[10] != 'T' && str[10] != ' ') || str[13] != ':' || str[16] != ':') {
-            CSVSQLDB_THROW(csvsqldb::Exception, "expected a timestamp field (YYYY-mm-ddTHH:MM:SS) in line " << _lineCount);
+            CSVSQLDB_THROW(CSVParserException, "expected a timestamp field (YYYY-mm-ddTHH:MM:SS) in line " << _lineCount);
           }
 
           uint16_t year = static_cast<uint16_t>(str[0] - 48) * 1000;
@@ -264,15 +261,14 @@ namespace csvsqldb
           second += static_cast<uint16_t>(str[18] - 48);
 
           uint16_t milliseconds = 0;
-          if(end - str == 23 && str[19] == '.') {
+          if (end - str == 23 && str[19] == '.') {
             milliseconds = static_cast<uint16_t>(str[20] - 48) * 100;
             milliseconds += static_cast<uint16_t>(str[21] - 48) * 10;
             milliseconds += static_cast<uint16_t>(str[22] - 48);
           }
           _callback.onTimestamp(csvsqldb::Timestamp(year, month, day, hour, minute, second, milliseconds), false);
         }
-      }
-      else {
+      } else {
         _callback.onTimestamp(csvsqldb::Timestamp(), true);
       }
     }
