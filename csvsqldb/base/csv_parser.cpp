@@ -48,336 +48,273 @@ namespace csvsqldb
     , _stream(stream)
     , _types(std::move(types))
     , _callback(callback)
-    , _typeIterator(_types.begin())
-    , _stringParser(_stringBuffer, _stringBufferSize, std::bind(&CSVParser::readNextChar, this, std::placeholders::_1))
     {
-      _buffer.resize(_bufferLength);
-      _stringBuffer.resize(_stringBufferSize);
-      readBuffer();
       if (_context._skipFirstLine) {
-        findEndOfLine();
+        if (std::getline(_stream, _currentLine)) {
+          ++_lineCount;
+        }
       }
+      _continue = !!std::getline(_stream, _currentLine);
+    }
+
+    size_t CSVParser::getLineCount() const
+    {
+      return _lineCount;
     }
 
     bool CSVParser::parseLine()
     {
-      if (_state == LINESTART) {
-        _state = FIELDSTART;
-        _typeIterator = _types.begin();
+      if (_continue) {
+        ++_lineCount;
+        if (!_currentLine.empty()) {
+          const auto* start{_currentLine.data()};
+          const auto* end{_currentLine.data() + _currentLine.length()};
+          auto typesIter = _types.begin();
+
+          try {
+            for (const auto* scanPos = start; scanPos < end; ++scanPos) {
+              if (*scanPos == _context._delimiter) {
+                scanPos = parseValue(*typesIter, start, scanPos, end);
+                start = scanPos + 1;
+                ++typesIter;
+                if (typesIter == _types.end() && start < end) {
+                  CSVSQLDB_THROW(CSVParserException, "too many fields found");
+                }
+              }
+            }
+            if (start <= end) {
+              parseValue(*typesIter, start, end, end);
+              if (++typesIter != _types.end()) {
+                start = end - (start < end ? 1 : 0);
+                CSVSQLDB_THROW(CSVParserException, "too few fields found");
+              }
+            }
+          } catch (const csvsqldb::TimeException& ex) {
+            skipLineError(typesIter, start, ex.what());
+          } catch (const csvsqldb::DateException& ex) {
+            skipLineError(typesIter, start, ex.what());
+          } catch (const csvsqldb::TimestampException& ex) {
+            skipLineError(typesIter, start, ex.what());
+          } catch (const CSVParserException& ex) {
+            skipLineError(typesIter, start, ex.what());
+          }
+        }
+      } else {
+        return false;
       }
-
-      while (_count > 0) {
-        try {
-          switch (*_typeIterator) {
-            case LONG:
-              parseLong();
-              break;
-            case DOUBLE:
-              parseDouble();
-              break;
-            case STRING:
-              parseString();
-              break;
-            case DATE:
-              parseDate();
-              break;
-            case TIME:
-              parseTime();
-              break;
-            case TIMESTAMP:
-              parseTimestamp();
-              break;
-            case BOOLEAN:
-              parseBool();
-              break;
-          }
-          ++_typeIterator;
-          if (_typeIterator == _types.end() && (_state != LINESTART && _state != END)) {
-            CSVSQLDB_THROW(CSVParserException, "too many fields found in line " << _lineCount);
-          } else if (_typeIterator != _types.end() && (_state == LINESTART || _state == END)) {
-            CSVSQLDB_THROW(CSVParserException, "too few fields found in line " << _lineCount);
-          }
-        } catch (const csvsqldb::TimeException& ex) {
-          return skipLineError(ex.what());
-        } catch (const csvsqldb::DateException& ex) {
-          return skipLineError(ex.what());
-        } catch (const csvsqldb::TimestampException& ex) {
-          return skipLineError(ex.what());
-        } catch (const CSVParserException& ex) {
-          return skipLineError(ex.what());
-        }
-
-        if (_n == static_cast<size_t>(_count) && _state == LINESTART) {
-          if (!readBuffer()) {
-            return false;
-          }
-        }
-
-        if (_state == LINESTART && _count > 0) {
-          ++_lineCount;
-          return true;
-        } else if (_state == LINESTART && _count == 0) {
-          if (!readBuffer()) {
-            return false;
-          }
-        } else if (_state == FIELDSTART && _count == 0) {
-          if (!readBuffer()) {
-            CSVSQLDB_THROW(NoMoreInputException, "no more input characters left in source in line " << _lineCount);
-          }
-        }
-        if (_state == END) {
-          return false;
-        }
-      }
-
-      return false;
+      _continue = !!std::getline(_stream, _currentLine);
+      return _continue && !_currentLine.empty();
     }
 
-    bool CSVParser::skipLineError(const char* error)
+    void CSVParser::skipLineError(Types::const_iterator typesIter, const char* fieldStart, const char* error) const
     {
+      auto field = static_cast<size_t>(typesIter - _types.begin()) + 1;
+      auto column = static_cast<size_t>(fieldStart - _currentLine.data()) + 1;
+      std::cerr << _context._filename << ":" << _lineCount << ":" << column << ":" << field << ": ERROR: " << error << " - skipping line\n";
       std::cerr << "ERROR: skipping line " << _lineCount << ": " << error << "\n";
-      skipLine();
-      return true;
     }
 
-    void CSVParser::parseString()
+    const char* CSVParser::parseString(const char* str, const char* end, const char* lineEnd) const
     {
-      size_t len = _stringParser.parseToBuffer();
-      _callback.onString(&_stringBuffer[0], len, !_stringBuffer[0]);
-    }
-
-    void CSVParser::parseLong()
-    {
-      char c = readNextChar();
-      _stringBuffer[0] = c;
-      int64_t value = 0;
-      bool neg = false;
-      if (c == '-') {
-        c = readNextChar();
-        neg = true;
-      } else if (c == '+') {
-        c = readNextChar();
-      }
-      while (c) {
-        int n = c - 48;
-        if (n < 0 || n > 9) {
-          CSVSQLDB_THROW(CSVParserException, "field is not a long in line " << _lineCount);
+      if (str < lineEnd && (*str == '"' || *str == '\'')) {
+        char quote = *str++;
+        const auto* src = str;
+        for (; src < lineEnd; ++src) {
+          if (*src == quote) {
+            ++src;
+            if (src == lineEnd || *src != quote) {
+              break;
+            }
+          }
         }
-        value = 10 * value + n;
-        c = readNextChar();
+        if (src < lineEnd && *src != _context._delimiter) {
+          CSVSQLDB_THROW(CSVParserException, "wrong delimiters in STRING");
+        } else {
+          auto val = std::string(str, src - 1);
+          char dequote[2] = {quote, quote};
+          size_t pos = 0;
+          while (true) {
+            pos = val.find(&dequote[0], pos, 2);
+            if (pos == std::string::npos) {
+              break;
+            }
+            val.erase(++pos, 1);
+          }
+          _callback.onString(val.c_str(), val.size(), false);
+          return src;
+        }
+      } else {
+        _callback.onString(str, static_cast<size_t>(end - str), str == end);
+        return end;
       }
-      if (_stringBuffer[0]) {
-        _callback.onLong(neg ? value * (-1) : value, false);
+    }
+
+    void CSVParser::parseLong(const char* str, const char* end) const
+    {
+      if (str != end) {
+        bool neg = *str == '-';
+        if (neg || *str == '+') {
+          ++str;
+        }
+        int64_t val = 0;
+        unsigned d;
+        while ((d = static_cast<unsigned>(*str++ - '0')) <= 9) {
+          val = val * 10 + d;
+        }
+        if (--str != end) {
+          CSVSQLDB_THROW(CSVParserException, "field is not a valid INTEGER");
+        }
+        _callback.onLong(neg ? -val : val, false);
       } else {
         _callback.onLong(std::numeric_limits<int64_t>::max(), true);
       }
     }
 
-    void CSVParser::parseDouble()
+    void CSVParser::parseDouble(const char* str, const char* end) const
     {
-      size_t n = 0;
-      _stringBuffer[n] = readNextChar();
-      while (_stringBuffer[n]) {
-        _stringBuffer[++n] = readNextChar();
-      }
-      if (_stringBuffer[0]) {
-        double result{0.0};
-        auto answer = fast_float::from_chars(_stringBuffer.data(), _stringBuffer.data() + n, result);
+      if (str != end) {
+        double val{0.0};
+        auto answer = fast_float::from_chars(str, end, val);
         if (answer.ec != std::errc()) {
-          CSVSQLDB_THROW(CSVParserException, "not a float '" << _stringBuffer.data() << "'");
+          CSVSQLDB_THROW(CSVParserException, "'" << std::string(str, end) << "' is not a valid REAL");
         }
-        _callback.onDouble(result, false);
+        _callback.onDouble(val, false);
       } else {
         _callback.onDouble(std::numeric_limits<double>::max(), true);
       }
     }
 
-    void CSVParser::parseBool()
+    void CSVParser::parseBool(const char* str, const char* end) const
     {
-      char c = readNextChar();
-      if (c) {
-        if ((c - 48) < 0 || (c - 48) > 9) {
-          CSVSQLDB_THROW(CSVParserException, "field is not a bool in line " << _lineCount);
+      if (end - str == 1) {
+        if ((*str - 48) < 0 || (*str - 48) > 9) {
+          CSVSQLDB_THROW(CSVParserException, "field is not a valid BOOLEAN");
         }
-        _callback.onBoolean((c - 48) != 0, false);
-        c = readNextChar();
-        if (c) {
-          CSVSQLDB_THROW(CSVParserException, "field is not a bool in line " << _lineCount);
-        }
+        _callback.onBoolean((*str - 48) != 0, false);
       } else {
-        _callback.onBoolean(false, true);
+        CSVSQLDB_THROW(CSVParserException, "field is not a valid BOOLEAN");
       }
     }
 
-    void CSVParser::parseDate()
+    void CSVParser::parseDate(const char* str, const char* end) const
     {
-      size_t n = 0;
-      _stringBuffer[n] = readNextChar();
-      while (_stringBuffer[n]) {
-        _stringBuffer[++n] = readNextChar();
-      }
-      if (_stringBuffer[0]) {
+      if (str != end) {
         // TODO LCF: check for digits
-        if (_stringBuffer[4] != '-' || _stringBuffer[7] != '-') {
-          CSVSQLDB_THROW(CSVParserException, "expected a date field (YYYY-mm-dd) in line " << _lineCount);
+        if (str[4] != '-' || str[7] != '-') {
+          CSVSQLDB_THROW(CSVParserException, "expected a DATE field (YYYY-mm-dd)");
         }
 
-        uint16_t year = static_cast<uint16_t>(_stringBuffer[0] - 48) * 1000;
-        year += static_cast<uint16_t>(_stringBuffer[1] - 48) * 100;
-        year += static_cast<uint16_t>(_stringBuffer[2] - 48) * 10;
-        year += static_cast<uint16_t>(_stringBuffer[3] - 48);
+        uint16_t year = static_cast<uint16_t>(str[0] - 48) * 1000;
+        year += static_cast<uint16_t>(str[1] - 48) * 100;
+        year += static_cast<uint16_t>(str[2] - 48) * 10;
+        year += static_cast<uint16_t>(str[3] - 48);
 
-        uint16_t mo = static_cast<uint16_t>(_stringBuffer[5] - 48) * 10;
-        mo += static_cast<uint16_t>(_stringBuffer[6] - 48);
-        csvsqldb::Date::eMonth month = static_cast<csvsqldb::Date::eMonth>(mo);
+        uint16_t mo = static_cast<uint16_t>(str[5] - 48) * 10;
+        mo += static_cast<uint16_t>(str[6] - 48);
+        auto month = static_cast<csvsqldb::Date::eMonth>(mo);
 
-        uint16_t day = static_cast<uint16_t>(_stringBuffer[8] - 48) * 10;
-        day += static_cast<uint16_t>(_stringBuffer[9] - 48);
+        uint16_t day = static_cast<uint16_t>(str[8] - 48) * 10;
+        day += static_cast<uint16_t>(str[9] - 48);
 
-        csvsqldb::Date date(year, month, day);
-        _callback.onDate(date, false);
+        _callback.onDate(csvsqldb::Date(year, month, day), false);
       } else {
         _callback.onDate(csvsqldb::Date(), true);
       }
     }
 
-    void CSVParser::parseTime()
+    void CSVParser::parseTime(const char* str, const char* end) const
     {
-      size_t n = 0;
-      _stringBuffer[n] = readNextChar();
-      while (_stringBuffer[n]) {
-        _stringBuffer[++n] = readNextChar();
-      }
-      if (_stringBuffer[0]) {
+      if (str != end) {
         // TODO LCF: check for digits
-        if (_stringBuffer[2] != ':' || _stringBuffer[5] != ':') {
-          CSVSQLDB_THROW(CSVParserException, "expected a time field (HH:MM:SS) in line " << _lineCount);
+        if (str[2] != ':' || str[5] != ':') {
+          CSVSQLDB_THROW(CSVParserException, "expected a TIME field (HH:MM:SS)");
         }
 
-        uint16_t hour = static_cast<uint16_t>(_stringBuffer[0] - 48) * 10;
-        hour += static_cast<uint16_t>(_stringBuffer[1] - 48);
+        uint16_t hour = static_cast<uint16_t>(str[0] - 48) * 10;
+        hour += static_cast<uint16_t>(str[1] - 48);
 
-        uint16_t minute = static_cast<uint16_t>(_stringBuffer[3] - 48) * 10;
-        minute += static_cast<uint16_t>(_stringBuffer[4] - 48);
+        uint16_t minute = static_cast<uint16_t>(str[3] - 48) * 10;
+        minute += static_cast<uint16_t>(str[4] - 48);
 
-        uint16_t second = static_cast<uint16_t>(_stringBuffer[6] - 48) * 10;
-        second += static_cast<uint16_t>(_stringBuffer[7] - 48);
+        uint16_t second = static_cast<uint16_t>(str[6] - 48) * 10;
+        second += static_cast<uint16_t>(str[7] - 48);
 
-        csvsqldb::Time time(hour, minute, second);
-        _callback.onTime(time, false);
+        _callback.onTime(csvsqldb::Time(hour, minute, second), false);
       } else {
         _callback.onTime(csvsqldb::Time(), true);
       }
     }
 
-    void CSVParser::parseTimestamp()
+    void CSVParser::parseTimestamp(const char* str, const char* end) const
     {
-      size_t n = 0;
-      _stringBuffer[n] = readNextChar();
-      while (_stringBuffer[n]) {
-        _stringBuffer[++n] = readNextChar();
-      }
-      if (_stringBuffer[0]) {
-        // TODO LCF: check for digits
-        if (_stringBuffer[4] != '-' || _stringBuffer[7] != '-' || (_stringBuffer[10] != 'T' && _stringBuffer[10] != ' ') ||
-            _stringBuffer[13] != ':' || _stringBuffer[16] != ':') {
-          CSVSQLDB_THROW(CSVParserException, "expected a timestamp field (YYYY-mm-ddTHH:MM:SS) in line "
-                                               << _lineCount << ", but got '" << &_stringBuffer[0] << "'");
+      if (str != end) {
+        if (end - str < 19) {
+          CSVSQLDB_THROW(CSVParserException, "expected a TIMESTAMP field (YYYY-mm-ddTHH:MM:SS)");
+        } else {
+          // TODO LCF: check for digits
+          if (str[4] != '-' || str[7] != '-' || (str[10] != 'T' && str[10] != ' ') || str[13] != ':' || str[16] != ':') {
+            CSVSQLDB_THROW(CSVParserException, "expected a TIMESTAMP field (YYYY-mm-ddTHH:MM:SS)");
+          }
+
+          uint16_t year = static_cast<uint16_t>(str[0] - 48) * 1000;
+          year += static_cast<uint16_t>(str[1] - 48) * 100;
+          year += static_cast<uint16_t>(str[2] - 48) * 10;
+          year += static_cast<uint16_t>(str[3] - 48);
+
+          uint16_t mo = static_cast<uint16_t>(str[5] - 48) * 10;
+          mo += static_cast<uint16_t>(str[6] - 48);
+          auto month = static_cast<csvsqldb::Date::eMonth>(mo);
+
+          uint16_t day = static_cast<uint16_t>(str[8] - 48) * 10;
+          day += static_cast<uint16_t>(str[9] - 48);
+
+          uint16_t hour = static_cast<uint16_t>(str[11] - 48) * 10;
+          hour += static_cast<uint16_t>(str[12] - 48);
+
+          uint16_t minute = static_cast<uint16_t>(str[14] - 48) * 10;
+          minute += static_cast<uint16_t>(str[15] - 48);
+
+          uint16_t second = static_cast<uint16_t>(str[17] - 48) * 10;
+          second += static_cast<uint16_t>(str[18] - 48);
+
+          uint16_t milliseconds = 0;
+          if (end - str == 23 && str[19] == '.') {
+            milliseconds = static_cast<uint16_t>(str[20] - 48) * 100;
+            milliseconds += static_cast<uint16_t>(str[21] - 48) * 10;
+            milliseconds += static_cast<uint16_t>(str[22] - 48);
+          }
+          _callback.onTimestamp(csvsqldb::Timestamp(year, month, day, hour, minute, second, milliseconds), false);
         }
-
-        uint16_t year = static_cast<uint16_t>(_stringBuffer[0] - 48) * 1000;
-        year += static_cast<uint16_t>(_stringBuffer[1] - 48) * 100;
-        year += static_cast<uint16_t>(_stringBuffer[2] - 48) * 10;
-        year += static_cast<uint16_t>(_stringBuffer[3] - 48);
-
-        uint16_t mo = static_cast<uint16_t>(_stringBuffer[5] - 48) * 10;
-        mo += static_cast<uint16_t>(_stringBuffer[6] - 48);
-        csvsqldb::Date::eMonth month = static_cast<csvsqldb::Date::eMonth>(mo);
-
-        uint16_t day = static_cast<uint16_t>(_stringBuffer[8] - 48) * 10;
-        day += static_cast<uint16_t>(_stringBuffer[9] - 48);
-
-        uint16_t hour = static_cast<uint16_t>(_stringBuffer[11] - 48) * 10;
-        hour += static_cast<uint16_t>(_stringBuffer[12] - 48);
-
-        uint16_t minute = static_cast<uint16_t>(_stringBuffer[14] - 48) * 10;
-        minute += static_cast<uint16_t>(_stringBuffer[15] - 48);
-
-        uint16_t second = static_cast<uint16_t>(_stringBuffer[17] - 48) * 10;
-        second += static_cast<uint16_t>(_stringBuffer[18] - 48);
-
-        csvsqldb::Timestamp ts(year, month, day, hour, minute, second, 0);
-        _callback.onTimestamp(ts, false);
       } else {
         _callback.onTimestamp(csvsqldb::Timestamp(), true);
       }
     }
 
-    void CSVParser::skipLine()
+    const char* CSVParser::parseValue(CsvTypes type, const char* start, const char* end, const char* lineEnd) const
     {
-      while (_state != LINESTART && _state != END) {
-        readNextChar();
+      switch (type) {
+        case LONG:
+          parseLong(start, end);
+          break;
+        case DOUBLE:
+          parseDouble(start, end);
+          break;
+        case STRING:
+          return parseString(start, end, lineEnd);
+        case DATE:
+          parseDate(start, end);
+          break;
+        case TIME:
+          parseTime(start, end);
+          break;
+        case TIMESTAMP:
+          parseTimestamp(start, end);
+          break;
+        case BOOLEAN:
+          parseBool(start, end);
+          break;
       }
-      ++_lineCount;
-    }
-
-    void CSVParser::findEndOfLine()
-    {
-      readNextChar();
-      skipLine();
-    }
-
-    char CSVParser::readNextChar(bool ignoreDelimiter)
-    {
-      if (!checkBuffer()) {
-        _state = END;
-        return '\0';
-      }
-      if (!ignoreDelimiter && _buffer[_n] == _context._delimiter) {
-        _state = FIELDSTART;
-        ++_n;
-        if (!checkBuffer()) {
-          _state = END;
-          return '\0';
-        }
-        while (_buffer[_n] == ' ') {
-          ++_n;
-          if (!checkBuffer()) {
-            _state = END;
-            return '\0';
-          }
-        }
-        return '\0';
-      }
-      if (_buffer[_n] == '\n' || _buffer[_n] == '\r') {
-        _state = LINESTART;
-        ++_n;
-        if (checkBuffer()) {
-          if (_buffer[_n] == '\n') {
-            ++_n;
-          }
-        }
-        return '\0';
-      }
-      return _buffer[_n++];
-    }
-
-    bool CSVParser::checkBuffer()
-    {
-      if (_n >= static_cast<size_t>(_count)) {
-        if (!readBuffer()) {
-          return false;
-        }
-      }
-      return true;
-    }
-
-    bool CSVParser::readBuffer()
-    {
-      _stream.read(&_buffer[0], _bufferLength);
-      _count = _stream.gcount();
-      _n = 0;
-      return _count > 0;
+      return end;
     }
   }
 }

@@ -35,7 +35,6 @@
 
 #include <csvsqldb/inc.h>
 
-#include <csvsqldb/base/csv_string_parser.h>
 #include <csvsqldb/base/date.h>
 #include <csvsqldb/base/time.h>
 #include <csvsqldb/base/timestamp.h>
@@ -59,7 +58,7 @@ namespace csvsqldb
      */
     struct CSVSQLDB_EXPORT CSVParserContext {
       CSVParserContext() = default;
-
+      std::string _filename;
       bool _skipFirstLine{false};  //!< The parser will skip the first input line (e.g. the header), default is false
       char _delimiter{','};        //!< Field delimiter, default is ','
     };
@@ -119,47 +118,28 @@ namespace csvsqldb
        * Returns the current count of lines excluding skipped lines.
        * @return The current line count starting with one.
        */
-      size_t getLineCount() const
-      {
-        return _lineCount;
-      }
+      size_t getLineCount() const;
 
     private:
-      enum State { INIT, LINESTART, FIELDSTART, END };
+      const char* parseString(const char* str, const char* end, const char* lineEnd) const;
+      void parseLong(const char* str, const char* end) const;
+      void parseDouble(const char* str, const char* end) const;
+      void parseBool(const char* str, const char* end) const;
+      void parseDate(const char* str, const char* end) const;
+      void parseTime(const char* str, const char* end) const;
+      void parseTimestamp(const char* str, const char* end) const;
+      const char* parseValue(CsvTypes type, const char* start, const char* end, const char* lineEnd) const;
 
-      using BufferType = std::vector<char>;
-
-      void parseString();
-      void parseLong();
-      void parseDouble();
-      void parseBool();
-      void parseDate();
-      void parseTime();
-      void parseTimestamp();
-
-      void skipLine();
-      void findEndOfLine();
-      char readNextChar(bool ignoreDelimiter = false);
-      bool checkBuffer();
-      bool readBuffer();
-
-      bool skipLineError(const char* error);
+      void skipLineError(Types::const_iterator typesIter, const char* fieldStart, const char* error) const;
 
       CSVParserContext _context;
       std::istream& _stream;
       Types _types;
       CSVParserCallback& _callback;
 
-      State _state{INIT};
-      Types::const_iterator _typeIterator;
-      size_t _lineCount{1};
-      BufferType _buffer;
-      BufferType _stringBuffer;
-      size_t _stringBufferSize{256};
-      size_t _n{0};
-      std::streamsize _count{0};
-      CSVStringParser _stringParser;
-      static constexpr std::streamsize _bufferLength = 8192;
+      std::string _currentLine;
+      size_t _lineCount{0};
+      bool _continue{true};
     };
   }
 }

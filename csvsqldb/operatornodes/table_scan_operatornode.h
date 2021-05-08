@@ -41,6 +41,7 @@
 
 #include <condition_variable>
 #include <queue>
+#include <iostream>
 
 
 namespace csvsqldb
