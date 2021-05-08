@@ -82,10 +82,12 @@ namespace csvsqldb
                 }
               }
             }
-            parseValue(*typesIter, start, end, end);
-            if (++typesIter != _types.end()) {
-              start = end - (start  < end ? 1 : 0);
-              CSVSQLDB_THROW(CSVParserException, "too few fields found");
+            if (start < end) {
+              parseValue(*typesIter, start, end, end);
+              if (++typesIter != _types.end()) {
+                start = end - (start < end ? 1 : 0);
+                CSVSQLDB_THROW(CSVParserException, "too few fields found");
+              }
             }
           } catch (const csvsqldb::Exception& ex) {
             auto field = static_cast<size_t>(typesIter - _types.begin()) + 1;
