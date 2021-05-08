@@ -1,5 +1,5 @@
 //
-//  default_configuration.cpp
+//  pragma_non_virtual_dtor.h
 //  csvsqldb
 //
 //  BSD 3-Clause License
@@ -31,50 +31,14 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-#include "default_configuration.h"
+#if defined(__clang__)
+  #pragma clang diagnostic ignored "-Wnon-virtual-dtor"
+#endif
 
-#include "exception.h"
+#if defined(__GNUC__)
+  #pragma GCC diagnostic ignored "-Wnon-virtual-dtor"
+#endif
 
-
-namespace csvsqldb
-{
-  size_t DefaultConfiguration::doGetProperties(const std::string&, StringVector&) const
-  {
-    return 0;
-  }
-
-  bool DefaultConfiguration::doHasProperty(const std::string&) const
-  {
-    return false;
-  }
-
-  bool DefaultConfiguration::get(const std::string&, Typer<bool>) const
-  {
-    return false;
-  }
-
-  int32_t DefaultConfiguration::get(const std::string& path, Typer<int32_t>) const
-  {
-    throw ConfigurationException("path '" + path + "' not found");
-  }
-
-  int64_t DefaultConfiguration::get(const std::string& path, Typer<int64_t>) const
-  {
-    throw ConfigurationException("path '" + path + "' not found");
-  }
-
-  float DefaultConfiguration::get(const std::string& path, Typer<float>) const
-  {
-    throw ConfigurationException("path '" + path + "' not found");
-  }
-
-  double DefaultConfiguration::get(const std::string& path, Typer<double>) const
-  {
-    throw ConfigurationException("path '" + path + "' not found");
-  }
-
-  std::string DefaultConfiguration::get(const std::string& path, Typer<std::string>) const
-  {
-    throw ConfigurationException("path '" + path + "' not found");
-  }
-}
+#if defined(_MSC_VER)
+  #pragma warning(disable : 4265)
+#endif

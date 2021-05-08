@@ -92,7 +92,7 @@ namespace csvsqldb
   {
   }
 
-  void RowCountAggregationFunction::doStep(const Variant& value)
+  void RowCountAggregationFunction::doStep(const Variant&)
   {
     _count += 1;
   }

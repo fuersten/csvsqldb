@@ -146,6 +146,8 @@ set(LIB_CSVSQLDB_BASE_HEADERS
     base/pragma_pop.h
     base/pragma_push.h
     base/pragma_sign.h
+    base/pragma_non_virtual_dtor.h
+    base/pragma_shadow.h
 )
 
 set(LIB_CSVSQLDB_GENERATED

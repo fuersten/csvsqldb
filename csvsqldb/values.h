@@ -84,7 +84,6 @@ namespace csvsqldb
   public:
     ValInt()
     : _val(std::numeric_limits<int64_t>::max())
-    , _isNull(true)
     {
     }
 
@@ -160,7 +159,7 @@ namespace csvsqldb
 
   private:
     int64_t _val;
-    bool _isNull;
+    bool _isNull{true};
   };
 #pragma pack(pop)
 
@@ -171,19 +170,12 @@ namespace csvsqldb
   public:
     ValDouble()
     : _val(std::numeric_limits<double>::max())
-    , _isNull(true)
     {
     }
 
     explicit ValDouble(double val)
     : _val(val)
     , _isNull(false)
-    {
-    }
-
-    ValDouble(const ValDouble& rhs)
-    : _val(rhs._val)
-    , _isNull(rhs._isNull)
     {
     }
 
@@ -253,7 +245,7 @@ namespace csvsqldb
 
   private:
     double _val;
-    bool _isNull;
+    bool _isNull{true};
   };
 #pragma pack(pop)
 
@@ -264,19 +256,12 @@ namespace csvsqldb
   public:
     ValBool()
     : _val(false)
-    , _isNull(true)
     {
     }
 
     explicit ValBool(bool val)
     : _val(val)
     , _isNull(false)
-    {
-    }
-
-    ValBool(const ValBool& rhs)
-    : _val(rhs._val)
-    , _isNull(rhs._isNull)
     {
     }
 
@@ -346,7 +331,7 @@ namespace csvsqldb
 
   private:
     bool _val;
-    bool _isNull;
+    bool _isNull{true};
   };
 #pragma pack(pop)
 
@@ -355,9 +340,7 @@ namespace csvsqldb
   class CSVSQLDB_EXPORT ValDate : public Value
   {
   public:
-    ValDate()
-    {
-    }
+    ValDate() = default;
 
     explicit ValDate(const csvsqldb::Date& val)
     : _val(val)
@@ -434,10 +417,7 @@ namespace csvsqldb
   class CSVSQLDB_EXPORT ValTime : public Value
   {
   public:
-    ValTime()
-    : _isNull(true)
-    {
-    }
+    ValTime() = default;
 
     explicit ValTime(const csvsqldb::Time& val)
     : _val(val)
@@ -507,7 +487,7 @@ namespace csvsqldb
 
   private:
     csvsqldb::Time _val;
-    bool _isNull;
+    bool _isNull{true};
   };
 #pragma pack(pop)
 
@@ -516,10 +496,7 @@ namespace csvsqldb
   class CSVSQLDB_EXPORT ValTimestamp : public Value
   {
   public:
-    ValTimestamp()
-    : _isNull(true)
-    {
-    }
+    ValTimestamp() = default;
 
     explicit ValTimestamp(const csvsqldb::Timestamp& val)
     : _val(val)
@@ -589,7 +566,7 @@ namespace csvsqldb
 
   private:
     csvsqldb::Timestamp _val;
-    bool _isNull;
+    bool _isNull{true};
   };
 #pragma pack(pop)
 

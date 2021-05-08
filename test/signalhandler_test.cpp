@@ -74,7 +74,7 @@ namespace
     {
     }
 
-    int onSignal(int signum) override
+    int onSignal(int) override
     {
       _counter++;
       _test_condition.notify_one();
