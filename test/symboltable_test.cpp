@@ -52,8 +52,17 @@ TEST_CASE("Symbol Table Utils Test", "[symbols]")
     CHECK("PLAIN" == csvsqldb::symbolTypeToString(csvsqldb::PLAIN));
     CHECK("SUBQUERY" == csvsqldb::symbolTypeToString(csvsqldb::SUBQUERY));
     CHECK("TABLE" == csvsqldb::symbolTypeToString(csvsqldb::TABLE));
+  }
+  SECTION("symbol type to string fail")
+  {
+// clang-format off
+    #include <csvsqldb/base/pragma_push.h>
+    #include <csvsqldb/base/pragma_conversion.h>
 
     CHECK_THROWS(csvsqldb::symbolTypeToString(static_cast<csvsqldb::eSymbolType>(4711)));
+
+    #include <csvsqldb/base/pragma_pop.h>
+    // clang-format on
   }
 }
 

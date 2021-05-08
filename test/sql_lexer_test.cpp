@@ -150,7 +150,16 @@ TEST_CASE("SQL Lexer Test", "[sql]")
     CHECK("VARYING" == csvsqldb::tokenToString(csvsqldb::TOK_VARYING));
     CHECK("WHERE" == csvsqldb::tokenToString(csvsqldb::TOK_WHERE));
     CHECK("YEAR" == csvsqldb::tokenToString(csvsqldb::TOK_YEAR));
+  }
+  SECTION("token to string fail")
+  {
+// clang-format off
+    #include <csvsqldb/base/pragma_push.h>
+    #include <csvsqldb/base/pragma_conversion.h>
 
     CHECK_THROWS(csvsqldb::tokenToString(static_cast<csvsqldb::eToken>(512)));
+
+    #include <csvsqldb/base/pragma_pop.h>
+    // clang-format on
   }
 }

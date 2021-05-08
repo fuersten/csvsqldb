@@ -270,7 +270,7 @@ namespace csvsqldb
       static int entry(lua_State* L)
       {
         typedef FunctionObjectImpl0<F, R> F0;
-        F0 const* impl = (F0 const*)lua_touserdata(L, lua_upvalueindex(1));
+        F0 const* impl = static_cast<F0 const*>(lua_touserdata(L, lua_upvalueindex(1)));
         impl->call<R>(L);
 
         return type2return<R>();
@@ -322,7 +322,7 @@ namespace csvsqldb
       static int entry(lua_State* L)
       {
         typedef FunctionObjectImpl1<F, R, T0> F1;
-        F1 const* impl = (F1 const*)lua_touserdata(L, lua_upvalueindex(1));
+        F1 const* impl = static_cast<F1 const*>(lua_touserdata(L, lua_upvalueindex(1)));
         T0 t0 = unwrapType<T0>(L, -1);
         impl->call<R>(L, t0);
 
@@ -377,7 +377,7 @@ namespace csvsqldb
       static int entry(lua_State* L)
       {
         typedef FunctionObjectImpl2<F, R, T0, T1> F2;
-        F2 const* impl = (F2 const*)lua_touserdata(L, lua_upvalueindex(1));
+        F2 const* impl = static_cast<F2 const*>(lua_touserdata(L, lua_upvalueindex(1)));
         T0 t0 = unwrapType<T0>(L, -1);
         T1 t1 = unwrapType<T1>(L, -2);
         impl->call<R>(L, t0, t1);
@@ -435,7 +435,7 @@ namespace csvsqldb
       static int entry(lua_State* L)
       {
         typedef FunctionObjectImpl3<F, R, T0, T1, T2> F3;
-        F3 const* impl = (F3 const*)lua_touserdata(L, lua_upvalueindex(1));
+        F3 const* impl = static_cast<F3 const*>(lua_touserdata(L, lua_upvalueindex(1)));
         T0 t0 = unwrapType<T0>(L, -1);
         T1 t1 = unwrapType<T1>(L, -2);
         T2 t2 = unwrapType<T2>(L, -3);

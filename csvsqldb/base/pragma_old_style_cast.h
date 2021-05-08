@@ -1,5 +1,6 @@
 //
-//  csvsqldb test
+//  pragma_old_style_cast.h
+//  csvsqldb
 //
 //  BSD 3-Clause License
 //  Copyright (c) 2015-2020 Lars-Christian Fürstenberg
@@ -30,74 +31,10 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-#include "temporary_directory.h"
-
-#ifdef _WIN32
-  #define WIN32_LEAN_AND_MEAN
-  #include <windows.h>
-#else
-  #include <limits.h>
-  #include <sys/stat.h>
-  #include <sys/types.h>
-  #include <unistd.h>
+#if defined(__clang__)
+  #pragma clang diagnostic ignored "-Wold-style-cast"
 #endif
 
-#include <array>
-#include <cstring>
-
-
-const std::filesystem::path& TemporaryDirectoryGuard::temporaryDirectoryPath() const
-{
-  return _path;
-}
-
-TemporaryDirectoryGuard::~TemporaryDirectoryGuard()
-{
-  std::error_code ec;
-  if (std::filesystem::equivalent(std::filesystem::current_path(), _path, ec)) {
-    std::filesystem::current_path("..");
-  }
-
-  if (!ec) {
-    std::filesystem::remove_all(_path, ec);
-  }
-}
-
-
-std::filesystem::path TemporaryDirectoryGuard::uniqueTempDirectoryPath()
-{
-  std::error_code ec;
-  auto path = uniqueTempDirectoryPath(ec);
-  if (ec) {
-    throw std::runtime_error{"Cannot create temp path: " + ec.message()};
-  }
-  return path;
-}
-
-std::filesystem::path TemporaryDirectoryGuard::uniqueTempDirectoryPath(std::error_code& ec)
-{
-  std::filesystem::path p{std::filesystem::temp_directory_path(ec)};
-
-  if (ec) {
-    return std::filesystem::path{};
-  }
-
-#ifdef WIN32
-  WCHAR tmp_dir[MAX_PATH];
-  if (GetTempFileNameW(p.c_str(), L"csvsqldb", 0, tmp_dir) == 0) {
-    ec.assign(GetLastError(), std::system_category());
-  }
-  std::filesystem::remove(tmp_dir);
-  std::filesystem::create_directories(tmp_dir);
-#else
-  std::array<char, PATH_MAX> tmpl = {};
-  ::strncpy(tmpl.data(), (p / "csvsqldb_XXXXXX").c_str(), PATH_MAX - 1);
-
-  const char* tmp_dir = ::mkdtemp(tmpl.data());
-  if (tmp_dir == nullptr) {
-    ec.assign(errno, std::system_category());
-  }
+#if defined(__GNUC__)
+  #pragma GCC diagnostic ignored "-Wold-style-cast"
 #endif
-
-  return std::filesystem::path{tmp_dir};
-}

@@ -143,11 +143,12 @@ set(LIB_CSVSQLDB_BASE_HEADERS
     base/detail/types_detail.h
 
     base/pragma_conversion.h
+    base/pragma_non_virtual_dtor.h
+    base/pragma_old_style_cast.h
     base/pragma_pop.h
     base/pragma_push.h
-    base/pragma_sign.h
-    base/pragma_non_virtual_dtor.h
     base/pragma_shadow.h
+    base/pragma_sign.h
 )
 
 set(LIB_CSVSQLDB_GENERATED
