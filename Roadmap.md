@@ -2,8 +2,7 @@
 # Roadmap
 
 * Add format library
-* Throttle block production to consumption
-* Quoted identifier where allowed by standard
+* Allow quoted identifiers where allowed by standard
 * Insert sort with limit
 * ORDER BY field NULLS (LAST | FIRST) 
 * Custom date, time, and timestamp formats
