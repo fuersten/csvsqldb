@@ -16,7 +16,7 @@ set_property(
            ${CMAKE_SOURCE_DIR}/thirdparty/linenoise-ng/src/wcwidth.cpp
     APPEND_STRING
     PROPERTY COMPILE_FLAGS
-    "-Wno-all -Wno-error -Wno-conversion -Wno-pedantic"
+    "-Wno-all -Wno-conversion -Wno-error -Wno-extra -Wno-pedantic -Wno-shadow -Wno-sign-compare -Wno-unreachable-code -Wno-old-style-cast"
 )
 endif()
 

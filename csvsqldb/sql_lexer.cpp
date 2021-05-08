@@ -41,6 +41,8 @@
 #include "base/pragma_push.h"
 #include "base/pragma_conversion.h"
 #include "base/pragma_sign.h"
+#include "base/pragma_shadow.h"
+#include "base/pragma_non_virtual_dtor.h"
 #include "lex.yy.h"
 #include "base/pragma_pop.h"
 // clang-format on

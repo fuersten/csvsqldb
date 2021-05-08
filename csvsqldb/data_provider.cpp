@@ -42,153 +42,137 @@
 
 namespace csvsqldb
 {
-  SystemDualDataProvider::SystemDualDataProvider(BlockManager& blockManager)
-  : _blockManager{blockManager}
+  bool SystemDualDataProvider::produce(BlockProducer& producer)
   {
-  }
-
-  BlockPtr SystemDualDataProvider::getNextBlock()
-  {
-    auto block = _blockManager.createBlock();
-    block->addValue(Variant(false));
-    block->nextRow();
-    block->endBlocks();
-    return block;
+    producer.addBool(false, false);
+    producer.nextRow();
+    return true;
   }
 
 
-  SystemTablesDataProvider::SystemTablesDataProvider(Database& database, BlockManager& blockManager)
-  : _database{database}
-  , _blockManager{blockManager}
+  SystemTablesDataProvider::SystemTablesDataProvider(Database& database)
+  : DataProvider()
+  , _database{database}
   {
   }
 
-  BlockPtr SystemTablesDataProvider::getNextBlock()
+  bool SystemTablesDataProvider::produce(BlockProducer& producer)
   {
-    auto block = _blockManager.createBlock();
     const auto& systemTables{_database.getSystemTables()};
     for (const auto& table : _database.getTables()) {
-      block->addValue(Variant(table.name()));
-      block->addValue(Variant(systemTables.isSystemTable(table.name())));
-      block->nextRow();
+      producer.addValue(Variant(table.name()));
+      producer.addValue(Variant(systemTables.isSystemTable(table.name())));
+      producer.nextRow();
     }
-    block->endBlocks();
-    return block;
+    return true;
   }
 
 
-  SystemColumnsDataProvider::SystemColumnsDataProvider(Database& database, BlockManager& blockManager)
-  : _database{database}
-  , _blockManager{blockManager}
+  SystemColumnsDataProvider::SystemColumnsDataProvider(Database& database)
+  : DataProvider()
+  , _database{database}
   {
   }
 
-  BlockPtr SystemColumnsDataProvider::getNextBlock()
+  bool SystemColumnsDataProvider::produce(BlockProducer& producer)
   {
-    auto block = _blockManager.createBlock();
     for (const auto& table : _database.getTables()) {
       const auto& tableName = table.name();
       for (auto n = 0u; n < table.columnCount(); ++n) {
         const auto& column = table.getColumn(n);
-        block->addValue(Variant(tableName));
-        block->addValue(Variant(column._name));
-        block->addValue(Variant(typeToString(column._type)));
-        block->addValue(Variant(column._primaryKey));
-        block->addValue(Variant(column._unique));
+        producer.addValue(Variant(tableName));
+        producer.addValue(Variant(column._name));
+        producer.addValue(Variant(typeToString(column._type)));
+        producer.addValue(Variant(column._primaryKey));
+        producer.addValue(Variant(column._unique));
         if (column._defaultValue.has_value()) {
-          block->addValue(Variant(typedValueToString(TypedValue(column._type, column._defaultValue))));
+          producer.addValue(Variant(typedValueToString(TypedValue(column._type, column._defaultValue))));
         } else {
-          block->addValue(Variant{STRING});
+          producer.addValue(Variant{STRING});
         }
         if (column._check) {
           ASTExpressionVisitor visitor;
           column._check->accept(visitor);
-          block->addValue(Variant(visitor.toString()));
+          producer.addValue(Variant(visitor.toString()));
         } else {
-          block->addValue(Variant{STRING});
+          producer.addValue(Variant{STRING});
         }
-        block->addValue(Variant(static_cast<int64_t>(column._length)));
-        block->nextRow();
+        producer.addValue(Variant(static_cast<int64_t>(column._length)));
+        producer.nextRow();
       }
     }
-    block->endBlocks();
-    return block;
+
+    return true;
   }
 
 
-  SystemFunctionsDataProvider::SystemFunctionsDataProvider(Database&, BlockManager& blockManager)
-  : _blockManager{blockManager}
+  SystemFunctionsDataProvider::SystemFunctionsDataProvider(Database&)
+  : DataProvider()
   {
   }
 
-  BlockPtr SystemFunctionsDataProvider::getNextBlock()
+  bool SystemFunctionsDataProvider::produce(BlockProducer& producer)
   {
-    auto block = _blockManager.createBlock();
-
     FunctionRegistry functionRegistry;
     initBuildInFunctions(functionRegistry);
     for (const auto& func : functionRegistry.getFunctions()) {
-      block->addValue(Variant(func->getName()));
-      block->nextRow();
+      producer.addValue(Variant(func->getName()));
+      producer.nextRow();
     }
-    block->endBlocks();
-    return block;
+
+    return true;
   }
 
 
-  SystemParametersDataProvider::SystemParametersDataProvider(Database&, BlockManager& blockManager)
-  : _blockManager{blockManager}
+  SystemParametersDataProvider::SystemParametersDataProvider(Database&)
+  : DataProvider()
   {
   }
 
-  BlockPtr SystemParametersDataProvider::getNextBlock()
+  bool SystemParametersDataProvider::produce(BlockProducer& producer)
   {
-    auto block = _blockManager.createBlock();
-
     FunctionRegistry functionRegistry;
     initBuildInFunctions(functionRegistry);
     for (const auto& func : functionRegistry.getFunctions()) {
       const auto& funcName = func->getName();
       int64_t index{0u};
       for (const auto& param : func->getParameterTypes()) {
-        block->addValue(Variant(funcName));
-        block->addValue(typeToString(param));
-        block->addValue(Variant{index++});
-        block->addValue(Variant(false));
-        block->nextRow();
+        producer.addValue(Variant(funcName));
+        producer.addValue(typeToString(param));
+        producer.addValue(Variant{index++});
+        producer.addValue(Variant(false));
+        producer.nextRow();
       }
-      block->addValue(Variant(funcName));
-      block->addValue(typeToString(func->getReturnType()));
-      block->addValue(Variant{-1});
-      block->addValue(Variant(true));
-      block->nextRow();
+      producer.addValue(Variant(funcName));
+      producer.addValue(typeToString(func->getReturnType()));
+      producer.addValue(Variant{-1});
+      producer.addValue(Variant(true));
+      producer.nextRow();
     }
-    block->endBlocks();
-    return block;
+
+    return true;
   }
 
 
-  SystemMappingsDataProvider::SystemMappingsDataProvider(Database& database, BlockManager& blockManager)
-  : _database{database}
-  , _blockManager{blockManager}
+  SystemMappingsDataProvider::SystemMappingsDataProvider(Database& database)
+  : DataProvider()
+  , _database{database}
   {
   }
 
-  BlockPtr SystemMappingsDataProvider::getNextBlock()
+  bool SystemMappingsDataProvider::produce(BlockProducer& producer)
   {
     static auto r = std::regex{R"((.+)->(.+))"};
-    auto block = _blockManager.createBlock();
 
     std::smatch m;
     for (const auto& mapping : _database.getMappings()) {
       if (std::regex_match(mapping, m, r) && m.size() == 3) {
-        block->addValue(Variant(m[1].str()));
-        block->addValue(Variant(m[2].str()));
-        block->nextRow();
+        producer.addValue(Variant(m[1].str()));
+        producer.addValue(Variant(m[2].str()));
+        producer.nextRow();
       }
     }
-    block->endBlocks();
-    return block;
-  }
 
+    return true;
+  }
 }

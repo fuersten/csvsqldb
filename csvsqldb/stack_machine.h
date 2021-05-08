@@ -146,6 +146,18 @@ namespace csvsqldb
         }
       }
 
+      Instruction& operator=(const Instruction& rhs)
+      {
+        _opCode = rhs._opCode;
+        _value = rhs._value;
+        _refCount = rhs._refCount;
+        _r = rhs._r;
+        if (_refCount) {
+          _refCount->inc();
+        }
+        return *this;
+      }
+
       ~Instruction()
       {
         if (_refCount) {

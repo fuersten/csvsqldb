@@ -67,7 +67,7 @@ namespace
       throw csvsqldb::ConfigurationException("not implemented");
     }
 
-    bool get(const std::string& path, csvsqldb::Typer<bool>) const override
+    bool get(const std::string&, csvsqldb::Typer<bool>) const override
     {
       throw csvsqldb::ConfigurationException("not implemented");
     }

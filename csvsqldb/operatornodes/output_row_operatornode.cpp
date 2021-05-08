@@ -100,7 +100,7 @@ namespace csvsqldb
     return true;
   }
 
-  void OutputRowOperatorNode::getColumnInfos(SymbolInfos& outputSymbols)
+  void OutputRowOperatorNode::getColumnInfos(SymbolInfos&)
   {
   }
 

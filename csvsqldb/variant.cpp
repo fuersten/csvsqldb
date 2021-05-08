@@ -389,7 +389,7 @@ namespace csvsqldb
     if (_type == INT) {
       _storage._int += rhs;
     } else if (_type == REAL) {
-      _storage._real += rhs;
+      _storage._real += static_cast<double>(rhs);
     }
     return *this;
   }
@@ -436,7 +436,7 @@ namespace csvsqldb
         if (rhs._storage._int == 0) {
           CSVSQLDB_THROW(VariantException, "cannot devide by null");
         }
-        _storage._real /= rhs._storage._int;
+        _storage._real /= static_cast<double>(rhs._storage._int);
       } else {
         if (Approx(rhs._storage._real) == 0.0) {
           CSVSQLDB_THROW(VariantException, "cannot devide by null");

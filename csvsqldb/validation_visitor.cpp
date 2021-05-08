@@ -41,31 +41,31 @@ namespace csvsqldb
   {
   }
 
-  void ASTValidationVisitor::visit(ASTCreateTableNode& node)
+  void ASTValidationVisitor::visit(ASTCreateTableNode&)
   {
   }
 
-  void ASTValidationVisitor::visit(ASTMappingNode& node)
+  void ASTValidationVisitor::visit(ASTMappingNode&)
   {
   }
 
-  void ASTValidationVisitor::visit(ASTDropMappingNode& node)
+  void ASTValidationVisitor::visit(ASTDropMappingNode&)
   {
   }
 
-  void ASTValidationVisitor::visit(ASTAlterTableAddColumnNode& node)
+  void ASTValidationVisitor::visit(ASTAlterTableAddColumnNode&)
   {
   }
 
-  void ASTValidationVisitor::visit(ASTAlterTableDropColumnNode& node)
+  void ASTValidationVisitor::visit(ASTAlterTableDropColumnNode&)
   {
   }
 
-  void ASTValidationVisitor::visit(ASTDropTableNode& node)
+  void ASTValidationVisitor::visit(ASTDropTableNode&)
   {
   }
 
-  void ASTValidationVisitor::visit(ASTExplainNode& node)
+  void ASTValidationVisitor::visit(ASTExplainNode&)
   {
   }
 
@@ -116,43 +116,43 @@ namespace csvsqldb
     }
   }
 
-  void ASTValidationVisitor::visit(ASTBinaryNode& node)
+  void ASTValidationVisitor::visit(ASTBinaryNode&)
   {
   }
 
-  void ASTValidationVisitor::visit(ASTUnaryNode& node)
+  void ASTValidationVisitor::visit(ASTUnaryNode&)
   {
   }
 
-  void ASTValidationVisitor::visit(ASTValueNode& node)
+  void ASTValidationVisitor::visit(ASTValueNode&)
   {
   }
 
-  void ASTValidationVisitor::visit(ASTLikeNode& node)
+  void ASTValidationVisitor::visit(ASTLikeNode&)
   {
   }
 
-  void ASTValidationVisitor::visit(ASTBetweenNode& node)
+  void ASTValidationVisitor::visit(ASTBetweenNode&)
   {
   }
 
-  void ASTValidationVisitor::visit(ASTInNode& node)
+  void ASTValidationVisitor::visit(ASTInNode&)
   {
   }
 
-  void ASTValidationVisitor::visit(ASTFunctionNode& node)
+  void ASTValidationVisitor::visit(ASTFunctionNode&)
   {
   }
 
-  void ASTValidationVisitor::visit(ASTAggregateFunctionNode& node)
+  void ASTValidationVisitor::visit(ASTAggregateFunctionNode&)
   {
   }
 
-  void ASTValidationVisitor::visit(ASTIdentifier& node)
+  void ASTValidationVisitor::visit(ASTIdentifier&)
   {
   }
 
-  void ASTValidationVisitor::visit(ASTQualifiedAsterisk& node)
+  void ASTValidationVisitor::visit(ASTQualifiedAsterisk&)
   {
   }
 
@@ -163,19 +163,19 @@ namespace csvsqldb
     }
   }
 
-  void ASTValidationVisitor::visit(ASTTableIdentifierNode& node)
+  void ASTValidationVisitor::visit(ASTTableIdentifierNode&)
   {
   }
 
-  void ASTValidationVisitor::visit(ASTTableSubqueryNode& node)
+  void ASTValidationVisitor::visit(ASTTableSubqueryNode&)
   {
   }
 
-  void ASTValidationVisitor::visit(ASTCrossJoinNode& node)
+  void ASTValidationVisitor::visit(ASTCrossJoinNode&)
   {
   }
 
-  void ASTValidationVisitor::visit(ASTNaturalJoinNode& node)
+  void ASTValidationVisitor::visit(ASTNaturalJoinNode&)
   {
   }
 
@@ -186,15 +186,15 @@ namespace csvsqldb
     }
   }
 
-  void ASTValidationVisitor::visit(ASTLeftJoinNode& node)
+  void ASTValidationVisitor::visit(ASTLeftJoinNode&)
   {
   }
 
-  void ASTValidationVisitor::visit(ASTRightJoinNode& node)
+  void ASTValidationVisitor::visit(ASTRightJoinNode&)
   {
   }
 
-  void ASTValidationVisitor::visit(ASTFullJoinNode& node)
+  void ASTValidationVisitor::visit(ASTFullJoinNode&)
   {
   }
 
@@ -205,19 +205,19 @@ namespace csvsqldb
     }
   }
 
-  void ASTValidationVisitor::visit(ASTGroupByNode& node)
+  void ASTValidationVisitor::visit(ASTGroupByNode&)
   {
   }
 
-  void ASTValidationVisitor::visit(ASTHavingNode& node)
+  void ASTValidationVisitor::visit(ASTHavingNode&)
   {
   }
 
-  void ASTValidationVisitor::visit(ASTOrderByNode& node)
+  void ASTValidationVisitor::visit(ASTOrderByNode&)
   {
   }
 
-  void ASTValidationVisitor::visit(ASTLimitNode& node)
+  void ASTValidationVisitor::visit(ASTLimitNode&)
   {
   }
 }

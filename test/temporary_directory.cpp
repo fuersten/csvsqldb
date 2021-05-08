@@ -91,7 +91,7 @@ std::filesystem::path TemporaryDirectoryGuard::uniqueTempDirectoryPath(std::erro
   std::filesystem::create_directories(tmp_dir);
 #else
   std::array<char, PATH_MAX> tmpl = {};
-  ::strncpy(tmpl.data(), (p / "csvsqldb_XXXXXX").c_str(), PATH_MAX);
+  ::strncpy(tmpl.data(), (p / "csvsqldb_XXXXXX").c_str(), PATH_MAX - 1);
 
   const char* tmp_dir = ::mkdtemp(tmpl.data());
   if (tmp_dir == nullptr) {

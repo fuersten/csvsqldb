@@ -3,6 +3,7 @@ set(LIB_CSVSQLDB_SOURCES
     aggregation_functions.cpp
     block.cpp
     block_iterator.cpp
+    block_producer.cpp
     buildin_functions.cpp
     data_provider.cpp
     database.cpp
@@ -58,6 +59,7 @@ set(LIB_CSVSQLDB_SOURCES
     aggregation_functions.h
     block.h
     block_iterator.h
+    block_producer.h
     buildin_functions.h
     data_provider.h
     database.h
@@ -143,8 +145,11 @@ set(LIB_CSVSQLDB_BASE_HEADERS
     base/detail/types_detail.h
 
     base/pragma_conversion.h
+    base/pragma_non_virtual_dtor.h
+    base/pragma_old_style_cast.h
     base/pragma_pop.h
     base/pragma_push.h
+    base/pragma_shadow.h
     base/pragma_sign.h
 )
 

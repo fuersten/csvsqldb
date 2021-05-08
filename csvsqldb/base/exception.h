@@ -110,11 +110,11 @@ namespace csvsqldb
     : base(message)                                                                                                              \
     {                                                                                                                            \
     }                                                                                                                            \
-    explicit ex(const base& ex) noexcept                                                                                         \
-    : base(ex)                                                                                                                   \
+    explicit ex(const base& e) noexcept                                                                                          \
+    : base(e)                                                                                                                    \
     {                                                                                                                            \
     }                                                                                                                            \
-  };
+  }
 
   /**
    * Exception object for configuration exceptions.
@@ -206,5 +206,5 @@ namespace csvsqldb
     std::ostringstream XX_ss__;                                                                                                  \
     XX_ss__ << arg;                                                                                                              \
     throw ex(XX_ss__.str());                                                                                                     \
-  } while (0);
+  } while (0)
 }

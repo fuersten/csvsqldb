@@ -65,7 +65,7 @@ namespace csvsqldb
   {
   }
 
-  Variant CurrentDateFunction::doCall(const Variants& parameter) const
+  Variant CurrentDateFunction::doCall(const Variants&) const
   {
     return Variant(csvsqldb::Date::now());
   }
@@ -76,7 +76,7 @@ namespace csvsqldb
   {
   }
 
-  Variant CurrentTimeFunction::doCall(const Variants& parameter) const
+  Variant CurrentTimeFunction::doCall(const Variants&) const
   {
     return Variant(csvsqldb::Time::now());
   }
@@ -87,7 +87,7 @@ namespace csvsqldb
   {
   }
 
-  Variant CurrentTimestampFunction::doCall(const Variants& parameter) const
+  Variant CurrentTimestampFunction::doCall(const Variants&) const
   {
     return Variant(csvsqldb::Timestamp::now());
   }
@@ -225,7 +225,7 @@ namespace csvsqldb
   {
   }
 
-  Variant VersionFunction::doCall(const Variants& parameter) const
+  Variant VersionFunction::doCall(const Variants&) const
   {
     return Variant(CSVSQLDB_VERSION_STRING);
   }

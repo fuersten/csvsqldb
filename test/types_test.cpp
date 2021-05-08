@@ -48,21 +48,44 @@ TEST_CASE("Types Test", "[types]")
     CHECK_FALSE(csvsqldb::stringToBool("0"));
     CHECK(csvsqldb::stringToBool("4711"));
 
+// clang-format off
+    #include <csvsqldb/base/pragma_push.h>
+    #include <csvsqldb/base/pragma_conversion.h>
+
     CHECK_THROWS_WITH(csvsqldb::stringToBool("This is no bool"), "Not a boolean value");
+
+    #include <csvsqldb/base/pragma_pop.h>
+    // clang-format on
   }
 
   SECTION("description type to string")
   {
     CHECK("AST" == csvsqldb::descriptionTypeToString(csvsqldb::AST));
     CHECK("EXEC" == csvsqldb::descriptionTypeToString(csvsqldb::EXEC));
+
+// clang-format off
+    #include <csvsqldb/base/pragma_push.h>
+    #include <csvsqldb/base/pragma_conversion.h>
+
     CHECK_THROWS_AS(csvsqldb::descriptionTypeToString(static_cast<csvsqldb::eDescriptionType>(42)), std::runtime_error);
+
+    #include <csvsqldb/base/pragma_pop.h>
+    // clang-format on
   }
 
   SECTION("order to string")
   {
     CHECK("ASC" == csvsqldb::orderToString(csvsqldb::ASC));
     CHECK("DESC" == csvsqldb::orderToString(csvsqldb::DESC));
+
+// clang-format off
+    #include <csvsqldb/base/pragma_push.h>
+    #include <csvsqldb/base/pragma_conversion.h>
+
     CHECK_THROWS_AS(csvsqldb::orderToString(static_cast<csvsqldb::eOrder>(42)), std::runtime_error);
+
+    #include <csvsqldb/base/pragma_pop.h>
+    // clang-format on
   }
 
   SECTION("type to string")
@@ -76,7 +99,14 @@ TEST_CASE("Types Test", "[types]")
     CHECK("TIME" == csvsqldb::typeToString(csvsqldb::TIME));
     CHECK("TIMESTAMP" == csvsqldb::typeToString(csvsqldb::TIMESTAMP));
 
+// clang-format off
+    #include <csvsqldb/base/pragma_push.h>
+    #include <csvsqldb/base/pragma_conversion.h>
+
     CHECK_THROWS(csvsqldb::typeToString(static_cast<csvsqldb::eType>(4711)));
+
+    #include <csvsqldb/base/pragma_pop.h>
+    // clang-format on
   }
 
   SECTION("string to type")
@@ -103,7 +133,14 @@ TEST_CASE("Types Test", "[types]")
     CHECK("MAX" == csvsqldb::aggregateFunctionToString(csvsqldb::MAX));
     CHECK("ARBITRARY" == csvsqldb::aggregateFunctionToString(csvsqldb::ARBITRARY));
 
+// clang-format off
+    #include <csvsqldb/base/pragma_push.h>
+    #include <csvsqldb/base/pragma_conversion.h>
+
     CHECK_THROWS(csvsqldb::aggregateFunctionToString(static_cast<csvsqldb::eAggregateFunction>(4711)));
+
+    #include <csvsqldb/base/pragma_pop.h>
+    // clang-format on
   }
 
   SECTION("natural join to string")
@@ -113,7 +150,14 @@ TEST_CASE("Types Test", "[types]")
     CHECK("NATURAL RIGHT OUTER" == csvsqldb::naturalJoinToString(csvsqldb::eNaturalJoinType::RIGHT));
     CHECK("NATURAL FULL OUTER" == csvsqldb::naturalJoinToString(csvsqldb::eNaturalJoinType::FULL));
 
+// clang-format off
+    #include <csvsqldb/base/pragma_push.h>
+    #include <csvsqldb/base/pragma_conversion.h>
+
     CHECK_THROWS(csvsqldb::naturalJoinToString(static_cast<csvsqldb::eNaturalJoinType>(4711)));
+
+    #include <csvsqldb/base/pragma_pop.h>
+    // clang-format on
   }
 
   SECTION("operation type to string")
@@ -142,7 +186,14 @@ TEST_CASE("Types Test", "[types]")
     CHECK("IS" == csvsqldb::operationTypeToString(csvsqldb::OP_IS));
     CHECK("IS NOT" == csvsqldb::operationTypeToString(csvsqldb::OP_ISNOT));
 
+// clang-format off
+    #include <csvsqldb/base/pragma_push.h>
+    #include <csvsqldb/base/pragma_conversion.h>
+
     CHECK_THROWS(csvsqldb::operationTypeToString(static_cast<csvsqldb::eOperationType>(4711)));
+
+    #include <csvsqldb/base/pragma_pop.h>
+    // clang-format on
   }
 
   SECTION("c type to eType")

@@ -112,9 +112,19 @@ TEST_CASE("Values Test", "[values]")
     REQUIRE(p);
     p.reset(csvsqldb::createValue(csvsqldb::STRING, std::string("Test")));
     REQUIRE(p);
+  }
+
+  SECTION("create value fail")
+  {
+// clang-format off
+    #include <csvsqldb/base/pragma_push.h>
+    #include <csvsqldb/base/pragma_conversion.h>
 
     CHECK_THROWS(csvsqldb::createValue(csvsqldb::NONE, {}));
     CHECK_THROWS(csvsqldb::createValue(static_cast<csvsqldb::eType>(4711), {}));
+
+    #include <csvsqldb/base/pragma_pop.h>
+    // clang-format on
   }
 
   SECTION("create empty value")

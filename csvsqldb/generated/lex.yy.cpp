@@ -36,6 +36,8 @@
 #include "base/pragma_push.h"
 #include "base/pragma_sign.h"
 #include "base/pragma_conversion.h"
+#include "base/pragma_shadow.h"
+#include "base/pragma_non_virtual_dtor.h"
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -80,7 +82,7 @@ class Lexer : public reflex::AbstractLexer<reflex::Matcher> {
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-#line 11 "../lexer.l"
+#line 13 "../lexer.l"
 
 #include "base/pragma_pop.h"
 
@@ -121,458 +123,458 @@ csvsqldb::Token Lexer::lex(void)
               return csvsqldb::Token();
             }
             break;
-          case 1: // rule ../lexer.l:139: {integer_const} :
-#line 139 "../lexer.l"
+          case 1: // rule ../lexer.l:141: {integer_const} :
+#line 141 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_CONST_INTEGER, {lineno(),columno()}}; token._value = text(); return token;}
             break;
-          case 2: // rule ../lexer.l:140: {real_const} :
-#line 140 "../lexer.l"
+          case 2: // rule ../lexer.l:142: {real_const} :
+#line 142 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_CONST_REAL, {lineno(),columno()}}; token._value = text(); return token;}
             break;
-          case 3: // rule ../lexer.l:141: {boolean_const} :
-#line 141 "../lexer.l"
+          case 3: // rule ../lexer.l:143: {boolean_const} :
+#line 143 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_CONST_BOOLEAN, {lineno(),columno()}}; token._value = text(); return token;}
             break;
-          case 4: // rule ../lexer.l:142: {char_const} :
-#line 142 "../lexer.l"
+          case 4: // rule ../lexer.l:144: {char_const} :
+#line 144 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_CONST_CHAR, {lineno(),columno()}}; token.setString(text()); return token;}
             break;
-          case 5: // rule ../lexer.l:143: {string_const} :
-#line 143 "../lexer.l"
+          case 5: // rule ../lexer.l:145: {string_const} :
+#line 145 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_CONST_STRING, {lineno(),columno()}}; token.setString(text()); return token;}
             break;
-          case 6: // rule ../lexer.l:144: {plus} :
-#line 144 "../lexer.l"
+          case 6: // rule ../lexer.l:146: {plus} :
+#line 146 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_ADD, {lineno(),columno()}}; return token;}
             break;
-          case 7: // rule ../lexer.l:145: {comment} :
-#line 145 "../lexer.l"
+          case 7: // rule ../lexer.l:147: {comment} :
+#line 147 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_COMMENT, {lineno(),columno()}}; return token;}
             break;
-          case 8: // rule ../lexer.l:146: {sub} :
-#line 146 "../lexer.l"
+          case 8: // rule ../lexer.l:148: {sub} :
+#line 148 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_SUB, {lineno(),columno()}}; return token;}
             break;
-          case 9: // rule ../lexer.l:147: {dot} :
-#line 147 "../lexer.l"
+          case 9: // rule ../lexer.l:149: {dot} :
+#line 149 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_DOT, {lineno(),columno()}}; return token;}
             break;
-          case 10: // rule ../lexer.l:148: {equal} :
-#line 148 "../lexer.l"
+          case 10: // rule ../lexer.l:150: {equal} :
+#line 150 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_EQUAL, {lineno(),columno()}}; return token;}
             break;
-          case 11: // rule ../lexer.l:149: {not_equal} :
-#line 149 "../lexer.l"
+          case 11: // rule ../lexer.l:151: {not_equal} :
+#line 151 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_NOTEQUAL, {lineno(),columno()}}; return token;}
             break;
-          case 12: // rule ../lexer.l:150: {greater_equal} :
-#line 150 "../lexer.l"
+          case 12: // rule ../lexer.l:152: {greater_equal} :
+#line 152 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_GREATEREQUAL, {lineno(),columno()}}; return token;}
             break;
-          case 13: // rule ../lexer.l:151: {lesser_equal} :
-#line 151 "../lexer.l"
+          case 13: // rule ../lexer.l:153: {lesser_equal} :
+#line 153 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_SMALLEREQUAL, {lineno(),columno()}}; return token;}
             break;
-          case 14: // rule ../lexer.l:152: {lesser} :
-#line 152 "../lexer.l"
+          case 14: // rule ../lexer.l:154: {lesser} :
+#line 154 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_SMALLER, {lineno(),columno()}}; return token;}
             break;
-          case 15: // rule ../lexer.l:153: {greater} :
-#line 153 "../lexer.l"
+          case 15: // rule ../lexer.l:155: {greater} :
+#line 155 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_GREATER, {lineno(),columno()}}; return token;}
             break;
-          case 16: // rule ../lexer.l:154: {comma} :
-#line 154 "../lexer.l"
+          case 16: // rule ../lexer.l:156: {comma} :
+#line 156 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_COMMA, {lineno(),columno()}}; return token;}
             break;
-          case 17: // rule ../lexer.l:155: {semicolon} :
-#line 155 "../lexer.l"
+          case 17: // rule ../lexer.l:157: {semicolon} :
+#line 157 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_SEMICOLON, {lineno(),columno()}}; return token;}
             break;
-          case 18: // rule ../lexer.l:156: {asterisk} :
-#line 156 "../lexer.l"
+          case 18: // rule ../lexer.l:158: {asterisk} :
+#line 158 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_ASTERISK, {lineno(),columno()}}; return token;}
             break;
-          case 19: // rule ../lexer.l:157: {left_paren} :
-#line 157 "../lexer.l"
+          case 19: // rule ../lexer.l:159: {left_paren} :
+#line 159 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_LEFT_PAREN, {lineno(),columno()}}; return token;}
             break;
-          case 20: // rule ../lexer.l:158: {right_paren} :
-#line 158 "../lexer.l"
+          case 20: // rule ../lexer.l:160: {right_paren} :
+#line 160 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_RIGHT_PAREN, {lineno(),columno()}}; return token;}
             break;
-          case 21: // rule ../lexer.l:159: {div} :
-#line 159 "../lexer.l"
+          case 21: // rule ../lexer.l:161: {div} :
+#line 161 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_DIV, {lineno(),columno()}}; return token;}
             break;
-          case 22: // rule ../lexer.l:160: {mod} :
-#line 160 "../lexer.l"
+          case 22: // rule ../lexer.l:162: {mod} :
+#line 162 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_MOD, {lineno(),columno()}}; return token;}
             break;
-          case 23: // rule ../lexer.l:161: {concat} :
-#line 161 "../lexer.l"
+          case 23: // rule ../lexer.l:163: {concat} :
+#line 163 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_CONCAT, {lineno(),columno()}}; return token;}
 
 
             break;
-          case 24: // rule ../lexer.l:164: {union} :
-#line 164 "../lexer.l"
+          case 24: // rule ../lexer.l:166: {union} :
+#line 166 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_UNION, {lineno(),columno()}}; return token;}
             break;
-          case 25: // rule ../lexer.l:165: {select} :
-#line 165 "../lexer.l"
+          case 25: // rule ../lexer.l:167: {select} :
+#line 167 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_SELECT, {lineno(),columno()}}; return token;}
             break;
-          case 26: // rule ../lexer.l:166: {from} :
-#line 166 "../lexer.l"
+          case 26: // rule ../lexer.l:168: {from} :
+#line 168 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_FROM, {lineno(),columno()}}; return token;}
             break;
-          case 27: // rule ../lexer.l:167: {where} :
-#line 167 "../lexer.l"
+          case 27: // rule ../lexer.l:169: {where} :
+#line 169 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_WHERE, {lineno(),columno()}}; return token;}
             break;
-          case 28: // rule ../lexer.l:168: {using} :
-#line 168 "../lexer.l"
+          case 28: // rule ../lexer.l:170: {using} :
+#line 170 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_USING, {lineno(),columno()}}; return token;}
             break;
-          case 29: // rule ../lexer.l:169: {intersect} :
-#line 169 "../lexer.l"
+          case 29: // rule ../lexer.l:171: {intersect} :
+#line 171 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_INTERSECT, {lineno(),columno()}}; return token;}
             break;
-          case 30: // rule ../lexer.l:170: {except} :
-#line 170 "../lexer.l"
+          case 30: // rule ../lexer.l:172: {except} :
+#line 172 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_EXCEPT, {lineno(),columno()}}; return token;}
             break;
-          case 31: // rule ../lexer.l:171: {as} :
-#line 171 "../lexer.l"
+          case 31: // rule ../lexer.l:173: {as} :
+#line 173 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_AS, {lineno(),columno()}}; return token;}
             break;
-          case 32: // rule ../lexer.l:172: {all} :
-#line 172 "../lexer.l"
+          case 32: // rule ../lexer.l:174: {all} :
+#line 174 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_ALL, {lineno(),columno()}}; return token;}
             break;
-          case 33: // rule ../lexer.l:173: {cast} :
-#line 173 "../lexer.l"
+          case 33: // rule ../lexer.l:175: {cast} :
+#line 175 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_CAST, {lineno(),columno()}}; return token;}
             break;
-          case 34: // rule ../lexer.l:174: {distinct} :
-#line 174 "../lexer.l"
+          case 34: // rule ../lexer.l:176: {distinct} :
+#line 176 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_DISTINCT, {lineno(),columno()}}; return token;}
             break;
-          case 35: // rule ../lexer.l:175: {on} :
-#line 175 "../lexer.l"
+          case 35: // rule ../lexer.l:177: {on} :
+#line 177 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_ON, {lineno(),columno()}}; return token;}
             break;
-          case 36: // rule ../lexer.l:176: {natural} :
-#line 176 "../lexer.l"
+          case 36: // rule ../lexer.l:178: {natural} :
+#line 178 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_NATURAL, {lineno(),columno()}}; return token;}
             break;
-          case 37: // rule ../lexer.l:177: {left} :
-#line 177 "../lexer.l"
+          case 37: // rule ../lexer.l:179: {left} :
+#line 179 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_LEFT, {lineno(),columno()}}; return token;}
             break;
-          case 38: // rule ../lexer.l:178: {right} :
-#line 178 "../lexer.l"
+          case 38: // rule ../lexer.l:180: {right} :
+#line 180 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_RIGHT, {lineno(),columno()}}; return token;}
             break;
-          case 39: // rule ../lexer.l:179: {inner} :
-#line 179 "../lexer.l"
+          case 39: // rule ../lexer.l:181: {inner} :
+#line 181 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_INNER, {lineno(),columno()}}; return token;}
             break;
-          case 40: // rule ../lexer.l:180: {outer} :
-#line 180 "../lexer.l"
+          case 40: // rule ../lexer.l:182: {outer} :
+#line 182 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_OUTER, {lineno(),columno()}}; return token;}
             break;
-          case 41: // rule ../lexer.l:181: {cross} :
-#line 181 "../lexer.l"
+          case 41: // rule ../lexer.l:183: {cross} :
+#line 183 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_CROSS, {lineno(),columno()}}; return token;}
             break;
-          case 42: // rule ../lexer.l:182: {full} :
-#line 182 "../lexer.l"
+          case 42: // rule ../lexer.l:184: {full} :
+#line 184 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_FULL, {lineno(),columno()}}; return token;}
             break;
-          case 43: // rule ../lexer.l:183: {join} :
-#line 183 "../lexer.l"
+          case 43: // rule ../lexer.l:185: {join} :
+#line 185 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_JOIN, {lineno(),columno()}}; return token;}
             break;
-          case 44: // rule ../lexer.l:184: {like} :
-#line 184 "../lexer.l"
+          case 44: // rule ../lexer.l:186: {like} :
+#line 186 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_LIKE, {lineno(),columno()}}; return token;}
             break;
-          case 45: // rule ../lexer.l:185: {and} :
-#line 185 "../lexer.l"
+          case 45: // rule ../lexer.l:187: {and} :
+#line 187 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_AND, {lineno(),columno()}}; return token;}
             break;
-          case 46: // rule ../lexer.l:186: {or} :
-#line 186 "../lexer.l"
+          case 46: // rule ../lexer.l:188: {or} :
+#line 188 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_OR, {lineno(),columno()}}; return token;}
             break;
-          case 47: // rule ../lexer.l:187: {not} :
-#line 187 "../lexer.l"
+          case 47: // rule ../lexer.l:189: {not} :
+#line 189 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_NOT, {lineno(),columno()}}; return token;}
             break;
-          case 48: // rule ../lexer.l:188: {is} :
-#line 188 "../lexer.l"
+          case 48: // rule ../lexer.l:190: {is} :
+#line 190 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_IS, {lineno(),columno()}}; return token;}
             break;
-          case 49: // rule ../lexer.l:189: {null} :
-#line 189 "../lexer.l"
+          case 49: // rule ../lexer.l:191: {null} :
+#line 191 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_NULL, {lineno(),columno()}}; return token;}
             break;
-          case 50: // rule ../lexer.l:190: {between} :
-#line 190 "../lexer.l"
+          case 50: // rule ../lexer.l:192: {between} :
+#line 192 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_BETWEEN, {lineno(),columno()}}; return token;}
             break;
-          case 51: // rule ../lexer.l:191: {in} :
-#line 191 "../lexer.l"
+          case 51: // rule ../lexer.l:193: {in} :
+#line 193 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_IN, {lineno(),columno()}}; return token;}
             break;
-          case 52: // rule ../lexer.l:192: {exists} :
-#line 192 "../lexer.l"
+          case 52: // rule ../lexer.l:194: {exists} :
+#line 194 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_EXISTS, {lineno(),columno()}}; return token;}
             break;
-          case 53: // rule ../lexer.l:193: {group} :
-#line 193 "../lexer.l"
+          case 53: // rule ../lexer.l:195: {group} :
+#line 195 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_GROUP, {lineno(),columno()}}; return token;}
             break;
-          case 54: // rule ../lexer.l:194: {order} :
-#line 194 "../lexer.l"
+          case 54: // rule ../lexer.l:196: {order} :
+#line 196 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_ORDER, {lineno(),columno()}}; return token;}
             break;
-          case 55: // rule ../lexer.l:195: {by} :
-#line 195 "../lexer.l"
+          case 55: // rule ../lexer.l:197: {by} :
+#line 197 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_BY, {lineno(),columno()}}; return token;}
             break;
-          case 56: // rule ../lexer.l:196: {collate} :
-#line 196 "../lexer.l"
+          case 56: // rule ../lexer.l:198: {collate} :
+#line 198 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_COLLATE, {lineno(),columno()}}; return token;}
             break;
-          case 57: // rule ../lexer.l:197: {asc} :
-#line 197 "../lexer.l"
+          case 57: // rule ../lexer.l:199: {asc} :
+#line 199 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_ASC, {lineno(),columno()}}; return token;}
             break;
-          case 58: // rule ../lexer.l:198: {desc} :
-#line 198 "../lexer.l"
+          case 58: // rule ../lexer.l:200: {desc} :
+#line 200 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_DESC, {lineno(),columno()}}; return token;}
             break;
-          case 59: // rule ../lexer.l:199: {having} :
-#line 199 "../lexer.l"
+          case 59: // rule ../lexer.l:201: {having} :
+#line 201 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_HAVING, {lineno(),columno()}}; return token;}
             break;
-          case 60: // rule ../lexer.l:200: {limit} :
-#line 200 "../lexer.l"
+          case 60: // rule ../lexer.l:202: {limit} :
+#line 202 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_LIMIT, {lineno(),columno()}}; return token;}
             break;
-          case 61: // rule ../lexer.l:201: {offset} :
-#line 201 "../lexer.l"
+          case 61: // rule ../lexer.l:203: {offset} :
+#line 203 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_OFFSET, {lineno(),columno()}}; return token;}
             break;
-          case 62: // rule ../lexer.l:202: {create} :
-#line 202 "../lexer.l"
+          case 62: // rule ../lexer.l:204: {create} :
+#line 204 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_CREATE, {lineno(),columno()}}; return token;}
             break;
-          case 63: // rule ../lexer.l:203: {table} :
-#line 203 "../lexer.l"
+          case 63: // rule ../lexer.l:205: {table} :
+#line 205 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_TABLE, {lineno(),columno()}}; return token;}
             break;
-          case 64: // rule ../lexer.l:204: {if} :
-#line 204 "../lexer.l"
+          case 64: // rule ../lexer.l:206: {if} :
+#line 206 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_IF, {lineno(),columno()}}; return token;}
             break;
-          case 65: // rule ../lexer.l:205: {boolean} :
-#line 205 "../lexer.l"
-{csvsqldb::Token token{csvsqldb::TOK_BOOL, {lineno(),columno()}}; return token;}
-            break;
-          case 66: // rule ../lexer.l:206: {bool} :
-#line 206 "../lexer.l"
-{csvsqldb::Token token{csvsqldb::TOK_BOOL, {lineno(),columno()}}; return token;}
-            break;
-          case 67: // rule ../lexer.l:207: {int} :
+          case 65: // rule ../lexer.l:207: {boolean} :
 #line 207 "../lexer.l"
-{csvsqldb::Token token{csvsqldb::TOK_INT, {lineno(),columno()}}; return token;}
+{csvsqldb::Token token{csvsqldb::TOK_BOOL, {lineno(),columno()}}; return token;}
             break;
-          case 68: // rule ../lexer.l:208: {integer} :
+          case 66: // rule ../lexer.l:208: {bool} :
 #line 208 "../lexer.l"
+{csvsqldb::Token token{csvsqldb::TOK_BOOL, {lineno(),columno()}}; return token;}
+            break;
+          case 67: // rule ../lexer.l:209: {int} :
+#line 209 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_INT, {lineno(),columno()}}; return token;}
             break;
-          case 69: // rule ../lexer.l:209: {real} :
-#line 209 "../lexer.l"
-{csvsqldb::Token token{csvsqldb::TOK_REAL, {lineno(),columno()}}; return token;}
-            break;
-          case 70: // rule ../lexer.l:210: {float} :
+          case 68: // rule ../lexer.l:210: {integer} :
 #line 210 "../lexer.l"
-{csvsqldb::Token token{csvsqldb::TOK_REAL, {lineno(),columno()}}; return token;}
+{csvsqldb::Token token{csvsqldb::TOK_INT, {lineno(),columno()}}; return token;}
             break;
-          case 71: // rule ../lexer.l:211: {double} :
+          case 69: // rule ../lexer.l:211: {real} :
 #line 211 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_REAL, {lineno(),columno()}}; return token;}
             break;
-          case 72: // rule ../lexer.l:212: {varchar} :
+          case 70: // rule ../lexer.l:212: {float} :
 #line 212 "../lexer.l"
+{csvsqldb::Token token{csvsqldb::TOK_REAL, {lineno(),columno()}}; return token;}
+            break;
+          case 71: // rule ../lexer.l:213: {double} :
+#line 213 "../lexer.l"
+{csvsqldb::Token token{csvsqldb::TOK_REAL, {lineno(),columno()}}; return token;}
+            break;
+          case 72: // rule ../lexer.l:214: {varchar} :
+#line 214 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_STRING, {lineno(),columno()}}; return token;}
             break;
-          case 73: // rule ../lexer.l:213: {char} :
-#line 213 "../lexer.l"
-{csvsqldb::Token token{csvsqldb::TOK_CHAR, {lineno(),columno()}}; return token;}
-            break;
-          case 74: // rule ../lexer.l:214: {character} :
-#line 214 "../lexer.l"
-{csvsqldb::Token token{csvsqldb::TOK_CHAR, {lineno(),columno()}}; return token;}
-            break;
-          case 75: // rule ../lexer.l:215: {date} :
+          case 73: // rule ../lexer.l:215: {char} :
 #line 215 "../lexer.l"
+{csvsqldb::Token token{csvsqldb::TOK_CHAR, {lineno(),columno()}}; return token;}
+            break;
+          case 74: // rule ../lexer.l:216: {character} :
+#line 216 "../lexer.l"
+{csvsqldb::Token token{csvsqldb::TOK_CHAR, {lineno(),columno()}}; return token;}
+            break;
+          case 75: // rule ../lexer.l:217: {date} :
+#line 217 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_DATE, {lineno(),columno()}}; return token;}
             break;
-          case 76: // rule ../lexer.l:216: {time} :
-#line 216 "../lexer.l"
+          case 76: // rule ../lexer.l:218: {time} :
+#line 218 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_TIME, {lineno(),columno()}}; return token;}
             break;
-          case 77: // rule ../lexer.l:217: {timestamp} :
-#line 217 "../lexer.l"
+          case 77: // rule ../lexer.l:219: {timestamp} :
+#line 219 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_TIMESTAMP, {lineno(),columno()}}; return token;}
             break;
-          case 78: // rule ../lexer.l:218: {constraint} :
-#line 218 "../lexer.l"
+          case 78: // rule ../lexer.l:220: {constraint} :
+#line 220 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_CONSTRAINT, {lineno(),columno()}}; return token;}
             break;
-          case 79: // rule ../lexer.l:219: {primary} :
-#line 219 "../lexer.l"
+          case 79: // rule ../lexer.l:221: {primary} :
+#line 221 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_PRIMARY, {lineno(),columno()}}; return token;}
             break;
-          case 80: // rule ../lexer.l:220: {key} :
-#line 220 "../lexer.l"
+          case 80: // rule ../lexer.l:222: {key} :
+#line 222 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_KEY, {lineno(),columno()}}; return token;}
             break;
-          case 81: // rule ../lexer.l:221: {unique} :
-#line 221 "../lexer.l"
+          case 81: // rule ../lexer.l:223: {unique} :
+#line 223 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_UNIQUE, {lineno(),columno()}}; return token;}
             break;
-          case 82: // rule ../lexer.l:222: {default} :
-#line 222 "../lexer.l"
+          case 82: // rule ../lexer.l:224: {default} :
+#line 224 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_DEFAULT, {lineno(),columno()}}; return token;}
             break;
-          case 83: // rule ../lexer.l:223: {check} :
-#line 223 "../lexer.l"
+          case 83: // rule ../lexer.l:225: {check} :
+#line 225 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_CHECK, {lineno(),columno()}}; return token;}
             break;
-          case 84: // rule ../lexer.l:224: {alter} :
-#line 224 "../lexer.l"
+          case 84: // rule ../lexer.l:226: {alter} :
+#line 226 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_ALTER, {lineno(),columno()}}; return token;}
             break;
-          case 85: // rule ../lexer.l:225: {column} :
-#line 225 "../lexer.l"
+          case 85: // rule ../lexer.l:227: {column} :
+#line 227 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_COLUMN, {lineno(),columno()}}; return token;}
             break;
-          case 86: // rule ../lexer.l:226: {drop} :
-#line 226 "../lexer.l"
+          case 86: // rule ../lexer.l:228: {drop} :
+#line 228 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_DROP, {lineno(),columno()}}; return token;}
             break;
-          case 87: // rule ../lexer.l:227: {add} :
-#line 227 "../lexer.l"
+          case 87: // rule ../lexer.l:229: {add} :
+#line 229 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_ADD_KEYWORD, {lineno(),columno()}}; return token;}
             break;
-          case 88: // rule ../lexer.l:228: {sum} :
-#line 228 "../lexer.l"
+          case 88: // rule ../lexer.l:230: {sum} :
+#line 230 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_SUM, {lineno(),columno()}}; return token;}
             break;
-          case 89: // rule ../lexer.l:229: {count} :
-#line 229 "../lexer.l"
+          case 89: // rule ../lexer.l:231: {count} :
+#line 231 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_COUNT, {lineno(),columno()}}; return token;}
             break;
-          case 90: // rule ../lexer.l:230: {avg} :
-#line 230 "../lexer.l"
+          case 90: // rule ../lexer.l:232: {avg} :
+#line 232 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_AVG, {lineno(),columno()}}; return token;}
             break;
-          case 91: // rule ../lexer.l:231: {max} :
-#line 231 "../lexer.l"
+          case 91: // rule ../lexer.l:233: {max} :
+#line 233 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_MAX, {lineno(),columno()}}; return token;}
             break;
-          case 92: // rule ../lexer.l:232: {min} :
-#line 232 "../lexer.l"
+          case 92: // rule ../lexer.l:234: {min} :
+#line 234 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_MIN, {lineno(),columno()}}; return token;}
             break;
-          case 93: // rule ../lexer.l:233: {current_date} :
-#line 233 "../lexer.l"
+          case 93: // rule ../lexer.l:235: {current_date} :
+#line 235 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_CURRENT_DATE, {lineno(),columno()}}; return token;}
             break;
-          case 94: // rule ../lexer.l:234: {current_time} :
-#line 234 "../lexer.l"
+          case 94: // rule ../lexer.l:236: {current_time} :
+#line 236 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_CURRENT_TIME, {lineno(),columno()}}; return token;}
             break;
-          case 95: // rule ../lexer.l:235: {current_timestamp} :
-#line 235 "../lexer.l"
+          case 95: // rule ../lexer.l:237: {current_timestamp} :
+#line 237 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_CURRENT_TIMESTAMP, {lineno(),columno()}}; return token;}
             break;
-          case 96: // rule ../lexer.l:236: {varying} :
-#line 236 "../lexer.l"
+          case 96: // rule ../lexer.l:238: {varying} :
+#line 238 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_VARYING, {lineno(),columno()}}; return token;}
             break;
-          case 97: // rule ../lexer.l:237: {describe} :
-#line 237 "../lexer.l"
+          case 97: // rule ../lexer.l:239: {describe} :
+#line 239 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_DESCRIBE, {lineno(),columno()}}; return token;}
             break;
-          case 98: // rule ../lexer.l:238: {ast} :
-#line 238 "../lexer.l"
+          case 98: // rule ../lexer.l:240: {ast} :
+#line 240 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_AST, {lineno(),columno()}}; return token;}
             break;
-          case 99: // rule ../lexer.l:239: {extract} :
-#line 239 "../lexer.l"
+          case 99: // rule ../lexer.l:241: {extract} :
+#line 241 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_EXTRACT, {lineno(),columno()}}; return token;}
             break;
-          case 100: // rule ../lexer.l:240: {second} :
-#line 240 "../lexer.l"
+          case 100: // rule ../lexer.l:242: {second} :
+#line 242 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_SECOND, {lineno(),columno()}}; return token;}
             break;
-          case 101: // rule ../lexer.l:241: {minute} :
-#line 241 "../lexer.l"
+          case 101: // rule ../lexer.l:243: {minute} :
+#line 243 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_MINUTE, {lineno(),columno()}}; return token;}
             break;
-          case 102: // rule ../lexer.l:242: {hour} :
-#line 242 "../lexer.l"
+          case 102: // rule ../lexer.l:244: {hour} :
+#line 244 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_HOUR, {lineno(),columno()}}; return token;}
             break;
-          case 103: // rule ../lexer.l:243: {year} :
-#line 243 "../lexer.l"
+          case 103: // rule ../lexer.l:245: {year} :
+#line 245 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_YEAR, {lineno(),columno()}}; return token;}
             break;
-          case 104: // rule ../lexer.l:244: {month} :
-#line 244 "../lexer.l"
+          case 104: // rule ../lexer.l:246: {month} :
+#line 246 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_MONTH, {lineno(),columno()}}; return token;}
             break;
-          case 105: // rule ../lexer.l:245: {day} :
-#line 245 "../lexer.l"
+          case 105: // rule ../lexer.l:247: {day} :
+#line 247 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_DAY, {lineno(),columno()}}; return token;}
             break;
-          case 106: // rule ../lexer.l:246: {explain} :
-#line 246 "../lexer.l"
+          case 106: // rule ../lexer.l:248: {explain} :
+#line 248 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_EXPLAIN, {lineno(),columno()}}; return token;}
             break;
-          case 107: // rule ../lexer.l:247: {show} :
-#line 247 "../lexer.l"
+          case 107: // rule ../lexer.l:249: {show} :
+#line 249 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_SHOW, {lineno(),columno()}}; return token;}
             break;
-          case 108: // rule ../lexer.l:248: {mapping} :
-#line 248 "../lexer.l"
+          case 108: // rule ../lexer.l:250: {mapping} :
+#line 250 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_MAPPING, {lineno(),columno()}}; return token;}
             break;
-          case 109: // rule ../lexer.l:249: {exec} :
-#line 249 "../lexer.l"
+          case 109: // rule ../lexer.l:251: {exec} :
+#line 251 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_EXEC, {lineno(),columno()}}; return token;}
             break;
-          case 110: // rule ../lexer.l:250: {arbitrary} :
-#line 250 "../lexer.l"
+          case 110: // rule ../lexer.l:252: {arbitrary} :
+#line 252 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_ARBITRARY, {lineno(),columno()}}; return token;}
             break;
-          case 111: // rule ../lexer.l:251: {identifier} :
-#line 251 "../lexer.l"
+          case 111: // rule ../lexer.l:253: {identifier} :
+#line 253 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_IDENTIFIER, {lineno(),columno()}}; token.setIdentifier(text()); return token;}
             break;
-          case 112: // rule ../lexer.l:252: {quoted_identifer} :
-#line 252 "../lexer.l"
+          case 112: // rule ../lexer.l:254: {quoted_identifer} :
+#line 254 "../lexer.l"
 {csvsqldb::Token token{csvsqldb::TOK_QUOTED_IDENTIFIER, {lineno(),columno()}}; token.setQuotedIdentifier(text()); return token;}
             break;
-          case 113: // rule ../lexer.l:253: {ws} :
-#line 253 "../lexer.l"
+          case 113: // rule ../lexer.l:255: {ws} :
+#line 255 "../lexer.l"
 {continue;}
             break;
         }

@@ -39,9 +39,9 @@ namespace csvsqldb
   SystemTableScanOperatorNode::SystemTableScanOperatorNode(const OperatorContext& context, const SymbolTablePtr& symbolTable,
                                                            const SymbolInfo& tableInfo)
   : ScanOperatorNode(context, symbolTable, tableInfo)
+  , _producer(context._blockManager)
   {
-    _blockProvider =
-      _context._database.getSystemTables().createDataProvider(_tableInfo._identifier, context._database, context._blockManager);
+    _dataProvider = _context._database.getSystemTables().createDataProvider(_tableInfo._identifier, context._database);
   }
 
   void SystemTableScanOperatorNode::dump(std::ostream& stream) const
@@ -49,10 +49,16 @@ namespace csvsqldb
     stream << "SystemTableScanOperatorNode(" << _tableInfo._identifier << ")\n";
   }
 
+  BlockPtr SystemTableScanOperatorNode::getNextBlock()
+  {
+    return _producer.getNextBlock();
+  }
+
   const Values* SystemTableScanOperatorNode::getNextRow()
   {
     if (!_iterator) {
-      _iterator = std::make_shared<BlockIterator>(_types, *_blockProvider, _context._blockManager);
+      _producer.start([&](BlockProducer& producer) { _dataProvider->produce(producer); });
+      _iterator = std::make_shared<BlockIterator>(_types, *this, _context._blockManager);
     }
     return _iterator->getNextRow();
   }

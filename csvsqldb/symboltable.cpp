@@ -297,7 +297,7 @@ namespace csvsqldb
     return true;
   }
 
-  bool SymbolTable::fillInfoFromSubquery(const Database& database, const SymbolInfos& subqueries, SymbolInfoPtr info) const
+  bool SymbolTable::fillInfoFromSubquery(const Database&, const SymbolInfos& subqueries, SymbolInfoPtr info) const
   {
     bool found = false;
     for (const auto& query : subqueries) {

@@ -39,170 +39,60 @@
 
 namespace csvsqldb
 {
-  BlockReader::BlockReader(BlockManager& blockManager)
-  : _blockManager(blockManager)
-  , _block(_blockManager.createBlock())
+  CSVBlockReader::CSVBlockReader(BlockManager& blockManager)
+  : _producer{blockManager}
   {
   }
 
-  BlockReader::~BlockReader()
-  {
-    _continue = false;
-    if (_readThread.joinable()) {
-      _readThread.join();
-    }
-    while (!_blocks.empty()) {
-      _blockManager.release(_blocks.front());
-      _blocks.pop();
-    }
-  }
-
-  void BlockReader::initialize(std::unique_ptr<csvsqldb::csv::CSVParser> csvparser)
+  void CSVBlockReader::initialize(std::unique_ptr<csvsqldb::csv::CSVParser> csvparser)
   {
     _csvparser.swap(csvparser);
-    _readThread = std::thread(std::bind(&BlockReader::readBlocks, this));
+    _producer.start([&](BlockProducer& producer) {
+      while (_csvparser->parseLine()) {
+        producer.nextRow();
+      }
+      producer.nextRow();
+    });
   }
 
-  BlockPtr BlockReader::getNextBlock()
+  BlockPtr CSVBlockReader::getNextBlock()
   {
-    std::unique_lock lk(_queueMutex);
-    if (_blocks.empty() && !_block) {
-      return nullptr;
-    }
-    _cv.wait(lk, [this] { return !_blocks.empty() || !_error.empty(); });
-
-    if (!_error.empty()) {
-      CSVSQLDB_THROW(csvsqldb::Exception, _error);
-    }
-
-    BlockPtr block = nullptr;
-    if (!_blocks.empty()) {
-      block = _blocks.front();
-      _blocks.pop();
-    }
-
-    return block;
+    return _producer.getNextBlock();
   }
 
-  void BlockReader::readBlocks()
+  void CSVBlockReader::onLong(int64_t num, bool isNull)
   {
-    try {
-      bool moreLines = _csvparser->parseLine();
-      _block->nextRow();
-
-      while (_continue && moreLines) {
-        moreLines = _csvparser->parseLine();
-        _block->nextRow();
-      }
-      {
-        std::unique_lock lk(_queueMutex);
-        _block->endBlocks();
-        _blocks.push(_block);
-        _block = nullptr;
-      }
-    } catch (csvsqldb::Exception& ex) {
-      _continue = false;
-      _error = ex.what();
-    }
-    _cv.notify_all();
+    _producer.addInt(num, isNull);
   }
 
-  void BlockReader::onLong(int64_t num, bool isNull)
+  void CSVBlockReader::onDouble(double num, bool isNull)
   {
-    if (!_block->addInt(num, isNull)) {
-      _block->markNextBlock();
-      {
-        std::unique_lock lk(_queueMutex);
-        _blocks.push(_block);
-        _cv.notify_all();
-      }
-      _block = _blockManager.createBlock();
-      _block->addInt(num, isNull);
-    }
+    _producer.addReal(num, isNull);
   }
 
-  void BlockReader::onDouble(double num, bool isNull)
+  void CSVBlockReader::onString(const char* s, size_t len, bool isNull)
   {
-    if (!_block->addReal(num, isNull)) {
-      _block->markNextBlock();
-      {
-        std::unique_lock lk(_queueMutex);
-        _blocks.push(_block);
-        _cv.notify_all();
-      }
-      _block = _blockManager.createBlock();
-      _block->addReal(num, isNull);
-    }
+    _producer.addString(s, len, isNull);
   }
 
-  void BlockReader::onString(const char* s, size_t len, bool isNull)
+  void CSVBlockReader::onDate(const csvsqldb::Date& date, bool isNull)
   {
-    if (!_block->addString(s, len, isNull)) {
-      _block->markNextBlock();
-      {
-        std::unique_lock lk(_queueMutex);
-        _blocks.push(_block);
-        _cv.notify_all();
-      }
-      _block = _blockManager.createBlock();
-      _block->addString(s, len, isNull);
-    }
+    _producer.addDate(date, isNull);
   }
 
-  void BlockReader::onDate(const csvsqldb::Date& date, bool isNull)
+  void CSVBlockReader::onTime(const csvsqldb::Time& time, bool isNull)
   {
-    if (!_block->addDate(date, isNull)) {
-      _block->markNextBlock();
-      {
-        std::unique_lock lk(_queueMutex);
-        _blocks.push(_block);
-        _cv.notify_all();
-      }
-      _block = _blockManager.createBlock();
-      _block->addDate(date, isNull);
-    }
+    _producer.addTime(time, isNull);
   }
 
-  void BlockReader::onTime(const csvsqldb::Time& time, bool isNull)
+  void CSVBlockReader::onTimestamp(const csvsqldb::Timestamp& timestamp, bool isNull)
   {
-    if (!_block->addTime(time, isNull)) {
-      _block->markNextBlock();
-      {
-        std::unique_lock lk(_queueMutex);
-        _blocks.push(_block);
-        _cv.notify_all();
-      }
-      _block = _blockManager.createBlock();
-      _block->addTime(time, isNull);
-    }
+    _producer.addTimestamp(timestamp, isNull);
   }
 
-  void BlockReader::onTimestamp(const csvsqldb::Timestamp& timestamp, bool isNull)
+  void CSVBlockReader::onBoolean(bool boolean, bool isNull)
   {
-    if (!_block->addTimestamp(timestamp, isNull)) {
-      _block->markNextBlock();
-      {
-        std::unique_lock lk(_queueMutex);
-        _blocks.push(_block);
-        _cv.notify_all();
-      }
-      _block = _blockManager.createBlock();
-      _block->addTimestamp(timestamp, isNull);
-    }
-  }
-
-  void BlockReader::onBoolean(bool boolean, bool isNull)
-  {
-    if (!_block->addBool(boolean, isNull)) {
-      _block->markNextBlock();
-      {
-        std::unique_lock lk(_queueMutex);
-        _blocks.push(_block);
-        _cv.notify_all();
-      }
-      _block = _blockManager.createBlock();
-      _block->addBool(boolean, isNull);
-    }
+    _producer.addBool(boolean, isNull);
   }
 
 

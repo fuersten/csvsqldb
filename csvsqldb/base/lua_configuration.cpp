@@ -80,7 +80,7 @@ namespace csvsqldb
     return _p->_lua.hasGlobal(path);
   }
 
-  bool LuaConfiguration::get(const std::string& path, Typer<bool> typer) const
+  bool LuaConfiguration::get(const std::string& path, Typer<bool>) const
   {
     try {
       return _p->_lua.getGlobal<bool>(path);
@@ -89,7 +89,7 @@ namespace csvsqldb
     }
   }
 
-  int32_t LuaConfiguration::get(const std::string& path, Typer<int32_t> typer) const
+  int32_t LuaConfiguration::get(const std::string& path, Typer<int32_t>) const
   {
     try {
       return _p->_lua.getGlobal<int32_t>(path);
@@ -98,7 +98,7 @@ namespace csvsqldb
     }
   }
 
-  int64_t LuaConfiguration::get(const std::string& path, Typer<int64_t> typer) const
+  int64_t LuaConfiguration::get(const std::string& path, Typer<int64_t>) const
   {
     try {
       return _p->_lua.getGlobal<int64_t>(path);
@@ -107,7 +107,7 @@ namespace csvsqldb
     }
   }
 
-  float LuaConfiguration::get(const std::string& path, Typer<float> typer) const
+  float LuaConfiguration::get(const std::string& path, Typer<float>) const
   {
     try {
       return _p->_lua.getGlobal<float>(path);
@@ -116,7 +116,7 @@ namespace csvsqldb
     }
   }
 
-  double LuaConfiguration::get(const std::string& path, Typer<double> typer) const
+  double LuaConfiguration::get(const std::string& path, Typer<double>) const
   {
     try {
       return _p->_lua.getGlobal<double>(path);
@@ -125,7 +125,7 @@ namespace csvsqldb
     }
   }
 
-  std::string LuaConfiguration::get(const std::string& path, Typer<std::string> typer) const
+  std::string LuaConfiguration::get(const std::string& path, Typer<std::string>) const
   {
     try {
       return _p->_lua.getGlobal<std::string>(path);

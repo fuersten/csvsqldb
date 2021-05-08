@@ -38,42 +38,42 @@
 
 namespace csvsqldb
 {
-  size_t DefaultConfiguration::doGetProperties(const std::string& path, StringVector& properties) const
+  size_t DefaultConfiguration::doGetProperties(const std::string&, StringVector&) const
   {
     return 0;
   }
 
-  bool DefaultConfiguration::doHasProperty(const std::string& path) const
+  bool DefaultConfiguration::doHasProperty(const std::string&) const
   {
     return false;
   }
 
-  bool DefaultConfiguration::get(const std::string& path, Typer<bool> typer) const
+  bool DefaultConfiguration::get(const std::string&, Typer<bool>) const
   {
     return false;
   }
 
-  int32_t DefaultConfiguration::get(const std::string& path, Typer<int32_t> typer) const
+  int32_t DefaultConfiguration::get(const std::string& path, Typer<int32_t>) const
   {
     throw ConfigurationException("path '" + path + "' not found");
   }
 
-  int64_t DefaultConfiguration::get(const std::string& path, Typer<int64_t> typer) const
+  int64_t DefaultConfiguration::get(const std::string& path, Typer<int64_t>) const
   {
     throw ConfigurationException("path '" + path + "' not found");
   }
 
-  float DefaultConfiguration::get(const std::string& path, Typer<float> typer) const
+  float DefaultConfiguration::get(const std::string& path, Typer<float>) const
   {
     throw ConfigurationException("path '" + path + "' not found");
   }
 
-  double DefaultConfiguration::get(const std::string& path, Typer<double> typer) const
+  double DefaultConfiguration::get(const std::string& path, Typer<double>) const
   {
     throw ConfigurationException("path '" + path + "' not found");
   }
 
-  std::string DefaultConfiguration::get(const std::string& path, Typer<std::string> typer) const
+  std::string DefaultConfiguration::get(const std::string& path, Typer<std::string>) const
   {
     throw ConfigurationException("path '" + path + "' not found");
   }
