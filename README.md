@@ -46,19 +46,28 @@ Most important issues, I am working on:
 # Usage
 
 ```
-csvsqldb tool version 0.1.6
-©2015-2016 Lars Fürstenberg
+csvsqldb tool version 0.2.0
+©2015-2020 Lars-Christian Fürstenberg
+
+Usage: ./csvsqldb [OPTIONS] [files...]
+
+Positionals:
+  files TEXT ...              Csv files to process, can use expansion patterns like ~ or *
+
 Options:
-  --help                    shows this help
-  --version                 shows the version of the program
-  -i [ --interactive ]      opens an interactive sql shell
-  -v [ --verbose ]          output verbose statistics
-  --show-header-line arg    if set to 'on' outputs a header line
-  -p [ --datbase-path ] arg path to the database
-  -c [ --command-file ] arg command file with sql commands to process
-  -s [ --sql ] arg          sql commands to call
-  -m [ --mapping ] arg      mapping from csv file to table
-  -f [ --files ] arg        csv files to process
+  -h,--help                   Print this help message and exit
+  -v,--version                Display program version information and exit
+  -i,--interactive            Opens an interactive sql shell
+  -V,--verbose                Output verbose statistics
+  --show-header-line TEXT     If set to 'on' outputs a header line
+  -p,--datbase-path TEXT      Path to the database
+  -c,--command-file TEXT Excludes: --sql
+                              Command file with sql commands to process
+  -s,--sql TEXT Excludes: --command-file
+                              Sql commands to call
+  -b,--blocks UINT            Sets the maximum active blocks
+  -m,--mapping TEXT           Mapping from csv file to table
+  -f,--files TEXT ...         Csv files to process, can use expansion patterns like ~ or *
 ```
 
 ## Example:
