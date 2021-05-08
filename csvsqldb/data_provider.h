@@ -35,83 +35,80 @@
 
 #include <csvsqldb/inc.h>
 
-#include <csvsqldb/block.h>
+#include <csvsqldb/block_producer.h>
 #include <csvsqldb/database.h>
 
 
 namespace csvsqldb
 {
-  class SystemDualDataProvider : public BlockProvider
+  class DataProvider
   {
   public:
-    SystemDualDataProvider(BlockManager& blockManager);
+    virtual ~DataProvider() = default;
 
-    BlockPtr getNextBlock() override;
-
-  private:
-    BlockManager& _blockManager;
+    virtual bool produce(BlockProducer& producer) = 0;
   };
 
 
-  class SystemTablesDataProvider : public BlockProvider
+  class SystemDualDataProvider : public DataProvider
   {
   public:
-    SystemTablesDataProvider(Database& database, BlockManager& blockManager);
+    SystemDualDataProvider() = default;
 
-    BlockPtr getNextBlock() override;
+    bool produce(BlockProducer& producer) override;
+  };
+
+
+  class SystemTablesDataProvider : public DataProvider
+  {
+  public:
+    SystemTablesDataProvider(Database& database);
+
+    bool produce(BlockProducer& producer) override;
 
   private:
     Database& _database;
-    BlockManager& _blockManager;
   };
 
 
-  class SystemColumnsDataProvider : public BlockProvider
+  class SystemColumnsDataProvider : public DataProvider
   {
   public:
-    SystemColumnsDataProvider(Database& database, BlockManager& blockManager);
+    SystemColumnsDataProvider(Database& database);
 
-    BlockPtr getNextBlock() override;
+    bool produce(BlockProducer& producer) override;
 
   private:
     Database& _database;
-    BlockManager& _blockManager;
   };
 
 
-  class SystemFunctionsDataProvider : public BlockProvider
+  class SystemFunctionsDataProvider : public DataProvider
   {
   public:
-    SystemFunctionsDataProvider(Database& database, BlockManager& blockManager);
+    SystemFunctionsDataProvider(Database& database);
 
-    BlockPtr getNextBlock() override;
-
-  private:
-    BlockManager& _blockManager;
+    bool produce(BlockProducer& producer) override;
   };
 
 
-  class SystemParametersDataProvider : public BlockProvider
+  class SystemParametersDataProvider : public DataProvider
   {
   public:
-    SystemParametersDataProvider(Database& database, BlockManager& blockManager);
+    SystemParametersDataProvider(Database& database);
 
-    BlockPtr getNextBlock() override;
-
-  private:
-    BlockManager& _blockManager;
+    bool produce(BlockProducer& producer) override;
   };
 
 
-  class SystemMappingsDataProvider : public BlockProvider
+  class SystemMappingsDataProvider : public DataProvider
   {
   public:
-    SystemMappingsDataProvider(Database& database, BlockManager& blockManager);
+    SystemMappingsDataProvider(Database& database);
 
-    BlockPtr getNextBlock() override;
+    bool produce(BlockProducer& producer) override;
 
   private:
     Database& _database;
-    BlockManager& _blockManager;
   };
 }

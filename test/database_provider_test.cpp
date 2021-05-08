@@ -58,16 +58,18 @@ TEST_CASE("Data Provider Test", "[system tables]")
   auto path = tmpDir.temporaryDirectoryPath();
   csvsqldb::FileMapping mapping;
   csvsqldb::BlockManager blockManager;
+  csvsqldb::BlockProducer producer{blockManager};
   csvsqldb::Database database{path, mapping};
 
   SECTION("SYSTEM_DUAL provider")
   {
     csvsqldb::SystemDualTable table;
     table.setUp();
-    auto provider = database.getSystemTables().createDataProvider("SYSTEM_DUAL", database, blockManager);
+    auto provider = database.getSystemTables().createDataProvider("SYSTEM_DUAL", database);
     REQUIRE(provider);
+    producer.start([&provider](csvsqldb::BlockProducer& blockProducer) { provider->produce(blockProducer); });
     csvsqldb::Types types = setupTypes(table);
-    csvsqldb::BlockIterator iterator(types, *provider, blockManager);
+    csvsqldb::BlockIterator iterator(types, producer, blockManager);
     auto* values = iterator.getNextRow();
     REQUIRE(values);
     REQUIRE(1 == values->size());
@@ -77,10 +79,11 @@ TEST_CASE("Data Provider Test", "[system tables]")
   {
     csvsqldb::SystemTableMeta table;
     table.setUp();
-    auto provider = database.getSystemTables().createDataProvider("SYSTEM_TABLES", database, blockManager);
+    auto provider = database.getSystemTables().createDataProvider("SYSTEM_TABLES", database);
     REQUIRE(provider);
+    producer.start([&provider](csvsqldb::BlockProducer& blockProducer) { provider->produce(blockProducer); });
     csvsqldb::Types types = setupTypes(table);
-    csvsqldb::BlockIterator iterator(types, *provider, blockManager);
+    csvsqldb::BlockIterator iterator(types, producer, blockManager);
     auto* values = iterator.getNextRow();
     REQUIRE(values);
     REQUIRE(2 == values->size());
@@ -91,10 +94,11 @@ TEST_CASE("Data Provider Test", "[system tables]")
   {
     csvsqldb::SystemColumnMeta table;
     table.setUp();
-    auto provider = database.getSystemTables().createDataProvider("SYSTEM_COLUMNS", database, blockManager);
+    auto provider = database.getSystemTables().createDataProvider("SYSTEM_COLUMNS", database);
     REQUIRE(provider);
+    producer.start([&provider](csvsqldb::BlockProducer& blockProducer) { provider->produce(blockProducer); });
     csvsqldb::Types types = setupTypes(table);
-    csvsqldb::BlockIterator iterator(types, *provider, blockManager);
+    csvsqldb::BlockIterator iterator(types, producer, blockManager);
     auto* values = iterator.getNextRow();
     REQUIRE(values);
     REQUIRE(8 == values->size());
@@ -111,10 +115,11 @@ TEST_CASE("Data Provider Test", "[system tables]")
   {
     csvsqldb::SystemFunctionMeta table;
     table.setUp();
-    auto provider = database.getSystemTables().createDataProvider("SYSTEM_FUNCTIONS", database, blockManager);
+    auto provider = database.getSystemTables().createDataProvider("SYSTEM_FUNCTIONS", database);
     REQUIRE(provider);
+    producer.start([&provider](csvsqldb::BlockProducer& blockProducer) { provider->produce(blockProducer); });
     csvsqldb::Types types = setupTypes(table);
-    csvsqldb::BlockIterator iterator(types, *provider, blockManager);
+    csvsqldb::BlockIterator iterator(types, producer, blockManager);
     auto* values = iterator.getNextRow();
     REQUIRE(values);
     REQUIRE(1 == values->size());
@@ -124,10 +129,11 @@ TEST_CASE("Data Provider Test", "[system tables]")
   {
     csvsqldb::SystemParameterMeta table;
     table.setUp();
-    auto provider = database.getSystemTables().createDataProvider("SYSTEM_PARAMETERS", database, blockManager);
+    auto provider = database.getSystemTables().createDataProvider("SYSTEM_PARAMETERS", database);
     REQUIRE(provider);
+    producer.start([&provider](csvsqldb::BlockProducer& blockProducer) { provider->produce(blockProducer); });
     csvsqldb::Types types = setupTypes(table);
-    csvsqldb::BlockIterator iterator(types, *provider, blockManager);
+    csvsqldb::BlockIterator iterator(types, producer, blockManager);
     auto* values = iterator.getNextRow();
     REQUIRE(values);
     REQUIRE(4 == values->size());
@@ -146,10 +152,11 @@ TEST_CASE("Data Provider Test", "[system tables]")
 
     csvsqldb::SystemMappingMeta table;
     table.setUp();
-    auto provider = database.getSystemTables().createDataProvider("SYSTEM_MAPPINGS", database, blockManager);
+    auto provider = database.getSystemTables().createDataProvider("SYSTEM_MAPPINGS", database);
     REQUIRE(provider);
+    producer.start([&provider](csvsqldb::BlockProducer& blockProducer) { provider->produce(blockProducer); });
     csvsqldb::Types types = setupTypes(table);
-    csvsqldb::BlockIterator iterator(types, *provider, blockManager);
+    csvsqldb::BlockIterator iterator(types, producer, blockManager);
     auto* values = iterator.getNextRow();
     REQUIRE(values);
     REQUIRE(2 == values->size());
@@ -158,7 +165,7 @@ TEST_CASE("Data Provider Test", "[system tables]")
   }
   SECTION("no table")
   {
-    CHECK_THROWS_WITH(database.getSystemTables().createDataProvider("NO SYSTEM TABLE", database, blockManager),
+    CHECK_THROWS_WITH(database.getSystemTables().createDataProvider("NO SYSTEM TABLE", database),
                       "system table 'NO SYSTEM TABLE' not found");
   }
 }

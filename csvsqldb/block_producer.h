@@ -44,7 +44,7 @@
 
 namespace csvsqldb
 {
-  class CSVSQLDB_EXPORT BlockProducer
+  class CSVSQLDB_EXPORT BlockProducer : public BlockProvider
   {
   public:
     explicit BlockProducer(BlockManager& blockManager);
@@ -58,9 +58,10 @@ namespace csvsqldb
 
     void start(std::function<void(BlockProducer& producer)> reader);
 
-    BlockPtr getNextBlock();
+    BlockPtr getNextBlock() override;
 
     void nextRow();
+    void addValue(const Variant& value);
     void addInt(int64_t num, bool isNull);
     void addReal(double num, bool isNull);
     void addString(const char* s, size_t len, bool isNull);
@@ -81,7 +82,6 @@ namespace csvsqldb
     std::thread _readThread;
     std::condition_variable _cv;
     std::mutex _queueMutex;
-    bool _continue{true};
     std::string _error;
     std::function<void(BlockProducer& producer)> _reader;
   };

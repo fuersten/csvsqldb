@@ -44,7 +44,6 @@ namespace csvsqldb
 
   BlockProducer::~BlockProducer()
   {
-    _continue = false;
     if (_readThread.joinable()) {
       _readThread.join();
     }
@@ -85,7 +84,6 @@ namespace csvsqldb
         _block = nullptr;
       }
     } catch (csvsqldb::Exception& ex) {
-      _continue = false;
       _error = ex.what();
     }
     _cv.notify_all();
@@ -117,6 +115,15 @@ namespace csvsqldb
   {
     _block->nextRow();
   }
+
+  void BlockProducer::addValue(const Variant& value)
+  {
+    if (!_block->addValue(value)) {
+      addBlock();
+      _block->addValue(value);
+    }
+  }
+
   void BlockProducer::addInt(int64_t num, bool isNull)
   {
     if (!_block->addInt(num, isNull)) {

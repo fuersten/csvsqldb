@@ -36,12 +36,16 @@
 #include <csvsqldb/inc.h>
 
 #include <csvsqldb/block_iterator.h>
+#include <csvsqldb/block_producer.h>
+#include <csvsqldb/data_provider.h>
 #include <csvsqldb/operatornodes/scan_operatornode.h>
 
 
 namespace csvsqldb
 {
-  class CSVSQLDB_EXPORT SystemTableScanOperatorNode : public ScanOperatorNode
+  class CSVSQLDB_EXPORT SystemTableScanOperatorNode
+  : public ScanOperatorNode
+  , public BlockProvider
   {
   public:
     SystemTableScanOperatorNode(const OperatorContext& context, const SymbolTablePtr& symbolTable, const SymbolInfo& tableInfo);
@@ -50,8 +54,12 @@ namespace csvsqldb
 
     const Values* getNextRow() override;
 
+    /// BlockProvider interface
+    BlockPtr getNextBlock() override;
+
   private:
     BlockIteratorPtr _iterator;
-    std::unique_ptr<BlockProvider> _blockProvider;
+    BlockProducer _producer;
+    std::unique_ptr<DataProvider> _dataProvider;
   };
 }

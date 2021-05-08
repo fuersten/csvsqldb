@@ -35,7 +35,7 @@
 
 #include <csvsqldb/inc.h>
 
-#include <csvsqldb/block.h>
+#include <csvsqldb/block_producer.h>
 #include <csvsqldb/tabledata.h>
 
 #include <memory>
@@ -44,6 +44,7 @@
 namespace csvsqldb
 {
   class Database;
+  class DataProvider;
   class SystemTable;
   using SystemTablePtr = std::shared_ptr<const SystemTable>;
 
@@ -59,14 +60,14 @@ namespace csvsqldb
     virtual ~SystemTable() = default;
 
     void setUp();
-    std::unique_ptr<BlockProvider> createDataProvider(Database& database, BlockManager& blockManager) const;
+    std::unique_ptr<DataProvider> createDataProvider(Database& database) const;
 
     TableData getTableData() const;
     const std::string& getName() const;
 
   private:
     virtual void doSetUp() = 0;
-    virtual std::unique_ptr<BlockProvider> doCreateDataProvider(Database& database, BlockManager& blockManager) const = 0;
+    virtual std::unique_ptr<DataProvider> doCreateDataProvider(Database& database) const = 0;
 
   protected:
     TableData _tableData;
@@ -80,7 +81,7 @@ namespace csvsqldb
 
   private:
     void doSetUp() override;
-    std::unique_ptr<BlockProvider> doCreateDataProvider(Database& database, BlockManager& blockManager) const override;
+    std::unique_ptr<DataProvider> doCreateDataProvider(Database& database) const override;
   };
 
 
@@ -91,7 +92,7 @@ namespace csvsqldb
 
   private:
     void doSetUp() override;
-    std::unique_ptr<BlockProvider> doCreateDataProvider(Database& database, BlockManager& blockManager) const override;
+    std::unique_ptr<DataProvider> doCreateDataProvider(Database& database) const override;
   };
 
 
@@ -102,7 +103,7 @@ namespace csvsqldb
 
   private:
     void doSetUp() override;
-    std::unique_ptr<BlockProvider> doCreateDataProvider(Database& database, BlockManager& blockManager) const override;
+    std::unique_ptr<DataProvider> doCreateDataProvider(Database& database) const override;
   };
 
 
@@ -113,7 +114,7 @@ namespace csvsqldb
 
   private:
     void doSetUp() override;
-    std::unique_ptr<BlockProvider> doCreateDataProvider(Database& database, BlockManager& blockManager) const override;
+    std::unique_ptr<DataProvider> doCreateDataProvider(Database& database) const override;
   };
 
 
@@ -124,7 +125,7 @@ namespace csvsqldb
 
   private:
     void doSetUp() override;
-    std::unique_ptr<BlockProvider> doCreateDataProvider(Database& database, BlockManager& blockManager) const override;
+    std::unique_ptr<DataProvider> doCreateDataProvider(Database& database) const override;
   };
 
 
@@ -135,7 +136,7 @@ namespace csvsqldb
 
   private:
     void doSetUp() override;
-    std::unique_ptr<BlockProvider> doCreateDataProvider(Database& database, BlockManager& blockManager) const override;
+    std::unique_ptr<DataProvider> doCreateDataProvider(Database& database) const override;
   };
 
 
@@ -152,8 +153,7 @@ namespace csvsqldb
     std::vector<SystemTablePtr> getSystemTables() const;
 
     bool isSystemTable(const std::string& name) const;
-    std::unique_ptr<BlockProvider> createDataProvider(const std::string& name, Database& database,
-                                                      BlockManager& blockManager) const;
+    std::unique_ptr<DataProvider> createDataProvider(const std::string& name, Database& database) const;
 
   private:
     void addSystemTables();

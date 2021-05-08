@@ -59,9 +59,9 @@ namespace csvsqldb
     return _tableData.name();
   }
 
-  std::unique_ptr<BlockProvider> SystemTable::createDataProvider(Database& database, BlockManager& blockManager) const
+  std::unique_ptr<DataProvider> SystemTable::createDataProvider(Database& database) const
   {
-    return doCreateDataProvider(database, blockManager);
+    return doCreateDataProvider(database);
   }
 
 
@@ -75,9 +75,9 @@ namespace csvsqldb
     _tableData.addColumn("x", BOOLEAN, false, false, false, std::any(), ASTExprNodePtr(), 0);
   }
 
-  std::unique_ptr<BlockProvider> SystemDualTable::doCreateDataProvider(Database&, BlockManager& blockManager) const
+  std::unique_ptr<DataProvider> SystemDualTable::doCreateDataProvider(Database&) const
   {
-    return std::make_unique<SystemDualDataProvider>(blockManager);
+    return std::make_unique<SystemDualDataProvider>();
   }
 
 
@@ -92,9 +92,9 @@ namespace csvsqldb
     _tableData.addColumn("SYSTEM", BOOLEAN, false, false, true, std::any(), ASTExprNodePtr(), 0);
   }
 
-  std::unique_ptr<BlockProvider> SystemTableMeta::doCreateDataProvider(Database& database, BlockManager& blockManager) const
+  std::unique_ptr<DataProvider> SystemTableMeta::doCreateDataProvider(Database& database) const
   {
-    return std::make_unique<SystemTablesDataProvider>(database, blockManager);
+    return std::make_unique<SystemTablesDataProvider>(database);
   }
 
 
@@ -115,9 +115,9 @@ namespace csvsqldb
     _tableData.addColumn("LENGTH", INT, false, false, false, std::any(), ASTExprNodePtr(), 0);
   }
 
-  std::unique_ptr<BlockProvider> SystemColumnMeta::doCreateDataProvider(Database& database, BlockManager& blockManager) const
+  std::unique_ptr<DataProvider> SystemColumnMeta::doCreateDataProvider(Database& database) const
   {
-    return std::make_unique<SystemColumnsDataProvider>(database, blockManager);
+    return std::make_unique<SystemColumnsDataProvider>(database);
   }
 
 
@@ -131,9 +131,9 @@ namespace csvsqldb
     _tableData.addColumn("NAME", STRING, true, true, true, std::any(), ASTExprNodePtr(), 0);
   }
 
-  std::unique_ptr<BlockProvider> SystemFunctionMeta::doCreateDataProvider(Database& database, BlockManager& blockManager) const
+  std::unique_ptr<DataProvider> SystemFunctionMeta::doCreateDataProvider(Database& database) const
   {
-    return std::make_unique<SystemFunctionsDataProvider>(database, blockManager);
+    return std::make_unique<SystemFunctionsDataProvider>(database);
   }
 
 
@@ -150,9 +150,9 @@ namespace csvsqldb
     _tableData.addColumn("RETURN", BOOLEAN, false, false, true, std::any(), ASTExprNodePtr(), 0);
   }
 
-  std::unique_ptr<BlockProvider> SystemParameterMeta::doCreateDataProvider(Database& database, BlockManager& blockManager) const
+  std::unique_ptr<DataProvider> SystemParameterMeta::doCreateDataProvider(Database& database) const
   {
-    return std::make_unique<SystemParametersDataProvider>(database, blockManager);
+    return std::make_unique<SystemParametersDataProvider>(database);
   }
 
 
@@ -167,9 +167,9 @@ namespace csvsqldb
     _tableData.addColumn("TABLE_NAME", STRING, true, true, true, std::any(), ASTExprNodePtr(), 0);
   }
 
-  std::unique_ptr<BlockProvider> SystemMappingMeta::doCreateDataProvider(Database& database, BlockManager& blockManager) const
+  std::unique_ptr<DataProvider> SystemMappingMeta::doCreateDataProvider(Database& database) const
   {
-    return std::make_unique<SystemMappingsDataProvider>(database, blockManager);
+    return std::make_unique<SystemMappingsDataProvider>(database);
   }
 
 
@@ -208,14 +208,13 @@ namespace csvsqldb
     return result != _systemTables.end();
   }
 
-  std::unique_ptr<BlockProvider> SystemTables::createDataProvider(const std::string& name, Database& database,
-                                                                  BlockManager& blockManager) const
+  std::unique_ptr<DataProvider> SystemTables::createDataProvider(const std::string& name, Database& database) const
   {
     auto result =
       std::find_if(_systemTables.begin(), _systemTables.end(), [&name](const auto& table) { return name == table->getName(); });
     if (result == _systemTables.end()) {
       CSVSQLDB_THROW(Exception, "system table '" << name << "' not found");
     }
-    return (*result)->createDataProvider(database, blockManager);
+    return (*result)->createDataProvider(database);
   }
 }
