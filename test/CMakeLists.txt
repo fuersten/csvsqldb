@@ -20,7 +20,7 @@ add_executable(csvsqldbtest
     configuration_test.cpp
     csv_parser_test.cpp
     data_framework_test.cpp
-    database_provider_test.cpp
+    data_provider_test.cpp
     database_system_test.cpp
     database_test.cpp
     date_test.cpp
