@@ -79,9 +79,24 @@ namespace csvsqldb
     if (!_blocks.empty()) {
       block = _blocks.front();
       _blocks.pop();
+      _cv.notify_all();
     }
 
     return block;
+  }
+
+  void BlockReader::addBlock()
+  {
+    _block->markNextBlock();
+    {
+      std::unique_lock lk(_queueMutex);
+      _blocks.push(_block);
+      _cv.notify_all();
+      if (_blocks.size() > 10) {
+        _cv.wait(lk, [this] { return _blocks.size() < 5; });
+      }
+    }
+    _block = _blockManager.createBlock();
   }
 
   void BlockReader::readBlocks()
@@ -110,13 +125,7 @@ namespace csvsqldb
   void BlockReader::onLong(int64_t num, bool isNull)
   {
     if (!_block->addInt(num, isNull)) {
-      _block->markNextBlock();
-      {
-        std::unique_lock lk(_queueMutex);
-        _blocks.push(_block);
-        _cv.notify_all();
-      }
-      _block = _blockManager.createBlock();
+      addBlock();
       _block->addInt(num, isNull);
     }
   }
@@ -124,13 +133,7 @@ namespace csvsqldb
   void BlockReader::onDouble(double num, bool isNull)
   {
     if (!_block->addReal(num, isNull)) {
-      _block->markNextBlock();
-      {
-        std::unique_lock lk(_queueMutex);
-        _blocks.push(_block);
-        _cv.notify_all();
-      }
-      _block = _blockManager.createBlock();
+      addBlock();
       _block->addReal(num, isNull);
     }
   }
@@ -138,13 +141,7 @@ namespace csvsqldb
   void BlockReader::onString(const char* s, size_t len, bool isNull)
   {
     if (!_block->addString(s, len, isNull)) {
-      _block->markNextBlock();
-      {
-        std::unique_lock lk(_queueMutex);
-        _blocks.push(_block);
-        _cv.notify_all();
-      }
-      _block = _blockManager.createBlock();
+      addBlock();
       _block->addString(s, len, isNull);
     }
   }
@@ -152,13 +149,7 @@ namespace csvsqldb
   void BlockReader::onDate(const csvsqldb::Date& date, bool isNull)
   {
     if (!_block->addDate(date, isNull)) {
-      _block->markNextBlock();
-      {
-        std::unique_lock lk(_queueMutex);
-        _blocks.push(_block);
-        _cv.notify_all();
-      }
-      _block = _blockManager.createBlock();
+      addBlock();
       _block->addDate(date, isNull);
     }
   }
@@ -166,13 +157,7 @@ namespace csvsqldb
   void BlockReader::onTime(const csvsqldb::Time& time, bool isNull)
   {
     if (!_block->addTime(time, isNull)) {
-      _block->markNextBlock();
-      {
-        std::unique_lock lk(_queueMutex);
-        _blocks.push(_block);
-        _cv.notify_all();
-      }
-      _block = _blockManager.createBlock();
+      addBlock();
       _block->addTime(time, isNull);
     }
   }
@@ -180,13 +165,7 @@ namespace csvsqldb
   void BlockReader::onTimestamp(const csvsqldb::Timestamp& timestamp, bool isNull)
   {
     if (!_block->addTimestamp(timestamp, isNull)) {
-      _block->markNextBlock();
-      {
-        std::unique_lock lk(_queueMutex);
-        _blocks.push(_block);
-        _cv.notify_all();
-      }
-      _block = _blockManager.createBlock();
+      addBlock();
       _block->addTimestamp(timestamp, isNull);
     }
   }
@@ -194,13 +173,7 @@ namespace csvsqldb
   void BlockReader::onBoolean(bool boolean, bool isNull)
   {
     if (!_block->addBool(boolean, isNull)) {
-      _block->markNextBlock();
-      {
-        std::unique_lock lk(_queueMutex);
-        _blocks.push(_block);
-        _cv.notify_all();
-      }
-      _block = _blockManager.createBlock();
+      addBlock();
       _block->addBool(boolean, isNull);
     }
   }

@@ -10,6 +10,9 @@
 * Tons of unit tests have been added and the coverage is about 90%
 * The number of maximum active blocks can now be configured interactively and by command line
 * The cast function can now also cast from real, bool, date, integer, date, time, timestamp to varchar
+* New system tables for database meta data (like tables, columns, functions, and mappings) where added
+* Better memory block handlng. The memory block generation adapts to the block consumption and uses significantly less memory.
+* Added gcc as mac os x compiler
 
 ### Changed
 
@@ -25,6 +28,7 @@
 * Lots of small refactorings and cleanups
 * All thridparty dependencies are now handled via submodules or are fetched while configuring
 * Uses fast_float library for parsing floating point numbers
+* More compiler warnings activated
 
 ### Removed
 

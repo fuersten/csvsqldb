@@ -80,6 +80,7 @@ namespace csvsqldb
   private:
     using Blocks = std::queue<BlockPtr>;
 
+    void addBlock();
     void readBlocks();
 
     std::unique_ptr<csvsqldb::csv::CSVParser> _csvparser;
