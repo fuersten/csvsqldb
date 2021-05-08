@@ -126,7 +126,7 @@ namespace csvsqldb
           return src;
         }
       } else {
-        _callback.onString(str, end - str, str == end);
+        _callback.onString(str, static_cast<size_t>(end - str), str == end);
         return end;
       }
     }

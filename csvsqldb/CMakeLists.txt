@@ -111,7 +111,6 @@ set(LIB_CSVSQLDB_BASE_HEADERS
     base/application.h
     base/configuration.h
     base/csv_parser.h
-    base/csv_parser_g.h
     base/date.h
     base/default_configuration.h
     base/duration.h
