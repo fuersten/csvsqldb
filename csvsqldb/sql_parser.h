@@ -57,7 +57,8 @@ namespace csvsqldb
     ASTNodePtr parse(std::string input);
     ASTNodePtr parse();
 
-    ASTExprNodePtr parseExpression(const std::string& expression, const SymbolTablePtr& parent = SymbolTablePtr());
+    ASTExprNodePtr parseExpression(const std::string& expression, const SymbolTablePtr& parent);
+    ASTExprNodePtr parseExpression(const std::string& expression);
 
     void setInput(std::string input);
 
