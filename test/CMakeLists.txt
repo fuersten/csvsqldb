@@ -8,7 +8,6 @@ add_executable(csvsqldbtest
     main.cpp
 
     aggregation_functions_test.cpp
-    aggregation_operatornode_test.cpp
     aggregation_test.cpp
     application_test.cpp
     ast_dump_visitor_test.cpp
@@ -70,6 +69,9 @@ add_executable(csvsqldbtest
     valtimestamp_test.cpp
     values_test.cpp
     variant_test.cpp
+
+    operatornodes/scan_operator_node_mock.h
+    operatornodes/aggregation_operatornode_test.cpp
 
     ${CSVSQLDB_TEST_SOURCES}
 

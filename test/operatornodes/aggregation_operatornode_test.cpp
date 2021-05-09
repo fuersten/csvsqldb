@@ -30,68 +30,14 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-#include <csvsqldb/block_iterator.h>
-#include <csvsqldb/block_producer.h>
 #include <csvsqldb/operatornodes/aggregation_operatornode.h>
-#include <csvsqldb/operatornodes/scan_operatornode.h>
 #include <csvsqldb/sql_parser.h>
 #include <csvsqldb/validation_visitor.h>
 
-#include "temporary_directory.h"
-#include "test/test_util.h"
+#include "test/operatornodes/scan_operator_node_mock.h"
+#include "test/temporary_directory.h"
 
 #include <catch2/catch.hpp>
-
-
-namespace
-{
-  class MockScanOperatorNode
-  : public csvsqldb::ScanOperatorNode
-  , public csvsqldb::BlockProvider
-  {
-  public:
-    MockScanOperatorNode(const csvsqldb::OperatorContext& context, const csvsqldb::SymbolTablePtr& symbolTable,
-                         const csvsqldb::SymbolInfo& tableInfo)
-    : ScanOperatorNode(context, symbolTable, tableInfo)
-    , _producer(context._blockManager)
-    {
-    }
-
-    void setProducer(std::function<void(csvsqldb::BlockProducer& producer)> produce)
-    {
-      _produce = produce;
-    }
-
-    const csvsqldb::Values* getNextRow() override
-    {
-      if (!_iterator) {
-        _producer.start([&](csvsqldb::BlockProducer& producer) {
-          if (_produce) {
-            _produce(producer);
-          }
-        });
-        _iterator = std::make_shared<csvsqldb::BlockIterator>(_types, *this, _context._blockManager);
-      }
-      return _iterator->getNextRow();
-    }
-
-    csvsqldb::BlockPtr getNextBlock() override
-    {
-      return _producer.getNextBlock();
-    }
-
-    void dump(std::ostream& stream) const override
-    {
-      stream << "MockScanOperatorNode()\n";
-    }
-
-  private:
-    std::function<void(csvsqldb::BlockProducer& producer)> _produce;
-
-    csvsqldb::BlockIteratorPtr _iterator;
-    csvsqldb::BlockProducer _producer;
-  };
-}
 
 
 TEST_CASE("Aggregation Operator Node Test", "[operatornodes]")
@@ -147,7 +93,7 @@ TEST_CASE("Aggregation Operator Node Test", "[operatornodes]")
     info._identifier = "TEST";
     info._name = "TEST";
     info._symbolType = csvsqldb::TABLE;
-    auto scanOperatorNode = std::make_shared<MockScanOperatorNode>(context, symbolTable, info);
+    auto scanOperatorNode = std::make_shared<ScanOperatorNodeMock>(context, symbolTable, info);
 
     expr->symbolTable()->typeSymbolTable(database);
 

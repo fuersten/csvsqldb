@@ -1,6 +1,8 @@
 
 # Roadmap
 
+* UTF-8 support
+* Test mapped files in csv import
 * Add format library
 * Allow quoted identifiers where allowed by standard
 * Insert sort with limit
