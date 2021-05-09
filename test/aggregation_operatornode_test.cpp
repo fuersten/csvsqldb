@@ -131,15 +131,7 @@ TEST_CASE("Aggregation Operator Node Test", "[operatornodes]")
       symbolTable->addSymbol("TEST", info);
     }
 
-    csvsqldb::SymbolInfo info;
-    info._identifier = "TEST";
-    info._name = "TEST";
-    info._symbolType = csvsqldb::TABLE;
-    auto scanOperatorNode = std::make_shared<MockScanOperatorNode>(context, symbolTable, info);
-
     auto expr = parser.parseExpression("sum(a)", symbolTable);
-    expr->symbolTable()->typeSymbolTable(database);
-
     {
       auto info = std::make_shared<csvsqldb::SymbolInfo>();
       info->_symbolType = csvsqldb::CALC;
@@ -150,6 +142,14 @@ TEST_CASE("Aggregation Operator Node Test", "[operatornodes]")
       symbolTable->addSymbol(symbolName, info);
       expr->_symbolName = symbolName;
     }
+
+    csvsqldb::SymbolInfo info;
+    info._identifier = "TEST";
+    info._name = "TEST";
+    info._symbolType = csvsqldb::TABLE;
+    auto scanOperatorNode = std::make_shared<MockScanOperatorNode>(context, symbolTable, info);
+
+    expr->symbolTable()->typeSymbolTable(database);
 
     csvsqldb::Expressions expressions;
     expressions.emplace_back(expr);
