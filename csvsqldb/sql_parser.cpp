@@ -144,11 +144,11 @@ namespace csvsqldb
     return astnode;
   }
 
-  ASTExprNodePtr SQLParser::parseExpression(const std::string& expression)
+  ASTExprNodePtr SQLParser::parseExpression(const std::string& expression, const SymbolTablePtr& parent)
   {
     setInput(expression);
     parseNext();
-    return parseExpression(SymbolTable::createSymbolTable());
+    return parseExpression(parent);
   }
 
   ASTDescribeNodePtr SQLParser::parseExplain()
