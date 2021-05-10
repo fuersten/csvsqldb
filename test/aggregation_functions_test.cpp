@@ -30,8 +30,7 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-
-#include "data_test_framework.h"
+#include <csvsqldb/aggregation_functions.h>
 
 #include <catch2/catch.hpp>
 
