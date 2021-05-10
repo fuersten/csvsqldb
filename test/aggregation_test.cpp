@@ -38,18 +38,18 @@
 
 TEST_CASE("Aggreagation Test", "[engine]")
 {
+  DatabaseTestWrapper dbWrapper;
+  dbWrapper.addTable(TableInitializer("employees", {{"id", csvsqldb::INT},
+                                                    {"first_name", csvsqldb::STRING},
+                                                    {"last_name", csvsqldb::STRING},
+                                                    {"birth_date", csvsqldb::DATE},
+                                                    {"hire_date", csvsqldb::DATE}}));
+
+  csvsqldb::ExecutionContext context(dbWrapper.getDatabase());
+  csvsqldb::ExecutionEngine<TestOperatorNodeFactory> engine(context);
+
   SECTION("count")
   {
-    DatabaseTestWrapper dbWrapper;
-    dbWrapper.addTable(TableInitializer("employees", {{"id", csvsqldb::INT},
-                                                      {"first_name", csvsqldb::STRING},
-                                                      {"last_name", csvsqldb::STRING},
-                                                      {"birth_date", csvsqldb::DATE},
-                                                      {"hire_date", csvsqldb::DATE}}));
-
-    csvsqldb::ExecutionContext context(dbWrapper.getDatabase());
-    csvsqldb::ExecutionEngine<TestOperatorNodeFactory> engine(context);
-
     TestRowProvider::setRows("employees",
                              {{815, "Mark", "Fürstenberg", csvsqldb::Date(1969, csvsqldb::Date::May, 17),
                                csvsqldb::Date(2003, csvsqldb::Date::April, 15)},
@@ -76,16 +76,6 @@ TEST_CASE("Aggreagation Test", "[engine]")
 
   SECTION("sum")
   {
-    DatabaseTestWrapper dbWrapper;
-    dbWrapper.addTable(TableInitializer("employees", {{"id", csvsqldb::INT},
-                                                      {"first_name", csvsqldb::STRING},
-                                                      {"last_name", csvsqldb::STRING},
-                                                      {"birth_date", csvsqldb::DATE},
-                                                      {"hire_date", csvsqldb::DATE}}));
-
-    csvsqldb::ExecutionContext context(dbWrapper.getDatabase());
-    csvsqldb::ExecutionEngine<TestOperatorNodeFactory> engine(context);
-
     TestRowProvider::setRows("employees",
                              {{815, "Mark", "Fürstenberg", csvsqldb::Date(1969, csvsqldb::Date::May, 17),
                                csvsqldb::Date(2003, csvsqldb::Date::April, 15)},
@@ -103,16 +93,6 @@ TEST_CASE("Aggreagation Test", "[engine]")
 
   SECTION("avg")
   {
-    DatabaseTestWrapper dbWrapper;
-    dbWrapper.addTable(TableInitializer("employees", {{"id", csvsqldb::INT},
-                                                      {"first_name", csvsqldb::STRING},
-                                                      {"last_name", csvsqldb::STRING},
-                                                      {"birth_date", csvsqldb::DATE},
-                                                      {"hire_date", csvsqldb::DATE}}));
-
-    csvsqldb::ExecutionContext context(dbWrapper.getDatabase());
-    csvsqldb::ExecutionEngine<TestOperatorNodeFactory> engine(context);
-
     TestRowProvider::setRows("employees",
                              {{815, "Mark", "Fürstenberg", csvsqldb::Date(1969, csvsqldb::Date::May, 17),
                                csvsqldb::Date(2003, csvsqldb::Date::April, 15)},
@@ -130,16 +110,6 @@ TEST_CASE("Aggreagation Test", "[engine]")
 
   SECTION("max")
   {
-    DatabaseTestWrapper dbWrapper;
-    dbWrapper.addTable(TableInitializer("employees", {{"id", csvsqldb::INT},
-                                                      {"first_name", csvsqldb::STRING},
-                                                      {"last_name", csvsqldb::STRING},
-                                                      {"birth_date", csvsqldb::DATE},
-                                                      {"hire_date", csvsqldb::DATE}}));
-
-    csvsqldb::ExecutionContext context(dbWrapper.getDatabase());
-    csvsqldb::ExecutionEngine<TestOperatorNodeFactory> engine(context);
-
     TestRowProvider::setRows("employees",
                              {{815, "Mark", "Fürstenberg", csvsqldb::Date(1969, csvsqldb::Date::May, 17),
                                csvsqldb::Date(2003, csvsqldb::Date::April, 15)},
@@ -168,16 +138,6 @@ TEST_CASE("Aggreagation Test", "[engine]")
 
   SECTION("min")
   {
-    DatabaseTestWrapper dbWrapper;
-    dbWrapper.addTable(TableInitializer("employees", {{"id", csvsqldb::INT},
-                                                      {"first_name", csvsqldb::STRING},
-                                                      {"last_name", csvsqldb::STRING},
-                                                      {"birth_date", csvsqldb::DATE},
-                                                      {"hire_date", csvsqldb::DATE}}));
-
-    csvsqldb::ExecutionContext context(dbWrapper.getDatabase());
-    csvsqldb::ExecutionEngine<TestOperatorNodeFactory> engine(context);
-
     TestRowProvider::setRows("employees",
                              {{815, "Mark", "Fürstenberg", csvsqldb::Date(1969, csvsqldb::Date::May, 17),
                                csvsqldb::Date(2003, csvsqldb::Date::April, 15)},
@@ -195,16 +155,6 @@ TEST_CASE("Aggreagation Test", "[engine]")
 
   SECTION("null count")
   {
-    DatabaseTestWrapper dbWrapper;
-    dbWrapper.addTable(TableInitializer("employees", {{"id", csvsqldb::INT},
-                                                      {"first_name", csvsqldb::STRING},
-                                                      {"last_name", csvsqldb::STRING},
-                                                      {"birth_date", csvsqldb::DATE},
-                                                      {"hire_date", csvsqldb::DATE}}));
-
-    csvsqldb::ExecutionContext context(dbWrapper.getDatabase());
-    csvsqldb::ExecutionEngine<TestOperatorNodeFactory> engine(context);
-
     TestRowProvider::setRows(
       "employees", {{815, "Mark", "Fürstenberg", csvsqldb::Date(1969, csvsqldb::Date::May, 17),
                      csvsqldb::Date(2003, csvsqldb::Date::April, 15)},
@@ -231,16 +181,6 @@ TEST_CASE("Aggreagation Test", "[engine]")
 
   SECTION("null sum")
   {
-    DatabaseTestWrapper dbWrapper;
-    dbWrapper.addTable(TableInitializer("employees", {{"id", csvsqldb::INT},
-                                                      {"first_name", csvsqldb::STRING},
-                                                      {"last_name", csvsqldb::STRING},
-                                                      {"birth_date", csvsqldb::DATE},
-                                                      {"hire_date", csvsqldb::DATE}}));
-
-    csvsqldb::ExecutionContext context(dbWrapper.getDatabase());
-    csvsqldb::ExecutionEngine<TestOperatorNodeFactory> engine(context);
-
     TestRowProvider::setRows(
       "employees", {{815, "Mark", "Fürstenberg", csvsqldb::Date(1969, csvsqldb::Date::May, 17),
                      csvsqldb::Date(2003, csvsqldb::Date::April, 15)},
@@ -258,16 +198,6 @@ TEST_CASE("Aggreagation Test", "[engine]")
 
   SECTION("all null")
   {
-    DatabaseTestWrapper dbWrapper;
-    dbWrapper.addTable(TableInitializer("employees", {{"id", csvsqldb::INT},
-                                                      {"first_name", csvsqldb::STRING},
-                                                      {"last_name", csvsqldb::STRING},
-                                                      {"birth_date", csvsqldb::DATE},
-                                                      {"hire_date", csvsqldb::DATE}}));
-
-    csvsqldb::ExecutionContext context(dbWrapper.getDatabase());
-    csvsqldb::ExecutionEngine<TestOperatorNodeFactory> engine(context);
-
     TestRowProvider::setRows(
       "employees", {{csvsqldb::Variant(csvsqldb::INT), "Mark", "Fürstenberg", csvsqldb::Date(1969, csvsqldb::Date::May, 17),
                      csvsqldb::Date(2003, csvsqldb::Date::April, 15)},
@@ -301,16 +231,6 @@ TEST_CASE("Aggreagation Test", "[engine]")
 
   SECTION("multi aggregation")
   {
-    DatabaseTestWrapper dbWrapper;
-    dbWrapper.addTable(TableInitializer("employees", {{"id", csvsqldb::INT},
-                                                      {"first_name", csvsqldb::STRING},
-                                                      {"last_name", csvsqldb::STRING},
-                                                      {"birth_date", csvsqldb::DATE},
-                                                      {"hire_date", csvsqldb::DATE}}));
-
-    csvsqldb::ExecutionContext context(dbWrapper.getDatabase());
-    csvsqldb::ExecutionEngine<TestOperatorNodeFactory> engine(context);
-
     TestRowProvider::setRows(
       "employees", {{815, "Mark", "Fürstenberg", csvsqldb::Date(1969, csvsqldb::Date::May, 17),
                      csvsqldb::Date(2003, csvsqldb::Date::April, 15)},
