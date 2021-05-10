@@ -62,13 +62,22 @@
   } while (0);
 
 
+struct DBConfig
+{
+  size_t _maxActiveBlocks{csvsqldb::sDefaultMaxActiveBlocks};
+  bool _showHeaderLine{true};
+  bool _verbose{false};
+  bool _interactive{false};
+  csvsqldb::StringVector _files;
+};
+
+
 class CsvDB
 {
 public:
-  CsvDB(csvsqldb::Database& database, bool showHeaderLine, csvsqldb::StringVector files)
+  CsvDB(csvsqldb::Database& database, DBConfig config)
   : _database(database)
-  , _showHeaderLine(showHeaderLine)
-  , _files(std::move(files))
+  , _config(std::move(config))
   {
   }
 
@@ -76,9 +85,9 @@ public:
   {
     try {
       csvsqldb::ExecutionContext context(_database);
-      context._files = _files;
-      context._showHeaderLine = _showHeaderLine;
-      context._maxActiveBlocks = _maxActiveBlocks;
+      context._files = _config._files;
+      context._showHeaderLine = _config._showHeaderLine;
+      context._maxActiveBlocks = _config._maxActiveBlocks;
 
       csvsqldb::ExecutionEngine<csvsqldb::OperatorNodeFactory> engine(context);
       csvsqldb::ExecutionStatistics statistics;
@@ -102,30 +111,40 @@ public:
     return true;
   }
 
+  void setShowHeaderline(bool showHeaderLine)
+  {
+    _config._showHeaderLine = showHeaderLine;
+  }
+
+  bool getShowHeaderline() const
+  {
+    return _config._showHeaderLine;
+  }
+
   void setVerbosity(bool verbosity)
   {
-    _verbose = verbosity;
+    _config._verbose = verbosity;
   }
 
   bool getVerbosity() const
   {
-    return _verbose;
+    return _config._verbose;
   }
 
   void setMaxActiveBlocks(size_t maxBlocks)
   {
-    _maxActiveBlocks = maxBlocks;
+    _config._maxActiveBlocks = maxBlocks;
   }
 
   size_t getMaxActiveBlocks() const
   {
-    return _maxActiveBlocks;
+    return _config._maxActiveBlocks;
   }
 
-  bool addFile(const std::string& csvFile)
+  bool addFile(std::string csvFile)
   {
-    if (std::find(_files.begin(), _files.end(), csvFile) == _files.end()) {
-      _files.push_back(csvFile);
+    if (std::find(_config._files.begin(), _config._files.end(), csvFile) == _config._files.end()) {
+      _config._files.emplace_back(std::move(csvFile));
       return true;
     }
     return false;
@@ -133,22 +152,20 @@ public:
 
   const csvsqldb::StringVector& getFiles() const
   {
-    return _files;
+    return _config._files;
   }
 
 private:
   void output(const std::string& message)
   {
-    if (_verbose) {
+    if (_config._verbose) {
       std::cout << message << std::endl;
     }
   }
 
   csvsqldb::Database& _database;
-  bool _showHeaderLine;
-  bool _verbose;
-  size_t _maxActiveBlocks{csvsqldb::sDefaultMaxActiveBlocks};
-  csvsqldb::StringVector _files;
+
+  DBConfig _config;
 };
 
 
@@ -171,10 +188,6 @@ class CSVDBApp
 public:
   CSVDBApp(int argc, char** argv)
   : csvsqldb::Application(argc, argv)
-  , _databasePath("./.csvdb")
-  , _showHeaderLine(true)
-  , _verbose(false)
-  , _interactive(false)
   {
     csvsqldb::GlobalConfiguration::create<CSVDBGlobalConfiguration>();
     try {
@@ -210,15 +223,15 @@ private:
     CLI::App app{version()};
 
     app.add_flag("-v,--version", "Display program version information and exit");
-    app.add_flag("-i,--interactive", _interactive, "Opens an interactive sql shell");
-    app.add_flag("-V,--verbose", _verbose, "Output verbose statistics");
+    app.add_flag("-i,--interactive", _config._interactive, "Opens an interactive sql shell");
+    app.add_flag("-V,--verbose", _config._verbose, "Output verbose statistics");
     app.add_option("--show-header-line", showHeader, "If set to 'on' outputs a header line");
     app.add_option("-p,--datbase-path", _databasePath, "Path to the database");
     auto command_file_option = app.add_option("-c,--command-file", _commandFile, "Command file with sql commands to process");
     app.add_option("-s,--sql", _sql, "Sql commands to call")->excludes(command_file_option);
-    app.add_option("-b,--blocks", _maxActiveBlocks, "Sets the maximum active blocks");
+    app.add_option("-b,--blocks", _config._maxActiveBlocks, "Sets the maximum active blocks");
     app.add_option("-m,--mapping", mapping, "Mapping from csv file to table");
-    app.add_option("files,-f,--files", _files, "Csv files to process, can use expansion patterns like ~ or *");
+    app.add_option("files,-f,--files", _config._files, "Csv files to process, can use expansion patterns like ~ or *");
 
     try {
       app.parse(argc, argv);
@@ -233,7 +246,7 @@ private:
     }
 
     if (app.count("--show-header-line")) {
-      _showHeaderLine = csvsqldb::toupper_copy(showHeader) == "ON";
+      _config._showHeaderLine = csvsqldb::toupper_copy(showHeader) == "ON";
     }
 
     csvsqldb::fs::path path(_databasePath);
@@ -264,7 +277,7 @@ private:
 
   void output(const std::string& message)
   {
-    if (_verbose) {
+    if (_config._verbose) {
       std::cout << message << std::endl;
     }
   }
@@ -284,23 +297,21 @@ private:
       sql << stream.rdbuf();
       _sql = sql.str();
       stream.close();
-    } else if (!_files.empty()) {
-      OUT("Processing files " << csvsqldb::join(_files, ","));
+    } else if (!_config._files.empty()) {
+      OUT("Processing files " << csvsqldb::join(_config._files, ","));
       OUT("Using table mapping " << csvsqldb::join(_mapping.asStringVector(), ","));
     }
 
     OUT("");
 
-    CsvDB csvDB(database, _showHeaderLine, _files);
-    csvDB.setVerbosity(_verbose);
-    csvDB.setMaxActiveBlocks(_maxActiveBlocks);
+    CsvDB csvDB(database, _config);
 
     if (!_sql.empty()) {
       csvDB.executeSql(_sql);
       _sql.clear();
     }
 
-    if (_interactive) {
+    if (_config._interactive) {
       csvsqldb::Console console("sql> ", "./.csvdb/.history");
       console.addCommand("quit", [&console](const csvsqldb::StringVector&) -> bool {
         console.stop();
@@ -458,15 +469,11 @@ private:
   {
   }
 
-  std::string _databasePath;
+  std::string _databasePath{"./.csvdb"};
   std::string _commandFile;
   std::string _sql;
-  size_t _maxActiveBlocks{csvsqldb::sDefaultMaxActiveBlocks};
   csvsqldb::FileMapping _mapping;
-  bool _showHeaderLine;
-  bool _verbose;
-  bool _interactive;
-  csvsqldb::StringVector _files;
+  DBConfig _config;
 };
 
 
@@ -474,7 +481,8 @@ int main(int argc, char** argv)
 {
   csvsqldb::SignalHandler sighandler;
   CSVDBApp csvdb(argc, argv);
-  csvsqldb::SetUpSignalEventHandler guard(SIGINT, &sighandler, &csvdb);
+  csvsqldb::SetUpSignalEventHandler sigint(SIGINT, &sighandler, &csvdb);
+  csvsqldb::SetUpSignalEventHandler sigterm(SIGTERM, &sighandler, &csvdb);
 
   return csvdb.run();
 }
