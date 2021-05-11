@@ -84,5 +84,6 @@ namespace csvsqldb
     std::mutex _queueMutex;
     std::string _error;
     std::function<void(BlockProducer& producer)> _reader;
+    std::atomic_bool _stop{false};
   };
 }
