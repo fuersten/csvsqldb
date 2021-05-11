@@ -178,4 +178,18 @@ TEST_CASE("Buildin Functions Test", "[engine]")
     CHECK(csvsqldb::REAL == result.getType());
     CHECK(100.0 == Approx(result.asDouble()));
   }
+
+  SECTION("date_trunc function")
+  {
+    csvsqldb::Function::Ptr function = _registry.getFunction("DATE_TRUNC");
+    CHECK(function);
+    CHECK("DATE_TRUNC" == function->getName());
+    CHECK(csvsqldb::TIMESTAMP == function->getReturnType());
+    csvsqldb::Variants parameter;
+    parameter.push_back(csvsqldb::Variant("day"));
+    parameter.push_back(csvsqldb::Variant(csvsqldb::Timestamp(1970, csvsqldb::Date::September, 23, 8, 9, 11)));
+    csvsqldb::Variant result = function->call(parameter);
+    CHECK(csvsqldb::TIMESTAMP == result.getType());
+    CHECK(result.toString() == "1970-09-23T00:00:00");
+  }
 }

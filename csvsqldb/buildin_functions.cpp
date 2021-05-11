@@ -48,6 +48,7 @@ namespace csvsqldb
     registry.registerFunction(std::make_shared<CurrentTimeFunction>());
     registry.registerFunction(std::make_shared<CurrentTimestampFunction>());
     registry.registerFunction(std::make_shared<ExtractFunction>());
+    registry.registerFunction(std::make_shared<DateTruncFunction>());
     registry.registerFunction(std::make_shared<DateFormatFunction>());
     registry.registerFunction(std::make_shared<TimeFormatFunction>());
     registry.registerFunction(std::make_shared<TimestampFormatFunction>());
@@ -168,6 +169,51 @@ namespace csvsqldb
   }
 
 
+  DateTruncFunction::DateTruncFunction()
+  : Function("DATE_TRUNC", TIMESTAMP, Types({STRING, TIMESTAMP}))
+  {
+  }
+
+  Variant DateTruncFunction::doCall(const Variants& parameter) const
+  {
+    auto time_part = toupper_copy(parameter[0].asString());
+    auto ts = parameter[1].asTimestamp();
+
+    if (time_part == "SECOND") {
+      ts.millisecond(0);
+    } else if(time_part == "MINUTE") {
+      ts.millisecond(0);
+      ts.second(0);
+    } else if(time_part == "HOUR") {
+      ts.millisecond(0);
+      ts.second(0);
+      ts.minute(0);
+    } else if(time_part == "DAY") {
+      ts.millisecond(0);
+      ts.second(0);
+      ts.minute(0);
+      ts.hour(0);
+    } else if(time_part == "MONTH") {
+      ts.millisecond(0);
+      ts.second(0);
+      ts.minute(0);
+      ts.hour(0);
+      ts.day(1);
+    } else if(time_part == "YEAR") {
+      ts.millisecond(0);
+      ts.second(0);
+      ts.minute(0);
+      ts.hour(0);
+      ts.day(1);
+      ts.month(Date::January);
+    } else {
+      CSVSQLDB_THROW(csvsqldb::Exception, "unknown date_trunc part");
+    }
+
+    return ts;
+  }
+
+  
   PowerFunction::PowerFunction()
   : Function("POW", REAL, Types({REAL, REAL}))
   {
