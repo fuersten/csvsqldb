@@ -37,6 +37,7 @@
 
 #include <csvsqldb/block.h>
 
+#include <atomic>
 #include <condition_variable>
 #include <queue>
 #include <thread>
