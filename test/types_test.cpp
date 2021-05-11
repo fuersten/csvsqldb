@@ -48,7 +48,7 @@ TEST_CASE("Types Test", "[types]")
     CHECK_FALSE(csvsqldb::stringToBool("0"));
     CHECK(csvsqldb::stringToBool("4711"));
 
-    // clang-format off
+// clang-format off
     #include <csvsqldb/base/pragma_push.h>
     #include <csvsqldb/base/pragma_conversion.h>
 
@@ -63,7 +63,7 @@ TEST_CASE("Types Test", "[types]")
     CHECK("AST" == csvsqldb::descriptionTypeToString(csvsqldb::AST));
     CHECK("EXEC" == csvsqldb::descriptionTypeToString(csvsqldb::EXEC));
 
-    // clang-format off
+// clang-format off
     #include <csvsqldb/base/pragma_push.h>
     #include <csvsqldb/base/pragma_conversion.h>
 
@@ -78,7 +78,7 @@ TEST_CASE("Types Test", "[types]")
     CHECK("ASC" == csvsqldb::orderToString(csvsqldb::ASC));
     CHECK("DESC" == csvsqldb::orderToString(csvsqldb::DESC));
 
-    // clang-format off
+// clang-format off
     #include <csvsqldb/base/pragma_push.h>
     #include <csvsqldb/base/pragma_conversion.h>
 
@@ -99,7 +99,7 @@ TEST_CASE("Types Test", "[types]")
     CHECK("TIME" == csvsqldb::typeToString(csvsqldb::TIME));
     CHECK("TIMESTAMP" == csvsqldb::typeToString(csvsqldb::TIMESTAMP));
 
-    // clang-format off
+// clang-format off
     #include <csvsqldb/base/pragma_push.h>
     #include <csvsqldb/base/pragma_conversion.h>
 
@@ -133,7 +133,7 @@ TEST_CASE("Types Test", "[types]")
     CHECK("MAX" == csvsqldb::aggregateFunctionToString(csvsqldb::MAX));
     CHECK("ARBITRARY" == csvsqldb::aggregateFunctionToString(csvsqldb::ARBITRARY));
 
-    // clang-format off
+// clang-format off
     #include <csvsqldb/base/pragma_push.h>
     #include <csvsqldb/base/pragma_conversion.h>
 
@@ -150,7 +150,7 @@ TEST_CASE("Types Test", "[types]")
     CHECK("NATURAL RIGHT OUTER" == csvsqldb::naturalJoinToString(csvsqldb::eNaturalJoinType::RIGHT));
     CHECK("NATURAL FULL OUTER" == csvsqldb::naturalJoinToString(csvsqldb::eNaturalJoinType::FULL));
 
-    // clang-format off
+// clang-format off
     #include <csvsqldb/base/pragma_push.h>
     #include <csvsqldb/base/pragma_conversion.h>
 
@@ -186,7 +186,7 @@ TEST_CASE("Types Test", "[types]")
     CHECK("IS" == csvsqldb::operationTypeToString(csvsqldb::OP_IS));
     CHECK("IS NOT" == csvsqldb::operationTypeToString(csvsqldb::OP_ISNOT));
 
-    // clang-format off
+// clang-format off
     #include <csvsqldb/base/pragma_push.h>
     #include <csvsqldb/base/pragma_conversion.h>
 

@@ -30,7 +30,6 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-
 #include <csvsqldb/base/thread_helper.h>
 
 #include <catch2/catch.hpp>
@@ -38,11 +37,11 @@
 
 namespace
 {
-  static bool stop = false;
+  static std::atomic_bool stop{false};
 
   static void runTest()
   {
-    while (!stop) {
+    while (!stop.load()) {
       std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
   }
@@ -56,7 +55,7 @@ TEST_CASE("Threadhelper Test", "[utils]")
     std::thread t(runTest);
     {
       csvsqldb::ThreadJoinGuard guard(t);
-      stop = true;
+      stop.store(true);
     }
 
     CHECK_FALSE(t.joinable());

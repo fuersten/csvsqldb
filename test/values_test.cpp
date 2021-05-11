@@ -116,7 +116,7 @@ TEST_CASE("Values Test", "[values]")
 
   SECTION("create value fail")
   {
-    // clang-format off
+// clang-format off
     #include <csvsqldb/base/pragma_push.h>
     #include <csvsqldb/base/pragma_conversion.h>
 

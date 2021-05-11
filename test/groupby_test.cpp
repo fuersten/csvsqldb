@@ -30,7 +30,6 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-
 #include <csvsqldb/block.h>
 
 #include "data_test_framework.h"
@@ -42,6 +41,16 @@
 
 TEST_CASE("Group By Test", "[engine]")
 {
+  DatabaseTestWrapper dbWrapper;
+  dbWrapper.addTable(TableInitializer("employees", {{"id", csvsqldb::INT},
+                                                    {"first_name", csvsqldb::STRING},
+                                                    {"last_name", csvsqldb::STRING},
+                                                    {"birth_date", csvsqldb::DATE},
+                                                    {"hire_date", csvsqldb::DATE}}));
+
+  csvsqldb::ExecutionContext context(dbWrapper.getDatabase());
+  csvsqldb::ExecutionEngine<TestOperatorNodeFactory> engine(context);
+
   SECTION("grouping element")
   {
     csvsqldb::Variants first;
@@ -81,16 +90,6 @@ TEST_CASE("Group By Test", "[engine]")
 
   SECTION("simple group by")
   {
-    DatabaseTestWrapper dbWrapper;
-    dbWrapper.addTable(TableInitializer("employees", {{"id", csvsqldb::INT},
-                                                      {"first_name", csvsqldb::STRING},
-                                                      {"last_name", csvsqldb::STRING},
-                                                      {"birth_date", csvsqldb::DATE},
-                                                      {"hire_date", csvsqldb::DATE}}));
-
-    csvsqldb::ExecutionContext context(dbWrapper.getDatabase());
-    csvsqldb::ExecutionEngine<TestOperatorNodeFactory> engine(context);
-
     TestRowProvider::setRows(
       "employees", {{815, "Mark", "Fuerstenberg", csvsqldb::Date(1969, csvsqldb::Date::May, 17),
                      csvsqldb::Date(2003, csvsqldb::Date::April, 15)},
@@ -116,16 +115,6 @@ TEST_CASE("Group By Test", "[engine]")
 
   SECTION("simple group by count with null")
   {
-    DatabaseTestWrapper dbWrapper;
-    dbWrapper.addTable(TableInitializer("employees", {{"id", csvsqldb::INT},
-                                                      {"first_name", csvsqldb::STRING},
-                                                      {"last_name", csvsqldb::STRING},
-                                                      {"birth_date", csvsqldb::DATE},
-                                                      {"hire_date", csvsqldb::DATE}}));
-
-    csvsqldb::ExecutionContext context(dbWrapper.getDatabase());
-    csvsqldb::ExecutionEngine<TestOperatorNodeFactory> engine(context);
-
     TestRowProvider::setRows(
       "employees", {{815, "Mark", "Fuerstenberg", csvsqldb::Date(1969, csvsqldb::Date::May, 17),
                      csvsqldb::Date(2003, csvsqldb::Date::April, 15)},
@@ -151,16 +140,6 @@ TEST_CASE("Group By Test", "[engine]")
 
   SECTION("group by with suppressed group by")
   {
-    DatabaseTestWrapper dbWrapper;
-    dbWrapper.addTable(TableInitializer("employees", {{"id", csvsqldb::INT},
-                                                      {"first_name", csvsqldb::STRING},
-                                                      {"last_name", csvsqldb::STRING},
-                                                      {"birth_date", csvsqldb::DATE},
-                                                      {"hire_date", csvsqldb::DATE}}));
-
-    csvsqldb::ExecutionContext context(dbWrapper.getDatabase());
-    csvsqldb::ExecutionEngine<TestOperatorNodeFactory> engine(context);
-
     TestRowProvider::setRows(
       "employees", {{815, "Mark", "Fuerstenberg", csvsqldb::Date(1969, csvsqldb::Date::May, 17),
                      csvsqldb::Date(2003, csvsqldb::Date::April, 15)},

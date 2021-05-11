@@ -31,7 +31,6 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-
 #include <csvsqldb/base/lua_engine.h>
 
 #include "test/test_util.h"
@@ -74,10 +73,10 @@ namespace
 
 TEST_CASE("Lua Engine Test", "[lua]")
 {
+  csvsqldb::luaengine::LuaEngine lua;
+
   SECTION("engine")
   {
-    csvsqldb::luaengine::LuaEngine lua;
-
     lua.registerFunction(lua, "mul", testit);
     lua.registerFunction(lua, "doit", doit);
     lua.registerFunction(lua, "done", done);
@@ -137,8 +136,6 @@ TEST_CASE("Lua Engine Test", "[lua]")
 
   SECTION("do string")
   {
-    csvsqldb::luaengine::LuaEngine lua;
-
     std::string script = "port = 4711";
     lua.doString(script);
 
@@ -147,8 +144,6 @@ TEST_CASE("Lua Engine Test", "[lua]")
 
   SECTION("properties")
   {
-    csvsqldb::luaengine::LuaEngine lua;
-
     lua.doFile(getTestPath() / std::filesystem::path("testdata") / "luaengine" / "properties.lua");
 
     csvsqldb::StringVector properties;

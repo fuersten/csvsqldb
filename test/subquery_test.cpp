@@ -30,7 +30,6 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-
 #include "data_test_framework.h"
 
 #include <catch2/catch.hpp>
@@ -38,18 +37,19 @@
 
 TEST_CASE("Subquery Test", "[engine]")
 {
+  DatabaseTestWrapper dbWrapper;
+  dbWrapper.addTable(TableInitializer("employees", {{"id", csvsqldb::INT},
+                                                    {"first_name", csvsqldb::STRING},
+                                                    {"last_name", csvsqldb::STRING},
+                                                    {"birth_date", csvsqldb::DATE},
+                                                    {"hire_date", csvsqldb::DATE}}));
+
+  csvsqldb::ExecutionContext context(dbWrapper.getDatabase());
+  csvsqldb::ExecutionEngine<TestOperatorNodeFactory> engine(context);
+  csvsqldb::ExecutionStatistics statistics;
+
   SECTION("simple subquery")
   {
-    DatabaseTestWrapper dbWrapper;
-    dbWrapper.addTable(TableInitializer("employees", {{"id", csvsqldb::INT},
-                                                      {"first_name", csvsqldb::STRING},
-                                                      {"last_name", csvsqldb::STRING},
-                                                      {"birth_date", csvsqldb::DATE},
-                                                      {"hire_date", csvsqldb::DATE}}));
-
-    csvsqldb::ExecutionContext context(dbWrapper.getDatabase());
-    csvsqldb::ExecutionEngine<TestOperatorNodeFactory> engine(context);
-
     TestRowProvider::setRows("employees",
                              {{815, "Mark", "Fürstenberg", csvsqldb::Date(1969, csvsqldb::Date::May, 17),
                                csvsqldb::Date(2003, csvsqldb::Date::April, 15)},
@@ -59,7 +59,6 @@ TEST_CASE("Subquery Test", "[engine]")
                                csvsqldb::Date(2003, csvsqldb::Date::June, 15)}});
 
     {
-      csvsqldb::ExecutionStatistics statistics;
       std::stringstream ss;
       int64_t rowCount = engine.execute("SELECT count(*) FROM (SELECT id,first_name,last_name FROM employees)", statistics, ss);
       CHECK(1 == rowCount);
@@ -67,7 +66,6 @@ TEST_CASE("Subquery Test", "[engine]")
     }
 
     {
-      csvsqldb::ExecutionStatistics statistics;
       std::stringstream ss;
       int64_t rowCount = engine.execute(
         "select count(*) as \"COUNT\",last_name from (select * from employees) group by last_name order by last_name limit 1",
@@ -82,16 +80,6 @@ TEST_CASE("Subquery Test", "[engine]")
 
   SECTION("simple subquery with alias")
   {
-    DatabaseTestWrapper dbWrapper;
-    dbWrapper.addTable(TableInitializer("employees", {{"id", csvsqldb::INT},
-                                                      {"first_name", csvsqldb::STRING},
-                                                      {"last_name", csvsqldb::STRING},
-                                                      {"birth_date", csvsqldb::DATE},
-                                                      {"hire_date", csvsqldb::DATE}}));
-
-    csvsqldb::ExecutionContext context(dbWrapper.getDatabase());
-    csvsqldb::ExecutionEngine<TestOperatorNodeFactory> engine(context);
-
     TestRowProvider::setRows("employees",
                              {{815, "Mark", "Fürstenberg", csvsqldb::Date(1969, csvsqldb::Date::May, 17),
                                csvsqldb::Date(2003, csvsqldb::Date::April, 15)},
@@ -101,7 +89,6 @@ TEST_CASE("Subquery Test", "[engine]")
                                csvsqldb::Date(2003, csvsqldb::Date::June, 15)}});
 
     {
-      csvsqldb::ExecutionStatistics statistics;
       std::stringstream ss;
       int64_t rowCount = engine.execute(
         "select emp.first_name,emp.last_name from (select emp.first_name,emp.last_name from employees as emp)", statistics, ss);
@@ -115,7 +102,6 @@ TEST_CASE("Subquery Test", "[engine]")
     }
 
     {
-      csvsqldb::ExecutionStatistics statistics;
       std::stringstream ss;
       int64_t rowCount =
         engine.execute("select first_name,last_name from (select first_name,last_name from employees as emp)", statistics, ss);
@@ -129,7 +115,6 @@ TEST_CASE("Subquery Test", "[engine]")
     }
 
     {
-      csvsqldb::ExecutionStatistics statistics;
       std::stringstream ss;
       int64_t rowCount = engine.execute(
         "select emp.first_name,emp.last_name from (select * from employees) as emp order by emp.first_name", statistics, ss);
@@ -145,18 +130,9 @@ TEST_CASE("Subquery Test", "[engine]")
 
   SECTION("subquery with join")
   {
-    DatabaseTestWrapper dbWrapper;
-    dbWrapper.addTable(TableInitializer("employees", {{"id", csvsqldb::INT},
-                                                      {"first_name", csvsqldb::STRING},
-                                                      {"last_name", csvsqldb::STRING},
-                                                      {"birth_date", csvsqldb::DATE},
-                                                      {"hire_date", csvsqldb::DATE}}));
     dbWrapper.addTable(TableInitializer(
       "salaries",
       {{"id", csvsqldb::INT}, {"salary", csvsqldb::REAL}, {"from_date", csvsqldb::DATE}, {"to_date", csvsqldb::DATE}}));
-
-    csvsqldb::ExecutionContext context(dbWrapper.getDatabase());
-    csvsqldb::ExecutionEngine<TestOperatorNodeFactory> engine(context);
 
     TestRowProvider::setRows(
       "employees",
@@ -175,7 +151,6 @@ TEST_CASE("Subquery Test", "[engine]")
        {9227, 450.00, csvsqldb::Date(2003, csvsqldb::Date::June, 15), csvsqldb::Date(2015, csvsqldb::Date::December, 31)}});
 
     {
-      csvsqldb::ExecutionStatistics statistics;
       std::stringstream ss;
       int64_t rowCount = engine.execute(
         "select emp.id,emp.first_name,emp.last_name,sal.salary from (SELECT * FROM employees emp INNER JOIN salaries sal ON "

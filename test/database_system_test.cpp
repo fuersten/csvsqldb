@@ -82,7 +82,7 @@ TEST_CASE("Database System Test", "[system]")
     csvsqldb::SymbolTablePtr symbolTable = node->symbolTable();
     node->typeSymbolTable(database);
 
-    std::fstream dataFile((path / "employees.csv").string(), std::ios_base::trunc | std::ios_base::out);
+    std::fstream dataFile(path / "employees.csv", std::ios_base::trunc | std::ios_base::out);
     CHECK(dataFile);
 
     dataFile << (R"(emp_no,birth_date,first_name,last_name,gender,hire_date

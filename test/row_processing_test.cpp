@@ -30,7 +30,6 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-
 #include <csvsqldb/operatornode.h>
 #include <csvsqldb/operatornodes/aggregation_operatornode.h>
 #include <csvsqldb/operatornodes/extended_projection_operatornode.h>
@@ -213,13 +212,7 @@ TEST_CASE("Row Processing Test", "[engine]")
     node = parser.parse("SELECT * FROM employees emp WHERE emp_no BETWEEN 100 AND 9999 AND emp.birth_date > DATE'1960-01-01'");
 
     csvsqldb::SymbolTablePtr symbolTable = node->symbolTable();
-    //        symbolTable->dump();
-    //        std::cout << std::endl;
-
     symbolTable->typeSymbolTable(database);
-
-    //        symbolTable->dump();
-    //        std::cout << std::endl;
 
     csvsqldb::ASTQueryNodePtr query = std::dynamic_pointer_cast<csvsqldb::ASTQueryNode>(node);
     csvsqldb::ASTExprNodePtr exp =
@@ -272,15 +265,8 @@ TEST_CASE("Row Processing Test", "[engine]")
 
     node = parser.parse("SELECT count(*) FROM employees");
 
-    //        csvsqldb::ASTNodeDumpVisitor visitor;
-    //        std::cout << std::endl;
-    //        node->accept(visitor);
-
     csvsqldb::SymbolTablePtr symbolTable = node->symbolTable();
     symbolTable->typeSymbolTable(database);
-
-    //        symbolTable->dump();
-    //        std::cout << std::endl;
 
     csvsqldb::ASTQueryNodePtr query = std::dynamic_pointer_cast<csvsqldb::ASTQueryNode>(node);
     csvsqldb::Expressions& selectList = std::dynamic_pointer_cast<csvsqldb::ASTQuerySpecificationNode>(query->_query)->_nodes;

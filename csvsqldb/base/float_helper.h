@@ -68,6 +68,16 @@ namespace csvsqldb
       return !(approx == d);
     }
 
+    friend bool operator==(double d, const Approx& approx)
+    {
+      return approx == d;
+    }
+
+    friend bool operator!=(double d, const Approx& approx)
+    {
+      return !(d == approx);
+    }
+
   private:
     double d_;
   };

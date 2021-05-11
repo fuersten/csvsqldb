@@ -62,8 +62,7 @@
   } while (0);
 
 
-struct DBConfig
-{
+struct DBConfig {
   size_t _maxActiveBlocks{csvsqldb::sDefaultMaxActiveBlocks};
   bool _showHeaderLine{true};
   bool _verbose{false};

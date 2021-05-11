@@ -30,8 +30,6 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-
-#include <csvsqldb/base/tribool.h>
 #include <csvsqldb/block.h>
 #include <csvsqldb/block_iterator.h>
 #include <csvsqldb/sql_astdump.h>

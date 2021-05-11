@@ -35,7 +35,6 @@
 
 #include <csvsqldb/inc.h>
 
-#include <csvsqldb/base/tribool.h>
 #include <csvsqldb/base/types.h>
 
 #include <memory>

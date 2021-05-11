@@ -55,7 +55,6 @@ add_executable(csvsqldbtest
     time_helper_test.cpp
     time_test.cpp
     timestamp_test.cpp
-    tribool_test.cpp
     typeoperations_test.cpp
     types_test.cpp
     union_test.cpp

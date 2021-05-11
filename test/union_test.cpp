@@ -38,18 +38,19 @@
 
 TEST_CASE("Union Test", "[engine]")
 {
+  DatabaseTestWrapper dbWrapper;
+  dbWrapper.addTable(TableInitializer("employees", {{"id", csvsqldb::INT},
+                                                    {"first_name", csvsqldb::STRING},
+                                                    {"last_name", csvsqldb::STRING},
+                                                    {"birth_date", csvsqldb::DATE},
+                                                    {"hire_date", csvsqldb::DATE}}));
+
+  csvsqldb::ExecutionContext context(dbWrapper.getDatabase());
+  csvsqldb::ExecutionEngine<TestOperatorNodeFactory> engine(context);
+  csvsqldb::ExecutionStatistics statistics;
+
   SECTION("simple union")
   {
-    DatabaseTestWrapper dbWrapper;
-    dbWrapper.addTable(TableInitializer("employees", {{"id", csvsqldb::INT},
-                                                      {"first_name", csvsqldb::STRING},
-                                                      {"last_name", csvsqldb::STRING},
-                                                      {"birth_date", csvsqldb::DATE},
-                                                      {"hire_date", csvsqldb::DATE}}));
-
-    csvsqldb::ExecutionContext context(dbWrapper.getDatabase());
-    csvsqldb::ExecutionEngine<TestOperatorNodeFactory> engine(context);
-
     TestRowProvider::setRows("employees",
                              {{815, "Mark", "Fürstenberg", csvsqldb::Date(1969, csvsqldb::Date::May, 17),
                                csvsqldb::Date(2003, csvsqldb::Date::April, 15)},
@@ -58,7 +59,6 @@ TEST_CASE("Union Test", "[engine]")
                               {9227, "Angelica", "Tello de Fürstenberg", csvsqldb::Date(1963, csvsqldb::Date::March, 6),
                                csvsqldb::Date(2003, csvsqldb::Date::June, 15)}});
 
-    csvsqldb::ExecutionStatistics statistics;
     std::stringstream ss;
     int64_t rowCount =
       engine.execute("SELECT * FROM employees WHERE id < 4700 UNION (SELECT * FROM employees WHERE id >= 4700)", statistics, ss);
@@ -70,18 +70,9 @@ TEST_CASE("Union Test", "[engine]")
 
   SECTION("failed union")
   {
-    DatabaseTestWrapper dbWrapper;
-    dbWrapper.addTable(TableInitializer("employees", {{"id", csvsqldb::INT},
-                                                      {"first_name", csvsqldb::STRING},
-                                                      {"last_name", csvsqldb::STRING},
-                                                      {"birth_date", csvsqldb::DATE},
-                                                      {"hire_date", csvsqldb::DATE}}));
     dbWrapper.addTable(TableInitializer(
       "salaries",
       {{"id", csvsqldb::INT}, {"salary", csvsqldb::REAL}, {"from_date", csvsqldb::DATE}, {"to_date", csvsqldb::DATE}}));
-
-    csvsqldb::ExecutionContext context(dbWrapper.getDatabase());
-    csvsqldb::ExecutionEngine<TestOperatorNodeFactory> engine(context);
 
     TestRowProvider::setRows("employees",
                              {{815, "Mark", "Fürstenberg", csvsqldb::Date(1969, csvsqldb::Date::May, 17),
@@ -91,7 +82,6 @@ TEST_CASE("Union Test", "[engine]")
                               {9227, "Angelica", "Tello de Fürstenberg", csvsqldb::Date(1963, csvsqldb::Date::March, 6),
                                csvsqldb::Date(2003, csvsqldb::Date::June, 15)}});
 
-    csvsqldb::ExecutionStatistics statistics;
     std::stringstream ss;
     CHECK_THROWS_AS(engine.execute("SELECT * FROM employees emp UNION (SELECT * FROM salaries)", statistics, ss),
                     csvsqldb::SqlParserException);
@@ -99,18 +89,9 @@ TEST_CASE("Union Test", "[engine]")
 
   SECTION("complex union")
   {
-    DatabaseTestWrapper dbWrapper;
-    dbWrapper.addTable(TableInitializer("employees", {{"id", csvsqldb::INT},
-                                                      {"first_name", csvsqldb::STRING},
-                                                      {"last_name", csvsqldb::STRING},
-                                                      {"birth_date", csvsqldb::DATE},
-                                                      {"hire_date", csvsqldb::DATE}}));
     dbWrapper.addTable(TableInitializer(
       "salaries",
       {{"id", csvsqldb::INT}, {"salary", csvsqldb::REAL}, {"from_date", csvsqldb::DATE}, {"to_date", csvsqldb::DATE}}));
-
-    csvsqldb::ExecutionContext context(dbWrapper.getDatabase());
-    csvsqldb::ExecutionEngine<TestOperatorNodeFactory> engine(context);
 
     TestRowProvider::setRows("employees",
                              {{815, "Mark", "Fürstenberg", csvsqldb::Date(1969, csvsqldb::Date::May, 17),
@@ -126,7 +107,6 @@ TEST_CASE("Union Test", "[engine]")
        {4711, 12000.00, csvsqldb::Date(2010, csvsqldb::Date::February, 1), csvsqldb::Date(2015, csvsqldb::Date::December, 31)},
        {9227, 450.00, csvsqldb::Date(2003, csvsqldb::Date::June, 15), csvsqldb::Date(2015, csvsqldb::Date::December, 31)}});
 
-    csvsqldb::ExecutionStatistics statistics;
     std::stringstream ss;
     int64_t rowCount = engine.execute("SELECT id FROM employees UNION (SELECT id FROM salaries)", statistics, ss);
     CHECK(6 == rowCount);

@@ -30,7 +30,6 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-
 #include <csvsqldb/execution_plan_creator.h>
 #include <csvsqldb/operatornode_factory.h>
 #include <csvsqldb/sql_parser.h>
@@ -51,7 +50,6 @@ TEST_CASE("Execution Plan Creator Test", "[engine]")
   csvsqldb::ExecutionPlan execPlan;
   std::stringstream output;
   csvsqldb::ExecutionPlanVisitor<TestOperatorNodeFactory> execPlanVisitor(context, execPlan, output);
-  csvsqldb::ASTValidationVisitor validationVisitor(dbWrapper.getDatabase());
 
   SECTION("create table")
   {
@@ -125,6 +123,7 @@ TEST_CASE("Execution Plan Creator Test", "[engine]")
   {
     csvsqldb::ASTNodePtr node = parser.parse("SELECT id,name FROM test WHERE id > 4711 order by id LIMIT 10");
     REQUIRE(node);
+    csvsqldb::ASTValidationVisitor validationVisitor(dbWrapper.getDatabase());
     node->accept(validationVisitor);
     node->accept(execPlanVisitor);
     execPlan.dump(output);

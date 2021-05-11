@@ -30,7 +30,6 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-
 #include <csvsqldb/block.h>
 
 #include "data_test_framework.h"
@@ -40,18 +39,19 @@
 
 TEST_CASE("Limit Test", "[engine]")
 {
+  DatabaseTestWrapper dbWrapper;
+  dbWrapper.addTable(TableInitializer("employees", {{"id", csvsqldb::INT},
+                                                    {"first_name", csvsqldb::STRING},
+                                                    {"last_name", csvsqldb::STRING},
+                                                    {"birth_date", csvsqldb::DATE},
+                                                    {"hire_date", csvsqldb::DATE}}));
+
+  csvsqldb::ExecutionContext context(dbWrapper.getDatabase());
+  csvsqldb::ExecutionEngine<TestOperatorNodeFactory> engine(context);
+  csvsqldb::ExecutionStatistics statistics;
+
   SECTION("simple limit")
   {
-    DatabaseTestWrapper dbWrapper;
-    dbWrapper.addTable(TableInitializer("employees", {{"id", csvsqldb::INT},
-                                                      {"first_name", csvsqldb::STRING},
-                                                      {"last_name", csvsqldb::STRING},
-                                                      {"birth_date", csvsqldb::DATE},
-                                                      {"hire_date", csvsqldb::DATE}}));
-
-    csvsqldb::ExecutionContext context(dbWrapper.getDatabase());
-    csvsqldb::ExecutionEngine<TestOperatorNodeFactory> engine(context);
-
     TestRowProvider::setRows(
       "employees",
       {{815, "Mark", "Fürstenberg", csvsqldb::Date(1969, csvsqldb::Date::May, 17),
@@ -66,7 +66,6 @@ TEST_CASE("Limit Test", "[engine]")
        {9227, "Angelica", "Tello de Fürstenberg", csvsqldb::Date(1963, csvsqldb::Date::March, 6),
         csvsqldb::Date(2003, csvsqldb::Date::June, 15)}});
 
-    csvsqldb::ExecutionStatistics statistics;
     std::stringstream ss;
     int64_t rowCount =
       engine.execute("SELECT id,first_name,last_name,birth_date,hire_date FROM employees order by id limit 3", statistics, ss);
@@ -82,16 +81,6 @@ TEST_CASE("Limit Test", "[engine]")
 
   SECTION("simple limit offset")
   {
-    DatabaseTestWrapper dbWrapper;
-    dbWrapper.addTable(TableInitializer("employees", {{"id", csvsqldb::INT},
-                                                      {"first_name", csvsqldb::STRING},
-                                                      {"last_name", csvsqldb::STRING},
-                                                      {"birth_date", csvsqldb::DATE},
-                                                      {"hire_date", csvsqldb::DATE}}));
-
-    csvsqldb::ExecutionContext context(dbWrapper.getDatabase());
-    csvsqldb::ExecutionEngine<TestOperatorNodeFactory> engine(context);
-
     TestRowProvider::setRows(
       "employees",
       {{815, "Mark", "Fürstenberg", csvsqldb::Date(1969, csvsqldb::Date::May, 17),
@@ -106,7 +95,6 @@ TEST_CASE("Limit Test", "[engine]")
        {9227, "Angelica", "Tello de Fürstenberg", csvsqldb::Date(1963, csvsqldb::Date::March, 6),
         csvsqldb::Date(2003, csvsqldb::Date::June, 15)}});
 
-    csvsqldb::ExecutionStatistics statistics;
     std::stringstream ss;
     int64_t rowCount = engine.execute(
       "SELECT id,first_name,last_name,birth_date,hire_date FROM employees order by id limit 3 offset 3", statistics, ss);

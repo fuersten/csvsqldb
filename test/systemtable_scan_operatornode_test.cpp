@@ -49,16 +49,24 @@ TEST_CASE("System Scan Operator Node Test", "[operatornodes]")
   csvsqldb::OperatorContext context{database, functions, blockManager, {}};
   auto symbolTable = csvsqldb::SymbolTable::createSymbolTable();
 
+  csvsqldb::SymbolInfo info;
+  info._identifier = "SYSTEM_TABLES";
+  csvsqldb::SystemTableScanOperatorNode operatorNode{context, symbolTable, info};
+
   SECTION("Scan System Table")
   {
-    csvsqldb::SymbolInfo info;
-    info._identifier = "SYSTEM_TABLES";
-    csvsqldb::SystemTableScanOperatorNode operatorNode{context, symbolTable, info};
     const auto* values = operatorNode.getNextRow();
     REQUIRE(values);
     REQUIRE(2 == values->size());
     values = operatorNode.getNextRow();
     REQUIRE(values);
     REQUIRE(2 == values->size());
+  }
+
+  SECTION("dump")
+  {
+    std::stringstream ss;
+    operatorNode.dump(ss);
+    CHECK(ss.str() == "SystemTableScanOperatorNode(SYSTEM_TABLES)\n");
   }
 }

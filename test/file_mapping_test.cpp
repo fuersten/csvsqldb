@@ -30,7 +30,6 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-
 #include <csvsqldb/base/string_helper.h>
 #include <csvsqldb/file_mapping.h>
 
@@ -39,9 +38,10 @@
 
 TEST_CASE("Mapping Test", "[engine]")
 {
+  csvsqldb::FileMapping::Mappings mappings;
+
   SECTION("mapping")
   {
-    csvsqldb::FileMapping::Mappings mappings;
     mappings.push_back({"employees.csv->employees", ',', false});
     mappings.push_back({"salaries\\d*.csv->salaries", ';', true});
 
@@ -57,7 +57,6 @@ TEST_CASE("Mapping Test", "[engine]")
 
   SECTION("missing mapping")
   {
-    csvsqldb::FileMapping::Mappings mappings;
     mappings.push_back({"employees.csv->employees", ',', false});
 
     csvsqldb::FileMapping mapping;
@@ -69,7 +68,6 @@ TEST_CASE("Mapping Test", "[engine]")
 
   SECTION("as string vector")
   {
-    csvsqldb::FileMapping::Mappings mappings;
     mappings.push_back({"employees.csv->employees", ',', false});
     mappings.push_back({"salaries.csv->salaries", ',', false});
 
@@ -78,22 +76,21 @@ TEST_CASE("Mapping Test", "[engine]")
     CHECK("employees.csv->EMPLOYEES,salaries.csv->SALARIES" == csvsqldb::join(mapping.asStringVector(), ","));
   }
 
-  SECTION("json")
+  SECTION("json roundtrip")
   {
-    std::string JSON;
+    std::string json;
 
     {
-      csvsqldb::FileMapping::Mappings mappings;
       mappings.push_back({"employees\\d*.csv->employees", ',', false});
       mappings.push_back({"salaries.csv->salaries", ',', false});
 
       csvsqldb::FileMapping mapping;
       mapping.initialize(mappings);
 
-      JSON = mapping.asJson("employees");
+      json = mapping.asJson("employees");
     }
 
-    std::stringstream ss(JSON);
+    std::stringstream ss(json);
     csvsqldb::FileMapping mapping = csvsqldb::FileMapping::fromJson(ss);
     CHECK("employees\\d*.csv" == mapping.getMappingForTable("EMPLOYEES")._mapping);
     CHECK_THROWS_AS(mapping.getMappingForTable("SALARIES"), csvsqldb::MappingException);

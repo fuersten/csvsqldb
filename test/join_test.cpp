@@ -30,7 +30,6 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-
 #include "data_test_framework.h"
 
 #include <catch2/catch.hpp>
@@ -38,21 +37,21 @@
 
 TEST_CASE("Join Test", "[engine]")
 {
+  DatabaseTestWrapper dbWrapper;
+  dbWrapper.addTable(TableInitializer("employees", {{"id", csvsqldb::INT},
+                                                    {"first_name", csvsqldb::STRING},
+                                                    {"last_name", csvsqldb::STRING},
+                                                    {"birth_date", csvsqldb::DATE},
+                                                    {"hire_date", csvsqldb::DATE}}));
+  dbWrapper.addTable(TableInitializer(
+    "salaries", {{"id", csvsqldb::INT}, {"salary", csvsqldb::REAL}, {"from_date", csvsqldb::DATE}, {"to_date", csvsqldb::DATE}}));
+
+  csvsqldb::ExecutionContext context(dbWrapper.getDatabase());
+  csvsqldb::ExecutionEngine<TestOperatorNodeFactory> engine(context);
+  csvsqldb::ExecutionStatistics statistics;
+
   SECTION("simple cross join")
   {
-    DatabaseTestWrapper dbWrapper;
-    dbWrapper.addTable(TableInitializer("employees", {{"id", csvsqldb::INT},
-                                                      {"first_name", csvsqldb::STRING},
-                                                      {"last_name", csvsqldb::STRING},
-                                                      {"birth_date", csvsqldb::DATE},
-                                                      {"hire_date", csvsqldb::DATE}}));
-    dbWrapper.addTable(TableInitializer(
-      "salaries",
-      {{"id", csvsqldb::INT}, {"salary", csvsqldb::REAL}, {"from_date", csvsqldb::DATE}, {"to_date", csvsqldb::DATE}}));
-
-    csvsqldb::ExecutionContext context(dbWrapper.getDatabase());
-    csvsqldb::ExecutionEngine<TestOperatorNodeFactory> engine(context);
-
     TestRowProvider::setRows("employees",
                              {{815, "Mark", "Fürstenberg", csvsqldb::Date(1969, csvsqldb::Date::May, 17),
                                csvsqldb::Date(2003, csvsqldb::Date::April, 15)},
@@ -67,7 +66,6 @@ TEST_CASE("Join Test", "[engine]")
        {4711, 12000.00, csvsqldb::Date(2010, csvsqldb::Date::February, 1), csvsqldb::Date(2015, csvsqldb::Date::December, 31)},
        {9227, 450.00, csvsqldb::Date(2003, csvsqldb::Date::June, 15), csvsqldb::Date(2015, csvsqldb::Date::December, 31)}});
 
-    csvsqldb::ExecutionStatistics statistics;
     std::stringstream ss;
     int64_t rowCount = engine.execute("SELECT * FROM employees CROSS JOIN salaries", statistics, ss);
     CHECK(9 == rowCount);
@@ -88,19 +86,6 @@ TEST_CASE("Join Test", "[engine]")
 
   SECTION("simple inner join")
   {
-    DatabaseTestWrapper dbWrapper;
-    dbWrapper.addTable(TableInitializer("employees", {{"id", csvsqldb::INT},
-                                                      {"first_name", csvsqldb::STRING},
-                                                      {"last_name", csvsqldb::STRING},
-                                                      {"birth_date", csvsqldb::DATE},
-                                                      {"hire_date", csvsqldb::DATE}}));
-    dbWrapper.addTable(TableInitializer(
-      "salaries",
-      {{"id", csvsqldb::INT}, {"salary", csvsqldb::REAL}, {"from_date", csvsqldb::DATE}, {"to_date", csvsqldb::DATE}}));
-
-    csvsqldb::ExecutionContext context(dbWrapper.getDatabase());
-    csvsqldb::ExecutionEngine<TestOperatorNodeFactory> engine(context);
-
     TestRowProvider::setRows(
       "employees",
       {{9384, "John", "Doe", csvsqldb::Date(1965, csvsqldb::Date::August, 8), csvsqldb::Date(9999, csvsqldb::Date::December, 31)},
@@ -117,7 +102,6 @@ TEST_CASE("Join Test", "[engine]")
        {4711, 12000.00, csvsqldb::Date(2010, csvsqldb::Date::February, 1), csvsqldb::Date(2015, csvsqldb::Date::December, 31)},
        {9227, 450.00, csvsqldb::Date(2003, csvsqldb::Date::June, 15), csvsqldb::Date(2015, csvsqldb::Date::December, 31)}});
 
-    csvsqldb::ExecutionStatistics statistics;
     std::stringstream ss;
     int64_t rowCount = engine.execute("SELECT * FROM employees emp INNER JOIN salaries sal ON emp.id = sal.id", statistics, ss);
     CHECK(3 == rowCount);
@@ -132,12 +116,6 @@ TEST_CASE("Join Test", "[engine]")
 
   SECTION("complex inner join")
   {
-    DatabaseTestWrapper dbWrapper;
-    dbWrapper.addTable(TableInitializer("employees", {{"id", csvsqldb::INT},
-                                                      {"first_name", csvsqldb::STRING},
-                                                      {"last_name", csvsqldb::STRING},
-                                                      {"birth_date", csvsqldb::DATE},
-                                                      {"hire_date", csvsqldb::DATE}}));
     dbWrapper.addTable(TableInitializer("dept_emp", {
                                                       {"id", csvsqldb::INT},
                                                       {"dept_no", csvsqldb::STRING},
@@ -148,9 +126,6 @@ TEST_CASE("Join Test", "[engine]")
                                                          {"dept_no", csvsqldb::STRING},
                                                          {"dept_name", csvsqldb::STRING},
                                                        }));
-
-    csvsqldb::ExecutionContext context(dbWrapper.getDatabase());
-    csvsqldb::ExecutionEngine<TestOperatorNodeFactory> engine(context);
 
     TestRowProvider::setRows(
       "employees",
@@ -178,7 +153,6 @@ TEST_CASE("Join Test", "[engine]")
                                              {"d008", "Research"},
                                              {"d007", "Sales"}});
 
-    csvsqldb::ExecutionStatistics statistics;
     std::stringstream ss;
     int64_t rowCount = engine.execute(
       "SELECT emp.first_name,emp.last_name,dept_emp.dept_no,departments.dept_name FROM employees as emp JOIN dept_emp ON "
@@ -195,14 +169,10 @@ TEST_CASE("Join Test", "[engine]")
 
   SECTION("self join")
   {
-    DatabaseTestWrapper dbWrapper;
     dbWrapper.addTable(TableInitializer("creditcards", {{"nr", csvsqldb::INT},
                                                         {"company", csvsqldb::STRING},
                                                         {"expiration_date", csvsqldb::DATE},
                                                         {"customer_nr", csvsqldb::INT}}));
-
-    csvsqldb::ExecutionContext context(dbWrapper.getDatabase());
-    csvsqldb::ExecutionEngine<TestOperatorNodeFactory> engine(context);
 
     TestRowProvider::setRows("creditcards",
                              {
@@ -214,7 +184,6 @@ TEST_CASE("Join Test", "[engine]")
                              });
 
     {
-      csvsqldb::ExecutionStatistics statistics;
       std::stringstream ss;
       int64_t rowCount = engine.execute(
         "SELECT cc1.customer_nr,cc1.company,cc2.customer_nr,cc2.company FROM creditcards cc1 INNER JOIN creditcards cc2 ON "
@@ -236,7 +205,6 @@ TEST_CASE("Join Test", "[engine]")
     }
 
     {
-      csvsqldb::ExecutionStatistics statistics;
       std::stringstream ss;
       int64_t rowCount = engine.execute(
         "SELECT cc1.customer_nr,cc1.company,cc2.customer_nr,cc2.company FROM creditcards cc1 INNER JOIN creditcards cc2 ON "

@@ -50,8 +50,7 @@ TEST_CASE("Aggregation Operator Node Test", "[operatornodes]")
   csvsqldb::BlockManager blockManager;
   csvsqldb::OperatorContext context{database, functions, blockManager, {}};
   auto symbolTable = csvsqldb::SymbolTable::createSymbolTable();
-  csvsqldb::FunctionRegistry registry;
-  csvsqldb::SQLParser parser{registry};
+  csvsqldb::SQLParser parser{functions};
 
   SECTION("Process")
   {

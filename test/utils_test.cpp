@@ -30,7 +30,6 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-
 #include <csvsqldb/base/float_helper.h>
 
 #include <catch2/catch.hpp>
@@ -40,13 +39,19 @@ TEST_CASE("Float Helper Test", "[utils]")
 {
   SECTION("equal")
   {
-    CHECK(47.11 == Approx(47.11));
-    CHECK_FALSE(47.11 == Approx(8.15));
+    CHECK(47.11 == csvsqldb::Approx(47.11));
+    CHECK_FALSE(47.11 == csvsqldb::Approx(8.15));
+
+    CHECK(csvsqldb::Approx(47.11) == 47.11);
+    CHECK_FALSE(csvsqldb::Approx(8.15) == 47.11);
   }
 
   SECTION("non equal")
   {
     CHECK_FALSE(47.11 != Approx(47.11));
     CHECK(47.11 != Approx(8.15));
+
+    CHECK_FALSE(csvsqldb::Approx(47.11) != 47.11);
+    CHECK(csvsqldb::Approx(8.15) != 47.11);
   }
 }

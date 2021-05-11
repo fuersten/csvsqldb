@@ -41,7 +41,6 @@ TEST_CASE("Data Framework Test", "[block]")
   SECTION("framework")
   {
     DatabaseTestWrapper dbWrapper;
-
     dbWrapper.addTable(TableInitializer("employees", {{"id", csvsqldb::INT},
                                                       {"first_name", csvsqldb::STRING},
                                                       {"last_name", csvsqldb::STRING},

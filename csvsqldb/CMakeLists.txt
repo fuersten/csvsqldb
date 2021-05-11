@@ -139,7 +139,6 @@ set(LIB_CSVSQLDB_BASE_HEADERS
     base/timestamp.h
     base/time_helper.h
     base/time_measurement.h
-    base/tribool.h
     base/types.h
     base/regexp.h
     base/detail/types_detail.h

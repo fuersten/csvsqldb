@@ -30,7 +30,6 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-
 #include <csvsqldb/base/float_helper.h>
 #include <csvsqldb/buildin_functions.h>
 
@@ -39,12 +38,12 @@
 
 TEST_CASE("Buildin Functions Test", "[engine]")
 {
-  csvsqldb::FunctionRegistry _registry;
-  initBuildInFunctions(_registry);
+  csvsqldb::FunctionRegistry registry;
+  initBuildInFunctions(registry);
 
   SECTION("buildin date functions")
   {
-    csvsqldb::Function::Ptr function = _registry.getFunction("CURRENT_DATE");
+    csvsqldb::Function::Ptr function = registry.getFunction("CURRENT_DATE");
     CHECK(function);
     CHECK("CURRENT_DATE" == function->getName());
     CHECK(csvsqldb::DATE == function->getReturnType());
@@ -52,14 +51,14 @@ TEST_CASE("Buildin Functions Test", "[engine]")
     csvsqldb::Variant result = function->call(parameter);
     CHECK(csvsqldb::DATE == result.getType());
 
-    function = _registry.getFunction("CURRENT_TIME");
+    function = registry.getFunction("CURRENT_TIME");
     CHECK(function);
     CHECK("CURRENT_TIME" == function->getName());
     CHECK(csvsqldb::TIME == function->getReturnType());
     result = function->call(parameter);
     CHECK(csvsqldb::TIME == result.getType());
 
-    function = _registry.getFunction("EXTRACT");
+    function = registry.getFunction("EXTRACT");
     CHECK(function);
     CHECK("EXTRACT" == function->getName());
     CHECK(csvsqldb::INT == function->getReturnType());
@@ -94,7 +93,7 @@ TEST_CASE("Buildin Functions Test", "[engine]")
     CHECK(csvsqldb::INT == result.getType());
     CHECK(11 == result.asInt());
 
-    function = _registry.getFunction("DATE_FORMAT");
+    function = registry.getFunction("DATE_FORMAT");
     CHECK(function);
     CHECK("DATE_FORMAT" == function->getName());
     CHECK(csvsqldb::STRING == function->getReturnType());
@@ -105,7 +104,7 @@ TEST_CASE("Buildin Functions Test", "[engine]")
     CHECK(csvsqldb::STRING == result.getType());
     CHECK("23.09.1970 266 39 3" == result.toString());
 
-    function = _registry.getFunction("TIME_FORMAT");
+    function = registry.getFunction("TIME_FORMAT");
     CHECK(function);
     CHECK("TIME_FORMAT" == function->getName());
     CHECK(csvsqldb::STRING == function->getReturnType());
@@ -116,7 +115,7 @@ TEST_CASE("Buildin Functions Test", "[engine]")
     CHECK(csvsqldb::STRING == result.getType());
     CHECK("08@09@11" == result.toString());
 
-    function = _registry.getFunction("TIMESTAMP_FORMAT");
+    function = registry.getFunction("TIMESTAMP_FORMAT");
     CHECK(function);
     CHECK("TIMESTAMP_FORMAT" == function->getName());
     CHECK(csvsqldb::STRING == function->getReturnType());
@@ -130,7 +129,7 @@ TEST_CASE("Buildin Functions Test", "[engine]")
 
   SECTION("buildin string functions")
   {
-    csvsqldb::Function::Ptr function = _registry.getFunction("UPPER");
+    csvsqldb::Function::Ptr function = registry.getFunction("UPPER");
     CHECK(function);
     CHECK("UPPER" == function->getName());
     CHECK(csvsqldb::STRING == function->getReturnType());
@@ -140,7 +139,7 @@ TEST_CASE("Buildin Functions Test", "[engine]")
     CHECK(csvsqldb::STRING == result.getType());
     CHECK("LARS" == result.toString());
 
-    function = _registry.getFunction("LOWER");
+    function = registry.getFunction("LOWER");
     CHECK(function);
     CHECK("LOWER" == function->getName());
     CHECK(csvsqldb::STRING == function->getReturnType());
@@ -148,7 +147,7 @@ TEST_CASE("Buildin Functions Test", "[engine]")
     CHECK(csvsqldb::STRING == result.getType());
     CHECK("lars" == result.toString());
 
-    function = _registry.getFunction("CHARACTER_LENGTH");
+    function = registry.getFunction("CHARACTER_LENGTH");
     CHECK(function);
     CHECK("CHARACTER_LENGTH" == function->getName());
     CHECK(csvsqldb::INT == function->getReturnType());
@@ -156,7 +155,7 @@ TEST_CASE("Buildin Functions Test", "[engine]")
     CHECK(csvsqldb::INT == result.getType());
     CHECK(4 == result.asInt());
 
-    function = _registry.getFunction("CHAR_LENGTH");
+    function = registry.getFunction("CHAR_LENGTH");
     CHECK(function);
     CHECK("CHAR_LENGTH" == function->getName());
     CHECK(csvsqldb::INT == function->getReturnType());
@@ -167,7 +166,7 @@ TEST_CASE("Buildin Functions Test", "[engine]")
 
   SECTION("buildin math functions")
   {
-    csvsqldb::Function::Ptr function = _registry.getFunction("POW");
+    csvsqldb::Function::Ptr function = registry.getFunction("POW");
     CHECK(function);
     CHECK("POW" == function->getName());
     CHECK(csvsqldb::REAL == function->getReturnType());
