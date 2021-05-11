@@ -179,27 +179,27 @@ namespace csvsqldb
     auto time_part = toupper_copy(parameter[0].asString());
     auto ts = parameter[1].asTimestamp();
 
-    if (time_part == "SECOND") {
+    if (time_part.compare("SECOND") == 0) {
       ts.millisecond(0);
-    } else if(time_part == "MINUTE") {
+    } else if(time_part.compare("MINUTE") == 0) {
       ts.millisecond(0);
       ts.second(0);
-    } else if(time_part == "HOUR") {
+    } else if(time_part.compare("HOUR") == 0) {
       ts.millisecond(0);
       ts.second(0);
       ts.minute(0);
-    } else if(time_part == "DAY") {
+    } else if(time_part.compare("DAY") == 0) {
       ts.millisecond(0);
       ts.second(0);
       ts.minute(0);
       ts.hour(0);
-    } else if(time_part == "MONTH") {
+    } else if(time_part.compare("MONTH") == 0) {
       ts.millisecond(0);
       ts.second(0);
       ts.minute(0);
       ts.hour(0);
       ts.day(1);
-    } else if(time_part == "YEAR") {
+    } else if(time_part.compare("YEAR") == 0) {
       ts.millisecond(0);
       ts.second(0);
       ts.minute(0);

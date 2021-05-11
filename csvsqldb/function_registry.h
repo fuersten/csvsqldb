@@ -67,10 +67,12 @@ namespace csvsqldb
     {
       return _name;
     }
+
     eType getReturnType() const
     {
       return _retType;
     }
+    
     const Types& getParameterTypes() const
     {
       return _parameterTypes;
