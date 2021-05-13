@@ -33,6 +33,7 @@
 * more built-in functions
 * extraction of the schema from csv files
 * replace LUA config with JSON config
+* replace own logging with log framework
 
 ## Version 0.6.0
 
