@@ -47,3 +47,9 @@ build_coverage
 docker
 check_loc.sh
 todo.md
+*.aux
+*.lof
+*.lol
+*.log
+*.lot
+*.toc
