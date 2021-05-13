@@ -120,7 +120,7 @@ namespace csvsqldb
             ++rowValueId;
           }
           if (!found) {
-            CSVSQLDB_THROW(csvsqldb::Exception, "aggregation parameter '" << param << "'");
+            CSVSQLDB_THROW(csvsqldb::Exception, "aggregation parameter '" << param << "' not found");
           }
         }
 
