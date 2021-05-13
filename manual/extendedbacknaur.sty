@@ -1,0 +1,36 @@
+\ProvidesPackage{extendedbacknaur}[2017/11/10 Extended Backus Naur Form Package]
+
+\usepackage{amssymb}
+\usepackage{lmodern}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ttscale=.875]{libertine}
+
+% GRAMMAR RULES
+\newenvironment{ebnf}%
+{\begin{eqnarray}}%
+{\end{eqnarray}\ignorespacesafterend}
+\newenvironment{ebnf*}%
+{\begin{eqnarray*}}%
+{\end{eqnarray*}\ignorespacesafterend}
+
+\newcommand{\ebnf@terminator}{;}
+\newcommand{\ebnf@to}{=}
+\newcommand{\ebnf@nts}[1]{\textnormal{\textit{#1}}}
+\newcommand{\ebnfes}{\epsilon}
+\newcommand{\ebnfsp}[0]{\hspace{1mm}}
+\newcommand{\ebnfdots}{\dots}
+\newcommand{\ebnfnt}[1]{\ebnf@nts{#1}}
+\newcommand{\ebnfnts}[1]{\ebnf@nts{#1} \ebnfsp}
+\newcommand{\ebnft}[1]{\textbf{'#1'}}
+\newcommand{\ebnfts}[1]{\ebnft{#1} \ebnfsp}
+\newcommand{\ebnfor}{\mid \ebnfsp}
+\newcommand{\ebnfrep}[1]{\big\{ #1 \big\}}
+\newcommand{\ebnfopt}[1]{\big[ #1 \big]}
+\newcommand{\ebnfgroup}[1]{\big( #1 \big)}
+\newcommand{\ebnfprod}[2]{\ebnf@nts{#1} & \ebnf@to & #2 \ebnf@terminator}
+
+\DeclareOption{brackets}{\renewcommand\ebnf@nts[1]{\textnormal{\guilsinglleft\textit{#1}\guilsinglright}}}
+\DeclareOption{arrow}{\renewcommand\ebnf@to{\to}}
+\DeclareOption{noterminator}{\renewcommand\ebnf@terminator{}}
+\ProcessOptions\relax

@@ -1,0 +1,65 @@
+
+\chapter{Supported SQL}
+
+\section{SQL}
+
+\subsection{Data Types}
+
+\begin{FseTabular}{Data Types}{p{3.5cm}p{7.5cm}}{data_types}
+\textbf{Type} & \textbf{Summary} \\
+\midrule
+BOOL & TRUE, FALSE, or UNKNOWN \\
+BOOLEAN & Same as BOOL \\
+INT & Signed 64-bit integer \\
+INTEGER & Same as INT \\
+FLOAT & 64-bit floating point \\
+DOUBLE & Same as FLOAT \\
+REAL & Same as FLOAT \\
+VARCHAR & Variable character string \\
+CHAR & Single character \\
+CHARACTER & Same as CHAR \\
+DATE & Date \\
+TIME & Time \\
+TIMESTAMP & Timestamp \\
+\end{FseTabular}
+
+\section{Functions}
+
+\subsection{Aggregation Functions}
+
+Functions that aggregate rows.
+
+\begin{FseTabular}{Aggregation Functions}{p{3.5cm}p{7.5cm}p{3.5cm}}{aggr_functions}
+\textbf{Function Name} & \textbf{Summary} & \textbf{Category} \\
+\midrule
+SUM & Calculates the rows sum & Math Functions \\
+MIN & Calculates the rows min value & Math Functions \\
+MAX & Calculates the rows max value & Math Functions \\
+AVG & Calculates the rows average  & Math Functions \\
+COUNT & Returns the number of rows & General \\
+ARBITRARY & Returns some row non-NULL value & General \\
+\end{FseTabular}
+
+\subsection{General Functions}
+
+General functions.
+
+\begin{FseTabular}{Build-In Functions}{p{3.5cm}p{7.5cm}p{3.5cm}}{functions}
+\textbf{Function Name} & \textbf{Summary} & \textbf{Category} \\
+\midrule
+CAST & Cast to another type & Conversion \\
+CHARACTER\_LENGTH & Returns the length in byte of the given string & String Manipulation \\
+CHAR\_LENGTH & Returns the length in byte of the given string & String Manipulation \\
+CURRENT\_DATE & Returns the current date & Date \& Time Functions\\
+CURRENT\_TIME & Returns the current time in the local timezone & Date \& Time Functions \\
+CURRENT\_TIMESTAMP & Returns the current time in the local timezone & Date \& Time Functions \\
+DATE\_FORMAT & Formats a date according to the specified pattern & Date \& Time Functions \\
+DATE\_TRUNC & Truncates the given timestamp according to the specified precision & Date \& Time Functions \\
+EXTRACT & Extracts the specified parts from a timestamp & Date \& Time Functions \\
+LOWER & Converts the given string to lower case & String Manipulation \\
+POW & Returns the number raised to the specified power & Math Functions \\
+TIMESTAMP\_FORMAT & Formats a timestamp according to the specified pattern & Date \& Time Functions \\
+TIME\_FORMAT & Formats a time according to the specified pattern & Date \& Time Functions \\
+UPPER & Converts the given string to upper case & String Manipulation \\
+VERSION & Returns the version of the \csvsqldb{} & Misc \\
+\end{FseTabular}

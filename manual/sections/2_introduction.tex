@@ -1,0 +1,37 @@
+
+\chapter{Introduction}
+
+\section{The \csvsqldb{} Database}
+
+The \csvsqldb{} database is a read only SQL database that gets its data from supplied csv files. The data is accessed via an SQL interface. Most of the standard SQL is supported, including joins. The schema has to be specified beforehand. The output is streamed in csv format to the standard output. The tool can be used to rearrange, filter and process csv files. It is much easier to use than the classic grep, awk, sort, cut, and sed commands as long as you have a basic knowledge of the SQL language.
+
+\section{Motivation}
+
+\section{Getting Started}
+
+\subsection{Setup}
+
+\subsubsection{Schema}
+
+\begin{ShellListing}{interactive_with_file}{Start Interactive Shell with CSV Input File}
+shell> csvsqldb -i ~/Downloads/csvsqldb_example/*.csv
+\end{ShellListing}
+
+\subsubsection{Mappings}
+
+\subsubsection{Inspect}
+
+\subsubsection{Add Data}
+
+\subsection{Queries}
+
+\subsubsection{Easy stuff}
+
+\subsubsection{Grouping and Ordering}
+
+\sqlex{grouping_ordering_example}{Grouping and Ordering}{grouping_ordering}
+
+\subsubsection{Joining}
+
+\subsection{Command Line Tool}
+

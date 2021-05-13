@@ -1,0 +1,31 @@
+\documentclass[11pt]{book}
+\usepackage{import}
+\usepackage{csvsqldb_manual}
+\usepackage[toc,page]{appendix}
+
+\frontmatter
+\begin{document}
+
+\import{sections/}{0_title.tex}
+
+\tableofcontents
+\listoffigures
+\listoftables
+\lstlistoflistings
+
+\renewcommand{\chaptermark}[1]{\markboth{\normalsize\sffamily\bfseries\ #1}{}} % Chapter text font settings
+\import{sections/}{1_preface.tex}
+
+\renewcommand{\chaptermark}[1]{\markboth{\normalsize\sffamily\bfseries\chaptername\ \thechapter.\ #1}{}} % Chapter text font settings
+\mainmatter
+
+\import{sections/}{2_introduction.tex}
+\import{sections/}{3_sql.tex}
+\import{sections/}{4_tool.tex}
+
+\appendix
+
+\backmatter
+\import{sections/}{11_bibliography.tex}
+
+\end{document} 

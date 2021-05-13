@@ -1,0 +1,40 @@
+
+\begingroup % Create the command for including the title page in the document
+\thispagestyle{empty}
+\hbox{ % Horizontal box
+\hspace*{0.2\textwidth} % Whitespace to the left of the title page
+\rule{1pt}{\textheight} % Vertical line
+\hspace*{0.05\textwidth} % Whitespace between the vertical line and title page text
+\parbox[b]{0.75\textwidth}{ % Paragraph box which restricts text to less than the width of the page
+
+{\noindent\Huge\bfseries \csvsqldb{} Manual \\[0.5\baselineskip] {\LARGE Version 0.2.0}}\\[2\baselineskip] % Title
+{\large \textit{A read only sql csv file database}}\\[4\baselineskip] % Tagline or further description
+{\Large \textsc{Lars-Christian F\"{u}rstenberg \\[0.5\baselineskip] Steffen Sch\"{u}mann}} % Author name
+
+\vspace{0.5\textheight} % Whitespace between the title block and the publisher
+{\noindent The Publisher - None -}\\[\baselineskip] % Publisher and logo
+}}
+\endgroup
+
+%----------------------------------------------------------------------------------------
+%	COPYRIGHT PAGE
+%----------------------------------------------------------------------------------------
+
+\newpage
+\thispagestyle{empty}
+
+\noindent {\LARGE\bfseries \csvsqldb{}}\\
+by Lars-Christian F\"{u}rstenberg\\
+and Steffen Sch\"{u}mann
+~\vfill
+\noindent Copyright \copyright\ 2021 Lars-Christian F\"{u}rstenberg, Steffen Sch\"{u}mann\\ % Copyright notice
+
+\noindent The authors can be reached at {\small \texttt{lars.fuerstenberg@miztli.de}}\\
+
+\begin{sloppypar}
+\noindent \ccbyncnd\\
+\noindent This work is licensed under the Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License (CC BY-NC-ND 4.0). To view a copy of this license, visit {\small \url{https://creativecommons.org/licenses/by-nc-nd/4.0/}}. Unless required by applicable law or agreed to in writing, software distributed under the license is distributed on an \textbf{``as is'' basis, without warranties or conditions of any kind}, either express or implied. See the license for the specific language governing permissions and limitations under the license.\\ % License information
+\end{sloppypar}
+\noindent Typeset by the author using \LaTeX
+
+\cleardoublepage % Forces the first chapter to start on an odd page so it's on the right
