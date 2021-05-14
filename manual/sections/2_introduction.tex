@@ -1,9 +1,7 @@
 
 \chapter{Introduction}
 
-\section{The \csvsqldb{} Database}
-
-The \csvsqldb{} database is a read only SQL database that gets its data from supplied csv files. The data is accessed via an SQL interface. Most of the standard SQL is supported, including joins. The schema has to be specified beforehand. The output is streamed in csv format to the standard output. The tool can be used to rearrange, filter and process csv files. It is much easier to use than the classic grep, awk, sort, cut, and sed commands as long as you have a basic knowledge of the SQL language.
+The \csvsqldb{} database is a read only SQL database that reads its data from supplied csv files. In contrast to other databases, \csvsqldb{} does not store the data in any way, but processes the csv files completely for every query. The csv files compose the database non-modifiable table data. It is important to mention that \csvsqldb{} is not an in memory database. The table data will be streamed into the engine in a block-wise manner and \csvsqldb{} tries to minimize the query memory consumption in order to be able to process very large files that do not even fit into memory. Nevertheless, \csvsqldb{} converts the csv field data into correctly typed data according to the schema upon import. This ensures high performance for operations on the data. In order to be able to do the conversion, a corresponding schema has to be specified beforehand. In contrary to the data, the meta data, aka schema, is persistently stored in the filesystem and will be reused for query processing. \csvsqldb{} features an SQL interface and supports a great deal of standard SQL, including joins. Obviously, not all SQL operations can be supported in a readonly non-persistent database, so there are a couple of restrictions. At the end of the processing chain, the output data is streamed in csv format to the standard output, which enables the tool to be used to rearrange, filter and process csv files. It is much easier to use than the classic grep, awk, sort, cut, and sed commands as long as you have a basic knowledge of the SQL language.
 
 \section{Motivation}
 

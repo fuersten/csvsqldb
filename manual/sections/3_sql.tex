@@ -12,7 +12,7 @@ BOOL & TRUE, FALSE, or UNKNOWN \\
 BOOLEAN & Same as BOOL \\
 INT & Signed 64-bit integer \\
 INTEGER & Same as INT \\
-FLOAT & 64-bit floating point \\
+FLOAT & IEEE 754 64-bit floating point number \\
 DOUBLE & Same as FLOAT \\
 REAL & Same as FLOAT \\
 VARCHAR & Variable character string \\
@@ -21,6 +21,16 @@ CHARACTER & Same as CHAR \\
 DATE & Date \\
 TIME & Time \\
 TIMESTAMP & Timestamp \\
+\end{FseTabular}
+
+\subsection{Operations on Data Types}
+
+\subsubsection{Boolean}
+
+\begin{FseTabular}{Data Types}{p{3.5cm}p{3.0cm}p{3.0cm}p{4.0cm}}{data_types}
+\textbf{Operator} & \textbf{Kind} & \textbf{Resulting Type} & \textbf{Description} \\
+\midrule
+
 \end{FseTabular}
 
 \section{Functions}
@@ -63,3 +73,5 @@ TIME\_FORMAT & Formats a time according to the specified pattern & Date \& Time 
 UPPER & Converts the given string to upper case & String Manipulation \\
 VERSION & Returns the version of the \csvsqldb{} & Misc \\
 \end{FseTabular}
+
+\section{Restrcitions}
