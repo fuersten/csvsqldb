@@ -123,6 +123,7 @@
 \definecolor{comment}{rgb}{0.65, 0.65, 0.65}
 \definecolor{string}{rgb}{0.16, 0.463, 0.816}
 \definecolor{keyword1}{rgb}{0.0, 0.0, 1.0}
+\definecolor{keyword2}{rgb}{0.0, 0.0, 1.0}
 \definecolor{identifier}{rgb}{0.0, 0.0, 0.545}
 \definecolor{backcolour}{rgb}{0.95, 0.95, 0.95}
 
@@ -149,10 +150,20 @@ framerule=0pt
 \tcbset{colback=gray!30!white, colframe=gray!75!black, arc=1mm, leftrule=2mm, left=1mm}
 
 %----------------------------------------------------------------------------------------
-%    SHELL LISTINGS
+%        LISTINGS
 %----------------------------------------------------------------------------------------
 \lstnewenvironment{ShellListing}[2]{%
 \lstset{language=BASH, label=#1, caption=#2}
+}{%
+}
+
+\lstnewenvironment{Bash}{%
+\lstset{language=BASH}
+}{%
+}
+
+\lstnewenvironment{SQL}{%
+\lstset{language=SQL}
 }{%
 }
 
@@ -162,6 +173,7 @@ framerule=0pt
 
 \newcommand{\csvsqldb}{\textit{csvsqldb}}
 \newcommand{\sqlex}[3]{\lstinputlisting[language=SQL,numbers=left,float=ht,label=#1,caption={#2}]{../examples/#3.sql}}
+\newcommand{\sqlinline}[1]{\lstinline[language=SQL]!#1!}
 
 %----------------------------------------------------------------------------------------
 %    TABLES

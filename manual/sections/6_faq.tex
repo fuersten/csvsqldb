@@ -1,0 +1,22 @@
+
+\chapter{FAQ}
+
+\section{Problems and Workarounds}
+
+Problem: Not able to use expressions in aggregations
+
+\begin{SQL}
+select name,avg(cast(system as int)) from system_tables group by name order by name
+\end{SQL}
+
+Results in the error
+
+\begin{Bash}
+ERROR: currently only identifier allowed as aggregation parameter
+\end{Bash}
+
+Workaround: Use a sub select
+
+\begin{SQL}
+select name,avg(sys) from (select name,cast(system as int) as sys from system_tables) group by name order by name
+\end{SQL}
