@@ -40,13 +40,23 @@
 * insert sort with limit
 * ORDER BY field NULLS (LAST | FIRST) 
 * CONVERT function (https://docs.microsoft.com/en-us/sql/t-sql/functions/cast-and-convert-transact-sql?view=sql-server-ver15)
+
+## Version 0.x.0
+
 * ORDER BY with expressions
 * GROUP BY with expressions
 * HAVING clause
 * LUA UDFs
 * more data types like INTERVAL, NUMERIC
+* calculate with date, time, timestamp and interval
 * left and right join
 * natural and outer join
 * full join
 * CASE WHEN expression
+* temporary in memory tables with support for "create table ... as select ..."
+* add trigger for insert in order to manipulate data upon import
+* sequence generators
+* simple constraints checking for import
+* schema object support
+* function names should be associated to an index and processed in the stack machine by index
 
