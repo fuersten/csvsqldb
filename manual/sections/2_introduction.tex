@@ -1,6 +1,5 @@
 
 \chapter{Introduction}
-
 The \csvsqldb{} database is a read only SQL database that reads its data from supplied csv files. In contrast to other databases, \csvsqldb{} does not store the data in any way, but processes the csv files completely for every query. The csv files compose the database non-modifiable table data. It is important to mention that \csvsqldb{} is not an in memory database. The table data will be streamed into the engine in a block-wise manner and \csvsqldb{} tries to minimize the query memory consumption in order to be able to process very large files that do not even fit into memory. Nevertheless, \csvsqldb{} converts the csv field data into correctly typed data according to the schema upon import. This ensures high performance for operations on the data. In order to be able to do the conversion, a corresponding schema has to be specified beforehand. In contrary to the data, the meta data, aka schema, is persistently stored in the filesystem and will be reused for query processing. \csvsqldb{} features an SQL interface and supports a great deal of standard SQL, including joins. Obviously, not all SQL operations can be supported in a readonly non-persistent database, so there are a couple of restrictions. At the end of the processing chain, the output data is streamed in csv format to the standard output, which enables the tool to be used to rearrange, filter and process csv files. It is much easier to use than the classic grep, awk, sort, cut, and sed commands as long as you have a basic knowledge of the SQL language.
 
 \section{Motivation}
@@ -8,29 +7,113 @@ The \csvsqldb{} database is a read only SQL database that reads its data from su
 \section{Getting Started}
 
 \subsection{Setup}
+For this example I will use csv data from {\small \url{http://ourairports.com/data/}}, specifically the \bashinline{airports.csv}, \bashinline{countries.csv} and \bashinline{regions.csv} files.
 
 \subsubsection{Schema}
+First you will have to create a schema for the required tables and a mapping for the csv files. This can be done via a command file with sql commands (\bashinline{csvsqldb -c <file_name>}) or the interactive mode. You start the interactive mode by invoking \bashinline{csvsqldb -i}.
 
-\begin{ShellListing}{interactive_with_file}{Start Interactive Shell with CSV Input File}
-shell> csvsqldb -i ~/Downloads/csvsqldb_example/*.csv
-\end{ShellListing}
+First the schema for the tables. The order and types of the fields have to match \textbf{exactly} the order the fields have in the csv file. Things like primary keys and length of characters currently have no influence on the engine. This might change in the future. The schema files for the tables will be created in the \bashinline{.csvdb/tables} metadata directory at the current path. \csvsqldb{} will always look for a \bashinline{.csvdb} directory in the current path if it is not specified by the \bashinline{-p} command line argument. The \bashinline{.csvdb} directory will be created, if it is not found in the specified path.
+
+\sqlex{create_tables_example}{Create Example Tables}{create_example_tables}
 
 \subsubsection{Mappings}
+Next we will create the mappings. This is more convenience than necessary, as you can specify a mapping using the command line argument \bashinline{-m}. On the other hand, creating a mapping using sql has the advantage that you can specify not only a csv file pattern, but also a field separator (default is ,) and if you want to skip the first line of the csv file because it is a header line (default is false). If you create a mapping this way, it will also be stored in the \bashinline{.csvdb/mappings} directory and can be used for the next \csvsqldb{} invocations without specifying mappings. You can use regular expressions in the mappings.
+
+\sqlex{create_example_mappings}{Create Example Mappings}{create_example_mappings}
 
 \subsubsection{Inspect}
+Now that we have created our schema, we can use the interactive mode in order to inspect, what metadata artifacts are available. Start the interactive mode by calling \bashinline{csvsqldb -i}.
+
+\begin{ShellListing}{interactive_inspect}{Inspect Database with Interactive Shell}
+sql>
+
+sql> help
+help - this help
+quit|exit - quit shell
+version - show version
+verbose ([on|off]) - show verbosity or switch it on/off
+database - show the database path
+clear history - clear all history entries
+show [tables|mappings|columns <tablename>|functions|files] - show db objects
+add file <path to csv file> - add the specified csv file for processing
+<sql command> - execute the sql
+
+sql> show tables
+SYSTEM_DUAL
+AIRPORT
+COUNTRY
+REGION
+
+sql> show columns region
+ID : INTEGER
+CODE : VARCHAR
+LOCAL_CODE : VARCHAR
+NAME : VARCHAR
+CONTINENT : VARCHAR
+ISO_COUNTRY : VARCHAR
+WIKIPEDIA_LINK : VARCHAR
+KEYWORDS : VARCHAR
+\end{ShellListing}
+
+You get the idea. By the way the \sqlinline{SYSTEM_DUAL} table is a system table that only has one boolean column \sqlinline{x} that has exactly one row containing the value \sqlinline{0}. This table is especially handy if you want to do some testing or arithmetic with sql, as \csvsqldb{} does not allow to skip the \sqlinline{FROM} clause.
 
 \subsubsection{Add Data}
+In order to execute some queries in interactive mode, we need some data sources (aka csv files). I have put the three above mentioned csv files in the directory \bashinline{\~/Downloads/csvsqldb_example}. Now I can add them for processing in interactive mode using:
+
+\begin{ShellListing}{add_example_file}{Add and Inspect Files with Interactive Shell}
+sql> add file ~/Downloads/csvsqldb_example/*.csv
+added 3 new csv files for processing
+
+sql> show files
+csv files for processing:
+/Users/lfg/Downloads/csvsqldb_example/airports.csv
+/Users/lfg/Downloads/csvsqldb_example/countries.csv
+/Users/lfg/Downloads/csvsqldb_example/regions.csv
+\end{ShellListing}
+
+Paths to files will not be stored in the metadata directory, so you have to add them every time you use the interactive mode. Alternatively you can specify them on the command line when you invoke \csvsqldb{} \bashinline{csvsqldb -i ~/Downloads/csvsqldb_example/*.csv}.
 
 \subsection{Queries}
+Now that all is setup, lets do some queries on the data.
 
 \subsubsection{Easy stuff}
+First some counting:
+
+\sqlex{easy_example_queries}{Some Simple Queries}{easy_example_queries}
 
 \subsubsection{Grouping and Ordering}
+Next grouping and ordering data.
 
-\sqlex{grouping_ordering_example}{Grouping and Ordering}{grouping_ordering}
+\sqlex{grouping_ordering_example_queries}{Grouping And Ordering}{grouping_ordering_example_queries}
 
 \subsubsection{Joining}
+You can even use joins to join multiple csv files.
+
+\sqlex{join_example_queries}{Joining}{join_example_queries}
 
 \subsection{Command Line Tool}
+
+Doing a query in interactive mode is only one way to execute sql on csv files. You can also use the command line directly. Hereby you have to supply the sql, an optional mapping and the corresponding csv files.
+
+\begin{ShellListing}{non_interactive_queryl}{Process Query with Command Line Tool}
+csvsqldb --sql="select country.name from airport join region on airport.iso_region = region.code join country on region.iso_country = country.code group by country.name order by country.name limit 10" ~/Downloads/csvsqldb_example/airports.csv ~/Downloads/csvsqldb_example/regions.csv ~/Downloads/csvsqldb_example/countries.csv
+#COUNTRY.NAME
+'Afghanistan'
+'Albania'
+'Algeria'
+'American Samoa'
+'Andorra'
+'Angola'
+'Anguilla'
+'Antarctica'
+'Antigua and Barbuda'
+'Argentina'
+\end{ShellListing}
+
+And with mappings specified, where the mapping is \bashinline{<csv_file_pattern> -> <table_name>}:
+
+\begin{ShellListing}{non_interactive_queryl}{Process Query with Command Line Tool And Custom Mapping}
+csvsqldb --sql="select count(*) as \"COUNT\", iso_region from airport where iso_region like 'DE%' group by iso_region order by \"COUNT\"" --mapping="airports.csv->airport;countries.csv->country;regions.csv->region" ~/Downloads/csvsqldb_example/airports.csv ~/Downloads/csvsqldb_example/regions.csv ~/Downloads/csvsqldb_example/countries.csv
+\end{ShellListing}
 
 \section{How \csvsqldb{} Works}
