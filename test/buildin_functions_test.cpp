@@ -178,4 +178,67 @@ TEST_CASE("Buildin Functions Test", "[engine]")
     CHECK(csvsqldb::REAL == result.getType());
     CHECK(100.0 == Approx(result.asDouble()));
   }
+
+  SECTION("date_trunc function")
+  {
+    csvsqldb::Function::Ptr function = _registry.getFunction("DATE_TRUNC");
+    CHECK(function);
+    CHECK("DATE_TRUNC" == function->getName());
+    CHECK(csvsqldb::TIMESTAMP == function->getReturnType());
+
+    {
+      csvsqldb::Variants parameter;
+      parameter.push_back(csvsqldb::Variant("second"));
+      parameter.push_back(csvsqldb::Variant(csvsqldb::Timestamp(1970, csvsqldb::Date::September, 23, 8, 9, 11)));
+      csvsqldb::Variant result = function->call(parameter);
+      CHECK(csvsqldb::TIMESTAMP == result.getType());
+      CHECK(result.toString() == "1970-09-23T08:09:11");
+    }
+    {
+      csvsqldb::Variants parameter;
+      parameter.push_back(csvsqldb::Variant("minute"));
+      parameter.push_back(csvsqldb::Variant(csvsqldb::Timestamp(1970, csvsqldb::Date::September, 23, 8, 9, 11)));
+      csvsqldb::Variant result = function->call(parameter);
+      CHECK(csvsqldb::TIMESTAMP == result.getType());
+      CHECK(result.toString() == "1970-09-23T08:09:00");
+    }
+    {
+      csvsqldb::Variants parameter;
+      parameter.push_back(csvsqldb::Variant("hour"));
+      parameter.push_back(csvsqldb::Variant(csvsqldb::Timestamp(1970, csvsqldb::Date::September, 23, 8, 9, 11)));
+      csvsqldb::Variant result = function->call(parameter);
+      CHECK(csvsqldb::TIMESTAMP == result.getType());
+      CHECK(result.toString() == "1970-09-23T08:00:00");
+    }
+    {
+      csvsqldb::Variants parameter;
+      parameter.push_back(csvsqldb::Variant("day"));
+      parameter.push_back(csvsqldb::Variant(csvsqldb::Timestamp(1970, csvsqldb::Date::September, 23, 8, 9, 11)));
+      csvsqldb::Variant result = function->call(parameter);
+      CHECK(csvsqldb::TIMESTAMP == result.getType());
+      CHECK(result.toString() == "1970-09-23T00:00:00");
+    }
+    {
+      csvsqldb::Variants parameter;
+      parameter.push_back(csvsqldb::Variant("month"));
+      parameter.push_back(csvsqldb::Variant(csvsqldb::Timestamp(1970, csvsqldb::Date::September, 23, 8, 9, 11)));
+      csvsqldb::Variant result = function->call(parameter);
+      CHECK(csvsqldb::TIMESTAMP == result.getType());
+      CHECK(result.toString() == "1970-09-01T00:00:00");
+    }
+    {
+      csvsqldb::Variants parameter;
+      parameter.push_back(csvsqldb::Variant("year"));
+      parameter.push_back(csvsqldb::Variant(csvsqldb::Timestamp(1970, csvsqldb::Date::September, 23, 8, 9, 11)));
+      csvsqldb::Variant result = function->call(parameter);
+      CHECK(csvsqldb::TIMESTAMP == result.getType());
+      CHECK(result.toString() == "1970-01-01T00:00:00");
+    }
+    {
+      csvsqldb::Variants parameter;
+      parameter.push_back(csvsqldb::Variant("hutzli"));
+      parameter.push_back(csvsqldb::Variant(csvsqldb::Timestamp(1970, csvsqldb::Date::September, 23, 8, 9, 11)));
+      CHECK_THROWS_WITH(function->call(parameter), "unknown date_trunc part 'HUTZLI'");
+    }
+  }
 }

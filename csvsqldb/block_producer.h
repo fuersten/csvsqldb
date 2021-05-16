@@ -37,6 +37,7 @@
 
 #include <csvsqldb/block.h>
 
+#include <atomic>
 #include <condition_variable>
 #include <queue>
 #include <thread>
@@ -84,5 +85,6 @@ namespace csvsqldb
     std::mutex _queueMutex;
     std::string _error;
     std::function<void(BlockProducer& producer)> _reader;
+    std::atomic_bool _stop{false};
   };
 }

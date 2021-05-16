@@ -83,6 +83,16 @@ namespace csvsqldb
   };
 
 
+  class CSVSQLDB_EXPORT DateTruncFunction : public Function
+  {
+  public:
+    DateTruncFunction();
+
+  private:
+    Variant doCall(const Variants& parameter) const override;
+  };
+
+
   class CSVSQLDB_EXPORT DateFormatFunction : public Function
   {
   public:

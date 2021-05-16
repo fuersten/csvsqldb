@@ -44,6 +44,8 @@ namespace csvsqldb
 
   BlockProducer::~BlockProducer()
   {
+    _stop.store(true);
+    _cv.notify_all();
     if (_readThread.joinable()) {
       _readThread.join();
     }
@@ -61,7 +63,7 @@ namespace csvsqldb
       _blocks.push(_block);
       _cv.notify_all();
       if (_blocks.size() > 10) {
-        _cv.wait(lk, [this] { return _blocks.size() < 5; });
+        _cv.wait(lk, [this] { return _blocks.size() < 5 || _stop.load(); });
       }
     }
     _block = _blockManager.createBlock();
