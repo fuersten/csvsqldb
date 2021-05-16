@@ -153,20 +153,14 @@ namespace csvsqldb
     void visit(ASTAggregateFunctionNode& node) override
     {
       _ss << aggregateFunctionToString(node._aggregateFunction) << "(";
-      bool first = true;
       if (node._aggregateFunction == COUNT_STAR) {
         _ss << "*";
       }
       if (node._quantifier == DISTINCT) {
         _ss << "DISTINCT ";
       }
-      for (const auto& param : node._parameters) {
-        if (!first) {
-          _ss << ",";
-        } else {
-          first = false;
-        }
-        param._exp->accept(*this);
+      if (node._parameter.has_value()) {
+        node._parameter->_exp->accept(*this);
       }
       _ss << ")";
     }

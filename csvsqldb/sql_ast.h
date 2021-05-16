@@ -40,6 +40,7 @@
 #include <csvsqldb/typeoperations.h>
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 
@@ -1047,11 +1048,11 @@ namespace csvsqldb
   {
   public:
     ASTAggregateFunctionNode(const SymbolTablePtr& symbolTable, eAggregateFunction aggregateFunction, eQuantifier quantifier,
-                             const Parameters& parameters)
+                             std::optional<Parameter> parameter)
     : ASTExprNode(symbolTable)
     , _aggregateFunction(aggregateFunction)
     , _quantifier(quantifier)
-    , _parameters(parameters)
+    , _parameter(std::move(parameter))
     {
     }
 
@@ -1072,15 +1073,19 @@ namespace csvsqldb
         case ARBITRARY:
         case MAX:
         case MIN:
-        case SUM:
-          return _parameters[0]._exp->type();
+        case SUM: {
+          if (!_parameter.has_value()) {
+            CSVSQLDB_THROW(SqlParserException, "no parameter for aggregation specified");
+          }
+          return _parameter->_exp->type();
+        }
       }
       throw std::runtime_error("just to make VC2013 happy");
     }
 
     eAggregateFunction _aggregateFunction;
     eQuantifier _quantifier;
-    Parameters _parameters;
+    std::optional<Parameter> _parameter;
   };
 
 

@@ -68,11 +68,7 @@ namespace csvsqldb
         ASTAggregateFunctionNodePtr aggr = std::dynamic_pointer_cast<ASTAggregateFunctionNode>(exp);
 
         if (aggr->_aggregateFunction != COUNT_STAR) {
-          if (aggr->_parameters.size() != 1) {
-            CSVSQLDB_THROW(csvsqldb::Exception, "not exactly one aggregation parameter found");
-          }
-
-          type = aggr->_parameters[0]._exp->type();
+          type = aggr->_parameter->_exp->type();
 
           StackMachine sm;
           IdentifierSet expressionVariables;
@@ -80,12 +76,12 @@ namespace csvsqldb
           VariableStore::VariableMapping mapping;
           {
             ASTInstructionStackVisitor visitor(sm, mapping);
-            aggr->_parameters[0]._exp->accept(visitor);
+            aggr->_parameter->_exp->accept(visitor);
           }
 
           {
             ASTExpressionVariableVisitor visitor(expressionVariables);
-            aggr->_parameters[0]._exp->accept(visitor);
+            aggr->_parameter->_exp->accept(visitor);
           }
 
           VariableIndexMapping varMapping;

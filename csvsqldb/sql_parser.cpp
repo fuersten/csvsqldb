@@ -1098,26 +1098,26 @@ namespace csvsqldb
       }
 
       expect(TOK_LEFT_PAREN);
-      Parameters parameters;
       if (aggregateFunction == COUNT) {
         if (canExpect(TOK_ASTERISK)) {
           aggregateFunction = COUNT_STAR;
         }
       }
       eQuantifier quantifier = ALL;
+      std::optional<Parameter> parameter;
       if (aggregateFunction != COUNT_STAR) {
-        Parameter param;
         if (canExpect(TOK_DISTINCT)) {
           quantifier = DISTINCT;
         } else if (canExpect(TOK_ALL)) {
           quantifier = ALL;
         }
+        Parameter param;
         param._exp = parseExpression(symboltable);
-        parameters.push_back(param);
+        parameter = param;
       }
       expect(TOK_RIGHT_PAREN);
 
-      node = std::make_shared<ASTAggregateFunctionNode>(symboltable, aggregateFunction, quantifier, parameters);
+      node = std::make_shared<ASTAggregateFunctionNode>(symboltable, aggregateFunction, quantifier, parameter);
     } else if (_currentToken._token == TOK_CONST_STRING || _currentToken._token == TOK_CONST_CHAR ||
                _currentToken._token == TOK_CONST_BOOLEAN || _currentToken._token == TOK_CONST_DATE ||
                _currentToken._token == TOK_CONST_INTEGER || _currentToken._token == TOK_CONST_REAL ||

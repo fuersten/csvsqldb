@@ -103,13 +103,10 @@ namespace csvsqldb
         eType type = INT;
 
         if (aggr->_aggregateFunction != COUNT_STAR) {
-          if (aggr->_parameters.size() != 1) {
-            CSVSQLDB_THROW(csvsqldb::Exception, "not exactly one aggregation parameter found");
-          }
-          if (!std::dynamic_pointer_cast<ASTIdentifier>(aggr->_parameters[0]._exp)) {
+          if (!std::dynamic_pointer_cast<ASTIdentifier>(aggr->_parameter->_exp)) {
             CSVSQLDB_THROW(csvsqldb::Exception, "currently only identifier allowed as aggregation parameter");
           }
-          std::string param = std::dynamic_pointer_cast<ASTIdentifier>(aggr->_parameters[0]._exp)->getQualifiedIdentifier();
+          std::string param = std::dynamic_pointer_cast<ASTIdentifier>(aggr->_parameter->_exp)->getQualifiedIdentifier();
           bool found = false;
           for (const auto& info : _inputSymbols) {
             if (info->_name == param) {
