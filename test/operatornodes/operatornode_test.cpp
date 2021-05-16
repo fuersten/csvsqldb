@@ -77,22 +77,22 @@ TEST_CASE("Operator Node Test", "[operatornodes]")
   SECTION("Index mapping not found")
   {
     csvsqldb::IdentifierSet expressionVariables;
-    auto info = std::make_shared<csvsqldb::SymbolInfo>();
-    info->_name = "b";
-    info->_identifier = info->_name;
-    info->_symbolType = csvsqldb::PLAIN;
-    info->_type = csvsqldb::INT;
-    info->_relation = "TEST";
-    fixture.symbolTable->addSymbol(info->_name, info);
-    expressionVariables.emplace(csvsqldb::ASTIdentifier(fixture.symbolTable, info, "", "b", false));
-    info = std::make_shared<csvsqldb::SymbolInfo>();
-    info->_name = "c";
-    info->_identifier = info->_name;
-    info->_symbolType = csvsqldb::PLAIN;
-    info->_type = csvsqldb::INT;
-    info->_relation = "TEST";
-    fixture.symbolTable->addSymbol(info->_name, info);
-    expressionVariables.emplace(csvsqldb::ASTIdentifier(fixture.symbolTable, info, "", "c", false));
+    auto sinfo = std::make_shared<csvsqldb::SymbolInfo>();
+    sinfo->_name = "b";
+    sinfo->_identifier = sinfo->_name;
+    sinfo->_symbolType = csvsqldb::PLAIN;
+    sinfo->_type = csvsqldb::INT;
+    sinfo->_relation = "TEST";
+    fixture.symbolTable->addSymbol(sinfo->_name, sinfo);
+    expressionVariables.emplace(csvsqldb::ASTIdentifier(fixture.symbolTable, sinfo, "", "b", false));
+    sinfo = std::make_shared<csvsqldb::SymbolInfo>();
+    sinfo->_name = "c";
+    sinfo->_identifier = sinfo->_name;
+    sinfo->_symbolType = csvsqldb::PLAIN;
+    sinfo->_type = csvsqldb::INT;
+    sinfo->_relation = "TEST";
+    fixture.symbolTable->addSymbol(sinfo->_name, sinfo);
+    expressionVariables.emplace(csvsqldb::ASTIdentifier(fixture.symbolTable, sinfo, "", "c", false));
 
     csvsqldb::VariableStore::VariableMapping mapping;
 

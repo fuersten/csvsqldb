@@ -107,4 +107,22 @@ TEST_CASE("Aggregation Operator Node Test", "[operatornodes]")
     csvsqldb::AggregationOperatorNode operatorNode(fixture.context, fixture.symbolTable, expressions);
     CHECK_THROWS_WITH(operatorNode.connect(scanOperatorNode), "no aggregation on other than aggregation functions");
   }
+
+  SECTION("Dump")
+  {
+    csvsqldb::SymbolInfo info = fixture.addTable("TEST", {{"A", csvsqldb::INT}, {"B", csvsqldb::INT}, {"C", csvsqldb::INT}});
+    auto scanOperatorNode = std::make_shared<ScanOperatorNodeMock>(fixture.context, fixture.symbolTable, info);
+
+    csvsqldb::Expressions expressions;
+    fixture.addExpression(expressions, "sum(c)");
+    fixture.addExpression(expressions, "avg(a)");
+    fixture.addExpression(expressions, "max(cast(b as integer))");
+
+    csvsqldb::AggregationOperatorNode operatorNode(fixture.context, fixture.symbolTable, expressions);
+    operatorNode.connect(scanOperatorNode);
+
+    std::stringstream ss;
+    operatorNode.dump(ss);
+    CHECK(ss.str() == "AggregationOperator (SUM,AVG,MAX)\n-->MockScanOperatorNode()\n");
+  }
 }
