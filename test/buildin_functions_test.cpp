@@ -180,7 +180,7 @@ TEST_CASE("Buildin Functions Test", "[engine]")
 
   SECTION("date_trunc function")
   {
-    csvsqldb::Function::Ptr function = _registry.getFunction("DATE_TRUNC");
+    csvsqldb::Function::Ptr function = registry.getFunction("DATE_TRUNC");
     CHECK(function);
     CHECK("DATE_TRUNC" == function->getName());
     CHECK(csvsqldb::TIMESTAMP == function->getReturnType());
