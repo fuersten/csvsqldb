@@ -2,6 +2,7 @@
 
 clang-format -i test/*.cpp
 clang-format -i test/*.h
+clang-format -i test/operatornodes/*.cpp
 clang-format -i csvsqldb/*.cpp
 clang-format -i csvsqldb/*.h
 clang-format -i csvsqldb/operatornodes/*.cpp

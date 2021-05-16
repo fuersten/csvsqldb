@@ -70,7 +70,9 @@ add_executable(csvsqldbtest
     variant_test.cpp
 
     operatornodes/scan_operator_node_mock.h
+    operatornodes/operatornode_test_fixture.h
     operatornodes/aggregation_operatornode_test.cpp
+    operatornodes/operatornode_test.cpp
 
     ${CSVSQLDB_TEST_SOURCES}
 

@@ -31,80 +31,31 @@
 //
 
 #include <csvsqldb/operatornodes/aggregation_operatornode.h>
-#include <csvsqldb/sql_parser.h>
-#include <csvsqldb/validation_visitor.h>
 
-#include "test/operatornodes/scan_operator_node_mock.h"
-#include "test/temporary_directory.h"
+#include "test/operatornodes/operatornode_test_fixture.h"
 
 #include <catch2/catch.hpp>
 
 
 TEST_CASE("Aggregation Operator Node Test", "[operatornodes]")
 {
-  TemporaryDirectoryGuard tmpDir;
-  auto path = tmpDir.temporaryDirectoryPath();
-  csvsqldb::FileMapping mapping;
-  csvsqldb::Database database{path, mapping};
-  csvsqldb::FunctionRegistry functions;
-  csvsqldb::BlockManager blockManager;
-  csvsqldb::OperatorContext context{database, functions, blockManager, {}};
-  auto symbolTable = csvsqldb::SymbolTable::createSymbolTable();
-  csvsqldb::SQLParser parser{functions};
+  OperatorNodeTestFixture fixture;
 
-  SECTION("Process")
+  SECTION("Simple Expression")
   {
-    csvsqldb::TableData tabledata("TEST");
-    csvsqldb::ASTExprNodePtr check;
-    tabledata.addColumn("A", csvsqldb::INT, true, false, false, std::any(), check, 0);
-    database.addTable(std::move(tabledata));
-
-    {
-      auto info = std::make_shared<csvsqldb::SymbolInfo>();
-      info->_name = "A";
-      info->_identifier = "A";
-      info->_symbolType = csvsqldb::PLAIN;
-      info->_type = csvsqldb::INT;
-      info->_relation = "TEST";
-      symbolTable->addSymbol("A", info);
-    }
-    {
-      auto info = std::make_shared<csvsqldb::SymbolInfo>();
-      info->_identifier = "TEST";
-      info->_name = "TEST";
-      info->_symbolType = csvsqldb::TABLE;
-      symbolTable->addSymbol("TEST", info);
-    }
-
-    auto expr = parser.parseExpression("sum(a)", symbolTable);
-    {
-      auto info = std::make_shared<csvsqldb::SymbolInfo>();
-      info->_symbolType = csvsqldb::CALC;
-      info->_type = csvsqldb::NONE;
-      info->_expressionNode = expr;
-      auto symbolName = symbolTable->getNextAlias();
-      info->_name = symbolName;
-      symbolTable->addSymbol(symbolName, info);
-      expr->_symbolName = symbolName;
-    }
-
-    csvsqldb::SymbolInfo info;
-    info._identifier = "TEST";
-    info._name = "TEST";
-    info._symbolType = csvsqldb::TABLE;
-    auto scanOperatorNode = std::make_shared<ScanOperatorNodeMock>(context, symbolTable, info);
-
-    expr->symbolTable()->typeSymbolTable(database);
+    csvsqldb::SymbolInfo info = fixture.addTable("TEST", {{"A", csvsqldb::INT}, {"B", csvsqldb::INT}});
+    auto scanOperatorNode = std::make_shared<ScanOperatorNodeMock>(fixture.context, fixture.symbolTable, info);
 
     csvsqldb::Expressions expressions;
-    expressions.emplace_back(expr);
+    fixture.addExpression(expressions, "sum(a)");
 
-    csvsqldb::AggregationOperatorNode operatorNode(context, symbolTable, expressions);
+    csvsqldb::AggregationOperatorNode operatorNode(fixture.context, fixture.symbolTable, expressions);
     operatorNode.connect(scanOperatorNode);
 
     scanOperatorNode->setProducer([](csvsqldb::BlockProducer& producer) {
       for (auto n = 0; n < 10; ++n) {
         producer.addInt(n, false);
+        producer.addInt(n * 10, false);
         producer.nextRow();
       }
     });
@@ -113,5 +64,47 @@ TEST_CASE("Aggregation Operator Node Test", "[operatornodes]")
     REQUIRE(values);
     CHECK(values->size() == 1);
     CHECK(csvsqldb::valueToVariant(*(values->at(0))) == csvsqldb::Variant{45});
+  }
+
+  SECTION("Complex Expression")
+  {
+    csvsqldb::SymbolInfo info = fixture.addTable("TEST", {{"A", csvsqldb::REAL}, {"B", csvsqldb::BOOLEAN}, {"C", csvsqldb::INT}});
+    auto scanOperatorNode = std::make_shared<ScanOperatorNodeMock>(fixture.context, fixture.symbolTable, info);
+
+    csvsqldb::Expressions expressions;
+    fixture.addExpression(expressions, "sum(c)");
+    fixture.addExpression(expressions, "avg(a)");
+    fixture.addExpression(expressions, "max(cast(b as integer))");
+
+    csvsqldb::AggregationOperatorNode operatorNode(fixture.context, fixture.symbolTable, expressions);
+    operatorNode.connect(scanOperatorNode);
+
+    scanOperatorNode->setProducer([](csvsqldb::BlockProducer& producer) {
+      for (auto n = 0; n < 10; ++n) {
+        producer.addReal(n, false);
+        producer.addBool(n % 10, false);
+        producer.addInt(n * 100, false);
+        producer.nextRow();
+      }
+    });
+
+    const auto* values = operatorNode.getNextRow();
+    REQUIRE(values);
+    REQUIRE(values->size() == 3);
+    CHECK(csvsqldb::valueToVariant(*(values->at(0))).asInt() == 4500);
+    CHECK(csvsqldb::valueToVariant(*(values->at(1))).asDouble() == Approx(4.5));
+    CHECK(csvsqldb::valueToVariant(*(values->at(2))).asInt() == 1);
+  }
+
+  SECTION("Wrong aggregation function")
+  {
+    csvsqldb::SymbolInfo info = fixture.addTable("TEST", {{"A", csvsqldb::INT}});
+    auto scanOperatorNode = std::make_shared<ScanOperatorNodeMock>(fixture.context, fixture.symbolTable, info);
+
+    csvsqldb::Expressions expressions;
+    fixture.addExpression(expressions, "cast(a as integer)");
+
+    csvsqldb::AggregationOperatorNode operatorNode(fixture.context, fixture.symbolTable, expressions);
+    CHECK_THROWS_WITH(operatorNode.connect(scanOperatorNode), "no aggregation on other than aggregation functions");
   }
 }

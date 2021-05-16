@@ -27,35 +27,6 @@ set(LIB_CSVSQLDB_SOURCES
     values.cpp
     variant.cpp
 
-    operatornodes/aggregation_operatornode.cpp
-    operatornodes/aggregation_operatornode.h
-    operatornodes/cross_join_operatornode.cpp
-    operatornodes/cross_join_operatornode.h
-    operatornodes/extended_projection_operatornode.cpp
-    operatornodes/extended_projection_operatornode.h
-    operatornodes/grouping_operatornode.cpp
-    operatornodes/grouping_operatornode.h
-    operatornodes/inner_hash_join_operatornode.cpp
-    operatornodes/inner_hash_join_operatornode.h
-    operatornodes/inner_join_operatornode.cpp
-    operatornodes/inner_join_operatornode.h
-    operatornodes/limit_operatornode.cpp
-    operatornodes/limit_operatornode.h
-    operatornodes/output_row_operatornode.cpp
-    operatornodes/output_row_operatornode.h
-    operatornodes/scan_operatornode.cpp
-    operatornodes/scan_operatornode.h
-    operatornodes/select_operatornode.cpp
-    operatornodes/select_operatornode.h
-    operatornodes/sort_operatornode.cpp
-    operatornodes/sort_operatornode.h
-    operatornodes/systemtable_scan_operatornode.cpp
-    operatornodes/systemtable_scan_operatornode.h
-    operatornodes/table_scan_operatornode.cpp
-    operatornodes/table_scan_operatornode.h
-    operatornodes/union_operatornode.cpp
-    operatornodes/union_operatornode.h
-
     aggregation_functions.h
     block.h
     block_iterator.h
@@ -88,6 +59,40 @@ set(LIB_CSVSQLDB_SOURCES
     variant.h
     visitor.h
     inc.h
+)
+
+set(LIB_CSVSQLDB_OPERATOR_SOURCES
+    operatornodes/aggregation_operatornode.cpp
+    operatornodes/cross_join_operatornode.cpp
+    operatornodes/extended_projection_operatornode.cpp
+    operatornodes/grouping_operatornode.cpp
+    operatornodes/inner_hash_join_operatornode.cpp
+    operatornodes/inner_join_operatornode.cpp
+    operatornodes/limit_operatornode.cpp
+    operatornodes/output_row_operatornode.cpp
+    operatornodes/scan_operatornode.cpp
+    operatornodes/select_operatornode.cpp
+    operatornodes/sort_operatornode.cpp
+    operatornodes/systemtable_scan_operatornode.cpp
+    operatornodes/table_scan_operatornode.cpp
+    operatornodes/union_operatornode.cpp
+)
+
+set(LIB_CSVSQLDB_OPERATOR_HEADER
+    operatornodes/aggregation_operatornode.h
+    operatornodes/cross_join_operatornode.h
+    operatornodes/extended_projection_operatornode.h
+    operatornodes/grouping_operatornode.h
+    operatornodes/inner_hash_join_operatornode.h
+    operatornodes/inner_join_operatornode.h
+    operatornodes/limit_operatornode.h
+    operatornodes/output_row_operatornode.h
+    operatornodes/scan_operatornode.h
+    operatornodes/select_operatornode.h
+    operatornodes/sort_operatornode.h
+    operatornodes/systemtable_scan_operatornode.h
+    operatornodes/table_scan_operatornode.h
+    operatornodes/union_operatornode.h
 )
 
 set(LIB_CSVSQLDB_BASE_SOURCES
@@ -184,10 +189,14 @@ source_group("Source Files\\base" FILES ${LIB_CSVSQLDB_BASE_SOURCES})
 source_group("Header Files\\base" FILES ${LIB_CSVSQLDB_BASE_HEADERS})
 source_group("Header Files\\compat" FILES ${LIB_CSVSQLDB_COMPAT_HEADERS})
 source_group("Source Files\\generated" FILES ${LIB_CSVSQLDB_GENERATED})
+source_group("Source Files\\operatornodes" FILES ${LIB_CSVSQLDB_OPERATOR_SOURCES})
+source_group("Header Files\\operatornodes" FILES ${LIB_CSVSQLDB_OPERATOR_HEADER})
 
 configure_file(version.h.in ${CMAKE_CURRENT_BINARY_DIR}/version.h)
 set(LIB_CSVSQLDB_SOURCES 
     ${LIB_CSVSQLDB_SOURCES}
+    ${LIB_CSVSQLDB_OPERATOR_SOURCES}
+    ${LIB_CSVSQLDB_OPERATOR_HEADER}
     ${LIB_CSVSQLDB_BASE_SOURCES}
     ${LIB_CSVSQLDB_BASE_HEADERS}
     ${LIB_CSVSQLDB_COMPAT_HEADERS}

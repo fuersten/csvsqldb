@@ -84,21 +84,7 @@ namespace csvsqldb
             aggr->_parameter->_exp->accept(visitor);
           }
 
-          VariableIndexMapping varMapping;
-          for (const auto& variable : expressionVariables) {
-            bool found = false;
-            for (size_t n = 0; !found && n < infos.size(); ++n) {
-              const SymbolInfoPtr& info = infos[n];
-
-              if (variable._info->_name == info->_name) {
-                varMapping.push_back(std::make_pair(VariableStore::getMapping(variable.getQualifiedIdentifier(), mapping), n));
-                found = true;
-              }
-            }
-            if (!found) {
-              CSVSQLDB_THROW(csvsqldb::Exception, "variable '" << variable.getQualifiedIdentifier() << "' not found");
-            }
-          }
+          VariableIndexMapping varMapping = getIndexMapping(expressionVariables, infos, mapping);
           _sms.push_back(StackMachineType(sm, varMapping));
         } else {
           // we just need a dummy value

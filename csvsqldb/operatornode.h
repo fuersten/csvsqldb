@@ -38,6 +38,7 @@
 #include <csvsqldb/block.h>
 #include <csvsqldb/database.h>
 #include <csvsqldb/function_registry.h>
+#include <csvsqldb/sql_ast.h>
 #include <csvsqldb/stack_machine.h>
 #include <csvsqldb/symboltable.h>
 
@@ -127,6 +128,27 @@ namespace csvsqldb
     }
 
     virtual void dump(std::ostream& stream) const = 0;
+
+    static VariableIndexMapping getIndexMapping(const IdentifierSet& expressionVariables, const SymbolInfos& infos,
+                                                const VariableStore::VariableMapping& mapping)
+    {
+      VariableIndexMapping varIndexMapping;
+      for (const auto& variable : expressionVariables) {
+        bool found = false;
+        for (size_t n = 0; !found && n < infos.size(); ++n) {
+          const SymbolInfoPtr& info = infos[n];
+
+          if (variable._info->_name == info->_name) {
+            varIndexMapping.push_back(std::make_pair(VariableStore::getMapping(variable.getQualifiedIdentifier(), mapping), n));
+            found = true;
+          }
+        }
+        if (!found) {
+          CSVSQLDB_THROW(csvsqldb::Exception, "variable '" << variable.getQualifiedIdentifier() << "' not found");
+        }
+      }
+      return varIndexMapping;
+    }
 
   protected:
     const OperatorContext& _context;

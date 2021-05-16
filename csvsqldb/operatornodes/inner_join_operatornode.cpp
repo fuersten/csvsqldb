@@ -85,22 +85,7 @@ namespace csvsqldb
         _exp->accept(visitor);
       }
 
-      VariableIndexMapping variableMapping;
-      for (const auto& variable : expressionVariables) {
-        bool found = false;
-        for (size_t n = 0; !found && n < outputSymbols.size(); ++n) {
-          const SymbolInfoPtr& info = outputSymbols[n];
-
-          if (variable._info->_name == info->_name) {
-            variableMapping.push_back(std::make_pair(VariableStore::getMapping(variable.getQualifiedIdentifier(), mapping), n));
-            found = true;
-          }
-        }
-        if (!found) {
-          CSVSQLDB_THROW(csvsqldb::Exception, "variable '" << variable.getQualifiedIdentifier() << "' not found in context");
-        }
-      }
-
+      VariableIndexMapping variableMapping = getIndexMapping(expressionVariables, outputSymbols, mapping);
       _sm = StackMachineType(sm, variableMapping);
     }
 
