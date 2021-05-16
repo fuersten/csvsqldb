@@ -74,6 +74,34 @@ TEST_CASE("Block Producer Test", "[block]")
   {
     dataProducer.start([](csvsqldb::BlockProducer& producer) { producer.addBool(true, false); });
   }
+  SECTION("Produce many blocks and no consume")
+  {
+    constexpr size_t numFields = 1000;
+    constexpr size_t rows = 2000;
+
+    csvsqldb::Types types;
+    for (auto m = 0u; m < numFields; ++m) {
+      types.emplace_back(csvsqldb::INT);
+      types.emplace_back(csvsqldb::INT);
+      types.emplace_back(csvsqldb::INT);
+      types.emplace_back(csvsqldb::INT);
+    }
+
+    dataProducer.start([&](csvsqldb::BlockProducer& producer) {
+      for (auto n = 0u; n < rows; ++n) {
+        for (auto m = 0u; m < numFields; ++m) {
+          producer.addInt(n, false);
+          producer.addInt(m, false);
+          producer.addInt(n + m, false);
+          producer.addInt(n * m, false);
+        }
+        producer.nextRow();
+      }
+    });
+
+    auto iterator = csvsqldb::BlockIterator(types, dataProducer, blockManager);
+    CHECK(iterator.getNextRow());
+  }
   SECTION("Produce exception")
   {
     constexpr size_t numFields = 10;
