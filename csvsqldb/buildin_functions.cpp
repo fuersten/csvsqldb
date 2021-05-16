@@ -181,25 +181,25 @@ namespace csvsqldb
 
     if (time_part.compare("SECOND") == 0) {
       ts.millisecond(0);
-    } else if(time_part.compare("MINUTE") == 0) {
+    } else if (time_part.compare("MINUTE") == 0) {
       ts.millisecond(0);
       ts.second(0);
-    } else if(time_part.compare("HOUR") == 0) {
+    } else if (time_part.compare("HOUR") == 0) {
       ts.millisecond(0);
       ts.second(0);
       ts.minute(0);
-    } else if(time_part.compare("DAY") == 0) {
+    } else if (time_part.compare("DAY") == 0) {
       ts.millisecond(0);
       ts.second(0);
       ts.minute(0);
       ts.hour(0);
-    } else if(time_part.compare("MONTH") == 0) {
+    } else if (time_part.compare("MONTH") == 0) {
       ts.millisecond(0);
       ts.second(0);
       ts.minute(0);
       ts.hour(0);
       ts.day(1);
-    } else if(time_part.compare("YEAR") == 0) {
+    } else if (time_part.compare("YEAR") == 0) {
       ts.millisecond(0);
       ts.second(0);
       ts.minute(0);
@@ -207,13 +207,13 @@ namespace csvsqldb
       ts.day(1);
       ts.month(Date::January);
     } else {
-      CSVSQLDB_THROW(csvsqldb::Exception, "unknown date_trunc part");
+      CSVSQLDB_THROW(csvsqldb::Exception, "unknown date_trunc part '" << time_part << "'");
     }
 
     return ts;
   }
 
-  
+
   PowerFunction::PowerFunction()
   : Function("POW", REAL, Types({REAL, REAL}))
   {

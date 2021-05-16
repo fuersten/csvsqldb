@@ -72,7 +72,7 @@ namespace csvsqldb
     {
       return _retType;
     }
-    
+
     const Types& getParameterTypes() const
     {
       return _parameterTypes;
