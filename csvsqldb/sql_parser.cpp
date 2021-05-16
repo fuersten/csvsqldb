@@ -1417,7 +1417,7 @@ namespace csvsqldb
       identifier->_info = symboltable->findSymbol(symbolName);
       identifier->_symbolName = symbolName;
     } else {
-      expect(TOK_IDENTIFIER);
+      expect(TOK_IDENTIFIER);  // this is just for the error message, as there will be no identifier here
     }
     if (_currentToken._token == TOK_AS || _currentToken._token == TOK_IDENTIFIER) {
       canExpect(TOK_AS);
@@ -1427,7 +1427,7 @@ namespace csvsqldb
       } else if (canExpect(TOK_QUOTED_IDENTIFIER)) {
         // empty
       } else {
-        expect(TOK_IDENTIFIER);
+        expect(TOK_IDENTIFIER);  // this is just for the error message, as there will be no identifier here
       }
       SymbolInfoPtr info = symboltable->findSymbol(symbolName)->clone();
       info->_name = csvsqldb::toupper(value);

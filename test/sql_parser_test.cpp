@@ -822,9 +822,13 @@ TEST_CASE("SQL Parser Fail Test", "[sql parser]")
   csvsqldb::initBuildInFunctions(functions);
   csvsqldb::SQLParser parser(functions);
 
-  SECTION("select with identifer after tablename")
+  SECTION("select with keyword after tablename")
   {
     CHECK_THROWS_AS(parser.parse("select count(*) from salaries from"), csvsqldb::SqlParserException);
+  }
+  SECTION("select with no select list")
+  {
+    CHECK_THROWS_AS(parser.parse("select from salaries"), csvsqldb::SqlParserException);
   }
 }
 
