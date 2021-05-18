@@ -55,3 +55,5 @@ todo.md
 *.gz
 *.toc
 manual/csvsqldb_manual.pdf
+manual/sql20nn
+manual/s026153_ISO_IEC_14977_1996(E).pdf

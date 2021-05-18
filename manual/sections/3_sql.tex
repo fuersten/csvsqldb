@@ -12,7 +12,7 @@ node distance=5mm,
 terminal/.style={rounded rectangle,draw=blue!50,fill=blue!10,thick,minimum size=4mm, text height=1.2ex,text depth=.25ex},
 nonterminal/.style={rectangle,draw=blue!50,fill=green!10,thick,minimum size=4mm, text height=1.2ex,text depth=.25ex},
 every path/.style = {draw, > = latex},
-point/.style={circle,inner sep=0pt,minimum size=0pt,fill=black},
+point/.style={circle,inner sep=0.5pt,minimum size=0pt,fill=red},
 endpoint/.style={circle,inner sep=1.2pt,minimum size=0pt,draw=black},
 startpoint/.style={circle,inner sep=1pt,minimum size=0pt,fill=black},
 hv path/.style={to path={-| (\tikztotarget)}},
@@ -52,6 +52,7 @@ vh path/.style={to path={|- (\tikztotarget)}}
 \fill[black] (p8) circle (0.5pt);
 \end{tikzpicture}
 \end{figure}
+\FloatBarrier
 
 \subsubsection{SELECT\_LIST}
 
@@ -87,9 +88,42 @@ vh path/.style={to path={|- (\tikztotarget)}}
 \fill[black] (p7) circle (0.5pt);
 \end{tikzpicture}
 \end{figure}
+\FloatBarrier
+
+\subsubsection{TABLE\_OR\_SUBSELECT}
+
+\begin{figure}[!htbp]
+\begin{tikzpicture}
+\matrix[row sep=1mm,column sep=2mm] {
+% First row:
+\node (p1) [startpoint] {}; &
+\node (p2) [point] {}; & \node (identifier) [nonterminal] {IDENTIFER}; & & &
+\node (p3) [point] {}; & \node (p4) [point] {}; & & & &
+\node (p6) [point] {}; & 
+\node (p7) [point] {}; & &
+\node (p8) [endpoint] {}; \\
+% Second row:
+ & & \node (lparen) [terminal] {(}; & 
+\node (select stmt) [nonterminal] {SELECT\_STMT}; & 
+\node (rparen) [terminal] {)}; & & & & \node (p5) [point] {}; &
+\node (alias) [nonterminal] {IDENTIFER}; & & & & \\
+% Third row:
+& & & & & & & \node (as) [terminal] {AS}; & & & & & \\
+};
+
+\graph [use existing nodes] {
+  p1 -- p2 -> identifier -- p3 -- p4 --p6 -- p7 -> p8;
+  p2 ->[vh path] lparen -> select stmt -> rparen ->[hv path] p3;
+  p4 ->[vh path] as ->[hv path] p5;
+  p4 ->[vh path] p5 -> alias ->[hv path] p6;
+};
+\fill[black] (p8) circle (0.5pt);
+\end{tikzpicture}
+\end{figure}
+\FloatBarrier
 
 \section{Data Types}
-\csvsqldb{} has an ample set of datatypes. 
+\csvsqldb{} has an ample set of datatypes. Type operations can be performed on data types. Data types can also be converted.
 
 \begin{FseTabular}{Data Types}{p{3.5cm}p{7.5cm}}{data_types}
 \textbf{Type} & \textbf{Summary} \\
