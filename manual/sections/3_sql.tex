@@ -12,7 +12,9 @@ node distance=5mm,
 terminal/.style={rounded rectangle,draw=blue!50,fill=blue!10,thick,minimum size=4mm, text height=1.2ex,text depth=.25ex},
 nonterminal/.style={rectangle,draw=blue!50,fill=green!10,thick,minimum size=4mm, text height=1.2ex,text depth=.25ex},
 every path/.style = {draw, > = latex},
-point/.style={circle,inner sep=0pt,minimum size=0pt,fill=white},
+point/.style={circle,inner sep=0pt,minimum size=0pt,fill=black},
+endpoint/.style={circle,inner sep=1.2pt,minimum size=0pt,draw=black},
+startpoint/.style={circle,inner sep=1pt,minimum size=0pt,fill=black},
 hv path/.style={to path={-| (\tikztotarget)}},
 vh path/.style={to path={|- (\tikztotarget)}}
 }
@@ -25,13 +27,13 @@ vh path/.style={to path={|- (\tikztotarget)}}
 % First row:
 & & & & & & & & & \node (comma) [terminal] {,}; & & & & \\
 % Second row:
-\node (p1) [point] {}; & \node (select) [terminal] {SELECT};                                                 &
+\node (p1) [startpoint] {}; & \node (select) [terminal] {SELECT};                                                 &
 \node (p2) [point] {}; &                                                                                                      &
 \node (p3) [point] {}; & \node (select list) [nonterminal] {SELECT\_LIST};                            &
 \node (p4) [point] {}; & \node (from) [terminal] {FROM};                                                     &
 \node (p5) [point] {}; & \node (table reference) [nonterminal] {TABLE\_REFERENCE};           &
-\node (p6) [point] {}; & \node (table expressions) [nonterminal] {TABLE\_EXPRESSIONs};    &
-\node (p7) [point] {}; & \node (p8) [point] {}; \\
+\node (p6) [point] {}; & \node (table expressions) [nonterminal] {TABLE\_EXPRESSIONS};    &
+\node (p7) [point] {}; & \node (p8) [endpoint] {}; \\
 % Third row:
 & & & \node (distinct) [terminal] {DISTINCT}; & & & & & & & & & &  \\
 % Fourth row:
@@ -47,6 +49,42 @@ vh path/.style={to path={|- (\tikztotarget)}}
   comma ->[hv path] p5;
   p6 ->[vh path] comma;
 };
+\fill[black] (p8) circle (0.5pt);
+\end{tikzpicture}
+\end{figure}
+
+\subsubsection{SELECT\_LIST}
+
+\begin{figure}[!htbp]
+\begin{tikzpicture}
+\matrix[row sep=1mm,column sep=2mm] {
+% First row:
+& & & & & & \node (comma) [terminal] {,}; & & & \\
+% Second row:
+\node (p1) [startpoint] {}; & \node (p2) [point] {}; & \node (asterisk) [terminal] {ASTERISK}; &
+&  &                                                                                    &
+&  &                                                                                    &
+& \node (p5) [point] {}; & \node (p6) [point] {}; & \node (p7) [endpoint] {}; \\
+% Third row:
+& & \node (expression) [nonterminal] {EXPRESSION}; & \node (p3) [point] {}; & & & & & & \\
+% Fourth row:
+& & &  &  & &  \node (p4) [point] {}; & \node (identifier) [nonterminal] {IDENTIFIER}; & & \\
+% Fifth row:
+& & & &  & \node (as) [terminal] {AS}; & & & & \\
+};
+
+\graph [use existing nodes] {
+  p1 -- p2 -> asterisk  -- p5 -- p6 -> p7;
+  expression <-[hv path] p2;
+  p5 <-[vh path] expression;
+  p5 <-[vh path] identifier;
+  identifier <-[hv path] p3;
+  as <-[hv path] p3;
+  p4 <-[vh path] as;
+  p5 ->[vh path] comma;
+  comma ->[hv path] p2;
+};
+\fill[black] (p7) circle (0.5pt);
 \end{tikzpicture}
 \end{figure}
 
