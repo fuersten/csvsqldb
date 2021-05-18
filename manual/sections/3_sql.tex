@@ -1,9 +1,57 @@
 
 \chapter{Supported SQL}
 
-\section{SQL}
+This chapter describes the SQL syntax and extensions that \csvsqldb{} supports. As mentioned previously, not all SQL constructs make sense for a readonly non-persistent database and we have excluded or adapted features in order to work properly. However, \csvsqldb{} follows the SQL standard ISO/IEC 9075-2:2011 \cite{ISO_SQL_Standard} as closely as possible wherever applicable. So, with minimal standard SQL knowledge you should be able to use \csvsqldb{} to your advantage, as most of the SQL will look very familiar.
 
-\subsection{Data Types}
+\section{SQL Syntax}
+We describe the SQL syntax using so called syntax diagrams \cite{Wikipedia_Syntaxdiagram}. In general the syntax can be understood much easier using these kind of diagrams rather than using EBNF grammars, which are much harder to decipher.
+
+\tikzset{
+font=\scriptsize\ttfamily,
+node distance=5mm,
+terminal/.style={rounded rectangle,draw=blue!50,fill=blue!10,thick,minimum size=4mm, text height=1.2ex,text depth=.25ex},
+nonterminal/.style={rectangle,draw=blue!50,fill=green!10,thick,minimum size=4mm, text height=1.2ex,text depth=.25ex},
+every path/.style = {draw, > = latex},
+point/.style={circle,inner sep=0pt,minimum size=0pt,fill=white},
+hv path/.style={to path={-| (\tikztotarget)}},
+vh path/.style={to path={|- (\tikztotarget)}}
+}
+
+\subsubsection{SELECT\_STMT}
+
+\begin{figure}[!htbp]
+\begin{tikzpicture}
+\matrix[row sep=1mm,column sep=2mm] {
+% First row:
+& & & & & & & & & \node (comma) [terminal] {,}; & & & & \\
+% Second row:
+\node (p1) [point] {}; & \node (select) [terminal] {SELECT};                                                 &
+\node (p2) [point] {}; &                                                                                                      &
+\node (p3) [point] {}; & \node (select list) [nonterminal] {SELECT\_LIST};                            &
+\node (p4) [point] {}; & \node (from) [terminal] {FROM};                                                     &
+\node (p5) [point] {}; & \node (table reference) [nonterminal] {TABLE\_REFERENCE};           &
+\node (p6) [point] {}; & \node (table expressions) [nonterminal] {TABLE\_EXPRESSIONs};    &
+\node (p7) [point] {}; & \node (p8) [point] {}; \\
+% Third row:
+& & & \node (distinct) [terminal] {DISTINCT}; & & & & & & & & & &  \\
+% Fourth row:
+& & & \node (all) [terminal] {ALL}; & & & & & & & & & & \\
+};
+
+\graph [use existing nodes] {
+  p1 -> select -- p3 -> select list -> from -> table reference -> table expressions -- p7 -> p8;
+  distinct <-[hv path] p2;
+  p3 <-[vh path] distinct;
+  all <-[hv path] p2;
+  p3 <-[vh path] all;
+  comma ->[hv path] p5;
+  p6 ->[vh path] comma;
+};
+\end{tikzpicture}
+\end{figure}
+
+\section{Data Types}
+\csvsqldb{} has an ample set of datatypes. 
 
 \begin{FseTabular}{Data Types}{p{3.5cm}p{7.5cm}}{data_types}
 \textbf{Type} & \textbf{Summary} \\
@@ -27,11 +75,24 @@ TIMESTAMP & Timestamp \\
 
 \subsubsection{Boolean}
 
-\begin{FseTabular}{Data Types}{p{3.5cm}p{3.0cm}p{3.0cm}p{4.0cm}}{data_types}
+\begin{FseTabular}{Boolean Operations}{p{3.5cm}p{3.0cm}p{3.0cm}p{4.0cm}}{data_types}
 \textbf{Operator} & \textbf{Kind} & \textbf{Resulting Type} & \textbf{Description} \\
 \midrule
-
 \end{FseTabular}
+
+\subsubsection{Integer}
+
+\subsubsection{Real}
+
+\subsubsection{Character String}
+
+\subsubsection{Date}
+
+\subsubsection{Time}
+
+\subsubsection{Timestamp}
+
+\subsection{Conversion Matrix}
 
 \section{Functions}
 
@@ -74,5 +135,4 @@ UPPER & Converts the given string to upper case & String Manipulation \\
 VERSION & Returns the version of the \csvsqldb{} & Misc \\
 \end{FseTabular}
 
-\section{Restrcitions}
-
+\section{Restrictions}
