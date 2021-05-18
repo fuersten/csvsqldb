@@ -12,8 +12,8 @@ node distance=5mm,
 terminal/.style={rounded rectangle,draw=blue!50,fill=blue!10,thick,minimum size=4mm, text height=1.2ex,text depth=.25ex},
 nonterminal/.style={rectangle,draw=blue!50,fill=green!10,thick,minimum size=4mm, text height=1.2ex,text depth=.25ex},
 every path/.style = {draw, > = latex},
-point/.style={circle,inner sep=0.5pt,minimum size=0pt,fill=red},
-endpoint/.style={circle,inner sep=1.2pt,minimum size=0pt,draw=black},
+point/.style={circle,inner sep=0pt,outer sep=0pt,minimum size=0pt,fill=red},
+endpoint/.style={circle,inner sep=1.5pt,minimum size=0pt,draw=black},
 startpoint/.style={circle,inner sep=1pt,minimum size=0pt,fill=black},
 hv path/.style={to path={-| (\tikztotarget)}},
 vh path/.style={to path={|- (\tikztotarget)}}
@@ -49,7 +49,7 @@ vh path/.style={to path={|- (\tikztotarget)}}
   comma ->[hv path] p5;
   p6 ->[vh path] comma;
 };
-\fill[black] (p8) circle (0.5pt);
+\fill[black] (p8) circle (0.75pt);
 \end{tikzpicture}
 \end{figure}
 \FloatBarrier
@@ -60,7 +60,7 @@ vh path/.style={to path={|- (\tikztotarget)}}
 \begin{tikzpicture}
 \matrix[row sep=1mm,column sep=2mm] {
 % First row:
-& & & & & & \node (comma) [terminal] {,}; & & & \\
+& & & & & \node (comma) [terminal] {,}; & & & & \\
 % Second row:
 \node (p1) [startpoint] {}; & \node (p2) [point] {}; & \node (asterisk) [terminal] {ASTERISK}; &
 &  &                                                                                    &
@@ -85,7 +85,41 @@ vh path/.style={to path={|- (\tikztotarget)}}
   p5 ->[vh path] comma;
   comma ->[hv path] p2;
 };
-\fill[black] (p7) circle (0.5pt);
+\fill[black] (p7) circle (0.75pt);
+\end{tikzpicture}
+\end{figure}
+\FloatBarrier
+
+\subsubsection{TABLE\_REFERENCE}
+
+\begin{figure}[!htbp]
+\begin{tikzpicture}
+\matrix[row sep=1mm,column sep=2mm] {
+% First row:
+ & & & & & \node (p8) [point] {}; & & & & & & \\
+ & & & & &  & & & & & & \\
+% Second row:
+\node (p1) [startpoint] {}; & \node (tableorsubselect) [nonterminal] {TABLE\_OR\_SUBSELECT}; & 
+\node (p2) [point] {}; & & & & & & & & 
+\node (p5) [point] {}; &
+\node (p6) [endpoint] {}; \\
+% Third row:
+ & & & \node (join type) [nonterminal] {JOIN\_TYPE}; &
+ \node (tableorsubselect2) [nonterminal] {TABLE\_OR\_SUBSELECT}; &
+ \node (p3) [point] {}; & \node (on) [terminal] {ON}; & \node (expression) [nonterminal] {EXPRESSION}; &
+ \node (p4) [point] {}; & & \\
+% Fourth row:
+ & & & & &  & & & & & & \\
+ & & & & & & & \node (p7) [point] {}; & & & & \\
+};
+
+\graph [use existing nodes] {
+  p1 -> tableorsubselect -- p2 -- p5 -> p6;
+  p2 ->[vh path] join type -> tableorsubselect2 -- p3 -> on -> expression -- p4 ->[hv path] p5;
+  p3 ->[vh path] p7 ->[hv path] p5;
+  p5 ->[vh path] p8 ->[hv path] p2;
+};
+\fill[black] (p6) circle (0.75pt);
 \end{tikzpicture}
 \end{figure}
 \FloatBarrier
@@ -115,9 +149,9 @@ vh path/.style={to path={|- (\tikztotarget)}}
   p1 -- p2 -> identifier -- p3 -- p4 --p6 -- p7 -> p8;
   p2 ->[vh path] lparen -> select stmt -> rparen ->[hv path] p3;
   p4 ->[vh path] as ->[hv path] p5;
-  p4 ->[vh path] p5 -> alias ->[hv path] p6;
+  p4 --[vh path] p5 -> alias ->[hv path] p6;
 };
-\fill[black] (p8) circle (0.5pt);
+\fill[black] (p8) circle (0.75pt);
 \end{tikzpicture}
 \end{figure}
 \FloatBarrier
