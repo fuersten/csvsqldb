@@ -70,22 +70,21 @@ We describe the SQL syntax using so called syntax diagrams \cite{Wikipedia_Synta
 \begin{SyntaxGrammar}{TABLE\_REFERENCE}{tablereference}
 \matrix[row sep=1mm,column sep=2mm] {
 % First row:
-% Second row:
 \node (p1) [startpoint] {}; & \node (tableorsubselect) [nonterminal] {TABLE\_OR\_SUBSELECT}; & 
-\node (p2) [point] {}; & & & & & & & & 
-\node (p5) [point] {}; &
+\node (p2) [point] {}; & & & & & & & & &
+\node (p5) [point] {}; & &
 \node (p6) [endpoint] {}; \\
-% Third row:
- & & \node (p9) [point] {}; & \node (join type) [nonterminal] {JOIN\_TYPE}; &
+% Second row:
+ & & \node (p9) [point] {}; & & \node (join type) [nonterminal] {JOIN\_TYPE}; &
  \node (tableorsubselect2) [nonterminal] {TABLE\_OR\_SUBSELECT}; &
  \node (p3) [point] {}; & \node (on) [terminal] {ON}; & \node (expression) [nonterminal] {EXPRESSION}; &
- \node (p4) [point] {}; & & \\
+ \node (p4) [point] {}; & & & \\
+% Third row:
+ & & & & &  & & & & & & & & \\
+ & & & & & & & \node (p7) [point] {}; & & & & & \\
 % Fourth row:
- & & & & &  & & & & & & \\
- & & & & & & & \node (p7) [point] {}; & & & & \\
-
- & & & & &  & & & & & & \\
- & & & & & \node (p8) [point] {}; & & & & & & \\
+ & & & & &  & & & & & & & & \\
+ & & & & & \node (p8) [point] {}; & & & & & & & \\
 };
 
 \graph [use existing nodes] {
