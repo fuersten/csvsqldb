@@ -123,6 +123,42 @@ We describe the SQL syntax using so called syntax diagrams \cite{Wikipedia_Synta
 \putendline{p8}
 \end{SyntaxGrammar}
 
+\begin{SyntaxGrammar}{JOIN\_TYPE}{jointype}
+\matrix[row sep=1mm,column sep=2mm] {
+% First row:
+\node (p1) [startpoint] {}; & 
+\node (p2) [point] {}; & 
+\node (cross) [terminal] {CROSS}; & &
+\node (p3) [point] {}; & & & & & & & \node (p9) [point] {}; & & \node (join) [terminal] {JOIN}; & & \node (p13) [endpoint] {}; \\
+% Second row:
+ & & \node (inner) [terminal] {INNER}; & & & & & & & & & & & \\
+% Third row:
+ & \node (p11) [point] {}; & \node (natural) [terminal] {NATURAL}; & \node (p10) [point] {}; &
+ \node (p4) [point] {}; & 
+ \node (left) [terminal] {LEFT}; & 
+ \node (p7) [point] {}; & \node (p5) [point] {}; & &
+ \node (p6) [point] {}; & \node (p8) [point] {}; & & & & \\
+% Fourth row:
+ & & \node (p12) [point] {}; & & & \node (right) [terminal] {RIGHT}; & & & \node (outer) [terminal] {OUTER}; & & & & & & \\
+% Fifth row:
+ & & & & & \node (full) [terminal] {FULL}; & & & & & & & & & \\
+% Sixth row:
+ & & & & & \node (inner2) [terminal] {INNER}; & & & & & & & & & \\
+};
+
+\graph [use existing nodes] {
+  p1 -> cross -> join -> p13;
+  p2 ->[vh path] inner ->[hv path] p3;
+  p2 ->[vh path] natural -> left ->[hv path] p9;
+  p4 ->[vh path] right ->[hv path] p7;
+  p4 ->[vh path] full ->[hv path] p7;
+  p4 ->[vh path] inner2 ->[hv path] p8;
+  p5 ->[vh path] outer ->[hv path] p6;
+  p11 --[vh path] p12 ->[hv path] p10;
+};
+\putendline{p13}
+\end{SyntaxGrammar}
+
 \section{Data Types}
 \csvsqldb{} has an ample set of datatypes. Type operations can be performed on data types. Data types can also be converted.
 
