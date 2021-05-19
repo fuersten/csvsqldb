@@ -96,12 +96,33 @@
 %----------------------------------------------------------------------------------------
 \DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
 
-%\tikzset{
-%->, % makes the edges directed
-%>=stealth, % makes the arrow heads bold
-%node distance=2cm, % specifies the minimum distance between two nodes. Change if necessary.
-%every state/.style={thick, fill=gray!10}, % sets the properties for each ’state’ node
-%}
+\tikzset{
+font=\scriptsize\ttfamily,
+node distance=5mm,
+terminal/.style={rounded rectangle,draw=blue!50,fill=blue!10,thick,minimum size=4mm, text height=1.2ex,text depth=.25ex},
+nonterminal/.style={rectangle,draw=blue!50,fill=green!10,thick,minimum size=4mm, text height=1.2ex,text depth=.25ex},
+every path/.style = {draw, > = latex},
+point/.style={circle,inner sep=0.5pt,outer sep=0pt,minimum size=0pt,fill=red},
+endpoint/.style={circle,inner sep=1.5pt,minimum size=0pt,draw=black},
+startpoint/.style={circle,inner sep=1pt,minimum size=0pt,fill=black},
+hv path/.style={to path={-| (\tikztotarget)}},
+vh path/.style={to path={|- (\tikztotarget)}}
+}
+
+\newenvironment{SyntaxGrammar}[2]{% #1 = caption, #2 = label
+    \subsubsection{#1}
+    \label{#2}
+    \renewcommand{\arraystretch}{1.3}
+    \begin{figure}[!htbp]
+    \begin{tikzpicture}
+}{%
+    \end{tikzpicture}
+    \end{figure}
+    \FloatBarrier
+}
+
+\newcommand{\putendline}[1]{\fill[black] (#1) circle (0.75pt);}
+    
 
 %----------------------------------------------------------------------------------------
 %    ITEMIZE AND ENUMERATE
@@ -199,141 +220,3 @@ framerule=0pt
 %    ENVIRONMENT
 %----------------------------------------------------------------------------------------
 \newcommand{\ra}[1]{\renewcommand{\arraystretch}{#1}}
-
-%----------------------------------------------------------------------------------------
-%    FLOATING ENVIRONMENT FOR EBNF GRAMMERS
-%----------------------------------------------------------------------------------------
-\DeclareFloatingEnvironment[placement={!ht}]{grammar}
-
-%----------------------------------------------------------------------------------------
-%    FLOATING ENVIRONMENT FOR REGISTER MAPS
-%----------------------------------------------------------------------------------------
-\DeclareFloatingEnvironment[placement={!ht}]{register map}
-
-%----------------------------------------------------------------------------------------
-%    FLOATING ENVIRONMENT FOR MEMORY MAPS
-%----------------------------------------------------------------------------------------
-\DeclareFloatingEnvironment[placement={!ht}]{mmap}
-
-% facilitates the creation of memory maps. Start address at the bottom,
-% end address at the top.
-% syntax:
-% \memsection{end address}{start address}{height in lines}{text in box}
-\newcommand{\memsection}[4]{%
-% define the height of the memsection
-\bytefieldsetup{bitheight=#3\baselineskip}%
-\bitbox[]{10}{%
-\texttt{#1}% print end address
-\\
-% do some spacing
-\vspace{#3\baselineskip}
-\vspace{-2\baselineskip}
-\vspace{-#3pt}
-\texttt{#2}% print start address
-}%
-\bitbox{16}{#4}% print box with caption
-}
-
-%----------------------------------------------------------------------------------------
-%    INSTRUCTIONS
-%----------------------------------------------------------------------------------------
-\DeclareFloatingEnvironment[placement={!htb}]{instruction}
-\captionsetup[instruction]{format=default,font=small,labelformat=empty}
-
-\newcommand{\IInstruction}[4]{
-\begin{instruction}%
-\centering
-\caption{I-Type Instruction}
-\bitpattern#1{#2}[3]{#3}[3]{#4}[6]/
-\end{instruction}
-}
-
-\newcommand{\JInstruction}[2]{
-\begin{instruction}%
-\centering
-\caption{J-Type Instruction}
-\bitpattern#1{#2}[12]/
-\end{instruction}
-}
-
-\newcommand{\RInstruction}[5]{
-\begin{instruction}%
-\centering
-\caption{R-Type Instruction}
-\bitpattern#1{#2}[3]{#3}[3]{#4}[3]{#5}[3]/
-\end{instruction}
-}
-
-\newcommand{\mono}[1]{\texttt{\small #1}}
-
-\newcommand{\gpr}[1]{\lstinline{#1}}
-
-\newcommand{\descmargin}{\vspace{3mm}}
-
-
-\newenvironment{Instruction}{\begin{flushleft}}{\end{flushleft}}
-
-\newcommand{\AddInstruction}[2]{
-\newpage
-\addcontentsline{toc}{subsection}{#1}
-
-\begin{tcolorbox}
-\textbf{#1} \hfill \textbf{#2}
-\end{tcolorbox}
-}
-
-\newcommand{\InstructionFormat}[1]{
-\textbf{Format:} \newline
-\texttt{\small #1}
-\descmargin
-}
-
-\newcommand{\InstructionClass}[1]{
-\textbf{Class:} #1
-\descmargin
-}
-
-\newcommand{\InstructionPurpose}[1]{
-\textbf{Purpose:} \newline
-#1
-\descmargin
-}
-
-\newcommand{\tab}{\hspace{10px}}
-\newcommand{\InstructionDescription}[2]{
-\textbf{Description:} \newline
-\texttt{\small #1}
-
-#2
-\descmargin
-}
-
-\newcommand{\InstructionExample}{
-\textbf{Example:}
-}
-
-\newcommand{\InstructionRestrictions}[1]{
-\textbf{Restrictions:} \newline
-#1
-\descmargin
-}
-
-\newcommand{\InstructionFlags}[2]{
-\textbf{Status Flags:} \newline
-\texttt{\small #1}
-
-#2
-\descmargin
-}
-
-\newcommand{\InstructionFlagsText}[1]{
-\textbf{Status Flags:} \newline
-#1
-\descmargin
-}
-
-\newcommand{\InstructionNotes}[1]{
-\textbf{Notes:} \newline
-#1
-\descmargin
-}

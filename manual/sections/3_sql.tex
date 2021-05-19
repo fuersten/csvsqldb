@@ -6,23 +6,7 @@ This chapter describes the SQL syntax and extensions that \csvsqldb{} supports. 
 \section{SQL Syntax}
 We describe the SQL syntax using so called syntax diagrams \cite{Wikipedia_Syntaxdiagram}. In general the syntax can be understood much easier using these kind of diagrams rather than using EBNF grammars, which are much harder to decipher.
 
-\tikzset{
-font=\scriptsize\ttfamily,
-node distance=5mm,
-terminal/.style={rounded rectangle,draw=blue!50,fill=blue!10,thick,minimum size=4mm, text height=1.2ex,text depth=.25ex},
-nonterminal/.style={rectangle,draw=blue!50,fill=green!10,thick,minimum size=4mm, text height=1.2ex,text depth=.25ex},
-every path/.style = {draw, > = latex},
-point/.style={circle,inner sep=0.5pt,outer sep=0pt,minimum size=0pt,fill=red},
-endpoint/.style={circle,inner sep=1.5pt,minimum size=0pt,draw=black},
-startpoint/.style={circle,inner sep=1pt,minimum size=0pt,fill=black},
-hv path/.style={to path={-| (\tikztotarget)}},
-vh path/.style={to path={|- (\tikztotarget)}}
-}
-
-\subsubsection{SELECT\_STMT}
-
-\begin{figure}[!htbp]
-\begin{tikzpicture}
+\begin{SyntaxGrammar}{SELECT\_STMT}{selectstmt}
 \matrix[row sep=1mm,column sep=2mm] {
 % First row:
 & & & & & & & & & \node (comma) [terminal] {,}; & & & & \\
@@ -49,15 +33,10 @@ vh path/.style={to path={|- (\tikztotarget)}}
   comma ->[hv path] p5;
   p6 ->[vh path] comma;
 };
-\fill[black] (p8) circle (0.75pt);
-\end{tikzpicture}
-\end{figure}
-\FloatBarrier
+\putendline{p8}
+\end{SyntaxGrammar}
 
-\subsubsection{SELECT\_LIST}
-
-\begin{figure}[!htbp]
-\begin{tikzpicture}
+\begin{SyntaxGrammar}{SELECT\_LIST}{selectlist}
 \matrix[row sep=1mm,column sep=2mm] {
 % First row:
 & & & & & \node (comma) [terminal] {,}; & & & & \\
@@ -85,15 +64,10 @@ vh path/.style={to path={|- (\tikztotarget)}}
   p5 ->[vh path] comma;
   comma ->[hv path] p2;
 };
-\fill[black] (p7) circle (0.75pt);
-\end{tikzpicture}
-\end{figure}
-\FloatBarrier
+\putendline{p7}
+\end{SyntaxGrammar}
 
-\subsubsection{TABLE\_REFERENCE}
-
-\begin{figure}[!htbp]
-\begin{tikzpicture}
+\begin{SyntaxGrammar}{TABLE\_REFERENCE}{tablereference}
 \matrix[row sep=1mm,column sep=2mm] {
 % First row:
 % Second row:
@@ -120,15 +94,10 @@ vh path/.style={to path={|- (\tikztotarget)}}
   p3 ->[vh path] p7 ->[hv path] p5;
   p5 ->[vh path] p8 ->[hv path] p9;
 };
-\fill[black] (p6) circle (0.75pt);
-\end{tikzpicture}
-\end{figure}
-\FloatBarrier
+\putendline{p6}
+\end{SyntaxGrammar}
 
-\subsubsection{TABLE\_OR\_SUBSELECT}
-
-\begin{figure}[!htbp]
-\begin{tikzpicture}
+\begin{SyntaxGrammar}{TABLE\_OR\_SUBSELECT}{tableorsubselect}
 \matrix[row sep=1mm,column sep=2mm] {
 % First row:
 \node (p1) [startpoint] {}; &
@@ -152,10 +121,8 @@ vh path/.style={to path={|- (\tikztotarget)}}
   p4 ->[vh path] as ->[hv path] p5;
   p4 --[vh path] p5 -> alias ->[hv path] p6;
 };
-\fill[black] (p8) circle (0.75pt);
-\end{tikzpicture}
-\end{figure}
-\FloatBarrier
+\putendline{p8}
+\end{SyntaxGrammar}
 
 \section{Data Types}
 \csvsqldb{} has an ample set of datatypes. Type operations can be performed on data types. Data types can also be converted.
