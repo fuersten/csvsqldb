@@ -12,7 +12,7 @@ node distance=5mm,
 terminal/.style={rounded rectangle,draw=blue!50,fill=blue!10,thick,minimum size=4mm, text height=1.2ex,text depth=.25ex},
 nonterminal/.style={rectangle,draw=blue!50,fill=green!10,thick,minimum size=4mm, text height=1.2ex,text depth=.25ex},
 every path/.style = {draw, > = latex},
-point/.style={circle,inner sep=0pt,outer sep=0pt,minimum size=0pt,fill=red},
+point/.style={circle,inner sep=0.5pt,outer sep=0pt,minimum size=0pt,fill=red},
 endpoint/.style={circle,inner sep=1.5pt,minimum size=0pt,draw=black},
 startpoint/.style={circle,inner sep=1pt,minimum size=0pt,fill=black},
 hv path/.style={to path={-| (\tikztotarget)}},
@@ -27,7 +27,7 @@ vh path/.style={to path={|- (\tikztotarget)}}
 % First row:
 & & & & & & & & & \node (comma) [terminal] {,}; & & & & \\
 % Second row:
-\node (p1) [startpoint] {}; & \node (select) [terminal] {SELECT};                                                 &
+\node (p1) [startpoint] {}; & \node (select) [terminal] {SELECT};                                          &
 \node (p2) [point] {}; &                                                                                                      &
 \node (p3) [point] {}; & \node (select list) [nonterminal] {SELECT\_LIST};                            &
 \node (p4) [point] {}; & \node (from) [terminal] {FROM};                                                     &
@@ -96,28 +96,29 @@ vh path/.style={to path={|- (\tikztotarget)}}
 \begin{tikzpicture}
 \matrix[row sep=1mm,column sep=2mm] {
 % First row:
- & & & & & \node (p8) [point] {}; & & & & & & \\
- & & & & &  & & & & & & \\
 % Second row:
 \node (p1) [startpoint] {}; & \node (tableorsubselect) [nonterminal] {TABLE\_OR\_SUBSELECT}; & 
 \node (p2) [point] {}; & & & & & & & & 
 \node (p5) [point] {}; &
 \node (p6) [endpoint] {}; \\
 % Third row:
- & & & \node (join type) [nonterminal] {JOIN\_TYPE}; &
+ & & \node (p9) [point] {}; & \node (join type) [nonterminal] {JOIN\_TYPE}; &
  \node (tableorsubselect2) [nonterminal] {TABLE\_OR\_SUBSELECT}; &
  \node (p3) [point] {}; & \node (on) [terminal] {ON}; & \node (expression) [nonterminal] {EXPRESSION}; &
  \node (p4) [point] {}; & & \\
 % Fourth row:
  & & & & &  & & & & & & \\
  & & & & & & & \node (p7) [point] {}; & & & & \\
+
+ & & & & &  & & & & & & \\
+ & & & & & \node (p8) [point] {}; & & & & & & \\
 };
 
 \graph [use existing nodes] {
   p1 -> tableorsubselect -- p2 -- p5 -> p6;
   p2 ->[vh path] join type -> tableorsubselect2 -- p3 -> on -> expression -- p4 ->[hv path] p5;
   p3 ->[vh path] p7 ->[hv path] p5;
-  p5 ->[vh path] p8 ->[hv path] p2;
+  p5 ->[vh path] p8 ->[hv path] p9;
 };
 \fill[black] (p6) circle (0.75pt);
 \end{tikzpicture}
