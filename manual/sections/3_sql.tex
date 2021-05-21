@@ -6,6 +6,8 @@ This chapter describes the SQL syntax and extensions that \csvsqldb{} supports. 
 \section{SQL Syntax}
 We describe the SQL syntax using so called syntax diagrams \cite{Wikipedia_Syntaxdiagram}. In general the syntax can be understood much easier using these kind of diagrams rather than using EBNF grammars, which are much harder to decipher.
 
+In this syntax diagrams a terminal symbol is represented by \tikz \node[scale=0.75] [terminal] {SELECT}; and a non-terminal by \tikz \node[scale=0.75] [nonterminal] {IDENTIFIER};.
+
 \begin{SyntaxGrammar}{SELECT\_STMT}{selectstmt}
 \matrix[row sep=1mm,column sep=2mm] {
 % First row:
@@ -25,13 +27,10 @@ We describe the SQL syntax using so called syntax diagrams \cite{Wikipedia_Synta
 };
 
 \graph [use existing nodes] {
-  p1 -> select -- p3 -> select list -> from -> table reference -> table expressions -- p7 -> p8;
-  distinct <-[hv path] p2;
-  p3 <-[vh path] distinct;
-  all <-[hv path] p2;
-  p3 <-[vh path] all;
-  comma ->[hv path] p5;
-  p6 ->[vh path] comma;
+  p1 -> select -- p3 -> select list -> from -> table reference -> table expressions -> p8;
+  p2 ->[vh path] distinct ->[hv path] p3;
+  p2 ->[vh path] all ->[hv path] p3;
+  p6 ->[vh path] comma ->[hv path] p5;
 };
 \putendline{p8}
 \end{SyntaxGrammar}
@@ -54,15 +53,11 @@ We describe the SQL syntax using so called syntax diagrams \cite{Wikipedia_Synta
 };
 
 \graph [use existing nodes] {
-  p1 -- p2 -> asterisk  -- p5 -- p6 -> p7;
-  expression <-[hv path] p2;
-  p5 <-[vh path] expression;
-  p5 <-[vh path] identifier;
-  identifier <-[hv path] p3;
-  as <-[hv path] p3;
-  p4 <-[vh path] as;
-  p5 ->[vh path] comma;
-  comma ->[hv path] p2;
+  p1 -- p2 -> asterisk -> p7;
+  p2 ->[vh path] expression ->[hv path] p5;
+  p3 ->[vh path] identifier ->[hv path] p5;
+  p3 ->[vh path] as ->[hv path] p4;
+  p5 ->[vh path] comma ->[hv path] p2;
 };
 \putendline{p7}
 \end{SyntaxGrammar}
@@ -78,18 +73,18 @@ We describe the SQL syntax using so called syntax diagrams \cite{Wikipedia_Synta
  & & \node (p9) [point] {}; & & \node (join type) [nonterminal] {JOIN\_TYPE}; &
  \node (tableorsubselect2) [nonterminal] {TABLE\_OR\_SUBSELECT}; &
  \node (p3) [point] {}; & \node (on) [terminal] {ON}; & \node (expression) [nonterminal] {EXPRESSION}; &
- \node (p4) [point] {}; & & & \\
+ & & & \\
 % Third row:
  & & & & &  & & & & & & & & \\
- & & & & & & & \node (p7) [point] {}; & & & & & \\
+ & & & & & & & & \node (p7) [point] {}; & & & & \\
 % Fourth row:
  & & & & &  & & & & & & & & \\
  & & & & & \node (p8) [point] {}; & & & & & & & \\
 };
 
 \graph [use existing nodes] {
-  p1 -> tableorsubselect -- p2 -- p5 -> p6;
-  p2 ->[vh path] join type -> tableorsubselect2 -- p3 -> on -> expression -- p4 ->[hv path] p5;
+  p1 -> tableorsubselect -> p6;
+  p2 ->[vh path] join type -> tableorsubselect2 -> on -> expression ->[hv path] p5;
   p3 ->[vh path] p7 ->[hv path] p5;
   p5 ->[vh path] p8 ->[hv path] p9;
 };
@@ -100,25 +95,25 @@ We describe the SQL syntax using so called syntax diagrams \cite{Wikipedia_Synta
 \matrix[row sep=1mm,column sep=2mm] {
 % First row:
 \node (p1) [startpoint] {}; &
-\node (p2) [point] {}; & \node (identifier) [nonterminal] {IDENTIFER}; & & &
+\node (p2) [point] {}; & & & \node (identifier) [nonterminal] {IDENTIFER}; & &
 \node (p3) [point] {}; & \node (p4) [point] {}; & & & &
 \node (p6) [point] {}; & 
-\node (p7) [point] {}; & &
+ & &
 \node (p8) [endpoint] {}; \\
 % Second row:
- & & \node (lparen) [terminal] {(}; & 
+ & & & \node (lparen) [terminal] {(}; & 
 \node (select stmt) [nonterminal] {SELECT\_STMT}; & 
 \node (rparen) [terminal] {)}; & & & & \node (p5) [point] {}; &
 \node (alias) [nonterminal] {IDENTIFER}; & & & & \\
 % Third row:
-& & & & & & & \node (as) [terminal] {AS}; & & & & & \\
+& & & & & & & & \node (as) [terminal] {AS}; & & & & & \\
 };
 
 \graph [use existing nodes] {
-  p1 -- p2 -> identifier -- p3 -- p4 --p6 -- p7 -> p8;
+  p1 -> identifier -> p8;
   p2 ->[vh path] lparen -> select stmt -> rparen ->[hv path] p3;
   p4 ->[vh path] as ->[hv path] p5;
-  p4 --[vh path] p5 -> alias ->[hv path] p6;
+  p4 ->[vh path] alias ->[hv path] p6;
 };
 \putendline{p8}
 \end{SyntaxGrammar}
@@ -229,7 +224,7 @@ We describe the SQL syntax using so called syntax diagrams \cite{Wikipedia_Synta
   p28 -- p14;
   p29 -- p18;
   p30 -- p24;
-  p24 ->[vh path] p13;
+  p30 ->[vh path] p13;
 };
 \putendline{p13}
 \end{SyntaxGrammar}
