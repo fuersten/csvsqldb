@@ -681,56 +681,48 @@ namespace csvsqldb
   ASTJoinNodePtr SQLParser::parseJoinClause(const ASTTableReferenceNodePtr& reference, eJoinType joinType)
   {
     ASTJoinNodePtr join;
+    ASTTableFactorNodePtr factor = parseTableFactor(reference->symbolTable());
 
     switch (joinType) {
       case INNER_JOIN: {
-        ASTTableFactorNodePtr factor = parseTableFactor(reference->symbolTable());
         expect(TOK_ON);
         ASTExprNodePtr exp = parseExpression(factor->symbolTable());
         join = std::make_shared<ASTInnerJoinNode>(factor->symbolTable(), reference, factor, exp);
         break;
       }
       case CROSS_JOIN: {
-        ASTTableFactorNodePtr factor = parseTableFactor(reference->symbolTable());
         join = std::make_shared<ASTCrossJoinNode>(factor->symbolTable(), reference, factor);
         break;
       }
       case NATURAL_JOIN: {
-        ASTTableFactorNodePtr factor = parseTableFactor(reference->symbolTable());
         join = std::make_shared<ASTNaturalJoinNode>(factor->symbolTable(), NATURAL, reference, factor);
         break;
       }
       case NATURAL_LEFT_JOIN: {
-        ASTTableFactorNodePtr factor = parseTableFactor(reference->symbolTable());
         join = std::make_shared<ASTNaturalJoinNode>(factor->symbolTable(), LEFT, reference, factor);
         break;
       }
       case NATURAL_RIGHT_JOIN: {
-        ASTTableFactorNodePtr factor = parseTableFactor(reference->symbolTable());
         join = std::make_shared<ASTNaturalJoinNode>(factor->symbolTable(), RIGHT, reference, factor);
         break;
       }
       case NATURAL_FULL_JOIN: {
-        ASTTableFactorNodePtr factor = parseTableFactor(reference->symbolTable());
         join = std::make_shared<ASTNaturalJoinNode>(factor->symbolTable(), FULL, reference, factor);
         break;
       }
       case LEFT_JOIN: {
-        ASTTableFactorNodePtr factor = parseTableFactor(reference->symbolTable());
         expect(TOK_ON);
         ASTExprNodePtr exp = parseExpression(factor->symbolTable());
         join = std::make_shared<ASTLeftJoinNode>(factor->symbolTable(), reference, factor, exp);
         break;
       }
       case RIGHT_JOIN: {
-        ASTTableFactorNodePtr factor = parseTableFactor(reference->symbolTable());
         expect(TOK_ON);
         ASTExprNodePtr exp = parseExpression(factor->symbolTable());
         join = std::make_shared<ASTRightJoinNode>(factor->symbolTable(), reference, factor, exp);
         break;
       }
       case FULL_JOIN: {
-        ASTTableFactorNodePtr factor = parseTableFactor(reference->symbolTable());
         expect(TOK_ON);
         ASTExprNodePtr exp = parseExpression(factor->symbolTable());
         join = std::make_shared<ASTFullJoinNode>(factor->symbolTable(), reference, factor, exp);
