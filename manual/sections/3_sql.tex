@@ -159,6 +159,81 @@ We describe the SQL syntax using so called syntax diagrams \cite{Wikipedia_Synta
 \putendline{p13}
 \end{SyntaxGrammar}
 
+\begin{SyntaxGrammar}{TABLE\_EXPRESSION}{tableexpressions}
+\matrix[row sep=1mm,column sep=2mm] {
+% First row:
+\node (p1) [startpoint] {}; & &
+\node (p2) [point] {}; & & 
+\node (where) [terminal] {WHERE}; & & & \node (where expression) [nonterminal] {EXPRESSION}; &
+\node (p3) [point] {}; & & & & & & & &  \\
+& & & & & & & & & & \\
+& & & & \node (p10) [point] {}; & & & & & & \\
+& & & & & & & & & & \\
+% Second row:
+& & \node (p31) [point] {}; & \node (p5) [point] {}; &
+\node (group) [terminal] {GROUP}; & 
+\node (group by) [terminal] {BY}; & 
+\node (p6) [point] {}; & & \node (p11) [point] {}; & & & \node (group identifier) [nonterminal] {IDENTIFIER\_LIST}; &
+\node (p7) [point] {}; & &
+ & \\
+& & & & & & & \node (distinct) [terminal] {DISTINCT}; & & & & \\
+&  & & & & & & \node (all) [terminal] {ALL}; & & & & \\
+% Third row:
+& & & & & & & & & & \\
+& & & & & \node (p12) [point] {}; & & & & & & \\
+& & & & & & & & & & \\
+& & \node (p28) [point] {}; & \node (p14) [point] {}; &
+\node (having) [terminal] {HAVING}; & & & \node (having expression) [nonterminal] {EXPRESSION}; &
+\node (p15) [point] {}; & & & & & &  & \\
+% Fourth row:
+& & & & & & & & & & \\
+& & & & & \node (p17) [point] {}; & & & & & & \\
+& & & & & & & & & & \\
+& & \node (p29) [point] {}; & \node (p18) [point] {};  &
+\node (order) [terminal] {ORDER}; & 
+\node (order by) [terminal] {BY}; & 
+\node (p19) [point] {}; & & \node (p20) [point] {}; & & & \node (order identifier) [nonterminal] {IDENTIFIER\_LIST}; &
+\node (p21) [point] {}; & 
+& \\
+& & & & & & & \node (asc) [terminal] {ASC}; & & & & \\
+& & & & & & & \node (desc) [terminal] {DESC}; & & & & \\
+% Fifth row:
+& & & & & & & & & & \\
+& & & & & \node (p23) [point] {}; & & & & & & \\
+& & & & & & & & & & \\
+& & \node (p30) [point] {}; & \node (p24) [point] {};  &
+\node (limit) [terminal] {LIMIT}; & & & \node (limit expression) [nonterminal] {EXPRESSION}; & \node (p27) [point] {};
+ & & & & \node (p25) [point] {}; & &  & \\
+& & & & & & & & & & \node (offset) [terminal] {OFFSET}; & \node (offset expression) [nonterminal] {EXPRESSION}; &  \\
+& & & & & & & & & & \\
+& & & & & & & & & & & & & & \node (p13) [endpoint] {}; \\
+};
+
+\graph [use existing nodes] {
+  p1 -> where -> where expression -> p3;
+  p3 --[vh path] p10 --[hv path] p5 -> group -> group by -> group identifier;
+  p6 ->[vh path] distinct ->[hv path] p11;
+  p6 ->[vh path] all ->[hv path] p11;
+  p7 --[vh path] p12 --[hv path] p14 -> having -> having expression;
+  p15 --[vh path] p17 --[hv path] p18 -> order -> order by -> order identifier;
+  p19 ->[vh path] asc ->[hv path] p20;
+  p19 ->[vh path] desc ->[hv path] p20;
+  p21 --[vh path] p23 --[hv path] p24 -> limit -> limit expression;
+  p27 ->[vh path] offset -> offset expression ->[hv path] p25;
+  group identifier -- p7;
+  having expression -- p15;
+  order identifier -- p21;
+  limit expression ->[hv path] p13;
+  p2 -> p31 -> p28 -> p29 -> p30;
+  p31 -- p5;
+  p28 -- p14;
+  p29 -- p18;
+  p30 -- p24;
+  p24 ->[vh path] p13;
+};
+\putendline{p13}
+\end{SyntaxGrammar}
+
 \section{Data Types}
 \csvsqldb{} has an ample set of datatypes. Type operations can be performed on data types. Data types can also be converted.
 
